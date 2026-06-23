@@ -74,16 +74,27 @@ class WordCard extends StatelessWidget {
                       ],
                     ),
                     if (word.synonyms.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.sm),
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
                       RichText(
                         text: TextSpan(
-                          style: AppTypography.labelSm
-                              .copyWith(color: AppColors.onSurfaceVariant),
+                          style: AppTypography.bodyMd.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            fontStyle: FontStyle.italic,
+                          ),
                           children: [
                             TextSpan(
                               text: '${l10n.wordsListSynonymPrefix} ',
-                              style: AppTypography.labelSm
-                                  .copyWith(color: AppColors.outline),
+                              style: AppTypography.bodyMd.copyWith(
+                                color: AppColors.outline,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             TextSpan(
                                 text: word.synonyms
@@ -101,7 +112,7 @@ class WordCard extends StatelessWidget {
                 constraints:
                     const BoxConstraints(minWidth: 48, minHeight: 48),
                 onPressed: onDelete,
-                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                icon: const Icon(Icons.delete, color: AppColors.error),
               ),
             ],
           ),
@@ -120,22 +131,32 @@ class _SourceBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isOcr = source.isOcr;
+    // OCR → nötr (surface-container-low + outline); MANUEL → amber
+    // (secondary-fixed + on-secondary-fixed-variant), Stitch tasarımı.
+    final bg = isOcr ? AppColors.surfaceContainerLow : AppColors.secondaryFixed;
+    final border =
+        isOcr ? AppColors.outlineVariant : AppColors.secondaryContainer;
+    final fg = isOcr ? AppColors.outline : AppColors.onSecondaryFixedVariant;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 2),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(color: border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(isOcr ? Icons.document_scanner : Icons.edit,
-              size: 12, color: AppColors.onSurfaceVariant),
+          Icon(isOcr ? Icons.document_scanner : Icons.edit, size: 12, color: fg),
           const SizedBox(width: 2),
           Text(
-            isOcr ? l10n.wordsListSourceOcr : l10n.wordsListSourceManual,
-            style: AppTypography.labelSm
-                .copyWith(color: AppColors.onSurfaceVariant),
+            (isOcr ? l10n.wordsListSourceOcr : l10n.wordsListSourceManual)
+                .toUpperCase(),
+            style: AppTypography.labelSm.copyWith(
+              color: fg,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ],
       ),
@@ -160,10 +181,11 @@ class _PrimaryChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.star, size: 14, color: AppColors.onPrimary),
+          const Icon(Icons.star, size: 16, color: AppColors.onPrimaryContainer),
           const SizedBox(width: AppSpacing.base),
           Text(text,
-              style: AppTypography.labelLg.copyWith(color: AppColors.onPrimary)),
+              style: AppTypography.labelLg
+                  .copyWith(color: AppColors.onPrimaryContainer)),
         ],
       ),
     );

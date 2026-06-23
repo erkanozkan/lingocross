@@ -215,12 +215,26 @@ class _Summary extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(l10n.wordsListCount(count), style: AppTypography.headlineMd),
-            const SizedBox(width: AppSpacing.xs),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text('$count',
+                    style: AppTypography.headlineMd
+                        .copyWith(color: AppColors.onSurface)),
+                const SizedBox(width: AppSpacing.base),
+                Text(
+                  l10n.wordsListWordUnit,
+                  style: AppTypography.bodyMd
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ],
+            ),
             Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xs, vertical: AppSpacing.base),
+                  horizontal: AppSpacing.sm, vertical: AppSpacing.base),
               decoration: BoxDecoration(
                 color: AppColors.primaryFixed,
                 borderRadius: BorderRadius.circular(AppRadius.full),
@@ -230,8 +244,10 @@ class _Summary extends StatelessWidget {
                   languageShortLabel(sourceCode),
                   languageShortLabel(targetCode),
                 ),
-                style:
-                    AppTypography.labelSm.copyWith(color: AppColors.primary),
+                style: AppTypography.labelSm.copyWith(
+                  color: AppColors.primary,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ],

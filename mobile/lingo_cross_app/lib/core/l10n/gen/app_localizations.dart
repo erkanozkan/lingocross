@@ -831,6 +831,12 @@ abstract class AppLocalizations {
   /// **'{count} kelime'**
   String wordsListCount(int count);
 
+  /// No description provided for @wordsListWordUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'kelime'**
+  String get wordsListWordUnit;
+
   /// No description provided for @wordsListLangDir.
   ///
   /// In tr, this message translates to:
