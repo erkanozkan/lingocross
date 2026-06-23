@@ -9,7 +9,8 @@ services:
       POSTGRES_PASSWORD: lingocross
       POSTGRES_DB: lingocross
     ports:
-      - "5432:5432"
+      # Host portu 5433 — yaygın 5432 çakışmasını (başka Postgres'ler) önlemek için.
+      - "5433:5432"
     volumes:
       - lingocross_pgdata:/var/lib/postgresql/data
     healthcheck:
