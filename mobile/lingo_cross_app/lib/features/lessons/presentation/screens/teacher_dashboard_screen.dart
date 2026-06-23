@@ -74,9 +74,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xl),
             _PrimaryActions(
               onNewLesson: () => context.push(AppRoutes.lessonNew),
-              onProgress: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.commonComingSoon)),
-              ),
+              onProgress: () => context.push(AppRoutes.teacherStudents),
             ),
             const SizedBox(height: AppSpacing.xl),
             _LessonsSection(lessonsAsync: lessonsAsync),
