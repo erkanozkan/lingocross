@@ -388,6 +388,9 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get wordsListWordUnit => 'kelime';
+
+  @override
   String wordsListLangDir(String source, String target) {
     return '$source → $target';
   }

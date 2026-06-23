@@ -144,6 +144,7 @@
 
   "wordsListCount": "{count} kelime",
   "@wordsListCount": { "placeholders": { "count": { "type": "int" } } },
+  "wordsListWordUnit": "kelime",
   "wordsListLangDir": "{source} → {target}",
   "@wordsListLangDir": { "placeholders": { "source": { "type": "String" }, "target": { "type": "String" } } },
   "wordsListScan": "Kameradan Tara",
