@@ -69,7 +69,12 @@ flutter analyze
 ```
 
 > Not (ortam): Bu makinede NuGet/pub restore için ağ, sandbox kapalıyken çalışır. Docker daemon'ı
-> kullanıcı başlatır. NuGet yalnız nuget.org'a gider.
+> kullanıcı başlatır. NuGet yalnız nuget.org'a gider. Lokal Postgres host portu **5433**.
+>
+> Not (iOS + ML Kit): OCR için `google_mlkit_text_recognition` iOS deployment target **≥15.5**
+> ister (Podfile + Runner ayarlandı) ve **Apple Silicon iOS Simülatöründe arm64 dilimi yok** →
+> `EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64` ile x86_64+Rosetta çalışır (repo'da ayarlı).
+> **OCR kamerası simülatörde çalışmaz** (galeri çalışır); tam OCR doğrulaması gerçek cihazda.
 
 ## Ekip & İş Akışı
 
