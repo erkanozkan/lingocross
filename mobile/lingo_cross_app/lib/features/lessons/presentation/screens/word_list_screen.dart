@@ -54,6 +54,10 @@ class WordListScreen extends ConsumerWidget {
       );
     }
 
+    void openScan() {
+      context.push(AppRoutes.lessonOcrCapture(lessonId));
+    }
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -113,9 +117,7 @@ class WordListScreen extends ConsumerWidget {
               countAsync: wordsAsync,
               sourceCode: sourceLang,
               targetCode: targetLang,
-              onScan: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.wordsListScanComingSoon)),
-              ),
+              onScan: openScan,
               onAdd: openAdd,
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -129,9 +131,7 @@ class WordListScreen extends ConsumerWidget {
               data: (words) {
                 if (words.isEmpty) {
                   return _EmptyWords(
-                    onScan: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.wordsListScanComingSoon)),
-                    ),
+                    onScan: openScan,
                     onAdd: openAdd,
                   );
                 }

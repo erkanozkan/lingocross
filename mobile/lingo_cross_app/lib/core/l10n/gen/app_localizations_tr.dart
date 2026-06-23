@@ -548,4 +548,138 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get lessonsErrorValidation => 'Girilen bilgileri kontrol edin.';
+
+  @override
+  String get ocrCaptureTitle => 'Kelime Listesi Yükle';
+
+  @override
+  String get ocrCaptureHowTitle => 'Nasıl Çalışır?';
+
+  @override
+  String get ocrCaptureHowDesc => 'El yazısı listenizin fotoğrafını çekin. Metin tanıma kâğıdı tarar ve kelimeleri otomatik olarak listenize aktarır.';
+
+  @override
+  String get ocrCaptureStep1 => 'Fotoğraf Çek';
+
+  @override
+  String get ocrCaptureStep2 => 'Tara';
+
+  @override
+  String get ocrCaptureStep3 => 'Onayla';
+
+  @override
+  String get ocrCaptureTriggerTitle => 'Kamera ile Tara';
+
+  @override
+  String get ocrCaptureTriggerSubtitle => 'Veya galeriden bir fotoğraf seçin';
+
+  @override
+  String get ocrCaptureSourceCamera => 'Kamera';
+
+  @override
+  String get ocrCaptureSourceGallery => 'Galeriden Seç';
+
+  @override
+  String get ocrCapturePhotoRemoveLabel => 'Fotoğrafı kaldır';
+
+  @override
+  String get ocrCaptureExtract => 'Kelimeleri Çıkart';
+
+  @override
+  String get ocrCaptureScanning => 'Taranıyor…';
+
+  @override
+  String get ocrCaptureOr => 'VEYA';
+
+  @override
+  String get ocrCaptureManual => 'Manuel Giriş';
+
+  @override
+  String get ocrCaptureNoCamera => 'Bu cihazda kamera yok — galeriden seçin.';
+
+  @override
+  String get ocrCapturePermissionTitle => 'Kamera/galeri erişimi gerekli';
+
+  @override
+  String get ocrCapturePermissionDesc => 'Devam etmek için ayarlardan kamera veya galeri erişimine izin verin.';
+
+  @override
+  String get ocrCaptureOpenSettings => 'Ayarları Aç';
+
+  @override
+  String get ocrCaptureError => 'Fotoğraf alınamadı, tekrar deneyin.';
+
+  @override
+  String get ocrReviewTitle => 'Tanınan Kelimeler';
+
+  @override
+  String ocrReviewSummary(int count) {
+    return '$count kelime tanındı';
+  }
+
+  @override
+  String ocrReviewSelected(int count) {
+    return '$count seçili';
+  }
+
+  @override
+  String get ocrReviewConfidenceNote => 'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.';
+
+  @override
+  String ocrReviewTermLabel(String sourceLang) {
+    return 'Terim ($sourceLang)';
+  }
+
+  @override
+  String get ocrReviewTermPlaceholder => 'Örn. environment';
+
+  @override
+  String get ocrReviewIncludeLabel => 'Kaydedilecek';
+
+  @override
+  String get ocrReviewExcludeLabel => 'Hariç tutuldu';
+
+  @override
+  String ocrReviewRowRemoveLabel(int index) {
+    return 'Aday $index, sil';
+  }
+
+  @override
+  String get ocrReviewAddRow => 'Satır Ekle';
+
+  @override
+  String get ocrReviewClearAll => 'Tümünü Temizle';
+
+  @override
+  String ocrReviewSave(int count) {
+    return 'Seçilenleri Kaydet ($count)';
+  }
+
+  @override
+  String get ocrReviewEmptyTitle => 'Hiç kelime tanınamadı';
+
+  @override
+  String get ocrReviewEmptyDesc => 'Net, iyi aydınlatılmış bir fotoğraf deneyin.';
+
+  @override
+  String get ocrReviewRetry => 'Tekrar Tara';
+
+  @override
+  String get ocrReviewError => 'Tarama başarısız oldu';
+
+  @override
+  String get ocrReviewInvalidRows => 'Eksik satırları doldurun veya kaldırın.';
+
+  @override
+  String get ocrReviewSaving => 'Kaydediliyor…';
+
+  @override
+  String ocrReviewPartialError(int count) {
+    return '$count kelime kaydedilemedi. Başarısız satırları tekrar deneyin.';
+  }
+
+  @override
+  String ocrReviewSavedSnack(int count) {
+    return '$count kelime eklendi';
+  }
 }

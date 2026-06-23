@@ -12,6 +12,8 @@ import '../../features/auth/presentation/screens/welcome_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
+import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
+import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_dashboard_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 
@@ -32,6 +34,10 @@ abstract final class AppRoutes {
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
   static String lessonEdit(String id) => '/teacher/lessons/$id/edit';
+
+  // OCR akışı (M2 #18): yakalama (Ekran A) + gözden geçirme (Ekran B).
+  static String lessonOcrCapture(String id) => '/teacher/lessons/$id/ocr';
+  static String lessonOcrReview(String id) => '/teacher/lessons/$id/ocr/review';
 }
 
 /// AuthState değişimlerini go_router'a [Listenable] olarak köprüler.
@@ -137,6 +143,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/teacher/lessons/:id/edit',
         builder: (context, state) =>
             LessonFormScreen(lessonId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/teacher/lessons/:id/ocr',
+        builder: (context, state) =>
+            OcrCaptureScreen(lessonId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/teacher/lessons/:id/ocr/review',
+        builder: (context, state) => OcrReviewScreen(
+          lessonId: state.pathParameters['id']!,
+          // Yakalama ekranı taramayı yaptıktan sonra adayları extra ile taşır.
+          // Doğrudan derin-bağlantı (extra yok) durumunda boş hata ekranı.
+          args: state.extra as OcrReviewArgs? ??
+              const OcrReviewArgs(
+                candidates: [],
+                sourceLangLabel: '',
+                failed: true,
+              ),
+        ),
       ),
     ],
   );

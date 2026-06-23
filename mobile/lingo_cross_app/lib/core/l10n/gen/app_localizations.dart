@@ -1142,6 +1142,246 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Girilen bilgileri kontrol edin.'**
   String get lessonsErrorValidation;
+
+  /// No description provided for @ocrCaptureTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Listesi Yükle'**
+  String get ocrCaptureTitle;
+
+  /// No description provided for @ocrCaptureHowTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nasıl Çalışır?'**
+  String get ocrCaptureHowTitle;
+
+  /// No description provided for @ocrCaptureHowDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'El yazısı listenizin fotoğrafını çekin. Metin tanıma kâğıdı tarar ve kelimeleri otomatik olarak listenize aktarır.'**
+  String get ocrCaptureHowDesc;
+
+  /// No description provided for @ocrCaptureStep1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf Çek'**
+  String get ocrCaptureStep1;
+
+  /// No description provided for @ocrCaptureStep2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tara'**
+  String get ocrCaptureStep2;
+
+  /// No description provided for @ocrCaptureStep3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Onayla'**
+  String get ocrCaptureStep3;
+
+  /// No description provided for @ocrCaptureTriggerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kamera ile Tara'**
+  String get ocrCaptureTriggerTitle;
+
+  /// No description provided for @ocrCaptureTriggerSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veya galeriden bir fotoğraf seçin'**
+  String get ocrCaptureTriggerSubtitle;
+
+  /// No description provided for @ocrCaptureSourceCamera.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kamera'**
+  String get ocrCaptureSourceCamera;
+
+  /// No description provided for @ocrCaptureSourceGallery.
+  ///
+  /// In tr, this message translates to:
+  /// **'Galeriden Seç'**
+  String get ocrCaptureSourceGallery;
+
+  /// No description provided for @ocrCapturePhotoRemoveLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğrafı kaldır'**
+  String get ocrCapturePhotoRemoveLabel;
+
+  /// No description provided for @ocrCaptureExtract.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelimeleri Çıkart'**
+  String get ocrCaptureExtract;
+
+  /// No description provided for @ocrCaptureScanning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taranıyor…'**
+  String get ocrCaptureScanning;
+
+  /// No description provided for @ocrCaptureOr.
+  ///
+  /// In tr, this message translates to:
+  /// **'VEYA'**
+  String get ocrCaptureOr;
+
+  /// No description provided for @ocrCaptureManual.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel Giriş'**
+  String get ocrCaptureManual;
+
+  /// No description provided for @ocrCaptureNoCamera.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihazda kamera yok — galeriden seçin.'**
+  String get ocrCaptureNoCamera;
+
+  /// No description provided for @ocrCapturePermissionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kamera/galeri erişimi gerekli'**
+  String get ocrCapturePermissionTitle;
+
+  /// No description provided for @ocrCapturePermissionDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam etmek için ayarlardan kamera veya galeri erişimine izin verin.'**
+  String get ocrCapturePermissionDesc;
+
+  /// No description provided for @ocrCaptureOpenSettings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarları Aç'**
+  String get ocrCaptureOpenSettings;
+
+  /// No description provided for @ocrCaptureError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf alınamadı, tekrar deneyin.'**
+  String get ocrCaptureError;
+
+  /// No description provided for @ocrReviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tanınan Kelimeler'**
+  String get ocrReviewTitle;
+
+  /// No description provided for @ocrReviewSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelime tanındı'**
+  String ocrReviewSummary(int count);
+
+  /// No description provided for @ocrReviewSelected.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} seçili'**
+  String ocrReviewSelected(int count);
+
+  /// No description provided for @ocrReviewConfidenceNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.'**
+  String get ocrReviewConfidenceNote;
+
+  /// No description provided for @ocrReviewTermLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Terim ({sourceLang})'**
+  String ocrReviewTermLabel(String sourceLang);
+
+  /// No description provided for @ocrReviewTermPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. environment'**
+  String get ocrReviewTermPlaceholder;
+
+  /// No description provided for @ocrReviewIncludeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydedilecek'**
+  String get ocrReviewIncludeLabel;
+
+  /// No description provided for @ocrReviewExcludeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hariç tutuldu'**
+  String get ocrReviewExcludeLabel;
+
+  /// No description provided for @ocrReviewRowRemoveLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aday {index}, sil'**
+  String ocrReviewRowRemoveLabel(int index);
+
+  /// No description provided for @ocrReviewAddRow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satır Ekle'**
+  String get ocrReviewAddRow;
+
+  /// No description provided for @ocrReviewClearAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümünü Temizle'**
+  String get ocrReviewClearAll;
+
+  /// No description provided for @ocrReviewSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçilenleri Kaydet ({count})'**
+  String ocrReviewSave(int count);
+
+  /// No description provided for @ocrReviewEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hiç kelime tanınamadı'**
+  String get ocrReviewEmptyTitle;
+
+  /// No description provided for @ocrReviewEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Net, iyi aydınlatılmış bir fotoğraf deneyin.'**
+  String get ocrReviewEmptyDesc;
+
+  /// No description provided for @ocrReviewRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Tara'**
+  String get ocrReviewRetry;
+
+  /// No description provided for @ocrReviewError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarama başarısız oldu'**
+  String get ocrReviewError;
+
+  /// No description provided for @ocrReviewInvalidRows.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eksik satırları doldurun veya kaldırın.'**
+  String get ocrReviewInvalidRows;
+
+  /// No description provided for @ocrReviewSaving.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydediliyor…'**
+  String get ocrReviewSaving;
+
+  /// No description provided for @ocrReviewPartialError.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelime kaydedilemedi. Başarısız satırları tekrar deneyin.'**
+  String ocrReviewPartialError(int count);
+
+  /// No description provided for @ocrReviewSavedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelime eklendi'**
+  String ocrReviewSavedSnack(int count);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
