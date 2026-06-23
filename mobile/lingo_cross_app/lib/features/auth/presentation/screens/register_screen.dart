@@ -17,8 +17,8 @@ import '../auth_notifier.dart';
 import '../auth_validators.dart';
 import '../widgets/role_select_card.dart';
 
-/// Hesap Oluştur ekranı (UX: auth-register.md). Rol burada belirlenir. Welcome
-/// rol kartı `?role=student|teacher` ile gelen rolü ön-seçer (param yoksa
+/// Hesap Oluştur ekranı (UX: auth-register.md). Rol burada belirlenir;
+/// `?role=student|teacher` query param ile gelen rolü ön-seçer (param yoksa
 /// varsayılan öğrenci). Başarıda API token döner → otomatik login → /home
 /// (router guard). Sosyal kayıt M1'de gösterilmez.
 class RegisterScreen extends ConsumerStatefulWidget {

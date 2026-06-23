@@ -21,52 +21,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authFooterTerms => 'Kullanım Koşulları';
 
   @override
-  String get authSocialGoogle => 'Google';
-
-  @override
-  String get authSocialApple => 'Apple';
-
-  @override
   String get authWelcomeTitle => 'LingoCross\'a Hoş Geldiniz';
 
   @override
   String get authWelcomeSubtitle => 'Dil yolculuğuna bugün başla, sınırları ortadan kaldır.';
 
   @override
-  String get authWelcomeRoleStudentTitle => 'Öğrenci Olarak Kaydol';
-
-  @override
-  String get authWelcomeRoleStudentSubtitle => 'Yeni hesap oluştur, öğrenmeye başla';
-
-  @override
-  String get authWelcomeRoleTeacherTitle => 'Eğitmen Olarak Kaydol';
-
-  @override
-  String get authWelcomeRoleTeacherSubtitle => 'Yeni hesap oluştur, sınıflarını yönet';
-
-  @override
-  String get authWelcomeForgotPassword => 'Şifremi Unuttum';
-
-  @override
-  String get authWelcomeHaveAccount => 'Zaten hesabın var mı?';
-
-  @override
-  String get authWelcomeLoginCta => 'Giriş Yap';
-
-  @override
   String get authWelcomeBadgeHi => 'Hi!';
 
   @override
   String get authWelcomeBadgeMerhaba => 'Merhaba!';
-
-  @override
-  String get authLoginAppbarHelp => 'Yardım';
-
-  @override
-  String get authLoginTitle => 'Tekrar Hoş Geldin';
-
-  @override
-  String get authLoginSubtitle => 'LingoCross ile yolculuğuna devam et';
 
   @override
   String get authLoginEmailLabel => 'E-posta Adresi';
@@ -85,9 +49,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get authLoginSubmit => 'Giriş Yap';
-
-  @override
-  String get authLoginDividerOr => 'VEYA ŞUNUNLA DEVAM ET';
 
   @override
   String get authLoginNoAccount => 'Hesabın yok mu?';
@@ -151,9 +112,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get authRegisterSubmit => 'Hesap Oluştur';
-
-  @override
-  String get authRegisterDividerOr => 'VEYA ŞUNUNLA KAYIT OL';
 
   @override
   String get authRegisterHaveAccount => 'Zaten bir hesabın var mı?';

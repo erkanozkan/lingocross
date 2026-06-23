@@ -13,7 +13,7 @@ import '../storage/token_storage.dart';
 ///   eşzamanlı 401'ler aynı refresh'i bekler (kuyruğa alınır).
 /// - Refresh başarılıysa orijinal istek **bir kez** yeni token ile retry edilir.
 /// - Refresh başarısızsa token'lar temizlenir ve [onSessionExpired] çağrılır
-///   (router welcome'a yönlendirir); hata yukarı taşınır.
+///   (router giriş ekranına yönlendirir); hata yukarı taşınır.
 class AuthInterceptor extends QueuedInterceptor {
   AuthInterceptor({
     required this.tokenStorage,
@@ -23,7 +23,7 @@ class AuthInterceptor extends QueuedInterceptor {
   final TokenStorage tokenStorage;
 
   /// Refresh kalıcı olarak başarısız olduğunda tetiklenir (token temizliği +
-  /// welcome'a yönlendirme için).
+  /// giriş ekranına yönlendirme için).
   final FutureOr<void> Function() onSessionExpired;
 
   /// Refresh çağrısı için ayrı, interceptor'sız Dio (sonsuz döngüyü önler).

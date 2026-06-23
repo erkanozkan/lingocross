@@ -8,7 +8,6 @@ import '../../features/auth/presentation/auth_state.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/screens/welcome_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
@@ -21,7 +20,7 @@ import '../../features/lessons/presentation/screens/word_list_screen.dart';
 abstract final class AppRoutes {
   AppRoutes._();
 
-  static const String welcome = '/welcome';
+  // Birleşik karşılama + giriş ekranı (tek auth giriş noktası).
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
@@ -65,7 +64,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   ref.onDispose(refreshListenable.dispose);
 
   return GoRouter(
-    initialLocation: AppRoutes.welcome,
+    initialLocation: AppRoutes.login,
     refreshListenable: refreshListenable,
     redirect: (context, state) {
       final auth = ref.read(authNotifierProvider);
@@ -76,14 +75,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthed = auth.isAuthenticated;
       final isTeacher = auth.user?.role == UserRole.teacher;
-      final onAuthRoute = loc == AppRoutes.welcome ||
-          loc == AppRoutes.login ||
+      final onAuthRoute = loc == AppRoutes.login ||
           loc == AppRoutes.register ||
           loc == AppRoutes.forgotPassword;
       final onTeacherRoute = loc.startsWith(AppRoutes.teacher);
 
-      // Token yoksa korumalı route → welcome.
-      if (!isAuthed && !onAuthRoute) return AppRoutes.welcome;
+      // Token yoksa korumalı route → birleşik giriş ekranı.
+      if (!isAuthed && !onAuthRoute) return AppRoutes.login;
 
       // Girişliyken auth ekranlarında ise → role-bazlı ana ekran.
       if (isAuthed && onAuthRoute) {
@@ -97,18 +95,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(
-        path: AppRoutes.welcome,
-        builder: (context, state) => const WelcomeScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.register,
         builder: (context, state) {
-          // Welcome rol kartları rolü query param ile geçer (öğrenci/öğretmen);
-          // param yoksa Register varsayılan öğrenciyi ön-seçer.
+          // Rol query param ile geçilebilir (öğrenci/öğretmen); param yoksa
+          // Register varsayılan öğrenciyi ön-seçer.
           final role = state.uri.queryParameters['role'];
           return RegisterScreen(initialRole: UserRole.fromName(role));
         },
