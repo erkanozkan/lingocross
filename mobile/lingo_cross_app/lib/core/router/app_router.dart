@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/domain/user_role.dart';
 import '../../features/auth/presentation/auth_notifier.dart';
 import '../../features/auth/presentation/auth_state.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
@@ -76,14 +77,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) {
-          final role = state.uri.queryParameters['role'];
-          return LoginScreen(roleHint: role);
-        },
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.register,
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) {
+          // Welcome rol kartları rolü query param ile geçer (öğrenci/öğretmen);
+          // param yoksa Register varsayılan öğrenciyi ön-seçer.
+          final role = state.uri.queryParameters['role'];
+          return RegisterScreen(initialRole: UserRole.fromName(role));
+        },
       ),
       GoRoute(
         path: AppRoutes.forgotPassword,

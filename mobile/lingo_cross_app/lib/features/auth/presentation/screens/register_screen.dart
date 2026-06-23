@@ -17,11 +17,15 @@ import '../auth_notifier.dart';
 import '../auth_validators.dart';
 import '../widgets/role_select_card.dart';
 
-/// Hesap Oluştur ekranı (UX: auth-register.md). Rol seçimi zorunlu (varsayılan
-/// öğrenci). Başarıda API token döner → otomatik login → /home (router guard).
-/// Sosyal kayıt M1'de gösterilmez.
+/// Hesap Oluştur ekranı (UX: auth-register.md). Rol burada belirlenir. Welcome
+/// rol kartı `?role=student|teacher` ile gelen rolü ön-seçer (param yoksa
+/// varsayılan öğrenci). Başarıda API token döner → otomatik login → /home
+/// (router guard). Sosyal kayıt M1'de gösterilmez.
 class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.initialRole = UserRole.student});
+
+  /// Welcome'dan gelen ön-seçili rol (varsayılan öğrenci).
+  final UserRole initialRole;
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
@@ -33,7 +37,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  UserRole _role = UserRole.student;
+  late UserRole _role = widget.initialRole;
   bool _termsAccepted = false;
   bool _termsError = false;
   bool _obscure = true;

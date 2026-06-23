@@ -6,14 +6,21 @@
 
 ## 1. Amaç & Akış
 
-E-posta + şifre ile giriş. Welcome ekranındaki rol kartlarından (öğrenci/eğitmen) gelinebilir;
-rol burada UI'yi değiştirmez, sadece welcome'dan taşınan bağlamdır (gerçek rol login response'undan
-gelir). Başarılı girişte rolüne göre dashboard'a yönlendirilir.
+E-posta + şifre ile giriş. **Bu ekran tamamen rolsüzdür**: rol seçimi/göstergesi, roleHint veya rola
+bağlı herhangi bir UI yoktur. Kullanıcı yalnız e-posta + şifre girer. Rol, login yanıtındaki
+`user.role` alanından gelir ve uygulama bu role göre doğru home'a yönlendirir. Welcome ekranından
+buraya **rolsüz** `/login` ile gelinir (query param taşınmaz).
 
-- API: `POST /auth/login` (body: email, password) → access + refresh token (bkz. `CLAUDE.md` JWT).
-- Başarı → token'lar `flutter_secure_storage`'a, sonra `redirect`: öğretmen → öğretmen paneli,
-  öğrenci → öğrenci paneli (go_router guard).
-- "Şifremi Unuttum?" → `/forgot-password`. "Ücretsiz kayıt ol" → `/register`.
+- API: `POST /auth/login` (body: email, password) → access + refresh token + `user.role`
+  (bkz. `CLAUDE.md` JWT).
+- Başarı → token'lar `flutter_secure_storage`'a kaydedilir; ardından `redirect`, **yanıttaki
+  `user.role`'a göre**: öğretmen → öğretmen paneli, öğrenci → öğrenci paneli (go_router guard).
+- "Şifremi Unuttum?" → `/forgot-password`. "Ücretsiz kayıt ol" → `/register` (rol register'da seçilir).
+
+> **Karar notu (PM + kullanıcı onaylı):** Rol HESAP OLUŞTUR'da belirlenir; GİRİŞ rolsüzdür. Login'de
+> rol göstermek gereksiz ve yanıltıcıdır — kimliğin rolü zaten sunucu tarafında kayıtlıdır ve login
+> yanıtındaki `user.role` ile gelir. Bu yüzden welcome'dan rol bağlamı (`?role=`) **taşınmaz**, login
+> formu tek/sade kalır ve yönlendirme tamamen yanıta dayanır.
 
 ## 2. Layout (yukarıdan aşağıya)
 
@@ -97,7 +104,7 @@ kısmı `primary` bold → `/register`. Üst boşluk `mt = xl`.
 | **validation** | Boş/format hatası: e-posta boş veya geçersiz → alan altı hata; şifre boş → alan altı hata. Submit engellenir. |
 | **loading** | Giriş butonu disabled, içerikte `progress_activity` spinner (animate-spin), metin gizli. Inputlar disabled. |
 | **error (401/ağ)** | Kartın üstünde / butonun üstünde hata banner'ı: zemin `error-container` (`#ffdad6`), metin `on-error-container` (`#93000a`), `rounded-lg`, ikon `error`. Genel mesaj (kimlik bilgisi sızdırma yok). |
-| **success** | Token kaydedilir, rolüne göre dashboard'a yönlendirme. Buton kısa "başarılı" hali opsiyonel. |
+| **success** | Token kaydedilir; yanıttaki `user.role`'a göre dashboard'a yönlendirme (UI rol sormaz). Buton kısa "başarılı" hali opsiyonel. |
 
 ## 6. Erişilebilirlik
 
