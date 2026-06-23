@@ -1,6 +1,12 @@
+using System.Text;
+using LingoCross.Api.Infrastructure;
+using LingoCross.Application;
 using LingoCross.Infrastructure;
+using LingoCross.Infrastructure.Auth;
 using LingoCross.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +19,30 @@ if (!string.IsNullOrWhiteSpace(port))
 
 // --- Servisler ---
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+
+// JWT bearer kimlik doğrulama (bizim kendi token'larımız, HS256).
+var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = jwtOptions.Audience,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(30),
+        };
+    });
+builder.Services.AddAuthorization();
+
+// Hata yönetimi: ProblemDetails + merkezi exception handler.
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<AppExceptionHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -27,6 +57,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // --- Pipeline ---
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -41,9 +73,16 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseCors("mobile");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 // Railway / izleme için sağlık ucu.
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "lingocross-api" }));
 
 app.Run();
+
+// Integration testlerinin WebApplicationFactory ile erişebilmesi için.
+public partial class Program;
