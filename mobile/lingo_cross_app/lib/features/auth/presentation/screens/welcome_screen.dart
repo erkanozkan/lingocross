@@ -41,7 +41,8 @@ class WelcomeScreen extends StatelessWidget {
                       accentColor: AppColors.primaryContainer,
                       title: l10n.authWelcomeRoleStudentTitle,
                       subtitle: l10n.authWelcomeRoleStudentSubtitle,
-                      onTap: () => context.go('${AppRoutes.login}?role=student'),
+                      onTap: () =>
+                          context.go('${AppRoutes.register}?role=student'),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     RoleCard(
@@ -51,7 +52,8 @@ class WelcomeScreen extends StatelessWidget {
                       accentColor: AppColors.tertiary,
                       title: l10n.authWelcomeRoleTeacherTitle,
                       subtitle: l10n.authWelcomeRoleTeacherSubtitle,
-                      onTap: () => context.go('${AppRoutes.login}?role=teacher'),
+                      onTap: () =>
+                          context.go('${AppRoutes.register}?role=teacher'),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     _QuickActions(l10n: l10n),
@@ -179,30 +181,35 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: AppSpacing.xs,
+    return Column(
       children: [
+        // Belirgin tek giriş aksiyonu (rolsüz).
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(
+              '${l10n.authWelcomeHaveAccount} ',
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+            GestureDetector(
+              onTap: () => context.go(AppRoutes.login),
+              child: Text(
+                l10n.authWelcomeLoginCta,
+                style: AppTypography.bodyMd.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.xs),
         TextButton(
           onPressed: () => context.go(AppRoutes.forgotPassword),
           child: Text(
             l10n.authWelcomeForgotPassword,
-            style: AppTypography.labelLg.copyWith(color: AppColors.primary),
-          ),
-        ),
-        Container(
-          width: 4,
-          height: 4,
-          decoration: const BoxDecoration(
-            color: AppColors.outlineVariant,
-            shape: BoxShape.circle,
-          ),
-        ),
-        TextButton(
-          onPressed: () => context.go(AppRoutes.register),
-          child: Text(
-            l10n.authWelcomeCreateAccount,
             style: AppTypography.labelLg.copyWith(color: AppColors.primary),
           ),
         ),

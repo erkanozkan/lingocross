@@ -144,25 +144,25 @@ abstract class AppLocalizations {
   /// No description provided for @authWelcomeRoleStudentTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Öğrenci Girişi'**
+  /// **'Öğrenci Olarak Kaydol'**
   String get authWelcomeRoleStudentTitle;
 
   /// No description provided for @authWelcomeRoleStudentSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Öğrenmeye ve puan kazanmaya başla'**
+  /// **'Yeni hesap oluştur, öğrenmeye başla'**
   String get authWelcomeRoleStudentSubtitle;
 
   /// No description provided for @authWelcomeRoleTeacherTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Eğitmen Girişi'**
+  /// **'Eğitmen Olarak Kaydol'**
   String get authWelcomeRoleTeacherTitle;
 
   /// No description provided for @authWelcomeRoleTeacherSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Sınıflarını ve materyallerini yönet'**
+  /// **'Yeni hesap oluştur, sınıflarını yönet'**
   String get authWelcomeRoleTeacherSubtitle;
 
   /// No description provided for @authWelcomeForgotPassword.
@@ -171,17 +171,17 @@ abstract class AppLocalizations {
   /// **'Şifremi Unuttum'**
   String get authWelcomeForgotPassword;
 
-  /// No description provided for @authWelcomeCreateAccount.
+  /// No description provided for @authWelcomeHaveAccount.
   ///
   /// In tr, this message translates to:
-  /// **'Hesap Oluştur'**
-  String get authWelcomeCreateAccount;
+  /// **'Zaten hesabın var mı?'**
+  String get authWelcomeHaveAccount;
 
-  /// No description provided for @authWelcomeContinueWith.
+  /// No description provided for @authWelcomeLoginCta.
   ///
   /// In tr, this message translates to:
-  /// **'Veya şunlarla devam et:'**
-  String get authWelcomeContinueWith;
+  /// **'Giriş Yap'**
+  String get authWelcomeLoginCta;
 
   /// No description provided for @authWelcomeBadgeHi.
   ///

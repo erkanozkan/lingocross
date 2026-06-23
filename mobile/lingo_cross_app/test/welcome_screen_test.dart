@@ -49,13 +49,76 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("LingoCross'a Hoş Geldiniz"), findsOneWidget);
-    expect(find.text('Öğrenci Girişi'), findsOneWidget);
-    expect(find.text('Eğitmen Girişi'), findsOneWidget);
+    expect(find.text('Öğrenci Olarak Kaydol'), findsOneWidget);
+    expect(find.text('Eğitmen Olarak Kaydol'), findsOneWidget);
     expect(find.text('Şifremi Unuttum'), findsOneWidget);
-    expect(find.text('Hesap Oluştur'), findsOneWidget);
+    expect(find.textContaining('Zaten hesabın var mı?'), findsOneWidget);
+    expect(find.text('Giriş Yap'), findsOneWidget);
   });
 
-  testWidgets('Öğrenci kartına dokununca /login?role=student rotasına gider',
+  testWidgets('Öğrenci kartına dokununca /register?role=student rotasına gider',
+      (tester) async {
+    String? lastLocation;
+    final router = GoRouter(
+      initialLocation: '/welcome',
+      routes: [
+        GoRoute(
+            path: '/welcome', builder: (_, __) => const WelcomeScreen()),
+        GoRoute(path: '/login', builder: (_, __) => const Scaffold()),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) {
+            lastLocation = state.uri.toString();
+            return const Scaffold(body: Text('REGISTER'));
+          },
+        ),
+        GoRoute(
+            path: '/forgot-password', builder: (_, __) => const Scaffold()),
+      ],
+    );
+
+    await tester.pumpWidget(_wrap(const WelcomeScreen(), router));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Öğrenci Olarak Kaydol'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('REGISTER'), findsOneWidget);
+    expect(lastLocation, '/register?role=student');
+  });
+
+  testWidgets('Eğitmen kartına dokununca /register?role=teacher rotasına gider',
+      (tester) async {
+    String? lastLocation;
+    final router = GoRouter(
+      initialLocation: '/welcome',
+      routes: [
+        GoRoute(
+            path: '/welcome', builder: (_, __) => const WelcomeScreen()),
+        GoRoute(path: '/login', builder: (_, __) => const Scaffold()),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) {
+            lastLocation = state.uri.toString();
+            return const Scaffold(body: Text('REGISTER'));
+          },
+        ),
+        GoRoute(
+            path: '/forgot-password', builder: (_, __) => const Scaffold()),
+      ],
+    );
+
+    await tester.pumpWidget(_wrap(const WelcomeScreen(), router));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Eğitmen Olarak Kaydol'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('REGISTER'), findsOneWidget);
+    expect(lastLocation, '/register?role=teacher');
+  });
+
+  testWidgets('"Giriş Yap" aksiyonu rolsüz /login rotasına gider',
       (tester) async {
     String? lastLocation;
     final router = GoRouter(
@@ -79,10 +142,13 @@ void main() {
     await tester.pumpWidget(_wrap(const WelcomeScreen(), router));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Öğrenci Girişi'));
+    final loginCta = find.text('Giriş Yap');
+    await tester.ensureVisible(loginCta);
+    await tester.pumpAndSettle();
+    await tester.tap(loginCta);
     await tester.pumpAndSettle();
 
     expect(find.text('LOGIN'), findsOneWidget);
-    expect(lastLocation, '/login?role=student');
+    expect(lastLocation, '/login');
   });
 }

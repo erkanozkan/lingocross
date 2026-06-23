@@ -16,6 +16,16 @@ enum UserRole {
     };
   }
 
+  /// Welcome rol kartlarının `?role=` query param'ını eşler. Bilinmeyen/boş
+  /// değerlerde varsayılan: öğrenci.
+  static UserRole fromName(String? name) {
+    return switch (name) {
+      'teacher' => UserRole.teacher,
+      'student' => UserRole.student,
+      _ => UserRole.student,
+    };
+  }
+
   bool get isTeacher => this == UserRole.teacher;
   bool get isStudent => this == UserRole.student;
 }

@@ -33,25 +33,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authWelcomeSubtitle => 'Dil yolculuğuna bugün başla, sınırları ortadan kaldır.';
 
   @override
-  String get authWelcomeRoleStudentTitle => 'Öğrenci Girişi';
+  String get authWelcomeRoleStudentTitle => 'Öğrenci Olarak Kaydol';
 
   @override
-  String get authWelcomeRoleStudentSubtitle => 'Öğrenmeye ve puan kazanmaya başla';
+  String get authWelcomeRoleStudentSubtitle => 'Yeni hesap oluştur, öğrenmeye başla';
 
   @override
-  String get authWelcomeRoleTeacherTitle => 'Eğitmen Girişi';
+  String get authWelcomeRoleTeacherTitle => 'Eğitmen Olarak Kaydol';
 
   @override
-  String get authWelcomeRoleTeacherSubtitle => 'Sınıflarını ve materyallerini yönet';
+  String get authWelcomeRoleTeacherSubtitle => 'Yeni hesap oluştur, sınıflarını yönet';
 
   @override
   String get authWelcomeForgotPassword => 'Şifremi Unuttum';
 
   @override
-  String get authWelcomeCreateAccount => 'Hesap Oluştur';
+  String get authWelcomeHaveAccount => 'Zaten hesabın var mı?';
 
   @override
-  String get authWelcomeContinueWith => 'Veya şunlarla devam et:';
+  String get authWelcomeLoginCta => 'Giriş Yap';
 
   @override
   String get authWelcomeBadgeHi => 'Hi!';

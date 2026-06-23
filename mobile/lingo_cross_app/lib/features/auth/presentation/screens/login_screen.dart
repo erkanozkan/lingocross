@@ -17,13 +17,11 @@ import '../auth_notifier.dart';
 import '../auth_validators.dart';
 import '../widgets/auth_footer.dart';
 
-/// Giriş Yap ekranı (UX: auth-login.md). Sosyal giriş M1'de gösterilmez.
+/// Giriş Yap ekranı (UX: auth-login.md). Tamamen rolsüz: rol login yanıtındaki
+/// `user.role`'dan gelir ve yönlendirmeyi router guard yapar. Sosyal giriş
+/// M1'de gösterilmez.
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key, this.roleHint});
-
-  /// Welcome'dan taşınan rol bağlamı (UI'yi değiştirmez; gerçek rol login
-  /// yanıtından gelir).
-  final String? roleHint;
+  const LoginScreen({super.key});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
