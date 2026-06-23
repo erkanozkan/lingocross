@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+// ML Kit: Apple Silicon iOS Simülatöründe arm64 framework dilimi yok; x86_64 + Rosetta ile çalış.
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64
