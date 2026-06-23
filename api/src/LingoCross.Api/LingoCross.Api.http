@@ -4,4 +4,61 @@
 GET {{LingoCross.Api_HostAddress}}/health
 Accept: application/json
 
+### Kayıt (öğretmen)
+POST {{LingoCross.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "ogretmen@example.com",
+  "password": "Sifre1234!",
+  "displayName": "Örnek Öğretmen",
+  "role": 1
+}
+
+### Giriş
+POST {{LingoCross.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ogretmen@example.com",
+  "password": "Sifre1234!"
+}
+
+### Token yenileme
+POST {{LingoCross.Api_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "<refresh-token>"
+}
+
+### Çıkış
+POST {{LingoCross.Api_HostAddress}}/api/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "<refresh-token>"
+}
+
+### Şifremi unuttum (her zaman 200)
+POST {{LingoCross.Api_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "ogretmen@example.com"
+}
+
+### Şifre sıfırlama (token dev log'undan)
+POST {{LingoCross.Api_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "<reset-token>",
+  "newPassword": "YeniSifre9!"
+}
+
+### Profilim (Bearer access token gerekir)
+GET {{LingoCross.Api_HostAddress}}/api/auth/me
+Authorization: Bearer <access-token>
+
 ###

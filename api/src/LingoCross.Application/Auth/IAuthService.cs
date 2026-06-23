@@ -1,0 +1,22 @@
+using LingoCross.Application.Auth.Dtos;
+
+namespace LingoCross.Application.Auth;
+
+/// <summary>Kimlik doğrulama iş akışları. Sahiplik/iş kuralları bu katmanda uygulanır.</summary>
+public interface IAuthService
+{
+    Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default);
+
+    Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
+
+    Task<AuthResponse> RefreshAsync(RefreshRequest request, CancellationToken cancellationToken = default);
+
+    Task LogoutAsync(LogoutRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Hesap olup olmadığını sızdırmaz; her zaman sessizce tamamlanır (controller 200 döner).</summary>
+    Task ForgotPasswordAsync(ForgotPasswordRequest request, CancellationToken cancellationToken = default);
+
+    Task ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default);
+
+    Task<UserDto> GetMeAsync(Guid userId, CancellationToken cancellationToken = default);
+}
