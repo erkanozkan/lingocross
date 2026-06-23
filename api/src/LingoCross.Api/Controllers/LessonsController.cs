@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LingoCross.Api.Controllers;
 
 [ApiController]
-[Authorize(Roles = "Teacher")]
+[Authorize]
 [Route("api/lessons")]
 public class LessonsController : ControllerBase
 {
@@ -24,6 +24,7 @@ public class LessonsController : ControllerBase
         _services = services;
     }
 
+    [Authorize(Roles = "Teacher")]
     [HttpPost]
     public async Task<ActionResult<LessonDto>> Create(CreateLessonRequest request, CancellationToken ct)
     {
@@ -32,10 +33,11 @@ public class LessonsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = lesson.Id }, lesson);
     }
 
+    // Rol-duyarlı: öğretmen → kendi dersleri; öğrenci → enrolled (Active) + yayımlanmış dersler.
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<LessonDto>>> List(CancellationToken ct)
     {
-        var lessons = await _lessonService.ListMineAsync(ct);
+        var lessons = await _lessonService.ListVisibleAsync(ct);
         return Ok(lessons);
     }
 
@@ -46,6 +48,7 @@ public class LessonsController : ControllerBase
         return Ok(lesson);
     }
 
+    [Authorize(Roles = "Teacher")]
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<LessonDto>> Update(Guid id, UpdateLessonRequest request, CancellationToken ct)
     {
@@ -54,6 +57,7 @@ public class LessonsController : ControllerBase
         return Ok(lesson);
     }
 
+    [Authorize(Roles = "Teacher")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
@@ -61,6 +65,7 @@ public class LessonsController : ControllerBase
         return NoContent();
     }
 
+    [Authorize(Roles = "Teacher")]
     [HttpPost("{id:guid}/publish")]
     public async Task<ActionResult<LessonDto>> Publish(Guid id, CancellationToken ct)
     {
@@ -77,6 +82,7 @@ public class LessonsController : ControllerBase
         return Ok(words);
     }
 
+    [Authorize(Roles = "Teacher")]
     [HttpPost("{id:guid}/words")]
     public async Task<ActionResult<WordDto>> AddWord(Guid id, AddWordRequest request, CancellationToken ct)
     {

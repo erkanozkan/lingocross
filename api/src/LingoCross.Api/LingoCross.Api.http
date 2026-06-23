@@ -62,3 +62,36 @@ GET {{LingoCross.Api_HostAddress}}/api/auth/me
 Authorization: Bearer <access-token>
 
 ###
+
+# ===== M3: Enrollment =====
+
+### Öğretmen davet kodu (yoksa üretir) — Teacher
+GET {{LingoCross.Api_HostAddress}}/api/teachers/me/invite-code
+Authorization: Bearer <teacher-access-token>
+
+### Öğretmen davet kodunu yenile — Teacher
+POST {{LingoCross.Api_HostAddress}}/api/teachers/me/invite-code/regenerate
+Authorization: Bearer <teacher-access-token>
+
+### Öğrenci koddan katıl (idempotent, doğrudan Active) — Student
+POST {{LingoCross.Api_HostAddress}}/api/enrollments/join
+Authorization: Bearer <student-access-token>
+Content-Type: application/json
+
+{
+  "code": "ABCD2345"
+}
+
+### Eşleşmelerim (öğretmen → öğrenciler, öğrenci → öğretmenler)
+GET {{LingoCross.Api_HostAddress}}/api/enrollments
+Authorization: Bearer <access-token>
+
+### (Pending akışı için) Eşleşmeyi onayla — Teacher
+POST {{LingoCross.Api_HostAddress}}/api/enrollments/<enrollment-id>/accept
+Authorization: Bearer <teacher-access-token>
+
+### Öğrenci olarak görünür dersler (enrolled + published) — Student
+GET {{LingoCross.Api_HostAddress}}/api/lessons
+Authorization: Bearer <student-access-token>
+
+###
