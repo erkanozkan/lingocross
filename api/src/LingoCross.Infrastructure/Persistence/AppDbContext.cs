@@ -22,6 +22,14 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
+    public DbSet<Lesson> Lessons => Set<Lesson>();
+
+    public DbSet<Word> Words => Set<Word>();
+
+    public DbSet<WordTranslation> WordTranslations => Set<WordTranslation>();
+
+    public DbSet<WordSynonym> WordSynonyms => Set<WordSynonym>();
+
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
 

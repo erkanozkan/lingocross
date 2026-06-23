@@ -21,6 +21,10 @@ if (!string.IsNullOrWhiteSpace(port))
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
+// Geçerli isteğin kimliği (JWT claim'lerinden) — servis katmanı sahiplik kontrolü için kullanır.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<LingoCross.Application.Common.Security.ICurrentUser, LingoCross.Api.Infrastructure.HttpCurrentUser>();
+
 // JWT bearer kimlik doğrulama (bizim kendi token'larımız, HS256).
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
