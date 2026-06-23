@@ -1,0 +1,11 @@
+# Codegen yapılandırması (freezed + json_serializable).
+#
+# explicit_to_json: iç içe model listelerinin (örn. AddWordRequest.translations)
+# toJson çağrısında Map'e dönüşmesini sağlar. Aksi halde nesneler olduğu gibi
+# kalır ve API JSON sözleşmesi bozulur.
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          explicit_to_json: true

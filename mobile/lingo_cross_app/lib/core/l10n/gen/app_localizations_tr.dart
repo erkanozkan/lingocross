@@ -235,4 +235,317 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get homeLogout => 'Çıkış Yap';
+
+  @override
+  String get commonRetry => 'Tekrar Dene';
+
+  @override
+  String get commonUndo => 'Geri Al';
+
+  @override
+  String get commonCancel => 'İptal';
+
+  @override
+  String get commonComingSoon => 'Yakında';
+
+  @override
+  String get navHome => 'Ana Sayfa';
+
+  @override
+  String get navReports => 'Raporlar';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
+  String teacherDashboardGreeting(String name) {
+    return 'Hoş Geldiniz, $name';
+  }
+
+  @override
+  String teacherDashboardSubtitle(int count) {
+    return 'Öğretmen Paneli • Bugün $count yeni raporunuz var.';
+  }
+
+  @override
+  String get teacherDashboardSubtitleEmpty => 'Öğretmen Paneli • Yeni rapor yok.';
+
+  @override
+  String teacherDashboardStreak(int days) {
+    return '$days Gün';
+  }
+
+  @override
+  String get teacherDashboardActionNewLessonTitle => 'Yeni Ders Oluştur';
+
+  @override
+  String get teacherDashboardActionNewLessonDesc => 'Kendi kelime listenizle dakikalar içinde yeni bir ders hazırlayın.';
+
+  @override
+  String get teacherDashboardActionProgressTitle => 'Öğrenci Gelişimi';
+
+  @override
+  String get teacherDashboardActionProgressDesc => 'Sınıfların performansını ve bireysel öğrenci raporlarını inceleyin.';
+
+  @override
+  String get teacherDashboardLessonsTitle => 'Derslerim';
+
+  @override
+  String get teacherDashboardSeeAll => 'Tümünü Gör';
+
+  @override
+  String get teacherDashboardLessonNoStudents => 'Henüz öğrenci yok';
+
+  @override
+  String get teacherDashboardReportsTitle => 'Yeni Öğrenci Raporları';
+
+  @override
+  String get teacherDashboardEmptyLessonsTitle => 'Henüz dersiniz yok';
+
+  @override
+  String get teacherDashboardEmptyLessonsDesc => 'İlk dersinizi oluşturarak başlayın.';
+
+  @override
+  String get teacherDashboardEmptyReports => 'Henüz yeni rapor yok. Öğrenciler oyun oynadıkça burada görünecek.';
+
+  @override
+  String get teacherDashboardError => 'Dersler yüklenemedi';
+
+  @override
+  String get teacherDashboardLessonCreated => 'Ders oluşturuldu';
+
+  @override
+  String teacherDashboardWordCount(int count) {
+    return '$count kelime';
+  }
+
+  @override
+  String get teacherDashboardLessonPublished => 'Yayında';
+
+  @override
+  String get teacherDashboardLessonDraft => 'Taslak';
+
+  @override
+  String get lessonFormTitleCreate => 'Yeni Ders';
+
+  @override
+  String get lessonFormTitleEdit => 'Dersi Düzenle';
+
+  @override
+  String get lessonFormFieldTitleLabel => 'Ders Başlığı';
+
+  @override
+  String get lessonFormFieldTitlePlaceholder => 'Örn. 9-A İngilizce Ünite 3';
+
+  @override
+  String get lessonFormFieldTitleRequired => 'Ders başlığı gerekli';
+
+  @override
+  String get lessonFormFieldDescriptionLabel => 'Açıklama (isteğe bağlı)';
+
+  @override
+  String get lessonFormFieldDescriptionPlaceholder => 'Bu ders hakkında kısa bir not…';
+
+  @override
+  String get lessonFormFieldSourceLangLabel => 'Kaynak Dil';
+
+  @override
+  String get lessonFormFieldTargetLangLabel => 'Hedef Dil';
+
+  @override
+  String get lessonFormFieldLangSameError => 'Kaynak ve hedef dil aynı olamaz';
+
+  @override
+  String get lessonFormStatusLabel => 'Yayın Durumu';
+
+  @override
+  String get lessonFormStatusDraft => 'Taslak';
+
+  @override
+  String get lessonFormStatusPublished => 'Yayında';
+
+  @override
+  String get lessonFormStatusDraftHint => 'Taslak dersi yalnız siz görürsünüz.';
+
+  @override
+  String get lessonFormStatusPublishedHint => 'Yayındaki ders öğrencilerinizle paylaşılır.';
+
+  @override
+  String get lessonFormSubmitCreate => 'Dersi Oluştur';
+
+  @override
+  String get lessonFormSubmitEdit => 'Değişiklikleri Kaydet';
+
+  @override
+  String get lessonFormSubmitting => 'Kaydediliyor…';
+
+  @override
+  String get lessonFormDelete => 'Dersi Sil';
+
+  @override
+  String get lessonFormDeleteConfirm => 'Bu ders ve içindeki tüm kelimeler silinecek. Emin misiniz?';
+
+  @override
+  String get lessonFormDiscardTitle => 'Kaydedilmemiş değişiklikler';
+
+  @override
+  String get lessonFormDiscardConfirm => 'Çık';
+
+  @override
+  String get lessonFormDiscardCancel => 'Düzenlemeye Dön';
+
+  @override
+  String get lessonFormError => 'Ders kaydedilemedi, tekrar deneyin.';
+
+  @override
+  String get lessonFormCreatedSnack => 'Ders oluşturuldu';
+
+  @override
+  String get lessonFormUpdatedSnack => 'Ders güncellendi';
+
+  @override
+  String get lessonFormDeletedSnack => 'Ders silindi';
+
+  @override
+  String get lessonFormPublishNoWordsTitle => 'Bu derste henüz kelime yok.';
+
+  @override
+  String get lessonFormPublishNoWordsConfirm => 'Yine de yayınlansın mı?';
+
+  @override
+  String get lessonFormPublishNoWordsPublish => 'Yayınla';
+
+  @override
+  String get lessonFormPublishNoWordsAddWords => 'Kelime Ekle';
+
+  @override
+  String get langEnglish => 'İngilizce';
+
+  @override
+  String get langTurkish => 'Türkçe';
+
+  @override
+  String wordsListCount(int count) {
+    return '$count kelime';
+  }
+
+  @override
+  String wordsListLangDir(String source, String target) {
+    return '$source → $target';
+  }
+
+  @override
+  String get wordsListScan => 'Kameradan Tara';
+
+  @override
+  String get wordsListAddManual => 'Manuel Ekle';
+
+  @override
+  String get wordsListSourceOcr => 'OCR';
+
+  @override
+  String get wordsListSourceManual => 'Manuel';
+
+  @override
+  String get wordsListSynonymPrefix => 'eş anlamlı:';
+
+  @override
+  String get wordsListEmptyTitle => 'Henüz kelime yok';
+
+  @override
+  String get wordsListEmptyDesc => 'Kameradan tarayın veya elle ekleyin.';
+
+  @override
+  String get wordsListDeleted => 'Kelime silindi';
+
+  @override
+  String get wordsListError => 'Kelimeler yüklenemedi';
+
+  @override
+  String get wordsListMenuEditLesson => 'Dersi Düzenle';
+
+  @override
+  String get wordsListMenuDeleteLesson => 'Dersi Sil';
+
+  @override
+  String get wordsListScanComingSoon => 'Kameradan tarama yakında eklenecek.';
+
+  @override
+  String get wordsFormTitleAdd => 'Kelime Ekle';
+
+  @override
+  String get wordsFormTitleEdit => 'Kelimeyi Düzenle';
+
+  @override
+  String wordsFormTermLabel(String sourceLang) {
+    return 'Terim ($sourceLang)';
+  }
+
+  @override
+  String get wordsFormTermPlaceholder => 'Örn. environment';
+
+  @override
+  String get wordsFormTermRequired => 'Terim gerekli';
+
+  @override
+  String get wordsFormMeaningLabel => 'Türkçe Karşılık(lar)';
+
+  @override
+  String get wordsFormMeaningPlaceholder => 'Örn. çevre';
+
+  @override
+  String get wordsFormMeaningAddMore => 'Karşılık Ekle';
+
+  @override
+  String get wordsFormMeaningRequired => 'En az bir Türkçe karşılık girin';
+
+  @override
+  String get wordsFormMeaningPrimaryLabel => 'Birincil karşılık';
+
+  @override
+  String wordsFormMeaningRemoveLabel(int index) {
+    return 'Karşılık $index, sil';
+  }
+
+  @override
+  String get wordsFormSynonymsLabel => 'Eş anlamlılar (isteğe bağlı)';
+
+  @override
+  String get wordsFormSynonymsHint => 'Aynı anlama gelen başka terimler. Oyunda ipucu olarak kullanılır.';
+
+  @override
+  String get wordsFormSynonymsPlaceholder => 'Eş anlamlı yazıp ekleyin';
+
+  @override
+  String get wordsFormSave => 'Kaydet';
+
+  @override
+  String get wordsFormSaveAndNew => 'Kaydet ve Yeni Ekle';
+
+  @override
+  String get wordsFormCancel => 'İptal';
+
+  @override
+  String get wordsFormSaving => 'Kaydediliyor…';
+
+  @override
+  String get wordsFormError => 'Kelime kaydedilemedi, tekrar deneyin.';
+
+  @override
+  String get wordsFormAddedSnack => 'Kelime eklendi';
+
+  @override
+  String get wordsFormUpdatedSnack => 'Kelime güncellendi';
+
+  @override
+  String get lessonsErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';
+
+  @override
+  String get lessonsErrorNotFound => 'İçerik bulunamadı.';
+
+  @override
+  String get lessonsErrorForbidden => 'Bu işlem için yetkiniz yok.';
+
+  @override
+  String get lessonsErrorValidation => 'Girilen bilgileri kontrol edin.';
 }

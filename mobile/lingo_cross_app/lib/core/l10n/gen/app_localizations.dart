@@ -548,6 +548,600 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Çıkış Yap'**
   String get homeLogout;
+
+  /// No description provided for @commonRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Dene'**
+  String get commonRetry;
+
+  /// No description provided for @commonUndo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri Al'**
+  String get commonUndo;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal'**
+  String get commonCancel;
+
+  /// No description provided for @commonComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yakında'**
+  String get commonComingSoon;
+
+  /// No description provided for @navHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ana Sayfa'**
+  String get navHome;
+
+  /// No description provided for @navReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlar'**
+  String get navReports;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
+  String get navProfile;
+
+  /// No description provided for @teacherDashboardGreeting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hoş Geldiniz, {name}'**
+  String teacherDashboardGreeting(String name);
+
+  /// No description provided for @teacherDashboardSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen Paneli • Bugün {count} yeni raporunuz var.'**
+  String teacherDashboardSubtitle(int count);
+
+  /// No description provided for @teacherDashboardSubtitleEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen Paneli • Yeni rapor yok.'**
+  String get teacherDashboardSubtitleEmpty;
+
+  /// No description provided for @teacherDashboardStreak.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} Gün'**
+  String teacherDashboardStreak(int days);
+
+  /// No description provided for @teacherDashboardActionNewLessonTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Ders Oluştur'**
+  String get teacherDashboardActionNewLessonTitle;
+
+  /// No description provided for @teacherDashboardActionNewLessonDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendi kelime listenizle dakikalar içinde yeni bir ders hazırlayın.'**
+  String get teacherDashboardActionNewLessonDesc;
+
+  /// No description provided for @teacherDashboardActionProgressTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci Gelişimi'**
+  String get teacherDashboardActionProgressTitle;
+
+  /// No description provided for @teacherDashboardActionProgressDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıfların performansını ve bireysel öğrenci raporlarını inceleyin.'**
+  String get teacherDashboardActionProgressDesc;
+
+  /// No description provided for @teacherDashboardLessonsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derslerim'**
+  String get teacherDashboardLessonsTitle;
+
+  /// No description provided for @teacherDashboardSeeAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümünü Gör'**
+  String get teacherDashboardSeeAll;
+
+  /// No description provided for @teacherDashboardLessonNoStudents.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz öğrenci yok'**
+  String get teacherDashboardLessonNoStudents;
+
+  /// No description provided for @teacherDashboardReportsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Öğrenci Raporları'**
+  String get teacherDashboardReportsTitle;
+
+  /// No description provided for @teacherDashboardEmptyLessonsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz dersiniz yok'**
+  String get teacherDashboardEmptyLessonsTitle;
+
+  /// No description provided for @teacherDashboardEmptyLessonsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk dersinizi oluşturarak başlayın.'**
+  String get teacherDashboardEmptyLessonsDesc;
+
+  /// No description provided for @teacherDashboardEmptyReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz yeni rapor yok. Öğrenciler oyun oynadıkça burada görünecek.'**
+  String get teacherDashboardEmptyReports;
+
+  /// No description provided for @teacherDashboardError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersler yüklenemedi'**
+  String get teacherDashboardError;
+
+  /// No description provided for @teacherDashboardLessonCreated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders oluşturuldu'**
+  String get teacherDashboardLessonCreated;
+
+  /// No description provided for @teacherDashboardWordCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelime'**
+  String teacherDashboardWordCount(int count);
+
+  /// No description provided for @teacherDashboardLessonPublished.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayında'**
+  String get teacherDashboardLessonPublished;
+
+  /// No description provided for @teacherDashboardLessonDraft.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taslak'**
+  String get teacherDashboardLessonDraft;
+
+  /// No description provided for @lessonFormTitleCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Ders'**
+  String get lessonFormTitleCreate;
+
+  /// No description provided for @lessonFormTitleEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Düzenle'**
+  String get lessonFormTitleEdit;
+
+  /// No description provided for @lessonFormFieldTitleLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Başlığı'**
+  String get lessonFormFieldTitleLabel;
+
+  /// No description provided for @lessonFormFieldTitlePlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. 9-A İngilizce Ünite 3'**
+  String get lessonFormFieldTitlePlaceholder;
+
+  /// No description provided for @lessonFormFieldTitleRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders başlığı gerekli'**
+  String get lessonFormFieldTitleRequired;
+
+  /// No description provided for @lessonFormFieldDescriptionLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama (isteğe bağlı)'**
+  String get lessonFormFieldDescriptionLabel;
+
+  /// No description provided for @lessonFormFieldDescriptionPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ders hakkında kısa bir not…'**
+  String get lessonFormFieldDescriptionPlaceholder;
+
+  /// No description provided for @lessonFormFieldSourceLangLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak Dil'**
+  String get lessonFormFieldSourceLangLabel;
+
+  /// No description provided for @lessonFormFieldTargetLangLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef Dil'**
+  String get lessonFormFieldTargetLangLabel;
+
+  /// No description provided for @lessonFormFieldLangSameError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaynak ve hedef dil aynı olamaz'**
+  String get lessonFormFieldLangSameError;
+
+  /// No description provided for @lessonFormStatusLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayın Durumu'**
+  String get lessonFormStatusLabel;
+
+  /// No description provided for @lessonFormStatusDraft.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taslak'**
+  String get lessonFormStatusDraft;
+
+  /// No description provided for @lessonFormStatusPublished.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayında'**
+  String get lessonFormStatusPublished;
+
+  /// No description provided for @lessonFormStatusDraftHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taslak dersi yalnız siz görürsünüz.'**
+  String get lessonFormStatusDraftHint;
+
+  /// No description provided for @lessonFormStatusPublishedHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayındaki ders öğrencilerinizle paylaşılır.'**
+  String get lessonFormStatusPublishedHint;
+
+  /// No description provided for @lessonFormSubmitCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Oluştur'**
+  String get lessonFormSubmitCreate;
+
+  /// No description provided for @lessonFormSubmitEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Değişiklikleri Kaydet'**
+  String get lessonFormSubmitEdit;
+
+  /// No description provided for @lessonFormSubmitting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydediliyor…'**
+  String get lessonFormSubmitting;
+
+  /// No description provided for @lessonFormDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Sil'**
+  String get lessonFormDelete;
+
+  /// No description provided for @lessonFormDeleteConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ders ve içindeki tüm kelimeler silinecek. Emin misiniz?'**
+  String get lessonFormDeleteConfirm;
+
+  /// No description provided for @lessonFormDiscardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydedilmemiş değişiklikler'**
+  String get lessonFormDiscardTitle;
+
+  /// No description provided for @lessonFormDiscardConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çık'**
+  String get lessonFormDiscardConfirm;
+
+  /// No description provided for @lessonFormDiscardCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenlemeye Dön'**
+  String get lessonFormDiscardCancel;
+
+  /// No description provided for @lessonFormError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders kaydedilemedi, tekrar deneyin.'**
+  String get lessonFormError;
+
+  /// No description provided for @lessonFormCreatedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders oluşturuldu'**
+  String get lessonFormCreatedSnack;
+
+  /// No description provided for @lessonFormUpdatedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders güncellendi'**
+  String get lessonFormUpdatedSnack;
+
+  /// No description provided for @lessonFormDeletedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders silindi'**
+  String get lessonFormDeletedSnack;
+
+  /// No description provided for @lessonFormPublishNoWordsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu derste henüz kelime yok.'**
+  String get lessonFormPublishNoWordsTitle;
+
+  /// No description provided for @lessonFormPublishNoWordsConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yine de yayınlansın mı?'**
+  String get lessonFormPublishNoWordsConfirm;
+
+  /// No description provided for @lessonFormPublishNoWordsPublish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayınla'**
+  String get lessonFormPublishNoWordsPublish;
+
+  /// No description provided for @lessonFormPublishNoWordsAddWords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Ekle'**
+  String get lessonFormPublishNoWordsAddWords;
+
+  /// No description provided for @langEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'İngilizce'**
+  String get langEnglish;
+
+  /// No description provided for @langTurkish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get langTurkish;
+
+  /// No description provided for @wordsListCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelime'**
+  String wordsListCount(int count);
+
+  /// No description provided for @wordsListLangDir.
+  ///
+  /// In tr, this message translates to:
+  /// **'{source} → {target}'**
+  String wordsListLangDir(String source, String target);
+
+  /// No description provided for @wordsListScan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kameradan Tara'**
+  String get wordsListScan;
+
+  /// No description provided for @wordsListAddManual.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel Ekle'**
+  String get wordsListAddManual;
+
+  /// No description provided for @wordsListSourceOcr.
+  ///
+  /// In tr, this message translates to:
+  /// **'OCR'**
+  String get wordsListSourceOcr;
+
+  /// No description provided for @wordsListSourceManual.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel'**
+  String get wordsListSourceManual;
+
+  /// No description provided for @wordsListSynonymPrefix.
+  ///
+  /// In tr, this message translates to:
+  /// **'eş anlamlı:'**
+  String get wordsListSynonymPrefix;
+
+  /// No description provided for @wordsListEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz kelime yok'**
+  String get wordsListEmptyTitle;
+
+  /// No description provided for @wordsListEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kameradan tarayın veya elle ekleyin.'**
+  String get wordsListEmptyDesc;
+
+  /// No description provided for @wordsListDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime silindi'**
+  String get wordsListDeleted;
+
+  /// No description provided for @wordsListError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelimeler yüklenemedi'**
+  String get wordsListError;
+
+  /// No description provided for @wordsListMenuEditLesson.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Düzenle'**
+  String get wordsListMenuEditLesson;
+
+  /// No description provided for @wordsListMenuDeleteLesson.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Sil'**
+  String get wordsListMenuDeleteLesson;
+
+  /// No description provided for @wordsListScanComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kameradan tarama yakında eklenecek.'**
+  String get wordsListScanComingSoon;
+
+  /// No description provided for @wordsFormTitleAdd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Ekle'**
+  String get wordsFormTitleAdd;
+
+  /// No description provided for @wordsFormTitleEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelimeyi Düzenle'**
+  String get wordsFormTitleEdit;
+
+  /// No description provided for @wordsFormTermLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Terim ({sourceLang})'**
+  String wordsFormTermLabel(String sourceLang);
+
+  /// No description provided for @wordsFormTermPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. environment'**
+  String get wordsFormTermPlaceholder;
+
+  /// No description provided for @wordsFormTermRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Terim gerekli'**
+  String get wordsFormTermRequired;
+
+  /// No description provided for @wordsFormMeaningLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe Karşılık(lar)'**
+  String get wordsFormMeaningLabel;
+
+  /// No description provided for @wordsFormMeaningPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. çevre'**
+  String get wordsFormMeaningPlaceholder;
+
+  /// No description provided for @wordsFormMeaningAddMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karşılık Ekle'**
+  String get wordsFormMeaningAddMore;
+
+  /// No description provided for @wordsFormMeaningRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'En az bir Türkçe karşılık girin'**
+  String get wordsFormMeaningRequired;
+
+  /// No description provided for @wordsFormMeaningPrimaryLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birincil karşılık'**
+  String get wordsFormMeaningPrimaryLabel;
+
+  /// No description provided for @wordsFormMeaningRemoveLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karşılık {index}, sil'**
+  String wordsFormMeaningRemoveLabel(int index);
+
+  /// No description provided for @wordsFormSynonymsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eş anlamlılar (isteğe bağlı)'**
+  String get wordsFormSynonymsLabel;
+
+  /// No description provided for @wordsFormSynonymsHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aynı anlama gelen başka terimler. Oyunda ipucu olarak kullanılır.'**
+  String get wordsFormSynonymsHint;
+
+  /// No description provided for @wordsFormSynonymsPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eş anlamlı yazıp ekleyin'**
+  String get wordsFormSynonymsPlaceholder;
+
+  /// No description provided for @wordsFormSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get wordsFormSave;
+
+  /// No description provided for @wordsFormSaveAndNew.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet ve Yeni Ekle'**
+  String get wordsFormSaveAndNew;
+
+  /// No description provided for @wordsFormCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal'**
+  String get wordsFormCancel;
+
+  /// No description provided for @wordsFormSaving.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydediliyor…'**
+  String get wordsFormSaving;
+
+  /// No description provided for @wordsFormError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime kaydedilemedi, tekrar deneyin.'**
+  String get wordsFormError;
+
+  /// No description provided for @wordsFormAddedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime eklendi'**
+  String get wordsFormAddedSnack;
+
+  /// No description provided for @wordsFormUpdatedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime güncellendi'**
+  String get wordsFormUpdatedSnack;
+
+  /// No description provided for @lessonsErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı hatası. Lütfen tekrar deneyin.'**
+  String get lessonsErrorNetwork;
+
+  /// No description provided for @lessonsErrorNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'İçerik bulunamadı.'**
+  String get lessonsErrorNotFound;
+
+  /// No description provided for @lessonsErrorForbidden.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu işlem için yetkiniz yok.'**
+  String get lessonsErrorForbidden;
+
+  /// No description provided for @lessonsErrorValidation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Girilen bilgileri kontrol edin.'**
+  String get lessonsErrorValidation;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
