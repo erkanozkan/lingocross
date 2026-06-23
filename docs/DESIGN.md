@@ -103,7 +103,7 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 ### MVP ekranları
 | Ekran | screenId | Not |
 |---|---|---|
-| Hoşgeldiniz / Giriş | `401622fe1fb94433969185ca4f6c139b` | Onboarding/landing |
+| Hoşgeldiniz (Kayıt Odaklı) | `301bfb0772794b30884fd261d36b293c` | Onboarding/landing — kayıt-odaklı güncel sürüm (rol kartları → kayıt, ayrı "Giriş Yap"). Eski sürüm: `401622fe1fb94433969185ca4f6c139b` |
 | Giriş Yap | `4d9957e6df9745db8ddf21e61b6e3737` | Login |
 | Hesap Oluştur | `c9cc078da3414805bdf36385cbf832ba` | Register (rol seçimi: öğretmen/öğrenci) |
 | Şifremi Unuttum | `3a8035bc5a86458c9883edc080ab11ef` | Reset isteği |
