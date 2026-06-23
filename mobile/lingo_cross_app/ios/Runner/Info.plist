@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Kelime listenizin fotoğrafını çekip metni otomatik tanımak için kamera erişimi gerekir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Kelime listenizin fotoğrafını seçip metni otomatik tanımak için fotoğraf galerisi erişimi gerekir.</string>
 </dict>
 </plist>

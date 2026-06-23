@@ -15,5 +15,13 @@ public interface IAppDbContext
 
     DbSet<PasswordResetToken> PasswordResetTokens { get; }
 
+    DbSet<Lesson> Lessons { get; }
+
+    DbSet<Word> Words { get; }
+
+    DbSet<WordTranslation> WordTranslations { get; }
+
+    DbSet<WordSynonym> WordSynonyms { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

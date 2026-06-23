@@ -25,4 +25,7 @@ public class User : Entity
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+
+    /// <summary>Öğretmenin oluşturduğu dersler; öğrenciler için boş.</summary>
+    public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
 }

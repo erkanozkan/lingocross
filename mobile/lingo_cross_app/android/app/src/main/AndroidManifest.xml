@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- OCR yakalama: kamera (opsiyonel donanım — emülatörde olmayabilir).
+         Galeri seçimi için image_picker runtime izinleri kendisi yönetir. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <application
         android:label="lingo_cross_app"
         android:name="${applicationName}"

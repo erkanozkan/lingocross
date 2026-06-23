@@ -22,6 +22,68 @@ namespace LingoCross.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Lesson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsPublished")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_published");
+
+                    b.Property<string>("SourceLanguage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasDefaultValue("en")
+                        .HasColumnName("source_language");
+
+                    b.Property<string>("TargetLanguage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasDefaultValue("tr")
+                        .HasColumnName("target_language");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_lessons");
+
+                    b.HasIndex("TeacherId")
+                        .HasDatabaseName("ix_lessons_teacher_id");
+
+                    b.ToTable("lessons", (string)null);
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.PasswordResetToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -186,6 +248,137 @@ namespace LingoCross.Infrastructure.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Word", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("LessonId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("lesson_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("integer")
+                        .HasColumnName("source");
+
+                    b.Property<string>("Term")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("term");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_words");
+
+                    b.HasIndex("LessonId")
+                        .HasDatabaseName("ix_words_lesson_id");
+
+                    b.ToTable("words", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.WordSynonym", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("WordId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("word_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_word_synonyms");
+
+                    b.HasIndex("WordId")
+                        .HasDatabaseName("ix_word_synonyms_word_id");
+
+                    b.ToTable("word_synonyms", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.WordTranslation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsPrimary")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_primary");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("WordId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("word_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_word_translations");
+
+                    b.HasIndex("WordId")
+                        .HasDatabaseName("ix_word_translations_word_id");
+
+                    b.ToTable("word_translations", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.Lesson", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.User", "Teacher")
+                        .WithMany("Lessons")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_lessons_users_teacher_id");
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.PasswordResetToken", b =>
                 {
                     b.HasOne("LingoCross.Domain.Entities.User", "User")
@@ -210,11 +403,61 @@ namespace LingoCross.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Word", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Lesson", "Lesson")
+                        .WithMany("Words")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_words_lessons_lesson_id");
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.WordSynonym", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Word", "Word")
+                        .WithMany("Synonyms")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_word_synonyms_words_word_id");
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.WordTranslation", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Word", "Word")
+                        .WithMany("Translations")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_word_translations_words_word_id");
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.Lesson", b =>
+                {
+                    b.Navigation("Words");
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.User", b =>
                 {
+                    b.Navigation("Lessons");
+
                     b.Navigation("PasswordResetTokens");
 
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.Word", b =>
+                {
+                    b.Navigation("Synonyms");
+
+                    b.Navigation("Translations");
                 });
 #pragma warning restore 612, 618
         }

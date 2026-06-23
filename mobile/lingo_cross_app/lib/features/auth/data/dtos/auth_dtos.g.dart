@@ -107,5 +107,5 @@ Map<String, dynamic> _$$AuthResponseImplToJson(_$AuthResponseImpl instance) =>
       'accessTokenExpiresAt': instance.accessTokenExpiresAt.toIso8601String(),
       'refreshToken': instance.refreshToken,
       'refreshTokenExpiresAt': instance.refreshTokenExpiresAt.toIso8601String(),
-      'user': instance.user,
+      'user': instance.user.toJson(),
     };
