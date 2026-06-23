@@ -16,10 +16,14 @@ import '../auth_failure_messages.dart';
 import '../auth_notifier.dart';
 import '../auth_validators.dart';
 import '../widgets/auth_footer.dart';
+import '../widgets/auth_hero.dart';
 
-/// Giriş Yap ekranı (UX: auth-login.md). Tamamen rolsüz: rol login yanıtındaki
-/// `user.role`'dan gelir ve yönlendirmeyi router guard yapar. Sosyal giriş
-/// M1'de gösterilmez.
+/// Birleşik kimlik-doğrulama girişi (Karşılama + Giriş tek ekran).
+///
+/// Eski Welcome (hero: maskot + Hi!/Merhaba! rozetleri + başlık/alt yazı) ile
+/// Giriş formu burada birleşti; uygulamanın tek auth giriş ekranıdır. Rol burada
+/// belirlenmez — login yanıtındaki `user.role`'dan gelir ve yönlendirmeyi router
+/// guard yapar. Sosyal giriş (OAuth) ve rol kartları gösterilmez.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -72,21 +76,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        // Üst marka: yalnız "LingoCross" wordmark (sağ-üstte redundant giriş
+        // linki YOK — bu ekranın kendisi giriş ekranı).
         title: Text(l10n.appName,
             style: AppTypography.displayLgMobile
                 .copyWith(color: AppColors.primary)),
         leadingWidth: 0,
         leading: const SizedBox.shrink(),
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              l10n.authLoginAppbarHelp,
-              style: AppTypography.labelLg
-                  .copyWith(color: AppColors.onSurfaceVariant),
-            ),
-          ),
-        ],
       ),
       body: SafeArea(
         child: Center(
@@ -100,16 +96,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 child: Column(
                   children: [
-                    Text(l10n.authLoginTitle,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.displayLgMobile),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      l10n.authLoginSubtitle,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodyMd
-                          .copyWith(color: AppColors.onSurfaceVariant),
-                    ),
+                    const AuthHero(),
                     const SizedBox(height: AppSpacing.xl),
                     _buildCard(l10n),
                     const SizedBox(height: AppSpacing.lg),

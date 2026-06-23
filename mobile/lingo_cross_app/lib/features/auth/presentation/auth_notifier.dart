@@ -14,7 +14,7 @@ part 'auth_notifier.g.dart';
 ///   (kullanıcı bilgisi token yenileme/`/me` ile M2'de zenginleştirilebilir).
 /// - login/register başarıda token'lar saklanır, state `authenticated` olur.
 /// - 401 refresh kalıcı başarısız olursa (SessionEvents) state
-///   `unauthenticated`'a düşer ve router welcome'a yönlendirir.
+///   `unauthenticated`'a düşer ve router giriş ekranına yönlendirir.
 @Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier {
   @override

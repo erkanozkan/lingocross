@@ -16,7 +16,7 @@ enum UserRole {
     };
   }
 
-  /// Welcome rol kartlarının `?role=` query param'ını eşler. Bilinmeyen/boş
+  /// Kayıt rotasının `?role=` query param'ını eşler. Bilinmeyen/boş
   /// değerlerde varsayılan: öğrenci.
   static UserRole fromName(String? name) {
     return switch (name) {

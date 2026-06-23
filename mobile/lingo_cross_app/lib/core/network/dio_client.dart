@@ -8,7 +8,7 @@ import 'auth_interceptor.dart';
 /// Oturum sonlandığında (refresh kalıcı başarısız) tetiklenen olay deposu.
 ///
 /// AuthNotifier bunu dinleyip state'i `unauthenticated`'a çeker; router guard
-/// welcome'a yönlendirir. Provider ile interceptor arasındaki döngüyü kırar.
+/// giriş ekranına yönlendirir. Provider ile interceptor arasındaki döngüyü kırar.
 class SessionEvents {
   final List<void Function()> _listeners = [];
 

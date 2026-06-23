@@ -103,8 +103,9 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 ### MVP ekranları
 | Ekran | screenId | Not |
 |---|---|---|
-| Hoşgeldiniz (Kayıt Odaklı) | `301bfb0772794b30884fd261d36b293c` | Onboarding/landing — kayıt-odaklı güncel sürüm (rol kartları → kayıt, ayrı "Giriş Yap"). Eski sürüm: `401622fe1fb94433969185ca4f6c139b` |
-| Giriş Yap | `4d9957e6df9745db8ddf21e61b6e3737` | Login |
+| Karşılama + Giriş (birleşik) | `c6188f694eea4fc3966753bd2c3a262c` | **Onboarding + Login tek ekran** (Stitch: "Giriş Yap (Marka Güncellenmiş)"). Hero (maskot + Hi!/Merhaba! rozetleri + hoş geldiniz) + giriş formu (e-posta/şifre/şifremi unuttum/giriş) + kayıt CTA. Rolsüz giriş; yönlendirme `user.role`'a göre. Sosyal giriş + "VEYA" divider **gizli** (OAuth yok). Telif "© 2026 LingoCross". Spec: `docs/ux-specs/auth-login.md` |
+| ~~Hoşgeldiniz (Kayıt Odaklı)~~ | ~~`301bfb0772794b30884fd261d36b293c`~~ | **KALDIRILDI / BİRLEŞTİRİLDİ** → `c6188f69…`. Eski Welcome sürümleri de kaldırıldı: `401622fe1fb94433969185ca4f6c139b`. Eski spec `auth-welcome.md` silindi (içerik `auth-login.md`'ye taşındı). |
+| ~~Giriş Yap~~ | ~~`4d9957e6df9745db8ddf21e61b6e3737`~~ | **KALDIRILDI / BİRLEŞTİRİLDİ** → `c6188f69…` (birleşik karşılama + giriş ekranı). |
 | Hesap Oluştur | `c9cc078da3414805bdf36385cbf832ba` | Register (rol seçimi: öğretmen/öğrenci) |
 | Şifremi Unuttum | `3a8035bc5a86458c9883edc080ab11ef` | Reset isteği |
 | Öğretmen Paneli | `5d57f8977cfd48728550f4272af72ac7` | Dashboard |

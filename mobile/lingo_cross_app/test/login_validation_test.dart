@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/storage/token_storage.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
+import 'package:lingo_cross_app/core/widgets/primary_button_3d.dart';
 import 'package:lingo_cross_app/features/auth/domain/user_role.dart';
 import 'package:lingo_cross_app/features/auth/presentation/screens/login_screen.dart';
 
@@ -55,8 +56,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Boş formda "Giriş Yap" butonuna bas.
-    await tester.tap(find.text('Giriş Yap'));
+    // Boş formda submit butonuna bas. Hero bloğu eklenince buton katlama
+    // altında kalabildiğinden önce görünür kıl. Submit butonu metni + trailing
+    // ikonla benzersizleşir.
+    final submit = find.widgetWithText(PrimaryButton3D, 'Giriş Yap');
+    await tester.ensureVisible(submit);
+    await tester.pumpAndSettle();
+    await tester.tap(submit);
     await tester.pumpAndSettle();
 
     expect(find.text('E-posta adresi gerekli.'), findsOneWidget);

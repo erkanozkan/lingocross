@@ -117,18 +117,6 @@ abstract class AppLocalizations {
   /// **'Kullanım Koşulları'**
   String get authFooterTerms;
 
-  /// No description provided for @authSocialGoogle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Google'**
-  String get authSocialGoogle;
-
-  /// No description provided for @authSocialApple.
-  ///
-  /// In tr, this message translates to:
-  /// **'Apple'**
-  String get authSocialApple;
-
   /// No description provided for @authWelcomeTitle.
   ///
   /// In tr, this message translates to:
@@ -141,48 +129,6 @@ abstract class AppLocalizations {
   /// **'Dil yolculuğuna bugün başla, sınırları ortadan kaldır.'**
   String get authWelcomeSubtitle;
 
-  /// No description provided for @authWelcomeRoleStudentTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Öğrenci Olarak Kaydol'**
-  String get authWelcomeRoleStudentTitle;
-
-  /// No description provided for @authWelcomeRoleStudentSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yeni hesap oluştur, öğrenmeye başla'**
-  String get authWelcomeRoleStudentSubtitle;
-
-  /// No description provided for @authWelcomeRoleTeacherTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Eğitmen Olarak Kaydol'**
-  String get authWelcomeRoleTeacherTitle;
-
-  /// No description provided for @authWelcomeRoleTeacherSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yeni hesap oluştur, sınıflarını yönet'**
-  String get authWelcomeRoleTeacherSubtitle;
-
-  /// No description provided for @authWelcomeForgotPassword.
-  ///
-  /// In tr, this message translates to:
-  /// **'Şifremi Unuttum'**
-  String get authWelcomeForgotPassword;
-
-  /// No description provided for @authWelcomeHaveAccount.
-  ///
-  /// In tr, this message translates to:
-  /// **'Zaten hesabın var mı?'**
-  String get authWelcomeHaveAccount;
-
-  /// No description provided for @authWelcomeLoginCta.
-  ///
-  /// In tr, this message translates to:
-  /// **'Giriş Yap'**
-  String get authWelcomeLoginCta;
-
   /// No description provided for @authWelcomeBadgeHi.
   ///
   /// In tr, this message translates to:
@@ -194,24 +140,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Merhaba!'**
   String get authWelcomeBadgeMerhaba;
-
-  /// No description provided for @authLoginAppbarHelp.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yardım'**
-  String get authLoginAppbarHelp;
-
-  /// No description provided for @authLoginTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tekrar Hoş Geldin'**
-  String get authLoginTitle;
-
-  /// No description provided for @authLoginSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'LingoCross ile yolculuğuna devam et'**
-  String get authLoginSubtitle;
 
   /// No description provided for @authLoginEmailLabel.
   ///
@@ -248,12 +176,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Giriş Yap'**
   String get authLoginSubmit;
-
-  /// No description provided for @authLoginDividerOr.
-  ///
-  /// In tr, this message translates to:
-  /// **'VEYA ŞUNUNLA DEVAM ET'**
-  String get authLoginDividerOr;
 
   /// No description provided for @authLoginNoAccount.
   ///
@@ -380,12 +302,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hesap Oluştur'**
   String get authRegisterSubmit;
-
-  /// No description provided for @authRegisterDividerOr.
-  ///
-  /// In tr, this message translates to:
-  /// **'VEYA ŞUNUNLA KAYIT OL'**
-  String get authRegisterDividerOr;
 
   /// No description provided for @authRegisterHaveAccount.
   ///
