@@ -27,8 +27,9 @@ class JoinTeacherScreen extends ConsumerStatefulWidget {
 class _JoinTeacherScreenState extends ConsumerState<JoinTeacherScreen> {
   final _controller = TextEditingController();
 
-  /// Stitch/spec ipucu: 6 haneli kod. Tam uzunlukta buton aktifleşir.
-  static const int _codeLength = 6;
+  /// Backend 8 haneli (harf+rakam, karışan karakterler hariç) davet kodu üretir.
+  /// Tam uzunlukta buton aktifleşir.
+  static const int _codeLength = 8;
 
   @override
   void initState() {
