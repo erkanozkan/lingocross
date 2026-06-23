@@ -21,7 +21,7 @@ public class WordService : IWordService
 
     public async Task<IReadOnlyList<WordDto>> ListByLessonAsync(Guid lessonId, CancellationToken cancellationToken = default)
     {
-        await EnsureLessonOwnedAsync(lessonId, cancellationToken);
+        await EnsureLessonReadableAsync(lessonId, cancellationToken);
 
         var words = await _db.Words
             .Where(w => w.LessonId == lessonId)
@@ -125,6 +125,45 @@ public class WordService : IWordService
 
         var lesson = await _db.Lessons.FirstOrDefaultAsync(l => l.Id == lessonId, cancellationToken);
         if (lesson is null || lesson.TeacherId != userId)
+        {
+            throw AppException.NotFound("Ders bulunamadı.");
+        }
+    }
+
+    /// <summary>
+    /// Rol-duyarlı okuma erişimi: öğretmen kendi dersinin kelimelerini, öğrenci yalnız Active
+    /// eşleşmesi olan öğretmenin yayımlanmış dersinin kelimelerini görebilir. Aksi 404.
+    /// </summary>
+    private async Task EnsureLessonReadableAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        if (_currentUser.UserId is not { } userId)
+        {
+            throw AppException.Unauthorized("Oturum gerekli.");
+        }
+
+        var lesson = await _db.Lessons.FirstOrDefaultAsync(l => l.Id == lessonId, cancellationToken);
+        if (lesson is null)
+        {
+            throw AppException.NotFound("Ders bulunamadı.");
+        }
+
+        if (_currentUser.Role == UserRole.Teacher)
+        {
+            if (lesson.TeacherId != userId)
+            {
+                throw AppException.NotFound("Ders bulunamadı.");
+            }
+
+            return;
+        }
+
+        var hasAccess = lesson.IsPublished && await _db.Enrollments.AnyAsync(
+            e => e.StudentId == userId
+                && e.TeacherId == lesson.TeacherId
+                && e.Status == EnrollmentStatus.Active,
+            cancellationToken);
+
+        if (!hasAccess)
         {
             throw AppException.NotFound("Ders bulunamadı.");
         }

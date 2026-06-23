@@ -1298,6 +1298,396 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{count} kelime eklendi'**
   String ocrReviewSavedSnack(int count);
+
+  /// No description provided for @commonContinue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam Et'**
+  String get commonContinue;
+
+  /// No description provided for @studentDashboardGreeting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba, {name}! 👋'**
+  String studentDashboardGreeting(String name);
+
+  /// No description provided for @studentDashboardSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün kelime avına hazır mısın?'**
+  String get studentDashboardSubtitle;
+
+  /// No description provided for @studentDashboardStreak.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days}'**
+  String studentDashboardStreak(int days);
+
+  /// No description provided for @studentDashboardStreakSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} günlük seri'**
+  String studentDashboardStreakSemantic(int days);
+
+  /// No description provided for @studentDashboardGameOfDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün Oyunu'**
+  String get studentDashboardGameOfDay;
+
+  /// No description provided for @studentDashboardGameSharedBy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşan: {teacher}'**
+  String studentDashboardGameSharedBy(String teacher);
+
+  /// No description provided for @studentDashboardGameAssigned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin Atadığı Oyun'**
+  String get studentDashboardGameAssigned;
+
+  /// No description provided for @studentDashboardGameDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kelimeyi eşleştir, doğruluk ve süreni geliştir.'**
+  String studentDashboardGameDesc(int count);
+
+  /// No description provided for @studentDashboardPlayGame.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuna Başla'**
+  String get studentDashboardPlayGame;
+
+  /// No description provided for @studentDashboardLessonsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derslerim'**
+  String get studentDashboardLessonsTitle;
+
+  /// No description provided for @studentDashboardProgressTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelişim Özeti'**
+  String get studentDashboardProgressTitle;
+
+  /// No description provided for @studentDashboardStatGames.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanan Oyun'**
+  String get studentDashboardStatGames;
+
+  /// No description provided for @studentDashboardStatAccuracy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama Doğruluk'**
+  String get studentDashboardStatAccuracy;
+
+  /// No description provided for @studentDashboardWeeklyGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık Hedef'**
+  String get studentDashboardWeeklyGoal;
+
+  /// No description provided for @studentDashboardAchievementsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son Başarımlar'**
+  String get studentDashboardAchievementsTitle;
+
+  /// No description provided for @studentDashboardJoinTeacherTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir Öğretmene Katıl'**
+  String get studentDashboardJoinTeacherTitle;
+
+  /// No description provided for @studentDashboardJoinTeacherDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmeninden aldığın davet kodunu girerek derslerine eriş.'**
+  String get studentDashboardJoinTeacherDesc;
+
+  /// No description provided for @studentDashboardJoinTeacherLinkShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni öğretmene katıl'**
+  String get studentDashboardJoinTeacherLinkShort;
+
+  /// No description provided for @studentDashboardEmptyNoTeacherTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir derse katılmadın'**
+  String get studentDashboardEmptyNoTeacherTitle;
+
+  /// No description provided for @studentDashboardEmptyNoTeacherDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmeninden aldığın davet koduyla başla.'**
+  String get studentDashboardEmptyNoTeacherDesc;
+
+  /// No description provided for @studentDashboardEmptyNoLessonsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin henüz ders yayınlamadı'**
+  String get studentDashboardEmptyNoLessonsTitle;
+
+  /// No description provided for @studentDashboardEmptyNoLessonsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni dersler burada görünecek.'**
+  String get studentDashboardEmptyNoLessonsDesc;
+
+  /// No description provided for @studentDashboardStatsSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yakında — ilk oyununu oynayınca burada görünecek.'**
+  String get studentDashboardStatsSoon;
+
+  /// No description provided for @studentDashboardError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersler yüklenemedi'**
+  String get studentDashboardError;
+
+  /// No description provided for @studentDashboardJoined.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derse katıldın'**
+  String get studentDashboardJoined;
+
+  /// No description provided for @studentJoinAppBarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmene Katıl'**
+  String get studentJoinAppBarTitle;
+
+  /// No description provided for @studentJoinHeroTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet Kodunu Gir'**
+  String get studentJoinHeroTitle;
+
+  /// No description provided for @studentJoinHeroDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmeninden aldığın daveti girerek derslerine katıl.'**
+  String get studentJoinHeroDesc;
+
+  /// No description provided for @studentJoinCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet Kodu'**
+  String get studentJoinCodeLabel;
+
+  /// No description provided for @studentJoinCodeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu öğretmeninden alabilirsin.'**
+  String get studentJoinCodeHint;
+
+  /// No description provided for @studentJoinSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katıl'**
+  String get studentJoinSubmit;
+
+  /// No description provided for @studentJoinSubmitting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katılıyor…'**
+  String get studentJoinSubmitting;
+
+  /// No description provided for @studentJoinErrorInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod geçerli değil. Kontrol edip tekrar dene.'**
+  String get studentJoinErrorInvalid;
+
+  /// No description provided for @studentJoinErrorAlready.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu öğretmene zaten katıldın.'**
+  String get studentJoinErrorAlready;
+
+  /// No description provided for @studentJoinErrorExpired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kodun süresi dolmuş. Öğretmeninden yeni kod iste.'**
+  String get studentJoinErrorExpired;
+
+  /// No description provided for @studentJoinErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlanılamadı. Tekrar dene.'**
+  String get studentJoinErrorNetwork;
+
+  /// No description provided for @studentJoinBackToDashboard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Panele Dön'**
+  String get studentJoinBackToDashboard;
+
+  /// No description provided for @studentJoinSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'{teacher} dersine katıldın'**
+  String studentJoinSuccess(String teacher);
+
+  /// No description provided for @studentLessonPlay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyna'**
+  String get studentLessonPlay;
+
+  /// No description provided for @studentLessonPlayComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun yakında eklenecek.'**
+  String get studentLessonPlayComingSoon;
+
+  /// No description provided for @studentLessonEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu derste henüz kelime yok'**
+  String get studentLessonEmptyTitle;
+
+  /// No description provided for @studentLessonEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin kelime ekleyince burada görünecek.'**
+  String get studentLessonEmptyDesc;
+
+  /// No description provided for @studentLessonError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelimeler yüklenemedi'**
+  String get studentLessonError;
+
+  /// No description provided for @teacherStudentsAppBarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencilerim'**
+  String get teacherStudentsAppBarTitle;
+
+  /// No description provided for @teacherStudentsCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet Kodu'**
+  String get teacherStudentsCodeLabel;
+
+  /// No description provided for @teacherStudentsCodeDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kodu öğrencilerinle paylaş; girince derslerine katılırlar.'**
+  String get teacherStudentsCodeDesc;
+
+  /// No description provided for @teacherStudentsCopy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kopyala'**
+  String get teacherStudentsCopy;
+
+  /// No description provided for @teacherStudentsCopied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod kopyalandı'**
+  String get teacherStudentsCopied;
+
+  /// No description provided for @teacherStudentsShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaş'**
+  String get teacherStudentsShare;
+
+  /// No description provided for @teacherStudentsShareMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross\'ta bana katıl. Davet kodu: {code}'**
+  String teacherStudentsShareMessage(String code);
+
+  /// No description provided for @teacherStudentsShareCopied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet metni kopyalandı'**
+  String get teacherStudentsShareCopied;
+
+  /// No description provided for @teacherStudentsRegenerate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Kod'**
+  String get teacherStudentsRegenerate;
+
+  /// No description provided for @teacherStudentsRegenerateConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni kod oluşturursan eski kod çalışmayı durdurur. Devam edilsin mi?'**
+  String get teacherStudentsRegenerateConfirm;
+
+  /// No description provided for @teacherStudentsRegenerated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni davet kodu oluşturuldu'**
+  String get teacherStudentsRegenerated;
+
+  /// No description provided for @teacherStudentsRegenerateError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni kod oluşturulamadı, tekrar deneyin.'**
+  String get teacherStudentsRegenerateError;
+
+  /// No description provided for @teacherStudentsListTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenciler'**
+  String get teacherStudentsListTitle;
+
+  /// No description provided for @teacherStudentsCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} öğrenci'**
+  String teacherStudentsCount(int count);
+
+  /// No description provided for @teacherStudentsJoinedAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katıldı: {date}'**
+  String teacherStudentsJoinedAt(String date);
+
+  /// No description provided for @teacherStudentsStatusActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get teacherStudentsStatusActive;
+
+  /// No description provided for @teacherStudentsEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz öğrencin yok'**
+  String get teacherStudentsEmptyTitle;
+
+  /// No description provided for @teacherStudentsEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yukarıdaki davet kodunu öğrencilerinle paylaş.'**
+  String get teacherStudentsEmptyDesc;
+
+  /// No description provided for @teacherStudentsErrorCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu yüklenemedi'**
+  String get teacherStudentsErrorCode;
+
+  /// No description provided for @teacherStudentsErrorList.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenciler yüklenemedi'**
+  String get teacherStudentsErrorList;
+
+  /// No description provided for @teacherStudentsCodeSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu: {spaced}'**
+  String teacherStudentsCodeSemantic(String spaced);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

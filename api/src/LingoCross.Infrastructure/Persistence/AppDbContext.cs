@@ -22,6 +22,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
 
+    public DbSet<Enrollment> Enrollments => Set<Enrollment>();
+
     public DbSet<Lesson> Lessons => Set<Lesson>();
 
     public DbSet<Word> Words => Set<Word>();

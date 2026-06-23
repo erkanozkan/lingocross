@@ -15,6 +15,8 @@ public interface IAppDbContext
 
     DbSet<PasswordResetToken> PasswordResetTokens { get; }
 
+    DbSet<Enrollment> Enrollments { get; }
+
     DbSet<Lesson> Lessons { get; }
 
     DbSet<Word> Words { get; }

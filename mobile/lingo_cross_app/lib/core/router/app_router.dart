@@ -8,11 +8,14 @@ import '../../features/auth/presentation/auth_state.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/home/presentation/home_screen.dart';
+import '../../features/enrollment/presentation/screens/join_teacher_screen.dart';
+import '../../features/enrollment/presentation/screens/student_dashboard_screen.dart';
+import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
+import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_dashboard_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 
@@ -24,11 +27,17 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  static const String home = '/home';
   static const String profile = '/profile';
+
+  // Öğrenci (M3) — korumalı + yalnız Student.
+  static const String student = '/student';
+  static const String studentJoin = '/student/join';
+
+  static String studentLesson(String id) => '/student/lessons/$id';
 
   // Öğretmen (M2) — korumalı + yalnız Teacher.
   static const String teacher = '/teacher';
+  static const String teacherStudents = '/teacher/students';
   static const String lessonNew = '/teacher/lessons/new';
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
@@ -75,21 +84,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final isAuthed = auth.isAuthenticated;
       final isTeacher = auth.user?.role == UserRole.teacher;
+      final homeForRole = isTeacher ? AppRoutes.teacher : AppRoutes.student;
       final onAuthRoute = loc == AppRoutes.login ||
           loc == AppRoutes.register ||
           loc == AppRoutes.forgotPassword;
       final onTeacherRoute = loc.startsWith(AppRoutes.teacher);
+      final onStudentRoute = loc.startsWith(AppRoutes.student);
 
       // Token yoksa korumalı route → birleşik giriş ekranı.
       if (!isAuthed && !onAuthRoute) return AppRoutes.login;
 
       // Girişliyken auth ekranlarında ise → role-bazlı ana ekran.
-      if (isAuthed && onAuthRoute) {
-        return isTeacher ? AppRoutes.teacher : AppRoutes.home;
-      }
+      if (isAuthed && onAuthRoute) return homeForRole;
 
-      // Öğretmen rotaları yalnız Teacher içindir; öğrenci/diğerleri → home.
-      if (onTeacherRoute && !isTeacher) return AppRoutes.home;
+      // Öğretmen rotaları yalnız Teacher; öğrenci rotaları yalnız Student.
+      if (onTeacherRoute && !isTeacher) return AppRoutes.student;
+      if (onStudentRoute && isTeacher) return AppRoutes.teacher;
 
       return null;
     },
@@ -112,17 +122,31 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
-        path: AppRoutes.home,
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.profile,
         builder: (context, state) => const ProfilePlaceholderScreen(),
       ),
-      // --- Öğretmen (M2) ---
+      // --- Öğrenci (M3) ---
+      GoRoute(
+        path: AppRoutes.student,
+        builder: (context, state) => const StudentDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.studentJoin,
+        builder: (context, state) => const JoinTeacherScreen(),
+      ),
+      GoRoute(
+        path: '/student/lessons/:id',
+        builder: (context, state) =>
+            StudentLessonScreen(lessonId: state.pathParameters['id']!),
+      ),
+      // --- Öğretmen (M2/M3) ---
       GoRoute(
         path: AppRoutes.teacher,
         builder: (context, state) => const TeacherDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.teacherStudents,
+        builder: (context, state) => const TeacherStudentsScreen(),
       ),
       GoRoute(
         path: AppRoutes.lessonNew,

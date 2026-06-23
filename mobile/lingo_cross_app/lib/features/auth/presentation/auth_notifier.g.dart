@@ -14,7 +14,7 @@ String _$authNotifierHash() => r'7a0c4465d9b912b6e75b6ee99904a17ab6f5622d';
 ///   (kullanıcı bilgisi token yenileme/`/me` ile M2'de zenginleştirilebilir).
 /// - login/register başarıda token'lar saklanır, state `authenticated` olur.
 /// - 401 refresh kalıcı başarısız olursa (SessionEvents) state
-///   `unauthenticated`'a düşer ve router welcome'a yönlendirir.
+///   `unauthenticated`'a düşer ve router giriş ekranına yönlendirir.
 ///
 /// Copied from [AuthNotifier].
 @ProviderFor(AuthNotifier)

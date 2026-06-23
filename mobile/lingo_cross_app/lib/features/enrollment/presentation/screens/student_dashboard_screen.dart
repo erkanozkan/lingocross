@@ -1,0 +1,783 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_shadows.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../auth/presentation/auth_notifier.dart';
+import '../../../lessons/data/dtos/lesson_dtos.dart';
+import '../../../lessons/presentation/lessons_notifier.dart';
+import '../../../lessons/presentation/widgets/skeleton_card.dart';
+import '../../data/dtos/enrollment_dtos.dart';
+import '../enrollments_notifier.dart';
+import '../widgets/student_bottom_nav.dart';
+
+/// Öğrenci Paneli (student-dashboard.md — Stitch `55a66eca…` birebir).
+///
+/// Enrolled (Active) öğretmenlerin yayınlanmış derslerini listeler. İlk ders
+/// "Günün Oyunu" bento-large kartı, kalanlar "Derslerim" listesidir. Boş/
+/// yükleniyor/hata durumları + "Öğretmene Katıl" giriş noktası. Faz 2 öğeleri
+/// (crossword, çıkmış sorular, Sorular nav) gizli; Gelişim Özeti/Başarımlar
+/// M6 iskeleti olarak "Yakında" gösterilir (Sapma 3).
+class StudentDashboardScreen extends ConsumerWidget {
+  const StudentDashboardScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final name = ref.watch(authNotifierProvider).user?.displayName ?? '';
+    final enrollmentsAsync = ref.watch(enrollmentsNotifierProvider);
+    final lessonsAsync = ref.watch(lessonsNotifierProvider);
+
+    Future<void> refreshAll() async {
+      await Future.wait([
+        ref.read(enrollmentsNotifierProvider.notifier).refresh(),
+        ref.read(lessonsNotifierProvider.notifier).refresh(),
+      ]);
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.surface,
+      appBar: AppBar(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        titleSpacing: AppSpacing.marginMobile,
+        title: Text(
+          l10n.appName,
+          style: AppTypography.headlineLg.copyWith(color: AppColors.primary),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.marginMobile),
+            child: _Avatar(
+              name: name,
+              onTap: () => context.push(AppRoutes.profile),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: StudentBottomNav(
+        currentIndex: 0,
+        onTap: (i) {
+          switch (i) {
+            case 2:
+              context.push(AppRoutes.profile);
+            case 1:
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.commonComingSoon)),
+              );
+            default:
+              break;
+          }
+        },
+      ),
+      body: RefreshIndicator(
+        onRefresh: refreshAll,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.marginMobile,
+            AppSpacing.md,
+            AppSpacing.marginMobile,
+            AppSpacing.xl,
+          ),
+          children: [
+            _Greeting(name: name),
+            const SizedBox(height: AppSpacing.lg),
+            _Content(
+              enrollmentsAsync: enrollmentsAsync,
+              lessonsAsync: lessonsAsync,
+              onRetry: refreshAll,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Enrollment + ders durumlarını birleştirip uygun bölümleri render eder.
+class _Content extends StatelessWidget {
+  const _Content({
+    required this.enrollmentsAsync,
+    required this.lessonsAsync,
+    required this.onRetry,
+  });
+
+  final AsyncValue<List<EnrollmentDto>> enrollmentsAsync;
+  final AsyncValue<List<LessonDto>> lessonsAsync;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    // Yükleniyor: bento-large + 2 kart skeleton.
+    if (enrollmentsAsync.isLoading || lessonsAsync.isLoading) {
+      return Column(
+        children: const [
+          SkeletonCard(height: 200),
+          SizedBox(height: AppSpacing.lg),
+          SkeletonList(count: 2, height: 96),
+        ],
+      );
+    }
+
+    // Hata (herhangi biri): hata kartı + Tekrar Dene.
+    if (enrollmentsAsync.hasError || lessonsAsync.hasError) {
+      return _StateCard(
+        icon: Icons.cloud_off,
+        iconColor: AppColors.error,
+        title: l10n.studentDashboardError,
+        action: OutlinedButton(
+          onPressed: onRetry,
+          child: Text(l10n.commonRetry),
+        ),
+      );
+    }
+
+    final enrollments = enrollmentsAsync.value ?? const [];
+    final activeTeacherIds = enrollments
+        .where((e) => e.status.isActive)
+        .map((e) => e.teacherId)
+        .toSet();
+    final teacherNameById = <String, String>{
+      for (final e in enrollments) e.teacherId: e.counterpartDisplayName,
+    };
+
+    // Boş — hiç öğretmene katılmamış: birincil "Öğretmene Katıl" + boş durum.
+    if (activeTeacherIds.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _JoinTeacherCard(
+            onTap: () => context.push(AppRoutes.studentJoin),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _StateCard(
+            icon: Icons.group_add,
+            iconColor: AppColors.primary,
+            title: l10n.studentDashboardEmptyNoTeacherTitle,
+            desc: l10n.studentDashboardEmptyNoTeacherDesc,
+          ),
+        ],
+      );
+    }
+
+    // Yalnız enrolled öğretmenlerin yayınlanmış dersleri (API zaten filtreler;
+    // savunmacı olarak tekrar süzülür).
+    final lessons = (lessonsAsync.value ?? const <LessonDto>[])
+        .where((l) => l.isPublished && activeTeacherIds.contains(l.teacherId))
+        .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+
+    // Boş — öğretmen var, yayınlanmış ders yok.
+    if (lessons.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _StateCard(
+            icon: Icons.hourglass_empty,
+            iconColor: AppColors.primary,
+            title: l10n.studentDashboardEmptyNoLessonsTitle,
+            desc: l10n.studentDashboardEmptyNoLessonsDesc,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
+          const SizedBox(height: AppSpacing.lg),
+          const _ProgressSkeletonSection(),
+        ],
+      );
+    }
+
+    final featured = lessons.first;
+    final rest = lessons.skip(1).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(l10n.studentDashboardGameOfDay),
+        const SizedBox(height: AppSpacing.sm),
+        _GameOfDayCard(
+          lesson: featured,
+          teacherName: teacherNameById[featured.teacherId] ?? '',
+          onPlay: () => context.push(AppRoutes.studentLesson(featured.id)),
+        ),
+        if (rest.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          Text(l10n.studentDashboardLessonsTitle,
+              style: AppTypography.headlineMd),
+          const SizedBox(height: AppSpacing.sm),
+          for (final lesson in rest) ...[
+            _StudentLessonRow(
+              lesson: lesson,
+              teacherName: teacherNameById[lesson.teacherId] ?? '',
+              onTap: () => context.push(AppRoutes.studentLesson(lesson.id)),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        ],
+        const SizedBox(height: AppSpacing.lg),
+        _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
+        const SizedBox(height: AppSpacing.lg),
+        const _ProgressSkeletonSection(),
+      ],
+    );
+  }
+}
+
+class _Greeting extends StatelessWidget {
+  const _Greeting({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.studentDashboardGreeting(name),
+          style: AppTypography.headlineMd,
+        ),
+        const SizedBox(height: AppSpacing.base),
+        Text(
+          l10n.studentDashboardSubtitle,
+          style:
+              AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text.toUpperCase(),
+      style: AppTypography.labelLg.copyWith(
+        color: AppColors.outline,
+        letterSpacing: 1.2,
+      ),
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.name, required this.onTap});
+
+  final String name;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final initial = name.isNotEmpty ? name.characters.first.toUpperCase() : '?';
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.full),
+      child: Container(
+        width: 48,
+        height: 48,
+        alignment: Alignment.center,
+        child: Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContainer,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.primary, width: 2),
+          ),
+          child: Text(
+            initial,
+            style: AppTypography.labelLg.copyWith(color: AppColors.primary),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Günün Oyunu" bento-large (student-dashboard.md §3.3, Sapma 1).
+///
+/// Crossword grid yerine kelime-çifti mini görseli; "Oyuna Başla" → öğrenci
+/// ders görünümü (M4 oyun placeholder oradan açılır).
+class _GameOfDayCard extends StatefulWidget {
+  const _GameOfDayCard({
+    required this.lesson,
+    required this.teacherName,
+    required this.onPlay,
+  });
+
+  final LessonDto lesson;
+  final String teacherName;
+  final VoidCallback onPlay;
+
+  @override
+  State<_GameOfDayCard> createState() => _GameOfDayCardState();
+}
+
+class _GameOfDayCardState extends State<_GameOfDayCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      onTap: widget.onPlay,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.outlineVariant),
+            boxShadow: AppShadows.level2,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            children: [
+              Positioned(
+                right: -32,
+                bottom: -32,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withValues(alpha: 0.05),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: AppSpacing.xs,
+                      runSpacing: AppSpacing.xs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (widget.teacherName.isNotEmpty)
+                          Text(
+                            l10n.studentDashboardGameSharedBy(
+                                widget.teacherName),
+                            style: AppTypography.labelSm
+                                .copyWith(color: AppColors.onSurfaceVariant),
+                          ),
+                        _AssignedChip(label: l10n.studentDashboardGameAssigned),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(widget.lesson.title, style: AppTypography.headlineLg),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      l10n.studentDashboardGameDesc(widget.lesson.wordCount),
+                      style: AppTypography.bodyMd
+                          .copyWith(color: AppColors.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _WordPairPreview(),
+                    const SizedBox(height: AppSpacing.md),
+                    _PlayButton(label: l10n.studentDashboardPlayGame),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Öğretmenin Atadığı Oyun" chip — tertiary tonlu.
+class _AssignedChip extends StatelessWidget {
+  const _AssignedChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.xs, vertical: AppSpacing.base),
+      decoration: BoxDecoration(
+        color: AppColors.tertiary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.chat_bubble_outline,
+              size: 14, color: AppColors.tertiary),
+          const SizedBox(width: AppSpacing.base),
+          Text(label,
+              style:
+                  AppTypography.labelSm.copyWith(color: AppColors.tertiary)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sapma 1: crossword grid yerine "İngilizce ↔ Türkçe" çift rozetleri.
+class _WordPairPreview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    const pairs = [
+      ('apple', 'elma'),
+      ('book', 'kitap'),
+      ('water', 'su'),
+    ];
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainer,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < pairs.length; i++) ...[
+            Row(
+              children: [
+                Expanded(child: _Pill(pairs[i].$1)),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                  child: Icon(Icons.compare_arrows,
+                      size: 18, color: AppColors.primary),
+                ),
+                Expanded(child: _Pill(pairs[i].$2)),
+              ],
+            ),
+            if (i != pairs.length - 1)
+              const SizedBox(height: AppSpacing.xs),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.base),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTypography.labelLg.copyWith(color: AppColors.primary),
+      ),
+    );
+  }
+}
+
+/// 3D primary buton (DESIGN.md) — kart içinde "Oyuna Başla". Tıklama kart
+/// GestureDetector'ı tarafından yakalanır; bu yalnız görseldir.
+class _PlayButton extends StatelessWidget {
+  const _PlayButton({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: const [
+          BoxShadow(color: AppColors.primaryShadow, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label,
+              style: AppTypography.labelLg.copyWith(color: AppColors.onPrimary)),
+          const SizedBox(width: AppSpacing.xs),
+          const Icon(Icons.play_arrow, color: AppColors.onPrimary, size: 20),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Derslerim" listesindeki ders satırı (bento-large dışındaki dersler).
+class _StudentLessonRow extends StatelessWidget {
+  const _StudentLessonRow({
+    required this.lesson,
+    required this.teacherName,
+    required this.onTap,
+  });
+
+  final LessonDto lesson;
+  final String teacherName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.outlineVariant),
+            boxShadow: AppShadows.soft,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(Icons.menu_book, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      lesson.title,
+                      style: AppTypography.headlineMd,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      teacherName.isNotEmpty
+                          ? '${l10n.studentDashboardGameSharedBy(teacherName)} • ${l10n.teacherDashboardWordCount(lesson.wordCount)}'
+                          : l10n.teacherDashboardWordCount(lesson.wordCount),
+                      style: AppTypography.labelSm
+                          .copyWith(color: AppColors.onSurfaceVariant),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right,
+                  color: AppColors.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Boş durumda birincil "Bir Öğretmene Katıl" bento kartı (Sapma 4).
+class _JoinTeacherCard extends StatelessWidget {
+  const _JoinTeacherCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Material(
+      color: AppColors.primaryContainer,
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            boxShadow: AppShadows.level2,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.onPrimary.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(Icons.group_add, color: AppColors.onPrimary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.studentDashboardJoinTeacherTitle,
+                      style: AppTypography.headlineMd
+                          .copyWith(color: AppColors.onPrimary),
+                    ),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      l10n.studentDashboardJoinTeacherDesc,
+                      style: AppTypography.bodyMd.copyWith(
+                          color: AppColors.onPrimary.withValues(alpha: 0.9)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              const Icon(Icons.chevron_right, color: AppColors.onPrimary),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dolu durumda küçük tonal satır-link "Yeni öğretmene katıl".
+class _JoinTeacherLink extends StatelessWidget {
+  const _JoinTeacherLink({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        onPressed: onTap,
+        icon: const Icon(Icons.add, color: AppColors.primary, size: 20),
+        label: Text(
+          l10n.studentDashboardJoinTeacherLinkShort,
+          style: AppTypography.labelLg.copyWith(color: AppColors.primary),
+        ),
+      ),
+    );
+  }
+}
+
+/// Gelişim Özeti — M6 iskeleti (Sapma 3). M3'te tek satır "Yakında".
+class _ProgressSkeletonSection extends StatelessWidget {
+  const _ProgressSkeletonSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(l10n.studentDashboardProgressTitle),
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.outlineVariant),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.insights, color: AppColors.onSurfaceVariant),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  l10n.studentDashboardStatsSoon,
+                  style: AppTypography.bodyMd
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Boş/hata durumları için ortak kart.
+class _StateCard extends StatelessWidget {
+  const _StateCard({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    this.desc,
+    this.action,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String? desc;
+  final Widget? action;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor, size: 40),
+          const SizedBox(height: AppSpacing.sm),
+          Text(title,
+              style: AppTypography.headlineMd, textAlign: TextAlign.center),
+          if (desc != null) ...[
+            const SizedBox(height: AppSpacing.base),
+            Text(
+              desc!,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          ],
+          if (action != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            action!,
+          ],
+        ],
+      ),
+    );
+  }
+}

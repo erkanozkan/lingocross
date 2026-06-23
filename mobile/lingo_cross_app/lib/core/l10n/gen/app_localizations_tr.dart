@@ -640,4 +640,219 @@ class AppLocalizationsTr extends AppLocalizations {
   String ocrReviewSavedSnack(int count) {
     return '$count kelime eklendi';
   }
+
+  @override
+  String get commonContinue => 'Devam Et';
+
+  @override
+  String studentDashboardGreeting(String name) {
+    return 'Merhaba, $name! 👋';
+  }
+
+  @override
+  String get studentDashboardSubtitle => 'Günün kelime avına hazır mısın?';
+
+  @override
+  String studentDashboardStreak(int days) {
+    return '$days';
+  }
+
+  @override
+  String studentDashboardStreakSemantic(int days) {
+    return '$days günlük seri';
+  }
+
+  @override
+  String get studentDashboardGameOfDay => 'Günün Oyunu';
+
+  @override
+  String studentDashboardGameSharedBy(String teacher) {
+    return 'Paylaşan: $teacher';
+  }
+
+  @override
+  String get studentDashboardGameAssigned => 'Öğretmenin Atadığı Oyun';
+
+  @override
+  String studentDashboardGameDesc(int count) {
+    return '$count kelimeyi eşleştir, doğruluk ve süreni geliştir.';
+  }
+
+  @override
+  String get studentDashboardPlayGame => 'Oyuna Başla';
+
+  @override
+  String get studentDashboardLessonsTitle => 'Derslerim';
+
+  @override
+  String get studentDashboardProgressTitle => 'Gelişim Özeti';
+
+  @override
+  String get studentDashboardStatGames => 'Tamamlanan Oyun';
+
+  @override
+  String get studentDashboardStatAccuracy => 'Ortalama Doğruluk';
+
+  @override
+  String get studentDashboardWeeklyGoal => 'Haftalık Hedef';
+
+  @override
+  String get studentDashboardAchievementsTitle => 'Son Başarımlar';
+
+  @override
+  String get studentDashboardJoinTeacherTitle => 'Bir Öğretmene Katıl';
+
+  @override
+  String get studentDashboardJoinTeacherDesc => 'Öğretmeninden aldığın davet kodunu girerek derslerine eriş.';
+
+  @override
+  String get studentDashboardJoinTeacherLinkShort => 'Yeni öğretmene katıl';
+
+  @override
+  String get studentDashboardEmptyNoTeacherTitle => 'Henüz bir derse katılmadın';
+
+  @override
+  String get studentDashboardEmptyNoTeacherDesc => 'Öğretmeninden aldığın davet koduyla başla.';
+
+  @override
+  String get studentDashboardEmptyNoLessonsTitle => 'Öğretmenin henüz ders yayınlamadı';
+
+  @override
+  String get studentDashboardEmptyNoLessonsDesc => 'Yeni dersler burada görünecek.';
+
+  @override
+  String get studentDashboardStatsSoon => 'Yakında — ilk oyununu oynayınca burada görünecek.';
+
+  @override
+  String get studentDashboardError => 'Dersler yüklenemedi';
+
+  @override
+  String get studentDashboardJoined => 'Derse katıldın';
+
+  @override
+  String get studentJoinAppBarTitle => 'Öğretmene Katıl';
+
+  @override
+  String get studentJoinHeroTitle => 'Davet Kodunu Gir';
+
+  @override
+  String get studentJoinHeroDesc => 'Öğretmeninden aldığın daveti girerek derslerine katıl.';
+
+  @override
+  String get studentJoinCodeLabel => 'Davet Kodu';
+
+  @override
+  String get studentJoinCodeHint => 'Kodu öğretmeninden alabilirsin.';
+
+  @override
+  String get studentJoinSubmit => 'Katıl';
+
+  @override
+  String get studentJoinSubmitting => 'Katılıyor…';
+
+  @override
+  String get studentJoinErrorInvalid => 'Bu kod geçerli değil. Kontrol edip tekrar dene.';
+
+  @override
+  String get studentJoinErrorAlready => 'Bu öğretmene zaten katıldın.';
+
+  @override
+  String get studentJoinErrorExpired => 'Bu kodun süresi dolmuş. Öğretmeninden yeni kod iste.';
+
+  @override
+  String get studentJoinErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get studentJoinBackToDashboard => 'Panele Dön';
+
+  @override
+  String studentJoinSuccess(String teacher) {
+    return '$teacher dersine katıldın';
+  }
+
+  @override
+  String get studentLessonPlay => 'Oyna';
+
+  @override
+  String get studentLessonPlayComingSoon => 'Oyun yakında eklenecek.';
+
+  @override
+  String get studentLessonEmptyTitle => 'Bu derste henüz kelime yok';
+
+  @override
+  String get studentLessonEmptyDesc => 'Öğretmenin kelime ekleyince burada görünecek.';
+
+  @override
+  String get studentLessonError => 'Kelimeler yüklenemedi';
+
+  @override
+  String get teacherStudentsAppBarTitle => 'Öğrencilerim';
+
+  @override
+  String get teacherStudentsCodeLabel => 'Davet Kodu';
+
+  @override
+  String get teacherStudentsCodeDesc => 'Bu kodu öğrencilerinle paylaş; girince derslerine katılırlar.';
+
+  @override
+  String get teacherStudentsCopy => 'Kopyala';
+
+  @override
+  String get teacherStudentsCopied => 'Kod kopyalandı';
+
+  @override
+  String get teacherStudentsShare => 'Paylaş';
+
+  @override
+  String teacherStudentsShareMessage(String code) {
+    return 'LingoCross\'ta bana katıl. Davet kodu: $code';
+  }
+
+  @override
+  String get teacherStudentsShareCopied => 'Davet metni kopyalandı';
+
+  @override
+  String get teacherStudentsRegenerate => 'Yeni Kod';
+
+  @override
+  String get teacherStudentsRegenerateConfirm => 'Yeni kod oluşturursan eski kod çalışmayı durdurur. Devam edilsin mi?';
+
+  @override
+  String get teacherStudentsRegenerated => 'Yeni davet kodu oluşturuldu';
+
+  @override
+  String get teacherStudentsRegenerateError => 'Yeni kod oluşturulamadı, tekrar deneyin.';
+
+  @override
+  String get teacherStudentsListTitle => 'Öğrenciler';
+
+  @override
+  String teacherStudentsCount(int count) {
+    return '$count öğrenci';
+  }
+
+  @override
+  String teacherStudentsJoinedAt(String date) {
+    return 'Katıldı: $date';
+  }
+
+  @override
+  String get teacherStudentsStatusActive => 'Aktif';
+
+  @override
+  String get teacherStudentsEmptyTitle => 'Henüz öğrencin yok';
+
+  @override
+  String get teacherStudentsEmptyDesc => 'Yukarıdaki davet kodunu öğrencilerinle paylaş.';
+
+  @override
+  String get teacherStudentsErrorCode => 'Davet kodu yüklenemedi';
+
+  @override
+  String get teacherStudentsErrorList => 'Öğrenciler yüklenemedi';
+
+  @override
+  String teacherStudentsCodeSemantic(String spaced) {
+    return 'Davet kodu: $spaced';
+  }
 }

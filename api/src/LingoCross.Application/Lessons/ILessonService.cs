@@ -13,6 +13,15 @@ public interface ILessonService
     /// <summary>Oturum açan öğretmenin tüm dersleri.</summary>
     Task<IReadOnlyList<LessonDto>> ListMineAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Rol-duyarlı listeleme: öğretmen → kendi tüm dersleri; öğrenci → Active eşleşmesi olduğu
+    /// öğretmenlerin yayımlanmış (is_published) dersleri.
+    /// </summary>
+    Task<IReadOnlyList<LessonDto>> ListVisibleAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Rol-duyarlı erişim: öğretmen → kendi dersi; öğrenci → enrolled+published ders. Aksi 404.
+    /// </summary>
     Task<LessonDto> GetAsync(Guid lessonId, CancellationToken cancellationToken = default);
 
     Task<LessonDto> UpdateAsync(Guid lessonId, UpdateLessonRequest request, CancellationToken cancellationToken = default);

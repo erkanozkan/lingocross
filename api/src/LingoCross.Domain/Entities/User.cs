@@ -28,4 +28,10 @@ public class User : Entity
 
     /// <summary>Öğretmenin oluşturduğu dersler; öğrenciler için boş.</summary>
     public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+
+    /// <summary>Bu öğretmene katılan öğrencilerin eşleşmeleri; öğrenciler için boş.</summary>
+    public ICollection<Enrollment> TeacherEnrollments { get; set; } = new List<Enrollment>();
+
+    /// <summary>Bu öğrencinin katıldığı öğretmenlerin eşleşmeleri; öğretmenler için boş.</summary>
+    public ICollection<Enrollment> StudentEnrollments { get; set; } = new List<Enrollment>();
 }
