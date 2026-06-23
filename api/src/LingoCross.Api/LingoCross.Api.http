@@ -1,0 +1,7 @@
+@LingoCross.Api_HostAddress = http://localhost:5093
+
+### Sağlık kontrolü
+GET {{LingoCross.Api_HostAddress}}/health
+Accept: application/json
+
+###

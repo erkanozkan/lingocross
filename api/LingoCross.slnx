@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LingoCross.Api/LingoCross.Api.csproj" />
+    <Project Path="src/LingoCross.Application/LingoCross.Application.csproj" />
+    <Project Path="src/LingoCross.Domain/LingoCross.Domain.csproj" />
+    <Project Path="src/LingoCross.Infrastructure/LingoCross.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LingoCross.Tests/LingoCross.Tests.csproj" />
+  </Folder>
+</Solution>
