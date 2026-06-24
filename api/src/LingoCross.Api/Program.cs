@@ -27,6 +27,16 @@ builder.Services.AddScoped<LingoCross.Application.Common.Security.ICurrentUser, 
 
 // JWT bearer kimlik doğrulama (bizim kendi token'larımız, HS256).
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? new JwtOptions();
+
+// Secret yoksa/çok kısaysa açılışta net bir hata ver — yoksa boş imza anahtarı her
+// istekte (sağlık ucu dahil) opak 500'e yol açar. HS256 için ≥32 bayt gerekir.
+if (Encoding.UTF8.GetByteCount(jwtOptions.Secret) < 32)
+{
+    throw new InvalidOperationException(
+        "Jwt:Secret tanımlı değil veya 32 bayttan kısa. Railway'de Jwt__Secret ortam " +
+        "değişkenini ayarlayın (üret: openssl rand -base64 48).");
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
