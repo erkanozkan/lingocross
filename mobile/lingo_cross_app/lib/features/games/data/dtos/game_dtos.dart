@@ -48,6 +48,10 @@ class GameDto with _$GameDto {
 
 /// Öğrenciye atanmış (yayımlanmış) bir oyunun özeti (AssignedGameDto) — API ile
 /// birebir. Öğrenci panelindeki "atanan bulmacalar" listesini besler.
+///
+/// [isCompleted] true ise bulmaca tamamlanmıştır (tekrar oynanamaz; yalnız
+/// istatistik). Tamamlanmış oyunlarda [resultId]/[score]/[completedAt] doludur
+/// ve dokununca `GET /results`'ten istatistik ekranına gidilir (replay değil).
 @freezed
 class AssignedGameDto with _$AssignedGameDto {
   const factory AssignedGameDto({
@@ -59,6 +63,10 @@ class AssignedGameDto with _$AssignedGameDto {
     required int wordCount,
     required String teacherName,
     DateTime? publishedAt,
+    @Default(false) bool isCompleted,
+    String? resultId,
+    int? score,
+    DateTime? completedAt,
   }) = _AssignedGameDto;
 
   factory AssignedGameDto.fromJson(Map<String, dynamic> json) =>

@@ -1,4 +1,5 @@
 using LingoCross.Application.Common.Exceptions;
+using LingoCross.Application.Notifications;
 using LingoCross.Application.Results;
 using LingoCross.Application.Results.Dtos;
 using LingoCross.Domain.Entities;
@@ -19,6 +20,30 @@ public class ResultServiceTests
         new(new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase($"results-{Guid.NewGuid()}")
             .Options);
+
+    /// <summary>Gönderim çağrılarını sayan no-op push sender (FCM yerine).</summary>
+    private sealed class FakePushSender : IPushSender
+    {
+        public int CallCount { get; private set; }
+
+        public Task<IReadOnlyList<string>> SendToTokensAsync(
+            IReadOnlyList<string> tokens,
+            string title,
+            string body,
+            IReadOnlyDictionary<string, string>? data,
+            CancellationToken ct = default)
+        {
+            CallCount++;
+            return Task.FromResult<IReadOnlyList<string>>([]);
+        }
+    }
+
+    /// <summary>Öğretmenin push alabilmesi için bir cihaz token'ı ekler (tercih kaydı yok → varsayılan: Results açık).</summary>
+    private static async Task AddTeacherTokenAsync(AppDbContext db, Guid teacherId)
+    {
+        db.DeviceTokens.Add(new DeviceToken { UserId = teacherId, Token = $"tok-{Guid.NewGuid():N}", Platform = "ios" });
+        await db.SaveChangesAsync();
+    }
 
     private static async Task<User> SeedUserAsync(AppDbContext db, UserRole role, string email)
     {
@@ -83,8 +108,9 @@ public class ResultServiceTests
         Assert.Equal(45_000, result.DurationMs);
         Assert.Equal(8, result.TotalItems);
         Assert.Equal(6, result.CorrectItems);
-        Assert.False(result.SharedWithTeacher);
-        Assert.Null(result.SharedAt);
+        // Otomatik paylaşım: sonuç tamamlanır tamamlanmaz öğretmenle paylaşılır.
+        Assert.True(result.SharedWithTeacher);
+        Assert.NotNull(result.SharedAt);
         Assert.Equal(session.GameId, result.GameId);
 
         var reloaded = await db.GameSessions.FirstAsync(s => s.Id == session.Id);
@@ -109,6 +135,53 @@ public class ResultServiceTests
         Assert.Equal(first.Id, second.Id);
         Assert.Equal(first.Score, second.Score);
         Assert.Equal(1, await db.GameResults.CountAsync());
+    }
+
+    [Fact]
+    public async Task Submit_AutoShares_AndPushesTeacher_ExactlyOnce()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+        await AddTeacherTokenAsync(db, teacher.Id);
+
+        var fake = new FakePushSender();
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id), new PushDispatcher(db, fake));
+
+        var result = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(45_000, 8, 6));
+
+        Assert.True(result.SharedWithTeacher);
+        Assert.NotNull(result.SharedAt);
+        Assert.Equal(1, fake.CallCount); // öğretmene results push'u tam 1 kez
+
+        // İkinci (idempotent) submit mevcut sonucu döndürür, tekrar push ETMEZ.
+        await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(99_000, 8, 2));
+        Assert.Equal(1, fake.CallCount);
+    }
+
+    [Fact]
+    public async Task Share_AlreadyShared_IsNoOp_NoPush_NoFieldChange()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+        await AddTeacherTokenAsync(db, teacher.Id);
+
+        var fake = new FakePushSender();
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id), new PushDispatcher(db, fake));
+
+        // Submit zaten auto-share + 1 push yapar.
+        var submitted = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(1000, 8, 8));
+        Assert.Equal(1, fake.CallCount);
+        var sharedAt = submitted.SharedAt;
+
+        // ShareWithTeacher zaten-paylaşılmış sonuçta no-op: alan değişmez, ek push gitmez.
+        var shared = await svc.ShareWithTeacherAsync(submitted.Id);
+        Assert.True(shared.SharedWithTeacher);
+        Assert.Equal(sharedAt, shared.SharedAt);
+        Assert.Equal(1, fake.CallCount);
     }
 
     [Fact]
@@ -297,9 +370,6 @@ public class ResultServiceTests
         var intruderSvc = new ResultService(db, TestCurrentUser.Student(intruder.Id));
         var ex = await Assert.ThrowsAsync<AppException>(() => intruderSvc.ShareWithTeacherAsync(submitted.Id));
         Assert.Equal(404, ex.StatusCode);
-
-        var reloaded = await db.GameResults.FirstAsync(r => r.Id == submitted.Id);
-        Assert.False(reloaded.SharedWithTeacher);
     }
 
     // ---- ListMine ----

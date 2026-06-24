@@ -16,6 +16,9 @@ public record GameDto(
 /// <summary>
 /// Öğrenciye atanmış (yayımlanmış) bir oyunun özeti. Öğrenci panelinde "atanan bulmacalar"
 /// listesini besler: oyun + ait olduğu ders + öğretmen adı + oynanabilir kelime sayısı.
+/// Tamamlanma alanları öğrencinin bu oyunu zaten bitirip bitirmediğini taşır: tamamlanmışsa
+/// <see cref="IsCompleted"/> true ve <see cref="ResultId"/>/<see cref="Score"/>/<see cref="CompletedAt"/>
+/// dolar; aksi halde false/null. Tamamlanmış bir oyun tekrar oynanamaz (StartSession 409 döner).
 /// </summary>
 public record AssignedGameDto(
     Guid Id,
@@ -25,7 +28,11 @@ public record AssignedGameDto(
     string Title,
     int WordCount,
     string TeacherName,
-    DateTime? PublishedAt);
+    DateTime? PublishedAt,
+    bool IsCompleted,
+    Guid? ResultId,
+    int? Score,
+    DateTime? CompletedAt);
 
 /// <summary>
 /// Öğretmenin "Bulmacalarım" görünümü için tüm derslerindeki bir bulmacanın özeti. Yayımlanmış bir

@@ -1,3 +1,8 @@
+// @JsonKey on a freezed constructor parameter triggers invalid_annotation_target.
+// Suppress it file-wide here rather than per-line: a line-level `// ignore:` above
+// the field gets copied into the generated getters, where the file-level ignore in
+// the .freezed.dart already covers it → duplicate_ignore warnings.
+// ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../games/data/dtos/game_dtos.dart';
@@ -22,7 +27,6 @@ class SubmitResultRequest with _$SubmitResultRequest {
     /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
     /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
     /// null iken JSON'a yazılmaz (gövde temiz kalır).
-    // ignore: invalid_annotation_target
     @JsonKey(includeIfNull: false) List<SubmitResultItem>? items,
   }) = _SubmitResultRequest;
 

@@ -1052,6 +1052,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get studentDashboardCompletedTitle => 'Completed Puzzles';
+
+  @override
+  String studentDashboardCompletedScore(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get studentDashboardCompletedSeeStats => 'See Stats';
+
+  @override
+  String get studentDashboardCompletedBadge => 'Completed';
+
+  @override
   String get studentDashboardStatsSoon => 'Coming soon — it\'ll appear here once you play your first game.';
 
   @override
@@ -1425,34 +1439,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get gameResultShare => 'Send to Teacher';
-
-  @override
-  String get gameResultShareSending => 'Sending…';
-
-  @override
-  String get gameResultShareShared => 'Sent to Teacher';
-
-  @override
-  String get gameResultShareToastSuccess => 'Your result was sent to your teacher.';
-
-  @override
-  String get gameResultShareToastError => 'Couldn\'t send, please try again.';
-
-  @override
-  String get gameResultPlayAgain => 'Play Again';
+  String get gameResultSharedNote => 'Shared with your teacher';
 
   @override
   String get gameResultErrorTitle => 'Couldn\'t load result';
-
-  @override
-  String get gameResultA11ySending => 'Sending';
-
-  @override
-  String get gameResultA11yShared => 'Sent';
-
-  @override
-  String get gameResultA11yError => 'Couldn\'t send';
 
   @override
   String get resultsHistoryTitle => 'My Results';

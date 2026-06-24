@@ -165,18 +165,34 @@ class _Content extends StatelessWidget {
     }
 
     // Atanan (yayımlanmış) bulmacalar — yeniden eskiye sırala.
-    final games = (gamesAsync.value ?? const <AssignedGameDto>[]).toList()
+    int byNewest(AssignedGameDto a, AssignedGameDto b) {
+      final ad = a.publishedAt;
+      final bd = b.publishedAt;
+      if (ad == null && bd == null) return 0;
+      if (ad == null) return 1;
+      if (bd == null) return -1;
+      return bd.compareTo(ad);
+    }
+
+    final allGames = (gamesAsync.value ?? const <AssignedGameDto>[]).toList()
+      ..sort(byNewest);
+
+    // Oynanabilir (henüz tamamlanmamış) ile tamamlanmış bulmacaları ayır.
+    // Tamamlananlar yalnız istatistik içindir; "atanan" listesinden çıkar.
+    final pending = allGames.where((g) => !g.isCompleted).toList();
+    // Tamamlanma zamanı varsa ona göre yeniden→eskiye; yoksa yayım sırası.
+    final completed = allGames.where((g) => g.isCompleted).toList()
       ..sort((a, b) {
-        final ad = a.publishedAt;
-        final bd = b.publishedAt;
-        if (ad == null && bd == null) return 0;
-        if (ad == null) return 1;
-        if (bd == null) return -1;
-        return bd.compareTo(ad);
+        final ac = a.completedAt;
+        final bc = b.completedAt;
+        if (ac != null && bc != null) return bc.compareTo(ac);
+        if (ac == null && bc == null) return byNewest(a, b);
+        if (ac == null) return 1;
+        return -1;
       });
 
-    // Boş — öğretmen var, atanmış bulmaca yok.
-    if (games.isEmpty) {
+    // Boş — öğretmen var, oynanabilir bulmaca yok.
+    if (pending.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -186,6 +202,10 @@ class _Content extends StatelessWidget {
             title: l10n.studentDashboardEmptyNoPuzzlesTitle,
             desc: l10n.studentDashboardEmptyNoPuzzlesDesc,
           ),
+          if (completed.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            _CompletedSection(games: completed),
+          ],
           const SizedBox(height: AppSpacing.lg),
           _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
           const SizedBox(height: AppSpacing.lg),
@@ -194,8 +214,8 @@ class _Content extends StatelessWidget {
       );
     }
 
-    final featured = games.first;
-    final rest = games.skip(1).toList();
+    final featured = pending.first;
+    final rest = pending.skip(1).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,11 +239,184 @@ class _Content extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
           ],
         ],
+        if (completed.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          _CompletedSection(games: completed),
+        ],
         const SizedBox(height: AppSpacing.lg),
         _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
         const SizedBox(height: AppSpacing.lg),
         const _ProgressSummarySection(),
       ],
+    );
+  }
+}
+
+/// "Tamamlanan Bulmacalar" bölümü — tamamlanmış (isCompleted) bulmacalar.
+///
+/// Tekrar oynanamaz: her satıra dokununca [AppRoutes.studentResultDetail] ile
+/// istatistik ekranına gidilir (asla oyun launcher'ına değil). Sonuç gönderimde
+/// otomatik paylaşıldığı için ayrıca paylaşma yoktur.
+class _CompletedSection extends StatelessWidget {
+  const _CompletedSection({required this.games});
+
+  final List<AssignedGameDto> games;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.studentDashboardCompletedTitle,
+            style: AppTypography.headlineMd),
+        const SizedBox(height: AppSpacing.sm),
+        for (final game in games) ...[
+          _CompletedGameRow(
+            game: game,
+            onTap: () {
+              final resultId = game.resultId;
+              if (resultId == null) return;
+              context.push(AppRoutes.studentResultDetail(resultId));
+            },
+          ),
+          const SizedBox(height: AppSpacing.sm),
+        ],
+      ],
+    );
+  }
+}
+
+/// Tamamlanmış bir bulmaca satırı: ders/bulmaca adı + skor + "İstatistikleri
+/// Gör". Dokununca istatistik ekranına gider (replay DEĞİL).
+class _CompletedGameRow extends StatelessWidget {
+  const _CompletedGameRow({required this.game, required this.onTap});
+
+  final AssignedGameDto game;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final score = game.score;
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.outlineVariant),
+            boxShadow: AppShadows.soft,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.tertiary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(Icons.check_circle,
+                    color: AppColors.tertiary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      game.title,
+                      style: AppTypography.headlineMd,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.base),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            game.lessonTitle,
+                            style: AppTypography.labelSm
+                                .copyWith(color: AppColors.onSurfaceVariant),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          l10n.studentDashboardCompletedSeeStats,
+                          style: AppTypography.labelSm
+                              .copyWith(color: AppColors.primary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              if (score != null)
+                _ScoreBadge(percent: score)
+              else
+                _CompletedBadge(label: l10n.studentDashboardCompletedBadge),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tamamlanan bulmacanın skor rozeti (örn. "%85").
+class _ScoreBadge extends StatelessWidget {
+  const _ScoreBadge({required this.percent});
+
+  final int percent;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.base),
+      decoration: BoxDecoration(
+        color: AppColors.tertiary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        l10n.studentDashboardCompletedScore(percent),
+        style: AppTypography.labelLg.copyWith(color: AppColors.tertiary),
+      ),
+    );
+  }
+}
+
+/// Skor bilinmiyorsa "Tamamlandı" rozeti.
+class _CompletedBadge extends StatelessWidget {
+  const _CompletedBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.base),
+      decoration: BoxDecoration(
+        color: AppColors.tertiary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.labelSm.copyWith(color: AppColors.tertiary),
+      ),
     );
   }
 }

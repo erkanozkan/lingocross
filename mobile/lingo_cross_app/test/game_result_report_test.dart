@@ -63,14 +63,16 @@ void _tallSurface(WidgetTester tester) {
 }
 
 void main() {
-  testWidgets('skor/süre/doğru-toplam ve idle paylaş butonu gösterilir',
-      (tester) async {
+  testWidgets(
+      'skor/süre/doğru-toplam gösterilir; "Tekrar Oyna"/"Öğretmene Gönder" YOK, '
+      '"paylaşıldı" notu VAR', (tester) async {
     _tallSurface(tester);
     final seed = sampleResult(
       score: 85,
       durationMs: 252000, // 04:12
       totalItems: 20,
       correctItems: 17,
+      sharedWithTeacher: true, // submit otomatik paylaştı
     );
     await tester.pumpWidget(
       _wrap(seed: seed, repo: FakeResultsRepository()),
@@ -78,66 +80,75 @@ void main() {
     await tester.pump(); // seed (post-frame)
     await tester.pump();
 
+    // İstatistikler aynen kalır.
     expect(find.text('Oyun Özeti'), findsOneWidget);
     expect(find.text('%85'), findsOneWidget); // doğruluk radyali
     expect(find.text('04:12'), findsOneWidget); // geçen süre
     expect(find.text('17 / 20'), findsOneWidget); // bulunan kelime
-    expect(find.text('Öğretmene Gönder'), findsOneWidget);
-    expect(find.text('Tekrar Oyna'), findsOneWidget);
+
+    // Butonlar kaldırıldı.
+    expect(find.text('Öğretmene Gönder'), findsNothing);
+    expect(find.text('Tekrar Oyna'), findsNothing);
+    expect(find.text('Öğretmene Gönderildi'), findsNothing);
+
+    // Paylaşıldı bilgi notu var.
+    expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
   });
 
-  testWidgets('"Tekrar Oyna" → launcher\'a gameId ile gider (lessonId değil)',
+  testWidgets('share repo metodu hiç çağrılmaz (otomatik paylaşım)',
       (tester) async {
     _tallSurface(tester);
-    // gameId=g1, lessonId=l1 (ayrı). Route gameId beklediği için g1 ile
-    // gidilmeli; lessonId geçilirse StartSession 404 döner (regresyon).
-    final seed = sampleResult(lessonId: 'l1');
-    await tester.pumpWidget(
-      _wrap(seed: seed, repo: FakeResultsRepository()),
-    );
-    await tester.pump();
-    await tester.pump();
-
-    await tester.tap(find.text('Tekrar Oyna'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('OYUN g1'), findsOneWidget);
-    expect(find.text('OYUN l1'), findsNothing);
-  });
-
-  testWidgets('paylaş → "Öğretmene Gönderildi" (tek-yön kilit) + share çağrısı',
-      (tester) async {
-    _tallSurface(tester);
-    final seed = sampleResult(id: 'r5', sharedWithTeacher: false);
+    final seed = sampleResult(id: 'r5', sharedWithTeacher: true);
     final repo = FakeResultsRepository(mine: [seed]);
     await tester.pumpWidget(_wrap(seed: seed, repo: repo));
     await tester.pump();
     await tester.pump();
 
-    await tester.tap(find.text('Öğretmene Gönder'));
-    await tester.pump(); // sending
-    await tester.pumpAndSettle(); // share resolves + toast
-
-    expect(repo.shareCount, 1);
-    expect(find.text('Öğretmene Gönderildi'), findsOneWidget);
-    expect(find.text('Öğretmene Gönder'), findsNothing);
-
-    // Tek-yön kilit: tekrar dokunma yeni istek üretmez.
-    await tester.tap(find.text('Öğretmene Gönderildi'));
-    await tester.pump();
-    expect(repo.shareCount, 1);
+    // Ekranda elle paylaşım yok → repo.share çağrılmamalı.
+    expect(repo.shareCount, 0);
+    expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
   });
 
-  testWidgets('zaten paylaşılmış sonuç doğrudan "Gönderildi" render edilir',
+  testWidgets('geçmişten (seed yok) yüklenince de paylaşıldı notu görünür',
       (tester) async {
     _tallSurface(tester);
-    final seed = sampleResult(id: 'r6', sharedWithTeacher: true);
-    await tester.pumpWidget(
-      _wrap(seed: seed, repo: FakeResultsRepository()),
+    final stored = sampleResult(id: 'r6', sharedWithTeacher: true);
+    final repo = FakeResultsRepository(mine: [stored]);
+    // seedResult vermeden, yalnız resultId ile aç → load() GET /results/me.
+    final router = GoRouter(
+      initialLocation: '/report',
+      routes: [
+        GoRoute(
+          path: '/report',
+          builder: (_, __) => const GameResultReportScreen(resultId: 'r6'),
+        ),
+        GoRoute(path: '/student', builder: (_, __) => const Scaffold()),
+        GoRoute(path: '/student/results', builder: (_, __) => const Scaffold()),
+        GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
+      ],
     );
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [resultsRepositoryProvider.overrideWithValue(repo)],
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          routerConfig: router,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('tr'),
+        ),
+      ),
+    );
+    await tester.pump(); // load (post-frame)
+    await tester.pumpAndSettle();
 
-    expect(find.text('Öğretmene Gönderildi'), findsOneWidget);
+    expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
+    expect(find.text('Öğretmene Gönder'), findsNothing);
+    expect(find.text('Tekrar Oyna'), findsNothing);
   });
 }
