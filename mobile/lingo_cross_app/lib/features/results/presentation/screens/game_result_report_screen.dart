@@ -110,9 +110,10 @@ class _GameResultReportScreenState
     context.go(AppRoutes.student);
   }
 
-  /// "Tekrar Oyna" — aynı ders için yeni oturum (oyun launcher'ı yeniden).
-  void _playAgain(String lessonId) {
-    context.go(AppRoutes.studentGame(lessonId));
+  /// "Tekrar Oyna" — aynı oyun için yeni oturum (oyun launcher'ı yeniden).
+  /// Route gameId bekler; lessonId değil (aksi halde StartSession 404 döner).
+  void _playAgain(String gameId) {
+    context.go(AppRoutes.studentGame(gameId));
   }
 
   @override
@@ -171,7 +172,7 @@ class _GameResultReportScreenState
                               ).notifier,
                             )
                             .share(),
-                onPlayAgain: () => _playAgain(result.lessonId),
+                onPlayAgain: () => _playAgain(result.gameId),
               ),
         ),
       ),

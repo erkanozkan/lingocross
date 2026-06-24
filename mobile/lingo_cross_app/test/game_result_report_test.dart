@@ -28,8 +28,9 @@ Widget _wrap({
       GoRoute(path: '/student', builder: (_, __) => const Scaffold()),
       GoRoute(path: '/student/results', builder: (_, __) => const Scaffold()),
       GoRoute(
-          path: '/student/games/:lessonId',
-          builder: (_, __) => const Scaffold(body: Text('OYUN'))),
+          path: '/student/games/:gameId',
+          builder: (_, state) =>
+              Scaffold(body: Text('OYUN ${state.pathParameters['gameId']}'))),
       GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
     ],
   );
@@ -83,6 +84,25 @@ void main() {
     expect(find.text('17 / 20'), findsOneWidget); // bulunan kelime
     expect(find.text('Öğretmene Gönder'), findsOneWidget);
     expect(find.text('Tekrar Oyna'), findsOneWidget);
+  });
+
+  testWidgets('"Tekrar Oyna" → launcher\'a gameId ile gider (lessonId değil)',
+      (tester) async {
+    _tallSurface(tester);
+    // gameId=g1, lessonId=l1 (ayrı). Route gameId beklediği için g1 ile
+    // gidilmeli; lessonId geçilirse StartSession 404 döner (regresyon).
+    final seed = sampleResult(lessonId: 'l1');
+    await tester.pumpWidget(
+      _wrap(seed: seed, repo: FakeResultsRepository()),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    await tester.tap(find.text('Tekrar Oyna'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('OYUN g1'), findsOneWidget);
+    expect(find.text('OYUN l1'), findsNothing);
   });
 
   testWidgets('paylaş → "Öğretmene Gönderildi" (tek-yön kilit) + share çağrısı',
