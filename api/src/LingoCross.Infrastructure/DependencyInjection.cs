@@ -17,9 +17,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("Default")
+        var connectionString = ResolveConnectionString(configuration)
             ?? throw new InvalidOperationException(
-                "ConnectionStrings:Default tanımlı değil. Railway'de ConnectionStrings__Default ortam değişkenini ayarlayın.");
+                "Veritabanı bağlantısı tanımlı değil. ConnectionStrings__Default (Npgsql) veya DATABASE_URL (postgres://) ayarlayın.");
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql =>
@@ -35,5 +35,41 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, LoggingEmailSender>();
 
         return services;
+    }
+
+    /// <summary>
+    /// Bağlantı dizesini çözer: önce ConnectionStrings:Default (Npgsql key-value),
+    /// yoksa Railway/Heroku tarzı DATABASE_URL (postgres://user:pass@host:port/db)
+    /// Npgsql formatına çevrilir. İkisi de yoksa null.
+    /// </summary>
+    public static string? ResolveConnectionString(IConfiguration configuration)
+    {
+        var fromConfig = configuration.GetConnectionString("Default");
+        if (!string.IsNullOrWhiteSpace(fromConfig))
+        {
+            return fromConfig;
+        }
+
+        var url = configuration["DATABASE_URL"];
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return null;
+        }
+
+        return ConvertDatabaseUrl(url);
+    }
+
+    /// <summary>postgres://user:pass@host:port/db[?params] → Npgsql key-value.</summary>
+    public static string ConvertDatabaseUrl(string databaseUrl)
+    {
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':', 2);
+        var username = Uri.UnescapeDataString(userInfo[0]);
+        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : string.Empty;
+        var database = uri.AbsolutePath.TrimStart('/');
+        var port = uri.Port > 0 ? uri.Port : 5432;
+
+        return $"Host={uri.Host};Port={port};Database={database};Username={username};" +
+               $"Password={password};SSL Mode=Require;Trust Server Certificate=true";
     }
 }
