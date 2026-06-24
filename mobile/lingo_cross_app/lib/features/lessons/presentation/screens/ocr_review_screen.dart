@@ -115,6 +115,15 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
     });
   }
 
+  void _swapRow(_ReviewRow row) {
+    final term = row.termController.text;
+    final meaning = row.meaningController.text;
+    setState(() {
+      row.termController.text = meaning;
+      row.meaningController.text = term;
+    });
+  }
+
   void _addSynonym(_ReviewRow row) {
     final raw = row.synonymController.text.trim();
     if (raw.isEmpty) return;
@@ -275,6 +284,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
               onChanged: () => setState(() {}),
               onToggle: () =>
                   setState(() => _rows[i].included = !_rows[i].included),
+              onSwap: () => _swapRow(_rows[i]),
               onRemove: () => _removeRow(i),
               onAddSynonym: () => _addSynonym(_rows[i]),
               onRemoveSynonym: (s) =>
@@ -359,6 +369,7 @@ class _CandidateCard extends StatelessWidget {
     required this.highlightInvalid,
     required this.onChanged,
     required this.onToggle,
+    required this.onSwap,
     required this.onRemove,
     required this.onAddSynonym,
     required this.onRemoveSynonym,
@@ -371,6 +382,7 @@ class _CandidateCard extends StatelessWidget {
   final bool highlightInvalid;
   final VoidCallback onChanged;
   final VoidCallback onToggle;
+  final VoidCallback onSwap;
   final VoidCallback onRemove;
   final VoidCallback onAddSynonym;
   final ValueChanged<String> onRemoveSynonym;
@@ -417,6 +429,17 @@ class _CandidateCard extends StatelessWidget {
                     labelText: l10n.ocrReviewTermLabel(sourceLangLabel),
                     hintText: l10n.ocrReviewTermPlaceholder,
                   ),
+                ),
+              ),
+              Semantics(
+                button: true,
+                label: l10n.ocrReviewSwap,
+                child: IconButton(
+                  constraints:
+                      const BoxConstraints(minWidth: 48, minHeight: 48),
+                  tooltip: l10n.ocrReviewSwap,
+                  onPressed: enabled ? onSwap : null,
+                  icon: const Icon(Icons.swap_horiz, color: AppColors.primary),
                 ),
               ),
               Semantics(

@@ -874,6 +874,9 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get ocrReviewSwap => 'Terim ve karşılığı yer değiştir';
+
+  @override
   String get ocrReviewAddRow => 'Satır Ekle';
 
   @override
