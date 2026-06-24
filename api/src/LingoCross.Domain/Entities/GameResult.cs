@@ -31,4 +31,9 @@ public class GameResult : Entity
 
     /// <summary>Paylaşıldıysa paylaşım zamanı, aksi halde null.</summary>
     public DateTime? SharedAt { get; set; }
+
+    /// <summary>
+    /// Sonucun kelime-bazlı kırılımı (F7.5). İstemci gönderirse doldurulur; eski sonuçlarda boş olur.
+    /// </summary>
+    public ICollection<GameResultItem> Items { get; set; } = new List<GameResultItem>();
 }

@@ -119,6 +119,7 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
               durationMs: _durationMs,
               totalItems: _engine.totalCount,
               correctItems: _correctItems,
+              items: _engine.resultItems(),
             );
     if (!mounted) return;
     if (result == null) {

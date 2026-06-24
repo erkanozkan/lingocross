@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -57,22 +58,37 @@ class StudentReportScreen extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
-          onRefresh: () => ref
-              .read(studentResultsNotifierProvider(studentId).notifier)
-              .refresh(),
+          onRefresh:
+              () =>
+                  ref
+                      .read(studentResultsNotifierProvider(studentId).notifier)
+                      .refresh(),
           child: resultsAsync.when(
             loading: () => const _ReportLoading(),
-            error: (error, _) => _ReportStateScroll(
-              child: _ReportError(
-                message: trackingFailureMessage(error, l10n),
-                onRetry: () => ref
-                    .read(studentResultsNotifierProvider(studentId).notifier)
-                    .refresh(),
-              ),
-            ),
-            data: (results) => results.isEmpty
-                ? _ReportStateScroll(child: const _ReportEmpty())
-                : _ReportList(studentName: studentName, results: results),
+            error:
+                (error, _) => _ReportStateScroll(
+                  child: _ReportError(
+                    message: trackingFailureMessage(error, l10n),
+                    onRetry:
+                        () =>
+                            ref
+                                .read(
+                                  studentResultsNotifierProvider(
+                                    studentId,
+                                  ).notifier,
+                                )
+                                .refresh(),
+                  ),
+                ),
+            data:
+                (results) =>
+                    results.isEmpty
+                        ? _ReportStateScroll(child: const _ReportEmpty())
+                        : _ReportList(
+                          studentId: studentId,
+                          studentName: studentName,
+                          results: results,
+                        ),
           ),
         ),
       ),
@@ -81,8 +97,13 @@ class StudentReportScreen extends ConsumerWidget {
 }
 
 class _ReportList extends StatelessWidget {
-  const _ReportList({required this.studentName, required this.results});
+  const _ReportList({
+    required this.studentId,
+    required this.studentName,
+    required this.results,
+  });
 
+  final String studentId;
   final String studentName;
   final List<SharedResultDto> results;
 
@@ -90,10 +111,11 @@ class _ReportList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final total = results.length;
-    final avg = total == 0
-        ? 0
-        : (results.fold<int>(0, (s, r) => s + r.accuracyPercent) / total)
-            .round();
+    final avg =
+        total == 0
+            ? 0
+            : (results.fold<int>(0, (s, r) => s + r.accuracyPercent) / total)
+                .round();
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -137,7 +159,7 @@ class _ReportList extends StatelessWidget {
         Text(l10n.trackingDetailResultsTitle, style: AppTypography.headlineMd),
         const SizedBox(height: AppSpacing.sm),
         for (final r in results) ...[
-          _ResultCard(result: r),
+          _ResultCard(studentId: studentId, result: r),
           const SizedBox(height: AppSpacing.sm),
         ],
       ],
@@ -188,9 +210,12 @@ class _SummaryCard extends StatelessWidget {
 }
 
 /// Sonuç kartı — ders adı + oyun türü + meta (süre, doğru/toplam, tarih) + skor%.
+///
+/// F7.5: tıklanınca o sonucun kelime-bazlı "Sonuç Detayı" ekranına gider.
 class _ResultCard extends StatelessWidget {
-  const _ResultCard({required this.result});
+  const _ResultCard({required this.studentId, required this.result});
 
+  final String studentId;
   final SharedResultDto result;
 
   @override
@@ -199,6 +224,7 @@ class _ResultCard extends StatelessWidget {
     final dateLabel = formatShortDate(result.createdAt);
 
     return Semantics(
+      button: true,
       label: l10n.trackingResultA11y(
         result.lessonTitle,
         result.accuracyPercent,
@@ -207,71 +233,84 @@ class _ResultCard extends StatelessWidget {
         result.totalItems,
         dateLabel,
       ),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 72),
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLowest,
+      child: Material(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: InkWell(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.outlineVariant),
-          boxShadow: AppShadows.level2,
-        ),
-        child: ExcludeSemantics(
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      result.lessonTitle,
-                      style: AppTypography.headlineMd,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppSpacing.base),
-                    Text(
-                      _gameTypeLabel(l10n, result.gameType),
-                      style: AppTypography.labelSm.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: AppSpacing.sm,
+          onTap:
+              () => context.push(
+                AppRoutes.teacherStudentResultDetail(
+                  studentId,
+                  result.resultId,
+                ),
+              ),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 72),
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.outlineVariant),
+              boxShadow: AppShadows.level2,
+            ),
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _Meta(
-                          icon: Icons.schedule,
-                          text: result.formattedDuration,
-                        ),
-                        _Meta(
-                          icon: Icons.menu_book,
-                          text: l10n.gameResultWordsValue(
-                            result.correctItems,
-                            result.totalItems,
-                          ),
-                        ),
                         Text(
-                          dateLabel,
+                          result.lessonTitle,
+                          style: AppTypography.headlineMd,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppSpacing.base),
+                        Text(
+                          _gameTypeLabel(l10n, result.gameType),
                           style: AppTypography.labelSm.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: AppColors.primary,
                           ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: AppSpacing.sm,
+                          children: [
+                            _Meta(
+                              icon: Icons.schedule,
+                              text: result.formattedDuration,
+                            ),
+                            _Meta(
+                              icon: Icons.menu_book,
+                              text: l10n.gameResultWordsValue(
+                                result.correctItems,
+                                result.totalItems,
+                              ),
+                            ),
+                            Text(
+                              dateLabel,
+                              style: AppTypography.labelSm.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(
+                    l10n.gameResultAccuracyValue(result.accuracyPercent),
+                    style: AppTypography.headlineMd.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                l10n.gameResultAccuracyValue(result.accuracyPercent),
-                style: AppTypography.headlineMd.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -279,10 +318,10 @@ class _ResultCard extends StatelessWidget {
   }
 
   String _gameTypeLabel(AppLocalizations l10n, GameType type) => switch (type) {
-        GameType.wordMatching => l10n.gameTypeWordMatching,
-        GameType.crossword => l10n.gameTypeCrossword,
-        GameType.questionSet => l10n.gameTypeQuestionSet,
-      };
+    GameType.wordMatching => l10n.gameTypeWordMatching,
+    GameType.crossword => l10n.gameTypeCrossword,
+    GameType.questionSet => l10n.gameTypeQuestionSet,
+  };
 }
 
 class _Meta extends StatelessWidget {
@@ -344,16 +383,17 @@ class _ReportStateScroll extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.marginMobile),
-            child: Center(child: child),
+      builder:
+          (context, constraints) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                child: Center(child: child),
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 }
@@ -375,11 +415,7 @@ class _ReportEmpty extends StatelessWidget {
             color: AppColors.primary.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.inbox,
-            size: 36,
-            color: AppColors.primary,
-          ),
+          child: const Icon(Icons.inbox, size: 36, color: AppColors.primary),
         ),
         const SizedBox(height: AppSpacing.md),
         Text(

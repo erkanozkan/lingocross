@@ -65,3 +65,72 @@ class SharedResultDto with _$SharedResultDto {
     return '$m:$s';
   }
 }
+
+/// "Sonuç Detayı" ekranındaki tek bir kelimenin dökümü (F7.5) — API `ResultItemDto`.
+@freezed
+class ResultItemDto with _$ResultItemDto {
+  const factory ResultItemDto({
+    required int ordinal,
+    required String term,
+    required String expectedAnswer,
+    String? studentAnswer,
+    required bool isCorrect,
+  }) = _ResultItemDto;
+
+  factory ResultItemDto.fromJson(Map<String, dynamic> json) =>
+      _$ResultItemDtoFromJson(json);
+}
+
+/// Bir öğrencinin tek bir sonucunun, kelime-bazlı dökümle birlikte tam görünümü
+/// (F7.5) — API `StudentResultDetailDto`.
+///
+/// `GET /teachers/me/students/{studentId}/results/{resultId}` yanıtı. [items]
+/// boşsa (eski sonuç) ekran "kelime detayı yok" boş durumunu gösterir.
+@freezed
+class StudentResultDetailDto with _$StudentResultDetailDto {
+  const StudentResultDetailDto._();
+
+  const factory StudentResultDetailDto({
+    required String resultId,
+    required String studentDisplayName,
+    required String lessonTitle,
+    @GameTypeConverter() required GameType gameType,
+    required int score,
+    required int durationMs,
+    required int totalItems,
+    required int correctItems,
+    DateTime? sharedAt,
+    required DateTime createdAt,
+    @Default(<ResultItemDto>[]) List<ResultItemDto> items,
+  }) = _StudentResultDetailDto;
+
+  factory StudentResultDetailDto.fromJson(Map<String, dynamic> json) =>
+      _$StudentResultDetailDtoFromJson(json);
+
+  /// Doğruluk yüzdesi (0–100). API skoru doğruluk yüzdesidir; aralığa sıkıştırılır.
+  int get accuracyPercent => score.clamp(0, 100);
+
+  /// Geçen süre `MM:SS` biçiminde.
+  String get formattedDuration {
+    final totalSeconds = (durationMs / 1000).round();
+    final m = (totalSeconds ~/ 60).toString().padLeft(2, '0');
+    final s = (totalSeconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  /// Kelime-bazlı döküm var mı (yoksa boş durum gösterilir).
+  bool get hasItems => items.isNotEmpty;
+
+  /// Doğru cevaplanan item sayısı (filtre rozeti için).
+  int get correctItemsCount => items.where((i) => i.isCorrect).length;
+
+  /// Yanlış cevaplanan item sayısı (filtre rozeti için).
+  int get wrongItemsCount => items.where((i) => !i.isCorrect).length;
+
+  /// Kelime başına ortalama saniye (Bölüm Analizi — sınıf ortalaması YOK).
+  /// [totalItems] 0 ise null (bölüm gizlenir).
+  double? get secondsPerWord {
+    if (totalItems <= 0) return null;
+    return durationMs / 1000 / totalItems;
+  }
+}

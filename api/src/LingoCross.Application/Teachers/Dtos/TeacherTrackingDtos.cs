@@ -41,3 +41,30 @@ public record SharedResultDto(
     int CorrectItems,
     DateTime? SharedAt,
     DateTime CreatedAt);
+
+/// <summary>
+/// Öğretmenin, bir öğrencinin paylaştığı tek bir sonucun kelime-bazlı detayı (F7.5). Yalnızca
+/// öğrencinin bu öğretmenle paylaştığı (shared_with_teacher=true) sonuçlar bu DTO'ya dönüşür;
+/// aksi 404. <see cref="Items"/> sonucun kelime kırılımıdır (Ordinal sırasında); eski sonuçlarda
+/// boş liste döner.
+/// </summary>
+public record StudentResultDetailDto(
+    Guid ResultId,
+    string StudentDisplayName,
+    string LessonTitle,
+    GameType GameType,
+    int Score,
+    int DurationMs,
+    int TotalItems,
+    int CorrectItems,
+    DateTime? SharedAt,
+    DateTime CreatedAt,
+    IReadOnlyList<ResultItemDto> Items);
+
+/// <summary>Sonuç detayında tek bir kelime-bazlı kalem (F7.5).</summary>
+public record ResultItemDto(
+    int Ordinal,
+    string Term,
+    string ExpectedAnswer,
+    string? StudentAnswer,
+    bool IsCorrect);

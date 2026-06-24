@@ -23,6 +23,7 @@ class SubmitResultController extends _$SubmitResultController {
     required int durationMs,
     required int totalItems,
     required int correctItems,
+    List<SubmitResultItem>? items,
   }) async {
     state = const AsyncValue.loading();
     final result = await AsyncValue.guard(() async {
@@ -33,6 +34,7 @@ class SubmitResultController extends _$SubmitResultController {
           durationMs: durationMs,
           totalItems: totalItems,
           correctItems: correctItems,
+          items: (items != null && items.isNotEmpty) ? items : null,
         ),
       );
     });

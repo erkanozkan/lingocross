@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../../results/data/dtos/result_dtos.dart';
 import '../data/dtos/game_dtos.dart';
 
 /// Bir terim kartının (sol sütun) durumu. Serbest oyunda doğruluk gösterilmez,
@@ -240,4 +241,45 @@ class WordMatchingEngine {
 
   /// Bir karşılık kartı şu an bir terime bağlı mı (matched görünür).
   bool isTranslationMatched(int index) => _pairings.values.contains(index);
+
+  /// "Bitir" anında her TERİM için kelime-bazlı sonuç dökümü (F7.5).
+  ///
+  /// - [SubmitResultItem.ordinal] = terimin sol sütundaki sırası (0-tabanlı).
+  /// - [SubmitResultItem.term] = kaynak (İngilizce) terim.
+  /// - [SubmitResultItem.expectedAnswer] = o terimin doğru Türkçe karşılığı.
+  /// - [SubmitResultItem.studentAnswer] = öğrencinin o terime eşleştirdiği
+  ///   karşılığın metni; eşleştirme yapmadıysa null.
+  /// - [SubmitResultItem.isCorrect] = öğrencinin eşleştirdiği karşılık doğru mu.
+  ///
+  /// Mevcut skorlama mantığı korunur; bu yalnız bitişte çağrılan türetimdir.
+  List<SubmitResultItem> resultItems() {
+    final items = <SubmitResultItem>[];
+    for (var i = 0; i < terms.length; i++) {
+      final term = terms[i];
+      // Terimin doğru karşılığı: matchWordId == term.wordId olan çeviri.
+      final expected = translations
+          .firstWhere(
+            (t) => t.matchWordId == term.wordId,
+            orElse: () => const TranslationCard(
+              text: '',
+              matchWordId: null,
+              status: TranslationCardStatus.neutral,
+            ),
+          )
+          .text;
+      final matchedIndex = _pairings[term.wordId];
+      final studentAnswer =
+          matchedIndex == null ? null : translations[matchedIndex].text;
+      final isCorrect =
+          matchedIndex != null && translations[matchedIndex].matchWordId == term.wordId;
+      items.add(SubmitResultItem(
+        ordinal: i,
+        term: term.term,
+        expectedAnswer: expected,
+        studentAnswer: studentAnswer,
+        isCorrect: isCorrect,
+      ));
+    }
+    return items;
+  }
 }

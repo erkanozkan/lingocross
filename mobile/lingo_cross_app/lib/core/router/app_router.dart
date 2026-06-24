@@ -35,6 +35,7 @@ import '../../features/results/data/dtos/result_dtos.dart';
 import '../../features/results/presentation/screens/game_result_report_screen.dart';
 import '../../features/results/presentation/screens/student_results_history_screen.dart';
 import '../../features/tracking/presentation/screens/student_report_screen.dart';
+import '../../features/tracking/presentation/screens/student_result_detail_screen.dart';
 
 /// Uygulama route adları.
 abstract final class AppRoutes {
@@ -103,6 +104,11 @@ abstract final class AppRoutes {
   /// `extra` (String) ile taşınır; doğrudan derin-bağlantıda boş başlık olur.
   static String teacherStudentResults(String studentId) =>
       '/teacher/students/$studentId/results';
+
+  /// Öğretmen takip: bir öğrencinin tek bir sonucunun kelime-bazlı detayı
+  /// (F7.5 — "Sonuç Detayı"). Öğrenci adı + oyun türü `extra` ile taşınır.
+  static String teacherStudentResultDetail(String studentId, String resultId) =>
+      '/teacher/students/$studentId/results/$resultId';
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
   static String lessonWords(String id) => '/teacher/lessons/$id/words';
@@ -278,6 +284,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => StudentReportScreen(
           studentId: state.pathParameters['id']!,
           studentName: state.extra is String ? state.extra as String : '',
+        ),
+      ),
+      // Sonuç Detayı (F7.5) — bir öğrencinin tek sonucunun kelime-bazlı dökümü.
+      GoRoute(
+        path: '/teacher/students/:id/results/:resultId',
+        builder: (context, state) => StudentResultDetailScreen(
+          studentId: state.pathParameters['id']!,
+          resultId: state.pathParameters['resultId']!,
         ),
       ),
       // Derslerim (F4.3) — Ana Sayfa/Profil'den erişilir (Sınıflar sekmesi

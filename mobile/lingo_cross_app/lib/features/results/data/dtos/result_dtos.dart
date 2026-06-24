@@ -17,10 +17,37 @@ class SubmitResultRequest with _$SubmitResultRequest {
     required int durationMs,
     required int totalItems,
     required int correctItems,
+
+    /// Kelime-bazlı döküm (F7.5). Opsiyonel; doluysa öğretmen "Sonuç Detayı"
+    /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
+    /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
+    /// null iken JSON'a yazılmaz (gövde temiz kalır).
+    // ignore: invalid_annotation_target
+    @JsonKey(includeIfNull: false) List<SubmitResultItem>? items,
   }) = _SubmitResultRequest;
 
   factory SubmitResultRequest.fromJson(Map<String, dynamic> json) =>
       _$SubmitResultRequestFromJson(json);
+}
+
+/// Sonuç gönderiminde tek bir kelimenin sonucu (F7.5).
+///
+/// [ordinal] terim sırası (0-tabanlı), [term] kaynak (İngilizce) kelime ya da
+/// bulmaca ipucu/cevap gösterimi, [expectedAnswer] doğru karşılık,
+/// [studentAnswer] öğrencinin verdiği cevap (boş bıraktıysa null), [isCorrect]
+/// doğru cevaplandı mı. JSON camelCase.
+@freezed
+class SubmitResultItem with _$SubmitResultItem {
+  const factory SubmitResultItem({
+    required int ordinal,
+    required String term,
+    required String expectedAnswer,
+    String? studentAnswer,
+    required bool isCorrect,
+  }) = _SubmitResultItem;
+
+  factory SubmitResultItem.fromJson(Map<String, dynamic> json) =>
+      _$SubmitResultItemFromJson(json);
 }
 
 /// Bir oyun sonucunun tam görünümü (oturum + ders/oyun özetiyle) — API

@@ -53,9 +53,15 @@ public class ResultService : IResultService
     {
         var studentId = RequireStudent();
 
+        // F7.5: kelime-bazlı kırılım gelirse toplam/doğru sayıları item listesinden türetilir;
+        // aksi halde istemciden gelen sayılar kullanılır (eski istemci uyumu).
+        var hasItems = request.Items is { Count: > 0 };
+        var totalItems = hasItems ? request.Items!.Count : request.TotalItems;
+        var correctItems = hasItems ? request.Items!.Count(i => i.IsCorrect) : request.CorrectItems;
+
         if (request.DurationMs < 0 || request.DurationMs > MaxDurationMs
-            || request.TotalItems < 0 || request.CorrectItems < 0
-            || request.CorrectItems > request.TotalItems)
+            || totalItems < 0 || correctItems < 0
+            || correctItems > totalItems)
         {
             throw AppException.BadRequest("Geçersiz sonuç değerleri.");
         }
@@ -85,11 +91,27 @@ public class ResultService : IResultService
         {
             SessionId = session.Id,
             DurationMs = request.DurationMs,
-            TotalItems = request.TotalItems,
-            CorrectItems = request.CorrectItems,
-            Score = CalculateScore(request.TotalItems, request.CorrectItems),
+            TotalItems = totalItems,
+            CorrectItems = correctItems,
+            Score = CalculateScore(totalItems, correctItems),
             SharedWithTeacher = false,
         };
+
+        if (hasItems)
+        {
+            foreach (var item in request.Items!)
+            {
+                result.Items.Add(new GameResultItem
+                {
+                    Ordinal = item.Ordinal,
+                    Term = item.Term,
+                    ExpectedAnswer = item.ExpectedAnswer,
+                    StudentAnswer = item.StudentAnswer,
+                    IsCorrect = item.IsCorrect,
+                });
+            }
+        }
+
         _db.GameResults.Add(result);
 
         session.Status = GameSessionStatus.Completed;

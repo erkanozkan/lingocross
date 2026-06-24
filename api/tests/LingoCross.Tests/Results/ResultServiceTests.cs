@@ -192,6 +192,56 @@ public class ResultServiceTests
         Assert.Equal(0, await db.GameResults.CountAsync());
     }
 
+    [Fact]
+    public async Task Submit_WithItems_PersistsBreakdown_AndDerivesTotals()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // İstemci totals=99/99 yollasa da item listesinden türetilmeli: 3 kalem, 2 doğru.
+        var items = new List<SubmitResultItem>
+        {
+            new(0, "cat", "kedi", "kedi", true),
+            new(1, "dog", "köpek", "balık", false),
+            new(2, "bird", "kuş", "kuş", true),
+        };
+        var result = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(10_000, 99, 99, items));
+
+        Assert.Equal(3, result.TotalItems);     // items.Count
+        Assert.Equal(2, result.CorrectItems);    // items.Count(IsCorrect)
+        Assert.Equal(67, result.Score);          // 2/3 → 66.66 → 67
+
+        var saved = await db.GameResultItems
+            .Where(i => i.ResultId == result.Id)
+            .OrderBy(i => i.Ordinal)
+            .ToListAsync();
+        Assert.Equal(3, saved.Count);
+        Assert.Equal("dog", saved[1].Term);
+        Assert.Equal("köpek", saved[1].ExpectedAnswer);
+        Assert.Equal("balık", saved[1].StudentAnswer);
+        Assert.False(saved[1].IsCorrect);
+    }
+
+    [Fact]
+    public async Task Submit_WithoutItems_KeepsClientTotals_AndStoresNoBreakdown()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // Items null (eski istemci): istemciden gelen sayılar korunur.
+        var result = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(5000, 8, 6));
+
+        Assert.Equal(8, result.TotalItems);
+        Assert.Equal(6, result.CorrectItems);
+        Assert.Equal(0, await db.GameResultItems.CountAsync());
+    }
+
     // ---- Share ----
 
     [Fact]

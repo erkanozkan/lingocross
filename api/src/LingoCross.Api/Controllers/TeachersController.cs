@@ -63,6 +63,19 @@ public class TeachersController : ControllerBase
     }
 
     /// <summary>
+    /// Belirtilen öğrencinin, bu öğretmenle paylaştığı tek bir sonucunun kelime-bazlı detayını
+    /// döndürür (hangi kelime doğru/yanlış + öğrencinin cevabı). Öğrenci Active eşleşmeli değilse,
+    /// sonuç o öğrenciye ait değilse veya paylaşılmamışsa 404.
+    /// </summary>
+    [HttpGet("me/students/{studentId:guid}/results/{resultId:guid}")]
+    public async Task<ActionResult<StudentResultDetailDto>> GetStudentResultDetail(
+        Guid studentId, Guid resultId, CancellationToken ct)
+    {
+        var detail = await _trackingService.GetStudentResultDetailAsync(studentId, resultId, ct);
+        return Ok(detail);
+    }
+
+    /// <summary>
     /// Öğretmen profili istatistikleri: arşivlenmemiş sınıf sayısı, distinct Active öğrenci sayısı
     /// ve son 7 günün haftalık ödev beklenen/tamamlanan sayıları (+ tamamlanma oranı).
     /// </summary>

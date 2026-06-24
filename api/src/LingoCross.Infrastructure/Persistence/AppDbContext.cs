@@ -38,6 +38,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<GameResult> GameResults => Set<GameResult>();
 
+    public DbSet<GameResultItem> GameResultItems => Set<GameResultItem>();
+
     public DbSet<Class> Classes => Set<Class>();
 
     public DbSet<ClassMember> ClassMembers => Set<ClassMember>();

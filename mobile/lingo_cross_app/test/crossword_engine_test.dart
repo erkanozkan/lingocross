@@ -174,4 +174,37 @@ void main() {
       expect(e.correctCount, 0);
     });
   });
+
+  group('resultItems (F7.5) — kelime-bazlı döküm', () {
+    test('term=ipucu, doğru/yanlış/boş türetilir', () {
+      // across CAT doğru doldurulur; down COW boş bırakılır (yalnız C ortak).
+      var e = CrosswordEngine.fromContent(_content).focusEntry(0); // across
+      e = e.enterLetter('C').enterLetter('A').enterLetter('T');
+
+      final items = e.resultItems();
+      expect(items.length, 2);
+
+      final across = items[0];
+      expect(across.ordinal, 0);
+      expect(across.term, 'kedi'); // ipucu
+      expect(across.expectedAnswer, 'CAT');
+      expect(across.studentAnswer, 'CAT');
+      expect(across.isCorrect, isTrue);
+
+      final down = items[1];
+      expect(down.ordinal, 1);
+      expect(down.term, 'inek');
+      expect(down.expectedAnswer, 'COW');
+      // down sadece kesişen 'C' dolu; studentAnswer = 'C' (boş değil) ama yanlış.
+      expect(down.studentAnswer, 'C');
+      expect(down.isCorrect, isFalse);
+    });
+
+    test('hiç harf girilmemiş kelimede studentAnswer null', () {
+      final e = CrosswordEngine.fromContent(_content);
+      final items = e.resultItems();
+      expect(items.every((i) => i.studentAnswer == null), isTrue);
+      expect(items.every((i) => i.isCorrect == false), isTrue);
+    });
+  });
 }

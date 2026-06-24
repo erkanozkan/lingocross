@@ -24,6 +24,14 @@ public interface ITeacherTrackingService
     Task<IReadOnlyList<SharedResultDto>> GetStudentSharedResultsAsync(Guid studentId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Verilen öğrencinin, geçerli öğretmenle <b>paylaştığı</b> tek bir sonucunun kelime-bazlı
+    /// detayını döndürür (F7.5). Öğrenci bu öğretmene Active eşleşmeli olmalı; sonuç o öğrenciye ait
+    /// ve paylaşılmış (shared_with_teacher=true) olmalıdır; aksi 404. Kalemler Ordinal sırasında;
+    /// eski sonuçlarda boş liste.
+    /// </summary>
+    Task<StudentResultDetailDto> GetStudentResultDetailAsync(Guid studentId, Guid resultId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Geçerli öğretmenin profil istatistikleri (F7): arşivlenmemiş sınıf sayısı, sınıflarındaki
     /// distinct Active öğrenci sayısı ve son 7 günün haftalık ödev beklenen/tamamlanan sayıları
     /// (+ tamamlanma oranı). Sahiplik bu katmanda uygulanır; yalnız kendi verisi.

@@ -2961,6 +2961,156 @@ abstract class AppLocalizations {
   /// **'{lesson}, doğruluk yüzde {percent}, süre {time}, {found} / {total}, {date}'**
   String trackingResultA11y(String lesson, int percent, String time, int found, int total, String date);
 
+  /// No description provided for @resultDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç Detayı'**
+  String get resultDetailTitle;
+
+  /// No description provided for @resultDetailDateTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} • {time}'**
+  String resultDetailDateTime(String date, String time);
+
+  /// No description provided for @resultDetailMetricAccuracy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başarı'**
+  String get resultDetailMetricAccuracy;
+
+  /// No description provided for @resultDetailMetricCorrect.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğru'**
+  String get resultDetailMetricCorrect;
+
+  /// No description provided for @resultDetailMetricDuration.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süre'**
+  String get resultDetailMetricDuration;
+
+  /// No description provided for @resultDetailFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü ({count})'**
+  String resultDetailFilterAll(int count);
+
+  /// No description provided for @resultDetailFilterCorrect.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrular ({count})'**
+  String resultDetailFilterCorrect(int count);
+
+  /// No description provided for @resultDetailFilterWrong.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanlışlar ({count})'**
+  String resultDetailFilterWrong(int count);
+
+  /// No description provided for @resultDetailBadgeCorrect.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğru'**
+  String get resultDetailBadgeCorrect;
+
+  /// No description provided for @resultDetailBadgeWrong.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanlış'**
+  String get resultDetailBadgeWrong;
+
+  /// No description provided for @resultDetailCorrectAnswer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğru cevap: {answer}'**
+  String resultDetailCorrectAnswer(String answer);
+
+  /// No description provided for @resultDetailStudentAnswer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencinin cevabı: {answer}'**
+  String resultDetailStudentAnswer(String answer);
+
+  /// No description provided for @resultDetailStudentAnswerEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencinin cevabı: — (boş)'**
+  String get resultDetailStudentAnswerEmpty;
+
+  /// No description provided for @resultDetailAnalysisTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bölüm Analizi'**
+  String get resultDetailAnalysisTitle;
+
+  /// No description provided for @resultDetailSpeedScore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hız Skoru'**
+  String get resultDetailSpeedScore;
+
+  /// No description provided for @resultDetailSpeedGreat.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika!'**
+  String get resultDetailSpeedGreat;
+
+  /// No description provided for @resultDetailSpeedGood.
+  ///
+  /// In tr, this message translates to:
+  /// **'İyi'**
+  String get resultDetailSpeedGood;
+
+  /// No description provided for @resultDetailSpeedFair.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta'**
+  String get resultDetailSpeedFair;
+
+  /// No description provided for @resultDetailSpeedSlow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Acele etme'**
+  String get resultDetailSpeedSlow;
+
+  /// No description provided for @resultDetailSpeedDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime başına ortalama {seconds} sn.'**
+  String resultDetailSpeedDesc(String seconds);
+
+  /// No description provided for @resultDetailNoItemsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime detayı yok'**
+  String get resultDetailNoItemsTitle;
+
+  /// No description provided for @resultDetailNoItemsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu sonuç eski bir oynamadan geldiği için kelime bazlı döküm bulunmuyor.'**
+  String get resultDetailNoItemsDesc;
+
+  /// No description provided for @resultDetailErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç detayı yüklenemedi'**
+  String get resultDetailErrorTitle;
+
+  /// No description provided for @resultDetailItemCorrectA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{term}, karşılığı {answer}, doğru'**
+  String resultDetailItemCorrectA11y(String term, String answer);
+
+  /// No description provided for @resultDetailItemWrongA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{term}, doğru cevap {expected}, öğrencinin cevabı {given}, yanlış'**
+  String resultDetailItemWrongA11y(String term, String expected, String given);
+
   /// No description provided for @gameTypeWordMatching.
   ///
   /// In tr, this message translates to:

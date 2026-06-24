@@ -7,7 +7,7 @@ part of 'submit_result_controller.dart';
 // **************************************************************************
 
 String _$submitResultControllerHash() =>
-    r'37c8358f8f49596c31ee43feb76b319314ad52a5';
+    r'1bf6bef8fcde6bc2ee29ace20e327142f6970329';
 
 /// Oyun bitince sonuç gönderim akışı (öğrenci).
 ///
