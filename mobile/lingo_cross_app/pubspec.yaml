@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.1.0+16
+version: 1.1.0+17
 
 environment:
   sdk: ^3.7.0
@@ -75,6 +75,7 @@ dev_dependencies:
   freezed: ^2.5.7
   json_serializable: ^6.8.0
   flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
 
 # App ikonu üretimi: design/app_icon.svg → assets/icon/app_icon.png (1024², alfasız).
 # Yeniden üret: python3 design/render_icon.py && dart run flutter_launcher_icons
@@ -82,6 +83,15 @@ flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/icon/app_icon.png"
+
+# Açılış (splash) ekranı: mavi zemin + ortada şeffaf logo (çapraz balonlar).
+# Yeniden üret: python3 design/render_splash.py && dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#0058be"
+  image: assets/icon/splash_logo.png
+  ios: true
+  android: false
+  web: false
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
