@@ -2230,49 +2230,67 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallTitle => 'Premium';
 
   @override
-  String get paywallHeadline => 'Premium\'a Yükselt';
+  String get paywallHeadline => 'LingoCross Premium';
 
   @override
-  String get paywallBannerOcr => 'Kameradan tarama Premium özelliğidir.';
+  String get paywallSubtitle => 'Tüm özelliklerin kilidini aç';
 
   @override
-  String get paywallBannerClassLimit => 'Daha fazla sınıf oluşturmak Premium özelliğidir.';
+  String get paywallBannerOcr => 'AI ile kelime tarama Premium\'da';
 
   @override
-  String get paywallBannerLessonLimit => 'Daha fazla ders oluşturmak Premium özelliğidir.';
+  String get paywallBannerClassLimit => 'Sınırsız sınıf Premium\'da';
 
   @override
-  String get paywallBannerMultiTeacher => 'Birden fazla öğretmene katılmak Premium özelliğidir.';
+  String get paywallBannerLessonLimit => 'Sınırsız ders Premium\'da';
 
   @override
-  String get paywallBannerDefault => 'Bu özellik Premium ile kullanılabilir.';
+  String get paywallBannerMultiTeacher => 'Birden fazla öğretmen Premium\'da';
+
+  @override
+  String get paywallBannerDefault => 'Tüm özellikler Premium\'da';
 
   @override
   String get paywallBenefitUnlimitedClasses => 'Sınırsız sınıf ve ders';
 
   @override
-  String get paywallBenefitOcr => 'Kameradan kelime tarama (OCR)';
+  String get paywallBenefitOcr => 'AI ile kelime tarama';
 
   @override
   String get paywallBenefitMultiTeacher => 'Birden fazla öğretmene katılma';
 
   @override
+  String get paywallBenefitReports => 'Tüm raporlar ve istatistikler';
+
+  @override
   String get paywallPlanMonthlyTitle => 'Aylık';
+
+  @override
+  String get paywallPlanMonthlySubtitle => 'Her ay otomatik yenilenir';
+
+  @override
+  String get paywallPlanMonthlyPeriod => '/ay';
 
   @override
   String get paywallPlanAnnualTitle => 'Yıllık';
 
   @override
-  String get paywallPlanTrialTitle => 'Ücretsiz deneme';
+  String get paywallPlanAnnualSubtitle => 'Yıllık ödeme, karlı seçim';
 
   @override
-  String get paywallPlanPriceComingSoon => 'Yakında';
+  String get paywallPlanAnnualPeriod => '/yıl';
 
   @override
-  String get paywallPlanTrialSubtitle => 'Önce dene, sonra karar ver';
+  String get paywallPlanBestValue => 'En Avantajlı';
 
   @override
-  String get paywallCta => 'Yükselt';
+  String get paywallPlanPriceComingSoon => '—';
+
+  @override
+  String get paywallTrialNote => '7 gün ücretsiz dene, istediğin zaman iptal et.';
+
+  @override
+  String get paywallCta => 'Premium\'a Yükselt';
 
   @override
   String get paywallSkip => 'Şimdilik geç';

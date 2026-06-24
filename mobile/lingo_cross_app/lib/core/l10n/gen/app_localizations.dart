@@ -4254,37 +4254,43 @@ abstract class AppLocalizations {
   /// Paywall hero başlığı.
   ///
   /// In tr, this message translates to:
-  /// **'Premium\'a Yükselt'**
+  /// **'LingoCross Premium'**
   String get paywallHeadline;
+
+  /// Paywall hero alt başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm özelliklerin kilidini aç'**
+  String get paywallSubtitle;
 
   /// No description provided for @paywallBannerOcr.
   ///
   /// In tr, this message translates to:
-  /// **'Kameradan tarama Premium özelliğidir.'**
+  /// **'AI ile kelime tarama Premium\'da'**
   String get paywallBannerOcr;
 
   /// No description provided for @paywallBannerClassLimit.
   ///
   /// In tr, this message translates to:
-  /// **'Daha fazla sınıf oluşturmak Premium özelliğidir.'**
+  /// **'Sınırsız sınıf Premium\'da'**
   String get paywallBannerClassLimit;
 
   /// No description provided for @paywallBannerLessonLimit.
   ///
   /// In tr, this message translates to:
-  /// **'Daha fazla ders oluşturmak Premium özelliğidir.'**
+  /// **'Sınırsız ders Premium\'da'**
   String get paywallBannerLessonLimit;
 
   /// No description provided for @paywallBannerMultiTeacher.
   ///
   /// In tr, this message translates to:
-  /// **'Birden fazla öğretmene katılmak Premium özelliğidir.'**
+  /// **'Birden fazla öğretmen Premium\'da'**
   String get paywallBannerMultiTeacher;
 
   /// No description provided for @paywallBannerDefault.
   ///
   /// In tr, this message translates to:
-  /// **'Bu özellik Premium ile kullanılabilir.'**
+  /// **'Tüm özellikler Premium\'da'**
   String get paywallBannerDefault;
 
   /// No description provided for @paywallBenefitUnlimitedClasses.
@@ -4296,7 +4302,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywallBenefitOcr.
   ///
   /// In tr, this message translates to:
-  /// **'Kameradan kelime tarama (OCR)'**
+  /// **'AI ile kelime tarama'**
   String get paywallBenefitOcr;
 
   /// No description provided for @paywallBenefitMultiTeacher.
@@ -4305,11 +4311,29 @@ abstract class AppLocalizations {
   /// **'Birden fazla öğretmene katılma'**
   String get paywallBenefitMultiTeacher;
 
+  /// No description provided for @paywallBenefitReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm raporlar ve istatistikler'**
+  String get paywallBenefitReports;
+
   /// No description provided for @paywallPlanMonthlyTitle.
   ///
   /// In tr, this message translates to:
   /// **'Aylık'**
   String get paywallPlanMonthlyTitle;
+
+  /// No description provided for @paywallPlanMonthlySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her ay otomatik yenilenir'**
+  String get paywallPlanMonthlySubtitle;
+
+  /// No description provided for @paywallPlanMonthlyPeriod.
+  ///
+  /// In tr, this message translates to:
+  /// **'/ay'**
+  String get paywallPlanMonthlyPeriod;
 
   /// No description provided for @paywallPlanAnnualTitle.
   ///
@@ -4317,28 +4341,40 @@ abstract class AppLocalizations {
   /// **'Yıllık'**
   String get paywallPlanAnnualTitle;
 
-  /// No description provided for @paywallPlanTrialTitle.
+  /// No description provided for @paywallPlanAnnualSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Ücretsiz deneme'**
-  String get paywallPlanTrialTitle;
+  /// **'Yıllık ödeme, karlı seçim'**
+  String get paywallPlanAnnualSubtitle;
+
+  /// No description provided for @paywallPlanAnnualPeriod.
+  ///
+  /// In tr, this message translates to:
+  /// **'/yıl'**
+  String get paywallPlanAnnualPeriod;
+
+  /// Yıllık plan rozeti.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Avantajlı'**
+  String get paywallPlanBestValue;
 
   /// Fiyat yer tutucusu (henüz belirlenmedi).
   ///
   /// In tr, this message translates to:
-  /// **'Yakında'**
+  /// **'—'**
   String get paywallPlanPriceComingSoon;
 
-  /// No description provided for @paywallPlanTrialSubtitle.
+  /// Plan kartları altındaki deneme notu.
   ///
   /// In tr, this message translates to:
-  /// **'Önce dene, sonra karar ver'**
-  String get paywallPlanTrialSubtitle;
+  /// **'7 gün ücretsiz dene, istediğin zaman iptal et.'**
+  String get paywallTrialNote;
 
   /// Paywall ana aksiyon butonu.
   ///
   /// In tr, this message translates to:
-  /// **'Yükselt'**
+  /// **'Premium\'a Yükselt'**
   String get paywallCta;
 
   /// No description provided for @paywallSkip.

@@ -53,9 +53,19 @@ Widget _wrap(FakeSubscriptionRepository repo, {String? feature}) {
   );
 }
 
+/// Paywall içeriği uzun + sabit footer var; tüm kartlar (Yıllık/Aylık) test
+/// yüzeyinde aynı anda görünsün diye uzun bir görünüm boyutu kullanılır.
+void _useTallSurface(WidgetTester tester) {
+  tester.view.physicalSize = const Size(390 * 3, 1400 * 3);
+  tester.view.devicePixelRatio = 3.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
 void main() {
   testWidgets('Yükselt CTA → activate(period:2) çağrılır + başarıda pop',
       (tester) async {
+    _useTallSurface(tester);
     final repo = FakeSubscriptionRepository(initial: freeSubscription());
     await tester.pumpWidget(_wrap(repo, feature: 'ocr'));
     await tester.pumpAndSettle();
@@ -66,8 +76,15 @@ void main() {
 
     final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
 
-    // OCR banner'ı görünür.
+    // AI banner'ı görünür (feature=ocr → "AI ile kelime tarama Premium'da").
     expect(find.text(l10n.paywallBannerOcr), findsOneWidget);
+
+    // Hero + alt başlık + AI fayda metni + iki plan kartı görünür.
+    expect(find.text(l10n.paywallHeadline), findsOneWidget);
+    expect(find.text(l10n.paywallSubtitle), findsOneWidget);
+    expect(find.text(l10n.paywallBenefitOcr), findsOneWidget); // "AI ile kelime tarama"
+    expect(find.text(l10n.paywallPlanAnnualTitle), findsOneWidget);
+    expect(find.text(l10n.paywallPlanMonthlyTitle), findsOneWidget);
 
     // Varsayılan seçim Yıllık → period=2 ile activate.
     await tester.tap(find.text(l10n.paywallCta));
@@ -82,6 +99,7 @@ void main() {
   });
 
   testWidgets('Aylık seçimi → activate(period:1)', (tester) async {
+    _useTallSurface(tester);
     final repo = FakeSubscriptionRepository(initial: freeSubscription());
     await tester.pumpWidget(_wrap(repo));
     await tester.pumpAndSettle();
@@ -100,6 +118,7 @@ void main() {
 
   testWidgets('503 (purchaseDisabled) → "satın alma kapalı" mesajı, pop olmaz',
       (tester) async {
+    _useTallSurface(tester);
     final repo = FakeSubscriptionRepository(initial: freeSubscription())
       ..activateError = const SubscriptionFailure.purchaseDisabled();
     await tester.pumpWidget(_wrap(repo));
