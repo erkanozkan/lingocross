@@ -1,5 +1,35 @@
 # LingoCross — Sürüm Notları
 
+## v0.2 (2026-06-24) — Faz 2: Öğretmen otoring + bulmaca atama + takip
+
+MVP (v0.1) üzerine öğretmen iş akışını ve ikinci oyun türünü ekler.
+
+### Yenilikler
+- **Öğretmen navigasyonu (F2.1):** 4 sekmeli yapı (Ana Sayfa / Sınıflar / Raporlar / Profil).
+  Derslerim listesi (tarih + durum AKTİF/TAMAMLANDI), Ders Oluşturma (tarih/hafta), Ders Detayı,
+  Profil ekranı. Ders durumu yaşam döngüsü: Draft → Active → Completed (+ unpublish).
+- **Bulmaca oluşturma + atama (F2.2):** Öğretmen tür (Kelime Eşleştirme / Crossword) + ders seçer →
+  "Oluştur ve Yayınla" → dersin kelimelerinden bulmaca üretilir ve **aktif öğrencilere atanır**.
+  Öğrenci panelinde atanan bulmacalar; oyna → sonuç.
+- **Öğretmen takip / Raporlar (F2.3):** Öğretmen, öğrencilerin paylaştığı sonuçları ve özet
+  ilerlemeyi (paylaşılan sayısı, ortalama skor, son aktivite) görür.
+- **Crossword (F2.4):** Dersin kelimelerinden kesişimli ızgara üretimi (cevap=İngilizce terim,
+  ipucu=Türkçe karşılık) + interaktif crossword oynanış ekranı (ızgara, ipucu listeleri, klavye, timer).
+- **Cila (F2.5):** köşe-yarıçapı sözleşmesi netleştirildi, erişilebilirlik (≥48px), OCR kamera
+  fallback'i, sonuç süresi makullük sınırı, ölü metin temizliği.
+
+### Düzeltmeler
+- Ders Oluşturma boş ekranı (PrimaryButton3D bottomNavigationBar'ı şişiriyordu).
+- Açılışta yanlış role yönlenme / boş isim (`/me` ile oturum geri yükleme).
+
+### Teknik
+- API: 136 test yeşil; yeni: lesson status/schedule, game publishing + assignment, teacher tracking,
+  crossword generator. Mobil: Riverpod 2.x, ~95 test; iOS simülatör build doğrulandı.
+- **Railway deploy** henüz yapılmadı (kullanıcı aksiyonu).
+
+### Sonraki (Faz 3+)
+Adlandırılmış sınıf/grup (6-A/6-B), Çıkmış Sorular + Soru Çözüm ekranları, push bildirim, OAuth.
+
 ## v0.1-mvp (2026-06-24) — MVP (Faz 1)
 
 İlk uçtan uca MVP. Dil öğretmenleri ile öğrencileri buluşturan, kelime tabanlı oyunlaştırılmış
