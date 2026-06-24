@@ -612,8 +612,14 @@ abstract class AppLocalizations {
   /// No description provided for @teacherDashboardEmptyReports.
   ///
   /// In tr, this message translates to:
-  /// **'Henüz yeni rapor yok. Öğrenciler oyun oynadıkça burada görünecek.'**
+  /// **'Öğrenciler sonuç paylaştıkça burada görünecek.'**
   String get teacherDashboardEmptyReports;
+
+  /// No description provided for @teacherDashboardReportsError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlar yüklenemedi'**
+  String get teacherDashboardReportsError;
 
   /// No description provided for @teacherDashboardError.
   ///
@@ -800,6 +806,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sınıflarınızın ödev tamamlama oranı geçen haftaya göre %{percent} arttı!'**
   String teacherProfileWeeklyHint(int percent);
+
+  /// No description provided for @teacherProfileWeeklyEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hafta atanmış ödev yok.'**
+  String get teacherProfileWeeklyEmpty;
+
+  /// No description provided for @teacherProfileStatValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent}'**
+  String teacherProfileStatValue(int percent);
+
+  /// No description provided for @teacherProfileStatsError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler yüklenemedi.'**
+  String get teacherProfileStatsError;
 
   /// No description provided for @teacherProfileBadgesTitle.
   ///
@@ -2006,6 +2030,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yakında — ilk oyununu oynayınca burada görünecek.'**
   String get studentDashboardStatsSoon;
+
+  /// No description provided for @studentDashboardStatsEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz oyun oynamadın.'**
+  String get studentDashboardStatsEmpty;
+
+  /// No description provided for @studentDashboardStatsError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelişim özeti yüklenemedi.'**
+  String get studentDashboardStatsError;
+
+  /// No description provided for @studentDashboardStatAccuracyValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent}'**
+  String studentDashboardStatAccuracyValue(int percent);
+
+  /// No description provided for @studentDashboardSeeReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlarım'**
+  String get studentDashboardSeeReports;
+
+  /// No description provided for @studentDashboardPlayCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyna'**
+  String get studentDashboardPlayCta;
 
   /// No description provided for @studentDashboardError.
   ///

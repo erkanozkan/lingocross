@@ -9,14 +9,16 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/auth_notifier.dart';
-import '../../../enrollment/presentation/enrollments_notifier.dart';
+import '../../../profile/data/dtos/teacher_stats_dto.dart';
+import '../../../profile/presentation/teacher_stats_notifier.dart';
 
 /// Öğretmen Profil (Stitch `b557deed…`) — "Profil" sekmesinin gövdesi.
 ///
-/// Avatar + ad + rol; istatistik kartları (sınıf/öğrenci/katılım — şimdilik
-/// iskelet, öğrenci sayısı enrollment'tan gerçek); haftalık ilerleme (iskelet);
-/// rozetler (statik); menü (Sınıf Yönetimi→Derslerim, İstatistik→Raporlar,
-/// Hesap Ayarları→placeholder, **Çıkış Yap → gerçek logout**).
+/// Avatar + ad + rol; istatistik kartları (sınıf/öğrenci/katılım — `GET
+/// /teachers/me/stats` gerçek veriden); haftalık ödev tamamlama (gerçek
+/// ilerleme); rozetler (statik); menü (Sınıf Yönetimi→Derslerim,
+/// İstatistik→Raporlar, Hesap Ayarları→placeholder, **Çıkış Yap → gerçek
+/// logout**).
 class TeacherProfileScreen extends ConsumerWidget {
   const TeacherProfileScreen({
     super.key,
@@ -35,11 +37,7 @@ class TeacherProfileScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(authNotifierProvider).user;
     final name = user?.displayName ?? '';
-    // Öğrenci sayısı enrollment'tan (gerçek); diğer istatistikler iskelet.
-    final studentCount = ref.watch(enrollmentsNotifierProvider).maybeWhen(
-          data: (list) => list.length,
-          orElse: () => 0,
-        );
+    final statsAsync = ref.watch(teacherStatsNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -63,9 +61,13 @@ class TeacherProfileScreen extends ConsumerWidget {
         children: [
           _Header(name: name),
           const SizedBox(height: AppSpacing.lg),
-          _StatsRow(studentCount: studentCount),
+          _StatsRow(
+            statsAsync: statsAsync,
+            onRetry: () =>
+                ref.read(teacherStatsNotifierProvider.notifier).refresh(),
+          ),
           const SizedBox(height: AppSpacing.lg),
-          const _WeeklyCard(),
+          _WeeklyCard(statsAsync: statsAsync),
           const SizedBox(height: AppSpacing.lg),
           const _Badges(),
           const SizedBox(height: AppSpacing.lg),
@@ -150,48 +152,94 @@ class _Header extends StatelessWidget {
   }
 }
 
+/// İstatistik kartları (Sınıf / Öğrenci / Katılım) — `GET /teachers/me/stats`
+/// gerçek verisinden. Yükleniyor "·", hata "—" gösterir; hata satırında
+/// Tekrar Dene bulunur.
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({required this.studentCount});
+  const _StatsRow({required this.statsAsync, required this.onRetry});
 
-  final int studentCount;
+  final AsyncValue<TeacherStatsDto> statsAsync;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Row(
+    final loading = statsAsync.isLoading;
+    final hasError = statsAsync.hasError;
+    final stats = statsAsync.valueOrNull;
+
+    String classes;
+    String students;
+    String participation;
+    if (loading) {
+      classes = students = participation = '·';
+    } else if (hasError || stats == null) {
+      classes = students = participation = '—';
+    } else {
+      classes = '${stats.classCount}';
+      students = '${stats.studentCount}';
+      participation = l10n.teacherProfileStatValue(stats.completionPercent);
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _StatCard(
-            icon: Icons.class_,
-            iconBg: AppColors.secondaryContainer,
-            iconColor: AppColors.onSecondaryFixedVariant,
-            value: '—',
-            valueColor: AppColors.secondary,
-            label: l10n.teacherProfileStatClasses,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _StatCard(
+                icon: Icons.class_,
+                iconBg: AppColors.secondaryContainer,
+                iconColor: AppColors.onSecondaryFixedVariant,
+                value: classes,
+                valueColor: AppColors.secondary,
+                label: l10n.teacherProfileStatClasses,
+                loading: loading,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.people,
+                iconBg: AppColors.primaryFixed,
+                iconColor: AppColors.primary,
+                value: students,
+                valueColor: AppColors.primary,
+                label: l10n.teacherProfileStatStudents,
+                loading: loading,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _StatCard(
+                icon: Icons.check_circle,
+                iconBg: AppColors.tertiaryFixed,
+                iconColor: AppColors.tertiary,
+                value: participation,
+                valueColor: AppColors.tertiary,
+                label: l10n.teacherProfileStatParticipation,
+                loading: loading,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _StatCard(
-            icon: Icons.people,
-            iconBg: AppColors.primaryFixed,
-            iconColor: AppColors.primary,
-            value: '$studentCount',
-            valueColor: AppColors.primary,
-            label: l10n.teacherProfileStatStudents,
+        if (hasError) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              const Icon(Icons.cloud_off, size: 16, color: AppColors.error),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Text(
+                  l10n.teacherProfileStatsError,
+                  style: AppTypography.labelSm
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ),
+              TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
+            ],
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _StatCard(
-            icon: Icons.check_circle,
-            iconBg: AppColors.tertiaryFixed,
-            iconColor: AppColors.tertiary,
-            value: '—',
-            valueColor: AppColors.tertiary,
-            label: l10n.teacherProfileStatParticipation,
-          ),
-        ),
+        ],
       ],
     );
   }
@@ -205,6 +253,7 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.valueColor,
     required this.label,
+    this.loading = false,
   });
 
   final IconData icon;
@@ -213,6 +262,9 @@ class _StatCard extends StatelessWidget {
   final String value;
   final Color valueColor;
   final String label;
+
+  /// Gerçek metrik yüklenirken ince ilerleme göstergesi.
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -237,8 +289,21 @@ class _StatCard extends StatelessWidget {
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(value,
-              style: AppTypography.headlineMd.copyWith(color: valueColor)),
+          if (loading)
+            const SizedBox(
+              height: 28,
+              width: 24,
+              child: Padding(
+                padding: EdgeInsets.all(4),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.primary,
+                ),
+              ),
+            )
+          else
+            Text(value,
+                style: AppTypography.headlineMd.copyWith(color: valueColor)),
           Text(
             label,
             style:
@@ -253,12 +318,38 @@ class _StatCard extends StatelessWidget {
   }
 }
 
+/// Haftalık Ödev Tamamlama — `GET /teachers/me/stats` gerçek verisinden.
+/// Atanmış ödev varsa `completed/assigned` ilerleme + "{done}/{total} ödev
+/// tamamlandı"; atanmış ödev yoksa nazik boş metin. Yükleniyor/hata
+/// durumlarında ilerleme gizli, açıklayıcı metin gösterilir.
 class _WeeklyCard extends StatelessWidget {
-  const _WeeklyCard();
+  const _WeeklyCard({required this.statsAsync});
+
+  final AsyncValue<TeacherStatsDto> statsAsync;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final loading = statsAsync.isLoading;
+    final hasError = statsAsync.hasError;
+    final stats = statsAsync.valueOrNull;
+    final hasData = !loading && !hasError && stats != null;
+    final hasAssignments = hasData && stats.hasWeeklyAssignments;
+
+    final String desc;
+    if (loading) {
+      desc = l10n.teacherProfileStatsSoon;
+    } else if (hasError || stats == null) {
+      desc = l10n.teacherProfileStatsError;
+    } else if (!stats.hasWeeklyAssignments) {
+      desc = l10n.teacherProfileWeeklyEmpty;
+    } else {
+      desc = l10n.teacherProfileWeeklyDesc(
+        stats.weeklyCompletedCount,
+        stats.weeklyAssignedCount,
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -273,20 +364,23 @@ class _WeeklyCard extends StatelessWidget {
           Text(l10n.teacherProfileWeeklyTitle, style: AppTypography.headlineMd),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            l10n.teacherProfileStatsSoon,
+            desc,
             style:
                 AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
           ),
-          const SizedBox(height: AppSpacing.sm),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppRadius.full),
-            child: const LinearProgressIndicator(
-              value: 0,
-              minHeight: 16,
-              backgroundColor: AppColors.surfaceContainerHigh,
-              valueColor: AlwaysStoppedAnimation(AppColors.primary),
+          if (hasAssignments) ...[
+            const SizedBox(height: AppSpacing.sm),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: LinearProgressIndicator(
+                value: stats.weeklyProgress,
+                minHeight: 16,
+                backgroundColor: AppColors.surfaceContainerHigh,
+                valueColor:
+                    const AlwaysStoppedAnimation(AppColors.primary),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

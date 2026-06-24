@@ -9,6 +9,9 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/auth_notifier.dart';
+import '../../../results/presentation/result_date_format.dart';
+import '../../../tracking/data/dtos/tracking_dtos.dart';
+import '../../../tracking/presentation/students_notifier.dart';
 import '../../data/dtos/lesson_dtos.dart';
 import '../lessons_notifier.dart';
 import '../widgets/lesson_card.dart';
@@ -74,7 +77,10 @@ class TeacherDashboardScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xl),
             _LessonsSection(lessonsAsync: lessonsAsync),
             const SizedBox(height: AppSpacing.xl),
-            _ReportsSection(),
+            _ReportsSection(
+              onOpenReports: onOpenReports ??
+                  () => context.push(AppRoutes.teacherStudents),
+            ),
           ],
         ),
       ),
@@ -466,39 +472,252 @@ class _LessonsError extends StatelessWidget {
   }
 }
 
-class _ReportsSection extends StatelessWidget {
+/// "Son Raporlar" mini listesi — `GET /teachers/me/students` üzerinden
+/// **paylaşılan sonucu olan** (sharedResultsCount > 0) öğrencileri en fazla 4
+/// satır olarak gösterir. Her satıra dokununca öğrenci sonuç detayına gider.
+/// Hiç paylaşılan sonuç yoksa anlamlı boş durum; yükleniyor/hata durumları.
+class _ReportsSection extends ConsumerWidget {
+  const _ReportsSection({required this.onOpenReports});
+
+  final VoidCallback onOpenReports;
+
+  /// Mini listede gösterilecek azami öğrenci sayısı.
+  static const int _maxRows = 4;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final studentsAsync = ref.watch(studentsNotifierProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionHeader(title: l10n.teacherDashboardReportsTitle),
+        _SectionHeader(
+          title: l10n.teacherDashboardReportsTitle,
+          actionLabel: l10n.teacherDashboardSeeAll,
+          onAction: onOpenReports,
+        ),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border.all(color: AppColors.outlineVariant),
+        studentsAsync.when(
+          loading: () => const SkeletonList(count: 2, height: 64),
+          error: (_, __) => _ReportsError(
+            onRetry: () =>
+                ref.read(studentsNotifierProvider.notifier).refresh(),
           ),
-          child: Row(
-            children: [
-              const Icon(Icons.notifications_off,
-                  color: AppColors.onSurfaceVariant),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  l10n.teacherDashboardEmptyReports,
-                  style: AppTypography.bodyMd
-                      .copyWith(color: AppColors.onSurfaceVariant),
-                ),
-              ),
-            ],
-          ),
+          data: (students) {
+            final shared =
+                students.where((s) => s.hasSharedResults).toList();
+            if (shared.isEmpty) return const _ReportsEmpty();
+            final visible = shared.take(_maxRows).toList();
+            return Column(
+              children: [
+                for (final s in visible) ...[
+                  _ReportRow(
+                    student: s,
+                    onTap: () => context.push(
+                      AppRoutes.teacherStudentResults(s.studentId),
+                      extra: s.displayName,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
+              ],
+            );
+          },
         ),
       ],
+    );
+  }
+}
+
+/// Mini rapor satırı — avatar + ad + son aktivite + ort. skor rozeti.
+/// Raporlar sekmesindeki `_StudentCard` desenini kompakt biçimde yeniden kullanır.
+class _ReportRow extends StatelessWidget {
+  const _ReportRow({required this.student, required this.onTap});
+
+  final StudentSummaryDto student;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final name = student.displayName;
+    final initial = name.isNotEmpty ? name.characters.first.toUpperCase() : '?';
+    final avg = student.averagePercent;
+    final lastActivity = student.lastActivityAt == null
+        ? l10n.trackingLastActivityNone
+        : l10n.trackingLastActivityLabel(
+            formatShortDate(student.lastActivityAt!),
+          );
+
+    return Semantics(
+      button: true,
+      label: l10n.trackingStudentRowA11y(name, student.sharedResultsCount),
+      child: Material(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 64),
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(color: AppColors.outlineVariant),
+              boxShadow: AppShadows.level2,
+            ),
+            child: ExcludeSemantics(
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.surfaceContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      initial,
+                      style: AppTypography.headlineMd
+                          .copyWith(color: AppColors.primary),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name,
+                          style: AppTypography.labelLg,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          lastActivity,
+                          style: AppTypography.labelSm
+                              .copyWith(color: AppColors.onSurfaceVariant),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  _ScorePill(percent: avg),
+                  const SizedBox(width: AppSpacing.xs),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.onSurfaceVariant, size: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Ortalama skor rozeti — varsa % (primary tonlu), yoksa "—" (nötr).
+class _ScorePill extends StatelessWidget {
+  const _ScorePill({required this.percent});
+
+  final int? percent;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final hasValue = percent != null;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.base,
+      ),
+      decoration: BoxDecoration(
+        color:
+            hasValue ? AppColors.primaryFixed : AppColors.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        hasValue
+            ? l10n.gameResultAccuracyValue(percent!)
+            : l10n.trackingAverageNone,
+        style: AppTypography.labelLg.copyWith(
+          color: hasValue ? AppColors.primary : AppColors.onSurfaceVariant,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+/// Boş — henüz paylaşılan sonuç yok.
+class _ReportsEmpty extends StatelessWidget {
+  const _ReportsEmpty();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.notifications_off,
+              color: AppColors.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              l10n.teacherDashboardEmptyReports,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Hata — raporlar yüklenemedi + Tekrar Dene.
+class _ReportsError extends StatelessWidget {
+  const _ReportsError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.cloud_off, color: AppColors.error),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              l10n.teacherDashboardReportsError,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          ),
+          TextButton(onPressed: onRetry, child: Text(l10n.commonRetry)),
+        ],
+      ),
     );
   }
 }

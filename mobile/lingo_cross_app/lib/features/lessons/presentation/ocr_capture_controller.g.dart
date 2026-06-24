@@ -7,7 +7,7 @@ part of 'ocr_capture_controller.dart';
 // **************************************************************************
 
 String _$ocrCaptureControllerHash() =>
-    r'4bddf45b5ad8f8de27330281eef09ed743b4c9be';
+    r'b893305f337991ab2a750b6c74dc9258625145ea';
 
 /// Ekran A iş akışını yönetir: foto seç → temizle → ML Kit tarama → AI zenginleştirme.
 ///

@@ -9,10 +9,12 @@ import 'package:lingo_cross_app/features/lessons/data/dtos/lesson_dtos.dart';
 import 'package:lingo_cross_app/features/lessons/data/lessons_repository.dart';
 import 'package:lingo_cross_app/features/lessons/domain/lesson_status.dart';
 import 'package:lingo_cross_app/features/lessons/presentation/screens/teacher_dashboard_screen.dart';
+import 'package:lingo_cross_app/features/tracking/data/tracking_repository.dart';
 
 import 'helpers/fake_lessons_repository.dart';
+import 'helpers/fake_tracking_repository.dart';
 
-Widget _wrap(FakeLessonsRepository repo) {
+Widget _wrap(FakeLessonsRepository repo, {FakeTrackingRepository? trackingRepo}) {
   final router = GoRouter(
     initialLocation: '/teacher',
     routes: [
@@ -21,12 +23,23 @@ Widget _wrap(FakeLessonsRepository repo) {
         builder: (_, __) => const TeacherDashboardScreen(),
       ),
       GoRoute(path: '/teacher/lessons/new', builder: (_, __) => const Scaffold()),
+      GoRoute(
+        path: '/teacher/students',
+        builder: (_, __) => const Scaffold(body: Text('reports-tab')),
+      ),
+      GoRoute(
+        path: '/teacher/students/:id/results',
+        builder: (_, state) =>
+            Scaffold(body: Text('DETAY ${state.extra ?? ''}')),
+      ),
       GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
     ],
   );
   return ProviderScope(
     overrides: [
       lessonsRepositoryProvider.overrideWithValue(repo),
+      trackingRepositoryProvider
+          .overrideWithValue(trackingRepo ?? FakeTrackingRepository()),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -94,5 +107,71 @@ void main() {
     expect(find.text('Yayında'), findsOneWidget);
     expect(find.text('12 kelime'), findsOneWidget);
     expect(find.text('Henüz dersiniz yok'), findsNothing);
+  });
+
+  testWidgets(
+      'Son Raporlar: paylaşılan sonucu olan öğrenci ad + ortalama % rozetiyle listelenir',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      FakeLessonsRepository(lessons: const []),
+      trackingRepo: FakeTrackingRepository(students: [
+        sampleStudent(
+          studentId: 's1',
+          displayName: 'Ada Yılmaz',
+          sharedResultsCount: 4,
+          averageScore: 90,
+        ),
+        // Paylaşımı olmayan öğrenci listelenmez.
+        sampleStudent(
+          studentId: 's2',
+          displayName: 'Boş Öğrenci',
+          sharedResultsCount: 0,
+          averageScore: null,
+        ),
+      ]),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(find.text('Ada Yılmaz'), 200);
+    expect(find.text('Ada Yılmaz'), findsOneWidget);
+    expect(find.text('%90'), findsOneWidget);
+    // Paylaşımı olmayan öğrenci mini listede görünmez.
+    expect(find.text('Boş Öğrenci'), findsNothing);
+  });
+
+  testWidgets('Son Raporlar: paylaşılan sonuç yoksa boş durum metni',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      FakeLessonsRepository(lessons: const []),
+      trackingRepo: FakeTrackingRepository(students: [
+        sampleStudent(sharedResultsCount: 0, averageScore: null),
+      ]),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(
+        find.text('Öğrenciler sonuç paylaştıkça burada görünecek.'), 200);
+    expect(find.text('Öğrenciler sonuç paylaştıkça burada görünecek.'),
+        findsOneWidget);
+  });
+
+  testWidgets('Son Raporlar satırına dokununca öğrenci detayına gider',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      FakeLessonsRepository(lessons: const []),
+      trackingRepo: FakeTrackingRepository(students: [
+        sampleStudent(studentId: 's1', displayName: 'Ada', sharedResultsCount: 2),
+      ]),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(find.text('Ada'), 200);
+    await tester.tap(find.text('Ada'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('DETAY Ada'), findsOneWidget);
   });
 }

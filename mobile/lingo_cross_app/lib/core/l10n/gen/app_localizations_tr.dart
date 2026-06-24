@@ -273,7 +273,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherDashboardEmptyLessonsDesc => 'İlk dersinizi oluşturarak başlayın.';
 
   @override
-  String get teacherDashboardEmptyReports => 'Henüz yeni rapor yok. Öğrenciler oyun oynadıkça burada görünecek.';
+  String get teacherDashboardEmptyReports => 'Öğrenciler sonuç paylaştıkça burada görünecek.';
+
+  @override
+  String get teacherDashboardReportsError => 'Raporlar yüklenemedi';
 
   @override
   String get teacherDashboardError => 'Dersler yüklenemedi';
@@ -377,6 +380,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String teacherProfileWeeklyHint(int percent) {
     return 'Sınıflarınızın ödev tamamlama oranı geçen haftaya göre %$percent arttı!';
   }
+
+  @override
+  String get teacherProfileWeeklyEmpty => 'Bu hafta atanmış ödev yok.';
+
+  @override
+  String teacherProfileStatValue(int percent) {
+    return '%$percent';
+  }
+
+  @override
+  String get teacherProfileStatsError => 'İstatistikler yüklenemedi.';
 
   @override
   String get teacherProfileBadgesTitle => 'Öğretmen Rozetleri';
@@ -1016,6 +1030,23 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get studentDashboardStatsSoon => 'Yakında — ilk oyununu oynayınca burada görünecek.';
+
+  @override
+  String get studentDashboardStatsEmpty => 'Henüz oyun oynamadın.';
+
+  @override
+  String get studentDashboardStatsError => 'Gelişim özeti yüklenemedi.';
+
+  @override
+  String studentDashboardStatAccuracyValue(int percent) {
+    return '%$percent';
+  }
+
+  @override
+  String get studentDashboardSeeReports => 'Raporlarım';
+
+  @override
+  String get studentDashboardPlayCta => 'Oyna';
 
   @override
   String get studentDashboardError => 'Dersler yüklenemedi';
