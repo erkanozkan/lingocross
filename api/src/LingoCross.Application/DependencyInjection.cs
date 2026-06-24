@@ -5,6 +5,7 @@ using LingoCross.Application.Common.Security;
 using LingoCross.Application.Enrollments;
 using LingoCross.Application.Games;
 using LingoCross.Application.Lessons;
+using LingoCross.Application.Results;
 using LingoCross.Application.Words;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +23,7 @@ public static class DependencyInjection
         // Random.Shared kullanılması için açık factory ile kaydedilir (testler kendi Random'ını verir).
         services.AddScoped<IGameService>(sp =>
             new GameService(sp.GetRequiredService<IAppDbContext>(), sp.GetRequiredService<ICurrentUser>()));
+        services.AddScoped<IResultService, ResultService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;

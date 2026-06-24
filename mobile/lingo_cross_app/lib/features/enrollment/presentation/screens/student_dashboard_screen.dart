@@ -68,9 +68,7 @@ class StudentDashboardScreen extends ConsumerWidget {
             case 2:
               context.push(AppRoutes.profile);
             case 1:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.commonComingSoon)),
-              );
+              context.push(AppRoutes.studentResults);
             default:
               break;
           }

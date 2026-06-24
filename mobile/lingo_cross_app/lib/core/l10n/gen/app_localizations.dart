@@ -1862,6 +1862,210 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Davet kodu: {spaced}'**
   String teacherStudentsCodeSemantic(String spaced);
+
+  /// No description provided for @gameResultSubmitting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonucun kaydediliyor…'**
+  String get gameResultSubmitting;
+
+  /// No description provided for @gameResultSubmitError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç kaydedilemedi, tekrar dene.'**
+  String get gameResultSubmitError;
+
+  /// No description provided for @gameResultTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun Özeti'**
+  String get gameResultTitle;
+
+  /// No description provided for @gameResultSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika bir iş çıkardın!'**
+  String get gameResultSubtitle;
+
+  /// No description provided for @gameResultAccuracyValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent}'**
+  String gameResultAccuracyValue(int percent);
+
+  /// No description provided for @gameResultAccuracyLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğruluk'**
+  String get gameResultAccuracyLabel;
+
+  /// No description provided for @gameResultAccuracyA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğruluk yüzde {percent}'**
+  String gameResultAccuracyA11y(int percent);
+
+  /// No description provided for @gameResultTimeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçen Süre'**
+  String get gameResultTimeLabel;
+
+  /// No description provided for @gameResultWordsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulunan Kelime'**
+  String get gameResultWordsLabel;
+
+  /// No description provided for @gameResultWordsValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'{found} / {total}'**
+  String gameResultWordsValue(int found, int total);
+
+  /// No description provided for @gameResultShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmene Gönder'**
+  String get gameResultShare;
+
+  /// No description provided for @gameResultShareSending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderiliyor…'**
+  String get gameResultShareSending;
+
+  /// No description provided for @gameResultShareShared.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmene Gönderildi'**
+  String get gameResultShareShared;
+
+  /// No description provided for @gameResultShareToastSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonucun öğretmenine gönderildi.'**
+  String get gameResultShareToastSuccess;
+
+  /// No description provided for @gameResultShareToastError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderilemedi, tekrar dene.'**
+  String get gameResultShareToastError;
+
+  /// No description provided for @gameResultPlayAgain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Oyna'**
+  String get gameResultPlayAgain;
+
+  /// No description provided for @gameResultErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç yüklenemedi'**
+  String get gameResultErrorTitle;
+
+  /// No description provided for @gameResultA11ySending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderiliyor'**
+  String get gameResultA11ySending;
+
+  /// No description provided for @gameResultA11yShared.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderildi'**
+  String get gameResultA11yShared;
+
+  /// No description provided for @gameResultA11yError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderilemedi'**
+  String get gameResultA11yError;
+
+  /// No description provided for @resultsHistoryTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlarım'**
+  String get resultsHistoryTitle;
+
+  /// No description provided for @resultsHistorySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm oyun geçmişin'**
+  String get resultsHistorySubtitle;
+
+  /// No description provided for @resultsHistorySummaryTotalGames.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam Oyun'**
+  String get resultsHistorySummaryTotalGames;
+
+  /// No description provided for @resultsHistorySummaryAvgAccuracy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama Doğruluk'**
+  String get resultsHistorySummaryAvgAccuracy;
+
+  /// No description provided for @resultsHistoryItemShared.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gönderildi'**
+  String get resultsHistoryItemShared;
+
+  /// No description provided for @resultsHistoryItemA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{lesson}, doğruluk yüzde {percent}, süre {time}, {found} / {total}'**
+  String resultsHistoryItemA11y(String lesson, int percent, String time, int found, int total);
+
+  /// No description provided for @resultsHistoryItemDateA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{lesson}, doğruluk yüzde {percent}, süre {time}, {found} / {total}, {date}'**
+  String resultsHistoryItemDateA11y(String lesson, int percent, String time, int found, int total, String date);
+
+  /// No description provided for @resultsHistoryEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz oyun oynamadın'**
+  String get resultsHistoryEmptyTitle;
+
+  /// No description provided for @resultsHistoryEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir ders oyununu bitirince sonucun burada görünür.'**
+  String get resultsHistoryEmptyDesc;
+
+  /// No description provided for @resultsHistoryEmptyCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyuna Başla'**
+  String get resultsHistoryEmptyCta;
+
+  /// No description provided for @resultsHistoryErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlar yüklenemedi'**
+  String get resultsHistoryErrorTitle;
+
+  /// No description provided for @resultsErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı hatası. Lütfen tekrar deneyin.'**
+  String get resultsErrorNetwork;
+
+  /// No description provided for @resultsErrorNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuç bulunamadı.'**
+  String get resultsErrorNotFound;
+
+  /// No description provided for @resultsErrorForbidden.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu işlem için yetkiniz yok.'**
+  String get resultsErrorForbidden;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

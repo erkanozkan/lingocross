@@ -948,4 +948,116 @@ class AppLocalizationsTr extends AppLocalizations {
   String teacherStudentsCodeSemantic(String spaced) {
     return 'Davet kodu: $spaced';
   }
+
+  @override
+  String get gameResultSubmitting => 'Sonucun kaydediliyor…';
+
+  @override
+  String get gameResultSubmitError => 'Sonuç kaydedilemedi, tekrar dene.';
+
+  @override
+  String get gameResultTitle => 'Oyun Özeti';
+
+  @override
+  String get gameResultSubtitle => 'Harika bir iş çıkardın!';
+
+  @override
+  String gameResultAccuracyValue(int percent) {
+    return '%$percent';
+  }
+
+  @override
+  String get gameResultAccuracyLabel => 'Doğruluk';
+
+  @override
+  String gameResultAccuracyA11y(int percent) {
+    return 'Doğruluk yüzde $percent';
+  }
+
+  @override
+  String get gameResultTimeLabel => 'Geçen Süre';
+
+  @override
+  String get gameResultWordsLabel => 'Bulunan Kelime';
+
+  @override
+  String gameResultWordsValue(int found, int total) {
+    return '$found / $total';
+  }
+
+  @override
+  String get gameResultShare => 'Öğretmene Gönder';
+
+  @override
+  String get gameResultShareSending => 'Gönderiliyor…';
+
+  @override
+  String get gameResultShareShared => 'Öğretmene Gönderildi';
+
+  @override
+  String get gameResultShareToastSuccess => 'Sonucun öğretmenine gönderildi.';
+
+  @override
+  String get gameResultShareToastError => 'Gönderilemedi, tekrar dene.';
+
+  @override
+  String get gameResultPlayAgain => 'Tekrar Oyna';
+
+  @override
+  String get gameResultErrorTitle => 'Sonuç yüklenemedi';
+
+  @override
+  String get gameResultA11ySending => 'Gönderiliyor';
+
+  @override
+  String get gameResultA11yShared => 'Gönderildi';
+
+  @override
+  String get gameResultA11yError => 'Gönderilemedi';
+
+  @override
+  String get resultsHistoryTitle => 'Sonuçlarım';
+
+  @override
+  String get resultsHistorySubtitle => 'Tüm oyun geçmişin';
+
+  @override
+  String get resultsHistorySummaryTotalGames => 'Toplam Oyun';
+
+  @override
+  String get resultsHistorySummaryAvgAccuracy => 'Ortalama Doğruluk';
+
+  @override
+  String get resultsHistoryItemShared => 'Gönderildi';
+
+  @override
+  String resultsHistoryItemA11y(String lesson, int percent, String time, int found, int total) {
+    return '$lesson, doğruluk yüzde $percent, süre $time, $found / $total';
+  }
+
+  @override
+  String resultsHistoryItemDateA11y(String lesson, int percent, String time, int found, int total, String date) {
+    return '$lesson, doğruluk yüzde $percent, süre $time, $found / $total, $date';
+  }
+
+  @override
+  String get resultsHistoryEmptyTitle => 'Henüz oyun oynamadın';
+
+  @override
+  String get resultsHistoryEmptyDesc => 'Bir ders oyununu bitirince sonucun burada görünür.';
+
+  @override
+  String get resultsHistoryEmptyCta => 'Oyuna Başla';
+
+  @override
+  String get resultsHistoryErrorTitle => 'Sonuçlar yüklenemedi';
+
+  @override
+  String get resultsErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';
+
+  @override
+  String get resultsErrorNotFound => 'Sonuç bulunamadı.';
+
+  @override
+  String get resultsErrorForbidden => 'Bu işlem için yetkiniz yok.';
 }

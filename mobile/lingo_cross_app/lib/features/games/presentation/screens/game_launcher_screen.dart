@@ -48,7 +48,10 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
           // Henüz başlatılmadı (post-frame öncesi) → yükleniyor görünümü.
           return const _LoadingScaffold();
         }
-        return WordMatchingGameScreen(content: response.content);
+        return WordMatchingGameScreen(
+          sessionId: response.session.id,
+          content: response.content,
+        );
       },
       loading: () => const _LoadingScaffold(),
       error: (error, _) => _ErrorScaffold(
