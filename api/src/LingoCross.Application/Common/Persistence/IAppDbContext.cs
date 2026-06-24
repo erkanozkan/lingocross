@@ -43,5 +43,7 @@ public interface IAppDbContext
 
     DbSet<NotificationPreference> NotificationPreferences { get; }
 
+    DbSet<Subscription> Subscriptions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

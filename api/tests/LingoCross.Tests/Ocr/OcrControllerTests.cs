@@ -1,7 +1,10 @@
 using System.Reflection;
 using LingoCross.Api.Controllers;
+using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Ocr;
 using LingoCross.Application.Ocr.Dtos;
+using LingoCross.Application.Subscriptions;
+using LingoCross.Tests.Subscriptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,19 +27,39 @@ public class OcrControllerTests
     }
 
     [Fact]
-    public async Task Enrich_DelegatesToService_AndReturns200()
+    public async Task Enrich_AsPremium_DelegatesToService_AndReturns200()
     {
         var expected = new OcrEnrichResponse(new[]
         {
             new EnrichedWord("happy", "mutlu", new[] { "glad" }),
         });
-        var controller = new OcrController(new FakeService(expected), new EmptyServiceProvider());
+        var controller = new OcrController(
+            new FakeService(expected),
+            new FakeEntitlementService { Premium = true },
+            new EmptyServiceProvider());
 
         var result = await controller.Enrich(new OcrEnrichRequest("happy mutlu"), default);
 
         var ok = Assert.IsType<OkObjectResult>(result.Result);
         var body = Assert.IsType<OcrEnrichResponse>(ok.Value);
         Assert.Same(expected, body);
+    }
+
+    [Fact]
+    public async Task Enrich_AsFreeTeacher_Throws402_WithOcrFeature()
+    {
+        var expected = new OcrEnrichResponse(Array.Empty<EnrichedWord>());
+        var controller = new OcrController(
+            new FakeService(expected),
+            new FakeEntitlementService { Premium = false },
+            new EmptyServiceProvider());
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => controller.Enrich(new OcrEnrichRequest("happy mutlu"), default));
+
+        Assert.Equal(402, ex.StatusCode);
+        Assert.Equal("subscription_required", ex.Code);
+        Assert.Equal("ocr", ex.Feature);
     }
 
     private sealed class FakeService : IOcrEnrichmentService

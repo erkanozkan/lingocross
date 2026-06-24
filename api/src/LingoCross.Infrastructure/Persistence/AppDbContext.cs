@@ -50,6 +50,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
 
+    public DbSet<Subscription> Subscriptions => Set<Subscription>();
+
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
 
