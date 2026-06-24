@@ -60,7 +60,11 @@ class _PrimaryButton3DState extends State<PrimaryButton3D> {
             ],
           ),
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          // heightFactor: 1 → dikeyde çocuğa göre küçülür. Aksi halde
+          // bottomNavigationBar gibi sınırlı-büyük maxHeight veren yuvalarda
+          // Center tüm yüksekliği doldurup butonu ekran boyutuna şişirir.
           child: Center(
+            heightFactor: 1,
             child: widget.isLoading
                 ? const SizedBox(
                     width: 24,
