@@ -71,6 +71,7 @@ class TeacherProfileScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.lg),
           _Menu(
             onOpenClasses: onOpenClasses,
+            onOpenLessons: () => context.push(AppRoutes.lessons),
             onOpenReports: onOpenReports,
             onSettings: () => context.push(AppRoutes.accountSettings),
             onLogout: () => ref.read(authNotifierProvider.notifier).logout(),
@@ -374,12 +375,14 @@ class _Badge extends StatelessWidget {
 class _Menu extends StatelessWidget {
   const _Menu({
     required this.onOpenClasses,
+    required this.onOpenLessons,
     required this.onOpenReports,
     required this.onSettings,
     required this.onLogout,
   });
 
   final VoidCallback onOpenClasses;
+  final VoidCallback onOpenLessons;
   final VoidCallback onOpenReports;
   final VoidCallback onSettings;
   final VoidCallback onLogout;
@@ -400,6 +403,12 @@ class _Menu extends StatelessWidget {
             icon: Icons.groups,
             label: l10n.teacherProfileMenuClasses,
             onTap: onOpenClasses,
+          ),
+          const Divider(height: 1, color: AppColors.outlineVariant),
+          _MenuRow(
+            icon: Icons.menu_book,
+            label: l10n.teacherProfileMenuLessons,
+            onTap: onOpenLessons,
           ),
           const Divider(height: 1, color: AppColors.outlineVariant),
           _MenuRow(

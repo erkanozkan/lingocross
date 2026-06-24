@@ -1037,6 +1037,7 @@ mixin _$CreateGameRequest {
   @GameTypeConverter()
   GameType get type => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
+  List<String>? get classIds => throw _privateConstructorUsedError;
 
   /// Serializes this CreateGameRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1055,7 +1056,11 @@ abstract class $CreateGameRequestCopyWith<$Res> {
     $Res Function(CreateGameRequest) then,
   ) = _$CreateGameRequestCopyWithImpl<$Res, CreateGameRequest>;
   @useResult
-  $Res call({@GameTypeConverter() GameType type, String? title});
+  $Res call({
+    @GameTypeConverter() GameType type,
+    String? title,
+    List<String>? classIds,
+  });
 }
 
 /// @nodoc
@@ -1072,7 +1077,11 @@ class _$CreateGameRequestCopyWithImpl<$Res, $Val extends CreateGameRequest>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? type = null, Object? title = freezed}) {
+  $Res call({
+    Object? type = null,
+    Object? title = freezed,
+    Object? classIds = freezed,
+  }) {
     return _then(
       _value.copyWith(
             type:
@@ -1085,6 +1094,11 @@ class _$CreateGameRequestCopyWithImpl<$Res, $Val extends CreateGameRequest>
                     ? _value.title
                     : title // ignore: cast_nullable_to_non_nullable
                         as String?,
+            classIds:
+                freezed == classIds
+                    ? _value.classIds
+                    : classIds // ignore: cast_nullable_to_non_nullable
+                        as List<String>?,
           )
           as $Val,
     );
@@ -1100,7 +1114,11 @@ abstract class _$$CreateGameRequestImplCopyWith<$Res>
   ) = __$$CreateGameRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({@GameTypeConverter() GameType type, String? title});
+  $Res call({
+    @GameTypeConverter() GameType type,
+    String? title,
+    List<String>? classIds,
+  });
 }
 
 /// @nodoc
@@ -1116,7 +1134,11 @@ class __$$CreateGameRequestImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? type = null, Object? title = freezed}) {
+  $Res call({
+    Object? type = null,
+    Object? title = freezed,
+    Object? classIds = freezed,
+  }) {
     return _then(
       _$CreateGameRequestImpl(
         type:
@@ -1129,6 +1151,11 @@ class __$$CreateGameRequestImplCopyWithImpl<$Res>
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
                     as String?,
+        classIds:
+            freezed == classIds
+                ? _value._classIds
+                : classIds // ignore: cast_nullable_to_non_nullable
+                    as List<String>?,
       ),
     );
   }
@@ -1140,7 +1167,8 @@ class _$CreateGameRequestImpl implements _CreateGameRequest {
   const _$CreateGameRequestImpl({
     @GameTypeConverter() required this.type,
     this.title,
-  });
+    final List<String>? classIds,
+  }) : _classIds = classIds;
 
   factory _$CreateGameRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$CreateGameRequestImplFromJson(json);
@@ -1150,10 +1178,19 @@ class _$CreateGameRequestImpl implements _CreateGameRequest {
   final GameType type;
   @override
   final String? title;
+  final List<String>? _classIds;
+  @override
+  List<String>? get classIds {
+    final value = _classIds;
+    if (value == null) return null;
+    if (_classIds is EqualUnmodifiableListView) return _classIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'CreateGameRequest(type: $type, title: $title)';
+    return 'CreateGameRequest(type: $type, title: $title, classIds: $classIds)';
   }
 
   @override
@@ -1162,12 +1199,18 @@ class _$CreateGameRequestImpl implements _CreateGameRequest {
         (other.runtimeType == runtimeType &&
             other is _$CreateGameRequestImpl &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.title, title) || other.title == title));
+            (identical(other.title, title) || other.title == title) &&
+            const DeepCollectionEquality().equals(other._classIds, _classIds));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, type, title);
+  int get hashCode => Object.hash(
+    runtimeType,
+    type,
+    title,
+    const DeepCollectionEquality().hash(_classIds),
+  );
 
   /// Create a copy of CreateGameRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -1190,6 +1233,7 @@ abstract class _CreateGameRequest implements CreateGameRequest {
   const factory _CreateGameRequest({
     @GameTypeConverter() required final GameType type,
     final String? title,
+    final List<String>? classIds,
   }) = _$CreateGameRequestImpl;
 
   factory _CreateGameRequest.fromJson(Map<String, dynamic> json) =
@@ -1200,6 +1244,8 @@ abstract class _CreateGameRequest implements CreateGameRequest {
   GameType get type;
   @override
   String? get title;
+  @override
+  List<String>? get classIds;
 
   /// Create a copy of CreateGameRequest
   /// with the given fields replaced by the non-null parameter values.

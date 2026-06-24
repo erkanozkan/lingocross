@@ -92,7 +92,7 @@ AssignedGameDto _game({
 }
 
 void main() {
-  testWidgets('Hiç öğretmene katılmamış → "Öğretmene Katıl" + boş durum',
+  testWidgets('Hiç sınıfa katılmamış → "Sınıfa Katıl" + boş durum',
       (tester) async {
     await tester.pumpWidget(_wrap(
       enrollmentRepo: FakeEnrollmentRepository(enrollments: const []),
@@ -101,8 +101,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    expect(find.text('Bir Öğretmene Katıl'), findsOneWidget);
-    expect(find.text('Henüz bir derse katılmadın'), findsOneWidget);
+    expect(find.text('Bir Sınıfa Katıl'), findsOneWidget);
+    expect(find.text('Henüz bir sınıfa katılmadın'), findsOneWidget);
     expect(find.text('GÜNÜN OYUNU'), findsNothing);
   });
 

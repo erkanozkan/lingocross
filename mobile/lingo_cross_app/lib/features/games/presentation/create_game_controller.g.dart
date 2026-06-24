@@ -7,7 +7,7 @@ part of 'create_game_controller.dart';
 // **************************************************************************
 
 String _$createGameControllerHash() =>
-    r'2cf422dd0535a9754fb8b805f1f24eee6c371d10';
+    r'aa097f6d016811ce0e82177c8078010ec782f6c8';
 
 /// Öğretmen "Yeni Bulmaca Oluştur" akışı (`POST /lessons/{id}/games`).
 ///

@@ -8,13 +8,17 @@ import '../../features/auth/presentation/auth_state.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/enrollment/presentation/screens/join_teacher_screen.dart';
+import '../../features/classes/presentation/screens/class_detail_screen.dart';
+import '../../features/classes/presentation/screens/classes_list_screen.dart';
+import '../../features/classes/presentation/screens/create_class_screen.dart';
+import '../../features/classes/presentation/screens/join_class_screen.dart';
 import '../../features/enrollment/presentation/screens/student_dashboard_screen.dart';
 import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
 import '../../features/games/presentation/screens/create_game_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/games/presentation/screens/my_puzzles_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
+import '../../features/lessons/presentation/screens/lessons_list_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
@@ -65,6 +69,16 @@ abstract final class AppRoutes {
   static const String teacher = '/teacher';
   static const String teacherStudents = '/teacher/students';
   static const String lessonNew = '/teacher/lessons/new';
+
+  /// Derslerim (F4.3 — "Sınıflar" sekmesi artık Sınıflarım olduğu için
+  /// Derslerim'e Ana Sayfa/Profil'den erişilir).
+  static const String lessons = '/teacher/lessons';
+
+  /// Adlandırılmış sınıflar (F4.3 — "Sınıflar" sekmesi gövdesi + alt ekranlar).
+  static const String classes = '/teacher/classes';
+  static const String classNew = '/teacher/classes/new';
+
+  static String classDetail(String id) => '/teacher/classes/$id';
 
   /// Yeni Bulmaca Oluştur (F2.2). Opsiyonel `?lessonId=` ile ön-seçili ders.
   static const String gameNew = '/teacher/games/new';
@@ -179,7 +193,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.studentJoin,
-        builder: (context, state) => const JoinTeacherScreen(),
+        builder: (context, state) => const JoinClassScreen(),
       ),
       GoRoute(
         path: '/student/lessons/:id',
@@ -215,6 +229,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.teacherStudents,
         builder: (context, state) => const TeacherStudentsScreen(),
       ),
+      // Adlandırılmış sınıflar (F4.3). Liste shell sekmesi gövdesi; ayrıca
+      // doğrudan derin-bağlantı için route.
+      GoRoute(
+        path: AppRoutes.classes,
+        builder: (context, state) => const ClassesListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.classNew,
+        builder: (context, state) => const CreateClassScreen(),
+      ),
+      GoRoute(
+        path: '/teacher/classes/:id',
+        builder: (context, state) =>
+            ClassDetailScreen(classId: state.pathParameters['id']!),
+      ),
       // Öğretmen takip: bir öğrencinin paylaştığı sonuçlar (F2.3). Görünen ad
       // liste ekranından `extra` (String) ile taşınır.
       GoRoute(
@@ -223,6 +252,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           studentId: state.pathParameters['id']!,
           studentName: state.extra is String ? state.extra as String : '',
         ),
+      ),
+      // Derslerim (F4.3) — Ana Sayfa/Profil'den erişilir (Sınıflar sekmesi
+      // artık Sınıflarım). `/teacher/lessons/new` ve `/:id` ayrı route'lar.
+      GoRoute(
+        path: AppRoutes.lessons,
+        builder: (context, state) => const LessonsListScreen(),
       ),
       GoRoute(
         path: AppRoutes.lessonNew,
