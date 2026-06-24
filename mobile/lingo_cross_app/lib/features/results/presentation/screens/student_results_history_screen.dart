@@ -210,7 +210,10 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final dateLabel = formatShortDate(result.createdAt);
+    final dateLabel = formatShortDate(
+      result.createdAt,
+      localeCode: Localizations.localeOf(context).languageCode,
+    );
     final a11y = l10n.resultsHistoryItemDateA11y(
       result.lessonTitle,
       result.accuracyPercent,

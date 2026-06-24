@@ -912,6 +912,8 @@ UpdateProfileRequest _$UpdateProfileRequestFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UpdateProfileRequest {
   String get displayName => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
+  String? get preferredLocale => throw _privateConstructorUsedError;
 
   /// Serializes this UpdateProfileRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -930,7 +932,10 @@ abstract class $UpdateProfileRequestCopyWith<$Res> {
     $Res Function(UpdateProfileRequest) then,
   ) = _$UpdateProfileRequestCopyWithImpl<$Res, UpdateProfileRequest>;
   @useResult
-  $Res call({String displayName});
+  $Res call({
+    String displayName,
+    @JsonKey(includeIfNull: false) String? preferredLocale,
+  });
 }
 
 /// @nodoc
@@ -950,7 +955,7 @@ class _$UpdateProfileRequestCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? displayName = null}) {
+  $Res call({Object? displayName = null, Object? preferredLocale = freezed}) {
     return _then(
       _value.copyWith(
             displayName:
@@ -958,6 +963,11 @@ class _$UpdateProfileRequestCopyWithImpl<
                     ? _value.displayName
                     : displayName // ignore: cast_nullable_to_non_nullable
                         as String,
+            preferredLocale:
+                freezed == preferredLocale
+                    ? _value.preferredLocale
+                    : preferredLocale // ignore: cast_nullable_to_non_nullable
+                        as String?,
           )
           as $Val,
     );
@@ -973,7 +983,10 @@ abstract class _$$UpdateProfileRequestImplCopyWith<$Res>
   ) = __$$UpdateProfileRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String displayName});
+  $Res call({
+    String displayName,
+    @JsonKey(includeIfNull: false) String? preferredLocale,
+  });
 }
 
 /// @nodoc
@@ -989,7 +1002,7 @@ class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? displayName = null}) {
+  $Res call({Object? displayName = null, Object? preferredLocale = freezed}) {
     return _then(
       _$UpdateProfileRequestImpl(
         displayName:
@@ -997,6 +1010,11 @@ class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
                 ? _value.displayName
                 : displayName // ignore: cast_nullable_to_non_nullable
                     as String,
+        preferredLocale:
+            freezed == preferredLocale
+                ? _value.preferredLocale
+                : preferredLocale // ignore: cast_nullable_to_non_nullable
+                    as String?,
       ),
     );
   }
@@ -1005,17 +1023,23 @@ class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
-  const _$UpdateProfileRequestImpl({required this.displayName});
+  const _$UpdateProfileRequestImpl({
+    required this.displayName,
+    @JsonKey(includeIfNull: false) this.preferredLocale,
+  });
 
   factory _$UpdateProfileRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$UpdateProfileRequestImplFromJson(json);
 
   @override
   final String displayName;
+  @override
+  @JsonKey(includeIfNull: false)
+  final String? preferredLocale;
 
   @override
   String toString() {
-    return 'UpdateProfileRequest(displayName: $displayName)';
+    return 'UpdateProfileRequest(displayName: $displayName, preferredLocale: $preferredLocale)';
   }
 
   @override
@@ -1024,12 +1048,14 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
         (other.runtimeType == runtimeType &&
             other is _$UpdateProfileRequestImpl &&
             (identical(other.displayName, displayName) ||
-                other.displayName == displayName));
+                other.displayName == displayName) &&
+            (identical(other.preferredLocale, preferredLocale) ||
+                other.preferredLocale == preferredLocale));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, displayName);
+  int get hashCode => Object.hash(runtimeType, displayName, preferredLocale);
 
   /// Create a copy of UpdateProfileRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -1050,14 +1076,19 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
 }
 
 abstract class _UpdateProfileRequest implements UpdateProfileRequest {
-  const factory _UpdateProfileRequest({required final String displayName}) =
-      _$UpdateProfileRequestImpl;
+  const factory _UpdateProfileRequest({
+    required final String displayName,
+    @JsonKey(includeIfNull: false) final String? preferredLocale,
+  }) = _$UpdateProfileRequestImpl;
 
   factory _UpdateProfileRequest.fromJson(Map<String, dynamic> json) =
       _$UpdateProfileRequestImpl.fromJson;
 
   @override
   String get displayName;
+  @override
+  @JsonKey(includeIfNull: false)
+  String? get preferredLocale;
 
   /// Create a copy of UpdateProfileRequest
   /// with the given fields replaced by the non-null parameter values.

@@ -42,7 +42,10 @@ class FakeAuthRepository implements AuthRepository {
       throw UnimplementedError();
 
   @override
-  Future<UserDto> updateProfile({required String displayName}) =>
+  Future<UserDto> updateProfile({
+    required String displayName,
+    String? preferredLocale,
+  }) =>
       throw UnimplementedError();
 
   @override

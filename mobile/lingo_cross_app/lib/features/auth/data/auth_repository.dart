@@ -72,12 +72,19 @@ class AuthRepository {
     return UserDto.fromJson(res.data!);
   }
 
-  /// Görünen adı günceller (PUT /auth/me → 200 UserDto).
-  Future<UserDto> updateProfile({required String displayName}) async {
+  /// Görünen adı (ve opsiyonel dil tercihini) günceller (PUT /auth/me → 200
+  /// UserDto). [preferredLocale] verilmezse istekte yer almaz.
+  Future<UserDto> updateProfile({
+    required String displayName,
+    String? preferredLocale,
+  }) async {
     try {
       final res = await _dio.put<Map<String, dynamic>>(
         '$_base/auth/me',
-        data: UpdateProfileRequest(displayName: displayName).toJson(),
+        data: UpdateProfileRequest(
+          displayName: displayName,
+          preferredLocale: preferredLocale,
+        ).toJson(),
       );
       return UserDto.fromJson(res.data!);
     } on DioException catch (e) {

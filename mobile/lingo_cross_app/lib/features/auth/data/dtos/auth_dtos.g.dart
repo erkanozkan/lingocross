@@ -56,11 +56,17 @@ Map<String, dynamic> _$$ForgotPasswordRequestImplToJson(
 
 _$UpdateProfileRequestImpl _$$UpdateProfileRequestImplFromJson(
   Map<String, dynamic> json,
-) => _$UpdateProfileRequestImpl(displayName: json['displayName'] as String);
+) => _$UpdateProfileRequestImpl(
+  displayName: json['displayName'] as String,
+  preferredLocale: json['preferredLocale'] as String?,
+);
 
 Map<String, dynamic> _$$UpdateProfileRequestImplToJson(
   _$UpdateProfileRequestImpl instance,
-) => <String, dynamic>{'displayName': instance.displayName};
+) => <String, dynamic>{
+  'displayName': instance.displayName,
+  if (instance.preferredLocale case final value?) 'preferredLocale': value,
+};
 
 _$ChangePasswordRequestImpl _$$ChangePasswordRequestImplFromJson(
   Map<String, dynamic> json,

@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/l10n/locale_controller.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 
-/// Dil Tercihi (Stitch `dba79a72…` — birebir). Hesap Ayarları'ndan push'lanır
-/// (`/account/language`).
+/// Dil Tercihi (Lumina). Hesap Ayarları'ndan push'lanır (`/account/language`).
 ///
-/// Radyo-liste: "Türkçe" (seçili, sağda dolu radio + check ikonu), "English"
-/// (pasif + sağda "Yakında" rozeti). Info satırı + dekoratif "Global Öğrenim
-/// Topluluğu" görsel kartı. Türkçe tek aktif dil — seçim değişmez.
-class LanguagePreferenceScreen extends StatelessWidget {
+/// İki dil aktiftir: "Türkçe" ve "English". Seçili dil [localeControllerProvider]
+/// state'ine bağlıdır; seçince [LocaleController.setLocale] çağrılır (cihazda
+/// saklanır + best-effort backend'e yazılır). Info satırı + dekoratif kart.
+class LanguagePreferenceScreen extends ConsumerWidget {
   const LanguagePreferenceScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final current = ref.watch(localeControllerProvider).languageCode;
+
+    Future<void> select(String code) async {
+      if (code == current) return;
+      await ref.read(localeControllerProvider.notifier).setLocale(Locale(code));
+    }
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -42,7 +49,7 @@ class LanguagePreferenceScreen extends StatelessWidget {
           AppSpacing.xl,
         ),
         children: [
-          // Dil seçici kart.
+          // Dil seçici kart (iki aktif seçenek).
           Container(
             decoration: BoxDecoration(
               color: AppColors.surfaceContainerLowest,
@@ -53,42 +60,10 @@ class LanguagePreferenceScreen extends StatelessWidget {
             clipBehavior: Clip.antiAlias,
             child: Column(
               children: [
-                // Aktif: Türkçe.
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.lg,
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.check_circle,
-                          color: AppColors.primary, size: 24),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(
-                          l10n.languageOptionTurkish,
-                          style: AppTypography.headlineMd,
-                        ),
-                      ),
-                      // Dolu radio.
-                      Container(
-                        width: 20,
-                        height: 20,
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border:
-                              Border.all(color: AppColors.primary, width: 2),
-                        ),
-                        child: const DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                _LanguageRow(
+                  label: l10n.languageOptionTurkish,
+                  selected: current == 'tr',
+                  onTap: () => select('tr'),
                 ),
                 Divider(
                   height: 1,
@@ -96,30 +71,10 @@ class LanguagePreferenceScreen extends StatelessWidget {
                   endIndent: AppSpacing.md,
                   color: AppColors.outlineVariant.withValues(alpha: 0.3),
                 ),
-                // Pasif: English + "Yakında" rozeti.
-                Opacity(
-                  opacity: 0.4,
-                  child: Container(
-                    color: AppColors.surfaceContainerLow.withValues(alpha: 0.5),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.lg,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.radio_button_unchecked,
-                            color: AppColors.outline, size: 24),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Text(
-                            l10n.languageOptionEnglish,
-                            style: AppTypography.headlineMd,
-                          ),
-                        ),
-                        _ComingSoonBadge(label: l10n.languageComingSoonBadge),
-                      ],
-                    ),
-                  ),
+                _LanguageRow(
+                  label: l10n.languageOptionEnglish,
+                  selected: current == 'en',
+                  onTap: () => select('en'),
                 ),
               ],
             ),
@@ -152,30 +107,72 @@ class LanguagePreferenceScreen extends StatelessWidget {
   }
 }
 
-/// Açık primary zeminli "Yakında" rozeti.
-class _ComingSoonBadge extends StatelessWidget {
-  const _ComingSoonBadge({required this.label});
+/// Tek dil satırı: seçili → dolu radio + check_circle; pasif → boş radio.
+class _LanguageRow extends StatelessWidget {
+  const _LanguageRow({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.primaryContainer.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: AppColors.primaryFixedDim.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.labelSm.copyWith(color: AppColors.primary),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.lg,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              selected ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: selected ? AppColors.primary : AppColors.outline,
+              size: 24,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(label, style: AppTypography.headlineMd),
+            ),
+            // Sağda durum göstergesi: seçili → dolu radio, pasif → boş.
+            if (selected)
+              Container(
+                width: 20,
+                height: 20,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary, width: 2),
+                ),
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              )
+            else
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.outline, width: 2),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Gradient + ikon kümesi dekoratif hero kart (Stitch görselinin yerel karşılığı).
+/// Gradient + ikon kümesi dekoratif hero kart (Lumina görselinin yerel karşılığı).
 class _DecorationCard extends StatelessWidget {
   const _DecorationCard({required this.caption});
 

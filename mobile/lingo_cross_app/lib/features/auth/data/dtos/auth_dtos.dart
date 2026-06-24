@@ -71,11 +71,16 @@ class ForgotPasswordRequest with _$ForgotPasswordRequest {
       _$ForgotPasswordRequestFromJson(json);
 }
 
-/// PUT /api/auth/me isteği — görünen ad güncelleme (UpdateProfileRequest).
+/// PUT /api/auth/me isteği — görünen ad + (opsiyonel) dil tercihi güncelleme
+/// (UpdateProfileRequest). `displayName` zorunlu kalır; `preferredLocale` yalnız
+/// verildiğinde gönderilir (null gönderilmez → mevcut backend davranışı korunur).
 @freezed
 class UpdateProfileRequest with _$UpdateProfileRequest {
-  const factory UpdateProfileRequest({required String displayName}) =
-      _UpdateProfileRequest;
+  const factory UpdateProfileRequest({
+    required String displayName,
+    // ignore: invalid_annotation_target
+    @JsonKey(includeIfNull: false) String? preferredLocale,
+  }) = _UpdateProfileRequest;
 
   factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
       _$UpdateProfileRequestFromJson(json);
