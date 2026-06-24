@@ -32,6 +32,10 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<WordSynonym> WordSynonyms => Set<WordSynonym>();
 
+    public DbSet<Game> Games => Set<Game>();
+
+    public DbSet<GameSession> GameSessions => Set<GameSession>();
+
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
 
