@@ -12,15 +12,19 @@ import 'package:lingo_cross_app/features/enrollment/presentation/screens/student
 import 'package:lingo_cross_app/features/games/data/dtos/game_dtos.dart';
 import 'package:lingo_cross_app/features/games/data/games_repository.dart';
 import 'package:lingo_cross_app/features/games/domain/game_type.dart';
+import 'package:lingo_cross_app/features/profile/data/dtos/student_stats_dto.dart';
+import 'package:lingo_cross_app/features/profile/data/student_stats_repository.dart';
 
 import 'helpers/fake_enrollment_repository.dart';
 import 'helpers/fake_games_repository.dart';
+import 'helpers/fake_student_stats_repository.dart';
 
 String? lastGameId;
 
 Widget _wrap({
   required FakeEnrollmentRepository enrollmentRepo,
   required FakeGamesRepository gamesRepo,
+  FakeStudentStatsRepository? statsRepo,
 }) {
   lastGameId = null;
   final router = GoRouter(
@@ -35,6 +39,9 @@ Widget _wrap({
           return const Scaffold(body: Text('game-screen'));
         },
       ),
+      GoRoute(
+          path: '/student/results',
+          builder: (_, __) => const Scaffold(body: Text('results-screen'))),
       GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
     ],
   );
@@ -42,6 +49,8 @@ Widget _wrap({
     overrides: [
       enrollmentRepositoryProvider.overrideWithValue(enrollmentRepo),
       gamesRepositoryProvider.overrideWithValue(gamesRepo),
+      studentStatsRepositoryProvider
+          .overrideWithValue(statsRepo ?? FakeStudentStatsRepository()),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -174,5 +183,64 @@ void main() {
 
     expect(find.text('Atanan Bulmacalar'), findsOneWidget);
     expect(find.text('İkinci Bulmaca'), findsOneWidget);
+  });
+
+  testWidgets('Gelişim Özeti: oyun oynanmışsa gerçek oyun + doğruluk gösterir',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
+      statsRepo: FakeStudentStatsRepository(
+        stats: const StudentStatsDto(gamesPlayed: 7, averageAccuracy: 82),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(find.text('Raporlarım'), 200,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Raporlarım'), findsOneWidget);
+    expect(find.text('7'), findsOneWidget);
+    expect(find.text('%82'), findsOneWidget);
+    expect(find.text('Henüz oyun oynamadın.'), findsNothing);
+  });
+
+  testWidgets('Gelişim Özeti: hiç oyun yoksa boş metin gösterir',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
+      statsRepo: FakeStudentStatsRepository(
+        stats: const StudentStatsDto(gamesPlayed: 0, averageAccuracy: 0),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(find.text("Henüz oyun oynamadın."), 200,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Henüz oyun oynamadın.'), findsOneWidget);
+  });
+
+  testWidgets('Gelişim Özeti "Raporlarım" → sonuç ekranına gider',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
+      statsRepo: FakeStudentStatsRepository(
+        stats: const StudentStatsDto(gamesPlayed: 3, averageAccuracy: 70),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.scrollUntilVisible(find.text('Raporlarım'), 200,
+        scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(find.text('Raporlarım'));
+    await tester.pump();
+    await tester.tap(find.text('Raporlarım'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('results-screen'), findsOneWidget);
   });
 }

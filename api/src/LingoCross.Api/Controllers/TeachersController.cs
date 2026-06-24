@@ -61,4 +61,15 @@ public class TeachersController : ControllerBase
         var results = await _trackingService.GetStudentSharedResultsAsync(studentId, ct);
         return Ok(results);
     }
+
+    /// <summary>
+    /// Öğretmen profili istatistikleri: arşivlenmemiş sınıf sayısı, distinct Active öğrenci sayısı
+    /// ve son 7 günün haftalık ödev beklenen/tamamlanan sayıları (+ tamamlanma oranı).
+    /// </summary>
+    [HttpGet("me/stats")]
+    public async Task<ActionResult<TeacherStatsDto>> GetMyStats(CancellationToken ct)
+    {
+        var stats = await _trackingService.GetMyStatsAsync(ct);
+        return Ok(stats);
+    }
 }

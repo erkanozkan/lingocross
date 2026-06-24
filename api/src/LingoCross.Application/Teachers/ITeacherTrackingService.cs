@@ -22,4 +22,11 @@ public interface ITeacherTrackingService
     /// yeniden eskiye. Öğrenci bu öğretmene Active eşleşmeli değilse 404. Paylaşılmamış sonuçlar dönmez.
     /// </summary>
     Task<IReadOnlyList<SharedResultDto>> GetStudentSharedResultsAsync(Guid studentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Geçerli öğretmenin profil istatistikleri (F7): arşivlenmemiş sınıf sayısı, sınıflarındaki
+    /// distinct Active öğrenci sayısı ve son 7 günün haftalık ödev beklenen/tamamlanan sayıları
+    /// (+ tamamlanma oranı). Sahiplik bu katmanda uygulanır; yalnız kendi verisi.
+    /// </summary>
+    Task<TeacherStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default);
 }

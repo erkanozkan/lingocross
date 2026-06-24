@@ -12,6 +12,7 @@ import '../../../auth/presentation/auth_notifier.dart';
 import '../../../games/data/dtos/game_dtos.dart';
 import '../../../games/presentation/assigned_games_notifier.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
+import '../../../profile/presentation/student_stats_notifier.dart';
 import '../../data/dtos/enrollment_dtos.dart';
 import '../enrollments_notifier.dart';
 import '../widgets/student_bottom_nav.dart';
@@ -188,7 +189,7 @@ class _Content extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
           const SizedBox(height: AppSpacing.lg),
-          const _ProgressSkeletonSection(),
+          const _ProgressSummarySection(),
         ],
       );
     }
@@ -221,7 +222,7 @@ class _Content extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
         const SizedBox(height: AppSpacing.lg),
-        const _ProgressSkeletonSection(),
+        const _ProgressSummarySection(),
       ],
     );
   }
@@ -686,41 +687,195 @@ class _JoinTeacherLink extends StatelessWidget {
   }
 }
 
-/// Gelişim Özeti — M6 iskeleti (Sapma 3). M3'te tek satır "Yakında".
-class _ProgressSkeletonSection extends StatelessWidget {
-  const _ProgressSkeletonSection();
+/// Gelişim Özeti — `GET /students/me/stats` gerçek verisinden: oynanan oyun
+/// sayısı + ortalama doğruluk mini kartları + "Raporlarım" kısayolu.
+/// Veri yoksa (hiç oyun oynanmadı) "Henüz oyun oynamadın" + Oyna CTA.
+/// Yükleniyor/hata durumları ele alınır.
+class _ProgressSummarySection extends ConsumerWidget {
+  const _ProgressSummarySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final statsAsync = ref.watch(studentStatsNotifierProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _SectionLabel(l10n.studentDashboardProgressTitle),
+            InkWell(
+              onTap: () => context.push(AppRoutes.studentResults),
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs, vertical: AppSpacing.base),
+                child: Row(
+                  children: [
+                    Text(
+                      l10n.studentDashboardSeeReports,
+                      style: AppTypography.labelLg
+                          .copyWith(color: AppColors.primary),
+                    ),
+                    const Icon(Icons.chevron_right,
+                        color: AppColors.primary, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        statsAsync.when(
+          loading: () => const SkeletonCard(height: 96),
+          error: (_, __) => _ProgressNotice(
+            icon: Icons.cloud_off,
+            text: l10n.studentDashboardStatsError,
+          ),
+          data: (stats) {
+            if (stats.gamesPlayed <= 0) {
+              return const _ProgressEmpty();
+            }
+            return Row(
+              children: [
+                Expanded(
+                  child: _ProgressStatCard(
+                    icon: Icons.extension,
+                    iconColor: AppColors.primary,
+                    iconBg: AppColors.primaryFixed,
+                    value: '${stats.gamesPlayed}',
+                    label: l10n.studentDashboardStatGames,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: _ProgressStatCard(
+                    icon: Icons.verified,
+                    iconColor: AppColors.tertiary,
+                    iconBg: AppColors.tertiaryFixed,
+                    value: l10n
+                        .studentDashboardStatAccuracyValue(stats.accuracyPercent),
+                    label: l10n.studentDashboardStatAccuracy,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+/// Gelişim özeti mini metrik kartı (oyun sayısı / doğruluk).
+class _ProgressStatCard extends StatelessWidget {
+  const _ProgressStatCard({
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.value,
+    required this.label,
+  });
+
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: AppShadows.level2,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: iconBg.withValues(alpha: 0.4),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(value,
+                    style: AppTypography.headlineMd
+                        .copyWith(color: AppColors.onSurface)),
+                Text(
+                  label,
+                  style: AppTypography.labelSm
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Boş — henüz oyun oynanmadı: açıklama satırı (üstte atanan bulmacalardan
+/// oynanır; ayrıca "Raporlarım" kısayolu başlıkta mevcuttur).
+class _ProgressEmpty extends StatelessWidget {
+  const _ProgressEmpty();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionLabel(l10n.studentDashboardProgressTitle),
-        const SizedBox(height: AppSpacing.sm),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border.all(color: AppColors.outlineVariant),
+    return _ProgressNotice(
+      icon: Icons.insights,
+      text: l10n.studentDashboardStatsEmpty,
+    );
+  }
+}
+
+/// Hata/uyarı satırı (gelişim özeti).
+class _ProgressNotice extends StatelessWidget {
+  const _ProgressNotice({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
           ),
-          child: Row(
-            children: [
-              const Icon(Icons.insights, color: AppColors.onSurfaceVariant),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Text(
-                  l10n.studentDashboardStatsSoon,
-                  style: AppTypography.bodyMd
-                      .copyWith(color: AppColors.onSurfaceVariant),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
