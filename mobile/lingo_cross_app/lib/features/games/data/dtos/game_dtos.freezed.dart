@@ -1560,6 +1560,533 @@ abstract class _WordMatchingContent implements WordMatchingContent {
       throw _privateConstructorUsedError;
 }
 
+CrosswordEntry _$CrosswordEntryFromJson(Map<String, dynamic> json) {
+  return _CrosswordEntry.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CrosswordEntry {
+  int get number => throw _privateConstructorUsedError;
+  String get answer => throw _privateConstructorUsedError;
+  String get clue => throw _privateConstructorUsedError;
+  int get row => throw _privateConstructorUsedError;
+  int get col => throw _privateConstructorUsedError;
+  @CrosswordDirectionConverter()
+  CrosswordDirection get direction => throw _privateConstructorUsedError;
+  int get length => throw _privateConstructorUsedError;
+
+  /// Serializes this CrosswordEntry to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CrosswordEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CrosswordEntryCopyWith<CrosswordEntry> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CrosswordEntryCopyWith<$Res> {
+  factory $CrosswordEntryCopyWith(
+    CrosswordEntry value,
+    $Res Function(CrosswordEntry) then,
+  ) = _$CrosswordEntryCopyWithImpl<$Res, CrosswordEntry>;
+  @useResult
+  $Res call({
+    int number,
+    String answer,
+    String clue,
+    int row,
+    int col,
+    @CrosswordDirectionConverter() CrosswordDirection direction,
+    int length,
+  });
+}
+
+/// @nodoc
+class _$CrosswordEntryCopyWithImpl<$Res, $Val extends CrosswordEntry>
+    implements $CrosswordEntryCopyWith<$Res> {
+  _$CrosswordEntryCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CrosswordEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? number = null,
+    Object? answer = null,
+    Object? clue = null,
+    Object? row = null,
+    Object? col = null,
+    Object? direction = null,
+    Object? length = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            number:
+                null == number
+                    ? _value.number
+                    : number // ignore: cast_nullable_to_non_nullable
+                        as int,
+            answer:
+                null == answer
+                    ? _value.answer
+                    : answer // ignore: cast_nullable_to_non_nullable
+                        as String,
+            clue:
+                null == clue
+                    ? _value.clue
+                    : clue // ignore: cast_nullable_to_non_nullable
+                        as String,
+            row:
+                null == row
+                    ? _value.row
+                    : row // ignore: cast_nullable_to_non_nullable
+                        as int,
+            col:
+                null == col
+                    ? _value.col
+                    : col // ignore: cast_nullable_to_non_nullable
+                        as int,
+            direction:
+                null == direction
+                    ? _value.direction
+                    : direction // ignore: cast_nullable_to_non_nullable
+                        as CrosswordDirection,
+            length:
+                null == length
+                    ? _value.length
+                    : length // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CrosswordEntryImplCopyWith<$Res>
+    implements $CrosswordEntryCopyWith<$Res> {
+  factory _$$CrosswordEntryImplCopyWith(
+    _$CrosswordEntryImpl value,
+    $Res Function(_$CrosswordEntryImpl) then,
+  ) = __$$CrosswordEntryImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    int number,
+    String answer,
+    String clue,
+    int row,
+    int col,
+    @CrosswordDirectionConverter() CrosswordDirection direction,
+    int length,
+  });
+}
+
+/// @nodoc
+class __$$CrosswordEntryImplCopyWithImpl<$Res>
+    extends _$CrosswordEntryCopyWithImpl<$Res, _$CrosswordEntryImpl>
+    implements _$$CrosswordEntryImplCopyWith<$Res> {
+  __$$CrosswordEntryImplCopyWithImpl(
+    _$CrosswordEntryImpl _value,
+    $Res Function(_$CrosswordEntryImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CrosswordEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? number = null,
+    Object? answer = null,
+    Object? clue = null,
+    Object? row = null,
+    Object? col = null,
+    Object? direction = null,
+    Object? length = null,
+  }) {
+    return _then(
+      _$CrosswordEntryImpl(
+        number:
+            null == number
+                ? _value.number
+                : number // ignore: cast_nullable_to_non_nullable
+                    as int,
+        answer:
+            null == answer
+                ? _value.answer
+                : answer // ignore: cast_nullable_to_non_nullable
+                    as String,
+        clue:
+            null == clue
+                ? _value.clue
+                : clue // ignore: cast_nullable_to_non_nullable
+                    as String,
+        row:
+            null == row
+                ? _value.row
+                : row // ignore: cast_nullable_to_non_nullable
+                    as int,
+        col:
+            null == col
+                ? _value.col
+                : col // ignore: cast_nullable_to_non_nullable
+                    as int,
+        direction:
+            null == direction
+                ? _value.direction
+                : direction // ignore: cast_nullable_to_non_nullable
+                    as CrosswordDirection,
+        length:
+            null == length
+                ? _value.length
+                : length // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CrosswordEntryImpl implements _CrosswordEntry {
+  const _$CrosswordEntryImpl({
+    required this.number,
+    required this.answer,
+    required this.clue,
+    required this.row,
+    required this.col,
+    @CrosswordDirectionConverter() required this.direction,
+    required this.length,
+  });
+
+  factory _$CrosswordEntryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CrosswordEntryImplFromJson(json);
+
+  @override
+  final int number;
+  @override
+  final String answer;
+  @override
+  final String clue;
+  @override
+  final int row;
+  @override
+  final int col;
+  @override
+  @CrosswordDirectionConverter()
+  final CrosswordDirection direction;
+  @override
+  final int length;
+
+  @override
+  String toString() {
+    return 'CrosswordEntry(number: $number, answer: $answer, clue: $clue, row: $row, col: $col, direction: $direction, length: $length)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CrosswordEntryImpl &&
+            (identical(other.number, number) || other.number == number) &&
+            (identical(other.answer, answer) || other.answer == answer) &&
+            (identical(other.clue, clue) || other.clue == clue) &&
+            (identical(other.row, row) || other.row == row) &&
+            (identical(other.col, col) || other.col == col) &&
+            (identical(other.direction, direction) ||
+                other.direction == direction) &&
+            (identical(other.length, length) || other.length == length));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    number,
+    answer,
+    clue,
+    row,
+    col,
+    direction,
+    length,
+  );
+
+  /// Create a copy of CrosswordEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CrosswordEntryImplCopyWith<_$CrosswordEntryImpl> get copyWith =>
+      __$$CrosswordEntryImplCopyWithImpl<_$CrosswordEntryImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CrosswordEntryImplToJson(this);
+  }
+}
+
+abstract class _CrosswordEntry implements CrosswordEntry {
+  const factory _CrosswordEntry({
+    required final int number,
+    required final String answer,
+    required final String clue,
+    required final int row,
+    required final int col,
+    @CrosswordDirectionConverter() required final CrosswordDirection direction,
+    required final int length,
+  }) = _$CrosswordEntryImpl;
+
+  factory _CrosswordEntry.fromJson(Map<String, dynamic> json) =
+      _$CrosswordEntryImpl.fromJson;
+
+  @override
+  int get number;
+  @override
+  String get answer;
+  @override
+  String get clue;
+  @override
+  int get row;
+  @override
+  int get col;
+  @override
+  @CrosswordDirectionConverter()
+  CrosswordDirection get direction;
+  @override
+  int get length;
+
+  /// Create a copy of CrosswordEntry
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CrosswordEntryImplCopyWith<_$CrosswordEntryImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CrosswordContent _$CrosswordContentFromJson(Map<String, dynamic> json) {
+  return _CrosswordContent.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CrosswordContent {
+  int get rows => throw _privateConstructorUsedError;
+  int get cols => throw _privateConstructorUsedError;
+  List<CrosswordEntry> get entries => throw _privateConstructorUsedError;
+
+  /// Serializes this CrosswordContent to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CrosswordContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CrosswordContentCopyWith<CrosswordContent> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CrosswordContentCopyWith<$Res> {
+  factory $CrosswordContentCopyWith(
+    CrosswordContent value,
+    $Res Function(CrosswordContent) then,
+  ) = _$CrosswordContentCopyWithImpl<$Res, CrosswordContent>;
+  @useResult
+  $Res call({int rows, int cols, List<CrosswordEntry> entries});
+}
+
+/// @nodoc
+class _$CrosswordContentCopyWithImpl<$Res, $Val extends CrosswordContent>
+    implements $CrosswordContentCopyWith<$Res> {
+  _$CrosswordContentCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CrosswordContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? rows = null,
+    Object? cols = null,
+    Object? entries = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            rows:
+                null == rows
+                    ? _value.rows
+                    : rows // ignore: cast_nullable_to_non_nullable
+                        as int,
+            cols:
+                null == cols
+                    ? _value.cols
+                    : cols // ignore: cast_nullable_to_non_nullable
+                        as int,
+            entries:
+                null == entries
+                    ? _value.entries
+                    : entries // ignore: cast_nullable_to_non_nullable
+                        as List<CrosswordEntry>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CrosswordContentImplCopyWith<$Res>
+    implements $CrosswordContentCopyWith<$Res> {
+  factory _$$CrosswordContentImplCopyWith(
+    _$CrosswordContentImpl value,
+    $Res Function(_$CrosswordContentImpl) then,
+  ) = __$$CrosswordContentImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({int rows, int cols, List<CrosswordEntry> entries});
+}
+
+/// @nodoc
+class __$$CrosswordContentImplCopyWithImpl<$Res>
+    extends _$CrosswordContentCopyWithImpl<$Res, _$CrosswordContentImpl>
+    implements _$$CrosswordContentImplCopyWith<$Res> {
+  __$$CrosswordContentImplCopyWithImpl(
+    _$CrosswordContentImpl _value,
+    $Res Function(_$CrosswordContentImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CrosswordContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? rows = null,
+    Object? cols = null,
+    Object? entries = null,
+  }) {
+    return _then(
+      _$CrosswordContentImpl(
+        rows:
+            null == rows
+                ? _value.rows
+                : rows // ignore: cast_nullable_to_non_nullable
+                    as int,
+        cols:
+            null == cols
+                ? _value.cols
+                : cols // ignore: cast_nullable_to_non_nullable
+                    as int,
+        entries:
+            null == entries
+                ? _value._entries
+                : entries // ignore: cast_nullable_to_non_nullable
+                    as List<CrosswordEntry>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CrosswordContentImpl implements _CrosswordContent {
+  const _$CrosswordContentImpl({
+    required this.rows,
+    required this.cols,
+    required final List<CrosswordEntry> entries,
+  }) : _entries = entries;
+
+  factory _$CrosswordContentImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CrosswordContentImplFromJson(json);
+
+  @override
+  final int rows;
+  @override
+  final int cols;
+  final List<CrosswordEntry> _entries;
+  @override
+  List<CrosswordEntry> get entries {
+    if (_entries is EqualUnmodifiableListView) return _entries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_entries);
+  }
+
+  @override
+  String toString() {
+    return 'CrosswordContent(rows: $rows, cols: $cols, entries: $entries)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CrosswordContentImpl &&
+            (identical(other.rows, rows) || other.rows == rows) &&
+            (identical(other.cols, cols) || other.cols == cols) &&
+            const DeepCollectionEquality().equals(other._entries, _entries));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    rows,
+    cols,
+    const DeepCollectionEquality().hash(_entries),
+  );
+
+  /// Create a copy of CrosswordContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CrosswordContentImplCopyWith<_$CrosswordContentImpl> get copyWith =>
+      __$$CrosswordContentImplCopyWithImpl<_$CrosswordContentImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CrosswordContentImplToJson(this);
+  }
+}
+
+abstract class _CrosswordContent implements CrosswordContent {
+  const factory _CrosswordContent({
+    required final int rows,
+    required final int cols,
+    required final List<CrosswordEntry> entries,
+  }) = _$CrosswordContentImpl;
+
+  factory _CrosswordContent.fromJson(Map<String, dynamic> json) =
+      _$CrosswordContentImpl.fromJson;
+
+  @override
+  int get rows;
+  @override
+  int get cols;
+  @override
+  List<CrosswordEntry> get entries;
+
+  /// Create a copy of CrosswordContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CrosswordContentImplCopyWith<_$CrosswordContentImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 StartGameSessionResponse _$StartGameSessionResponseFromJson(
   Map<String, dynamic> json,
 ) {
@@ -1569,7 +2096,10 @@ StartGameSessionResponse _$StartGameSessionResponseFromJson(
 /// @nodoc
 mixin _$StartGameSessionResponse {
   GameSessionDto get session => throw _privateConstructorUsedError;
-  WordMatchingContent get content => throw _privateConstructorUsedError;
+  @GameTypeConverter()
+  GameType get type => throw _privateConstructorUsedError;
+  WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
+  CrosswordContent? get crossword => throw _privateConstructorUsedError;
 
   /// Serializes this StartGameSessionResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1588,10 +2118,16 @@ abstract class $StartGameSessionResponseCopyWith<$Res> {
     $Res Function(StartGameSessionResponse) then,
   ) = _$StartGameSessionResponseCopyWithImpl<$Res, StartGameSessionResponse>;
   @useResult
-  $Res call({GameSessionDto session, WordMatchingContent content});
+  $Res call({
+    GameSessionDto session,
+    @GameTypeConverter() GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
+  });
 
   $GameSessionDtoCopyWith<$Res> get session;
-  $WordMatchingContentCopyWith<$Res> get content;
+  $WordMatchingContentCopyWith<$Res>? get wordMatching;
+  $CrosswordContentCopyWith<$Res>? get crossword;
 }
 
 /// @nodoc
@@ -1611,7 +2147,12 @@ class _$StartGameSessionResponseCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? session = null, Object? content = null}) {
+  $Res call({
+    Object? session = null,
+    Object? type = null,
+    Object? wordMatching = freezed,
+    Object? crossword = freezed,
+  }) {
     return _then(
       _value.copyWith(
             session:
@@ -1619,11 +2160,21 @@ class _$StartGameSessionResponseCopyWithImpl<
                     ? _value.session
                     : session // ignore: cast_nullable_to_non_nullable
                         as GameSessionDto,
-            content:
-                null == content
-                    ? _value.content
-                    : content // ignore: cast_nullable_to_non_nullable
-                        as WordMatchingContent,
+            type:
+                null == type
+                    ? _value.type
+                    : type // ignore: cast_nullable_to_non_nullable
+                        as GameType,
+            wordMatching:
+                freezed == wordMatching
+                    ? _value.wordMatching
+                    : wordMatching // ignore: cast_nullable_to_non_nullable
+                        as WordMatchingContent?,
+            crossword:
+                freezed == crossword
+                    ? _value.crossword
+                    : crossword // ignore: cast_nullable_to_non_nullable
+                        as CrosswordContent?,
           )
           as $Val,
     );
@@ -1643,9 +2194,27 @@ class _$StartGameSessionResponseCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $WordMatchingContentCopyWith<$Res> get content {
-    return $WordMatchingContentCopyWith<$Res>(_value.content, (value) {
-      return _then(_value.copyWith(content: value) as $Val);
+  $WordMatchingContentCopyWith<$Res>? get wordMatching {
+    if (_value.wordMatching == null) {
+      return null;
+    }
+
+    return $WordMatchingContentCopyWith<$Res>(_value.wordMatching!, (value) {
+      return _then(_value.copyWith(wordMatching: value) as $Val);
+    });
+  }
+
+  /// Create a copy of StartGameSessionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CrosswordContentCopyWith<$Res>? get crossword {
+    if (_value.crossword == null) {
+      return null;
+    }
+
+    return $CrosswordContentCopyWith<$Res>(_value.crossword!, (value) {
+      return _then(_value.copyWith(crossword: value) as $Val);
     });
   }
 }
@@ -1659,12 +2228,19 @@ abstract class _$$StartGameSessionResponseImplCopyWith<$Res>
   ) = __$$StartGameSessionResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GameSessionDto session, WordMatchingContent content});
+  $Res call({
+    GameSessionDto session,
+    @GameTypeConverter() GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
+  });
 
   @override
   $GameSessionDtoCopyWith<$Res> get session;
   @override
-  $WordMatchingContentCopyWith<$Res> get content;
+  $WordMatchingContentCopyWith<$Res>? get wordMatching;
+  @override
+  $CrosswordContentCopyWith<$Res>? get crossword;
 }
 
 /// @nodoc
@@ -1684,7 +2260,12 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? session = null, Object? content = null}) {
+  $Res call({
+    Object? session = null,
+    Object? type = null,
+    Object? wordMatching = freezed,
+    Object? crossword = freezed,
+  }) {
     return _then(
       _$StartGameSessionResponseImpl(
         session:
@@ -1692,11 +2273,21 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
                 ? _value.session
                 : session // ignore: cast_nullable_to_non_nullable
                     as GameSessionDto,
-        content:
-            null == content
-                ? _value.content
-                : content // ignore: cast_nullable_to_non_nullable
-                    as WordMatchingContent,
+        type:
+            null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                    as GameType,
+        wordMatching:
+            freezed == wordMatching
+                ? _value.wordMatching
+                : wordMatching // ignore: cast_nullable_to_non_nullable
+                    as WordMatchingContent?,
+        crossword:
+            freezed == crossword
+                ? _value.crossword
+                : crossword // ignore: cast_nullable_to_non_nullable
+                    as CrosswordContent?,
       ),
     );
   }
@@ -1707,7 +2298,9 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
 class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
   const _$StartGameSessionResponseImpl({
     required this.session,
-    required this.content,
+    @GameTypeConverter() required this.type,
+    this.wordMatching,
+    this.crossword,
   });
 
   factory _$StartGameSessionResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -1716,11 +2309,16 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
   @override
   final GameSessionDto session;
   @override
-  final WordMatchingContent content;
+  @GameTypeConverter()
+  final GameType type;
+  @override
+  final WordMatchingContent? wordMatching;
+  @override
+  final CrosswordContent? crossword;
 
   @override
   String toString() {
-    return 'StartGameSessionResponse(session: $session, content: $content)';
+    return 'StartGameSessionResponse(session: $session, type: $type, wordMatching: $wordMatching, crossword: $crossword)';
   }
 
   @override
@@ -1729,12 +2327,17 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
         (other.runtimeType == runtimeType &&
             other is _$StartGameSessionResponseImpl &&
             (identical(other.session, session) || other.session == session) &&
-            (identical(other.content, content) || other.content == content));
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.wordMatching, wordMatching) ||
+                other.wordMatching == wordMatching) &&
+            (identical(other.crossword, crossword) ||
+                other.crossword == crossword));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, session, content);
+  int get hashCode =>
+      Object.hash(runtimeType, session, type, wordMatching, crossword);
 
   /// Create a copy of StartGameSessionResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -1755,7 +2358,9 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
 abstract class _StartGameSessionResponse implements StartGameSessionResponse {
   const factory _StartGameSessionResponse({
     required final GameSessionDto session,
-    required final WordMatchingContent content,
+    @GameTypeConverter() required final GameType type,
+    final WordMatchingContent? wordMatching,
+    final CrosswordContent? crossword,
   }) = _$StartGameSessionResponseImpl;
 
   factory _StartGameSessionResponse.fromJson(Map<String, dynamic> json) =
@@ -1764,7 +2369,12 @@ abstract class _StartGameSessionResponse implements StartGameSessionResponse {
   @override
   GameSessionDto get session;
   @override
-  WordMatchingContent get content;
+  @GameTypeConverter()
+  GameType get type;
+  @override
+  WordMatchingContent? get wordMatching;
+  @override
+  CrosswordContent? get crossword;
 
   /// Create a copy of StartGameSessionResponse
   /// with the given fields replaced by the non-null parameter values.

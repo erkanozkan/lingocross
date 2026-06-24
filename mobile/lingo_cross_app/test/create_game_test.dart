@@ -88,7 +88,7 @@ Future<void> _openCreate(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('İki oyun türü kartı; Crossword "Yakında" ve pasif',
+  testWidgets('İki oyun türü kartı; Crossword aktif (Yakında kaldırıldı)',
       (tester) async {
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson()]),
@@ -99,7 +99,27 @@ void main() {
     expect(find.text('Oyun Türünü Seç'), findsOneWidget);
     expect(find.text('Kelime Eşleştirme'), findsOneWidget);
     expect(find.text('Crossword'), findsOneWidget);
-    expect(find.text('Yakında'), findsOneWidget);
+    // F2.4: Crossword artık aktif; "Yakında" rozeti kaldırıldı.
+    expect(find.text('Yakında'), findsNothing);
+  });
+
+  testWidgets('Crossword seçilip oluştur+yayınla Crossword tipiyle çağrılır',
+      (tester) async {
+    final games = FakeGamesRepository();
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await tester.tap(find.text('Crossword'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
+    await tester.pumpAndSettle();
+
+    expect(games.createCount, 1);
+    expect(games.lastCreateRequest?.type, GameType.crossword);
   });
 
   testWidgets('Ders seçilmeden "Oluştur ve Yayınla" tetiklenmez',

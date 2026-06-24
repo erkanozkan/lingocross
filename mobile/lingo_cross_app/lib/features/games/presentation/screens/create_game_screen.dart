@@ -122,10 +122,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             icon: Icons.extension,
             title: l10n.createGameTypeCrosswordTitle,
             desc: l10n.createGameTypeCrosswordDesc,
-            selected: false,
-            enabled: false,
-            badge: l10n.createGameTypeComingSoon,
-            onTap: null,
+            selected: _selectedType == GameType.crossword,
+            enabled: true,
+            onTap: () => setState(() => _selectedType = GameType.crossword),
           ),
           const SizedBox(height: AppSpacing.xl),
           _StepHeader(number: 2, title: l10n.createGameStep2Title),
@@ -194,7 +193,7 @@ class _StepHeader extends StatelessWidget {
 }
 
 /// Oyun türü kartı. Seçili → primary çerçeve + tonal zemin + dolgulu ikon.
-/// Pasif (enabled=false) → soluk + "Yakında" rozeti, dokunulamaz.
+/// Pasif (enabled=false) → soluk, dokunulamaz. F2.4: her iki tür de aktif.
 class _GameTypeCard extends StatelessWidget {
   const _GameTypeCard({
     required this.icon,
@@ -203,7 +202,6 @@ class _GameTypeCard extends StatelessWidget {
     required this.selected,
     required this.enabled,
     required this.onTap,
-    this.badge,
   });
 
   final IconData icon;
@@ -212,7 +210,6 @@ class _GameTypeCard extends StatelessWidget {
   final bool selected;
   final bool enabled;
   final VoidCallback? onTap;
-  final String? badge;
 
   @override
   Widget build(BuildContext context) {
@@ -253,17 +250,7 @@ class _GameTypeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(title, style: AppTypography.headlineMd),
-                      ),
-                      if (badge != null) ...[
-                        const SizedBox(width: AppSpacing.xs),
-                        _ComingSoonBadge(label: badge!),
-                      ],
-                    ],
-                  ),
+                  Text(title, style: AppTypography.headlineMd),
                   const SizedBox(height: AppSpacing.base),
                   Text(
                     desc,
@@ -288,28 +275,6 @@ class _GameTypeCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         child: card,
-      ),
-    );
-  }
-}
-
-class _ComingSoonBadge extends StatelessWidget {
-  const _ComingSoonBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs, vertical: AppSpacing.base),
-      decoration: BoxDecoration(
-        color: AppColors.secondaryContainer.withValues(alpha: 0.25),
-        borderRadius: BorderRadius.circular(AppRadius.full),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.labelSm.copyWith(color: AppColors.onSurfaceVariant),
       ),
     );
   }

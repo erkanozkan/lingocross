@@ -2235,12 +2235,6 @@ abstract class AppLocalizations {
   /// **'Klasik kare bulmaca formatında kelime tamamlama oyunu.'**
   String get createGameTypeCrosswordDesc;
 
-  /// No description provided for @createGameTypeComingSoon.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yakında'**
-  String get createGameTypeComingSoon;
-
   /// No description provided for @createGameLessonLabel.
   ///
   /// In tr, this message translates to:
@@ -2306,6 +2300,66 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bulmaca oluşturulamadı, tekrar dene.'**
   String get createGameErrorGeneric;
+
+  /// No description provided for @gameCrosswordTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün Bulmacası'**
+  String get gameCrosswordTitle;
+
+  /// No description provided for @gameCrosswordCounter.
+  ///
+  /// In tr, this message translates to:
+  /// **'{correct} / {total}'**
+  String gameCrosswordCounter(int correct, int total);
+
+  /// No description provided for @gameCrosswordAcross.
+  ///
+  /// In tr, this message translates to:
+  /// **'SOLDAN SAĞA'**
+  String get gameCrosswordAcross;
+
+  /// No description provided for @gameCrosswordDown.
+  ///
+  /// In tr, this message translates to:
+  /// **'YUKARIDAN AŞAĞI'**
+  String get gameCrosswordDown;
+
+  /// No description provided for @gameCrosswordFinish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitir'**
+  String get gameCrosswordFinish;
+
+  /// No description provided for @gameCrosswordKeyDelete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get gameCrosswordKeyDelete;
+
+  /// No description provided for @gameCrosswordCompleteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca tamamlandı!'**
+  String get gameCrosswordCompleteTitle;
+
+  /// No description provided for @gameCrosswordCellSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca hücresi'**
+  String get gameCrosswordCellSemantic;
+
+  /// No description provided for @gameCrosswordCellNumberedSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'{number} numaralı kelimenin başlangıç hücresi'**
+  String gameCrosswordCellNumberedSemantic(int number);
+
+  /// No description provided for @gameCrosswordCellEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'boş'**
+  String get gameCrosswordCellEmpty;
 
   /// No description provided for @teacherStudentsAppBarTitle.
   ///

@@ -134,18 +134,74 @@ Map<String, dynamic> _$$WordMatchingContentImplToJson(
   'distractors': instance.distractors,
 };
 
+_$CrosswordEntryImpl _$$CrosswordEntryImplFromJson(Map<String, dynamic> json) =>
+    _$CrosswordEntryImpl(
+      number: (json['number'] as num).toInt(),
+      answer: json['answer'] as String,
+      clue: json['clue'] as String,
+      row: (json['row'] as num).toInt(),
+      col: (json['col'] as num).toInt(),
+      direction: const CrosswordDirectionConverter().fromJson(
+        (json['direction'] as num).toInt(),
+      ),
+      length: (json['length'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$$CrosswordEntryImplToJson(
+  _$CrosswordEntryImpl instance,
+) => <String, dynamic>{
+  'number': instance.number,
+  'answer': instance.answer,
+  'clue': instance.clue,
+  'row': instance.row,
+  'col': instance.col,
+  'direction': const CrosswordDirectionConverter().toJson(instance.direction),
+  'length': instance.length,
+};
+
+_$CrosswordContentImpl _$$CrosswordContentImplFromJson(
+  Map<String, dynamic> json,
+) => _$CrosswordContentImpl(
+  rows: (json['rows'] as num).toInt(),
+  cols: (json['cols'] as num).toInt(),
+  entries:
+      (json['entries'] as List<dynamic>)
+          .map((e) => CrosswordEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
+
+Map<String, dynamic> _$$CrosswordContentImplToJson(
+  _$CrosswordContentImpl instance,
+) => <String, dynamic>{
+  'rows': instance.rows,
+  'cols': instance.cols,
+  'entries': instance.entries.map((e) => e.toJson()).toList(),
+};
+
 _$StartGameSessionResponseImpl _$$StartGameSessionResponseImplFromJson(
   Map<String, dynamic> json,
 ) => _$StartGameSessionResponseImpl(
   session: GameSessionDto.fromJson(json['session'] as Map<String, dynamic>),
-  content: WordMatchingContent.fromJson(
-    json['content'] as Map<String, dynamic>,
-  ),
+  type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
+  wordMatching:
+      json['wordMatching'] == null
+          ? null
+          : WordMatchingContent.fromJson(
+            json['wordMatching'] as Map<String, dynamic>,
+          ),
+  crossword:
+      json['crossword'] == null
+          ? null
+          : CrosswordContent.fromJson(
+            json['crossword'] as Map<String, dynamic>,
+          ),
 );
 
 Map<String, dynamic> _$$StartGameSessionResponseImplToJson(
   _$StartGameSessionResponseImpl instance,
 ) => <String, dynamic>{
   'session': instance.session.toJson(),
-  'content': instance.content.toJson(),
+  'type': const GameTypeConverter().toJson(instance.type),
+  'wordMatching': instance.wordMatching?.toJson(),
+  'crossword': instance.crossword?.toJson(),
 };

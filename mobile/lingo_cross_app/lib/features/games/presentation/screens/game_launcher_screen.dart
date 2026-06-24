@@ -6,9 +6,11 @@ import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/game_type.dart';
 import '../../domain/games_failure.dart';
 import '../games_failure_messages.dart';
 import '../start_game_controller.dart';
+import 'crossword_game_screen.dart';
 import 'word_matching_game_screen.dart';
 
 /// Oyun başlatma akışını yürüten launcher (`/student/games/:gameId`).
@@ -48,10 +50,37 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
           // Henüz başlatılmadı (post-frame öncesi) → yükleniyor görünümü.
           return const _LoadingScaffold();
         }
-        return WordMatchingGameScreen(
-          sessionId: response.session.id,
-          content: response.content,
-        );
+        // F2.4: oturum tipine göre dallan. WordMatching → eşleştirme ekranı,
+        // Crossword → crossword ekranı. İlgili içerik alanı eksikse hata.
+        switch (response.type) {
+          case GameType.crossword:
+            final crossword = response.crossword;
+            if (crossword == null) {
+              return _ErrorScaffold(
+                error: const GamesFailure.unexpected(),
+                isEmpty: false,
+                onRetry: _start,
+              );
+            }
+            return CrosswordGameScreen(
+              sessionId: response.session.id,
+              content: crossword,
+            );
+          case GameType.wordMatching:
+          case GameType.questionSet:
+            final wordMatching = response.wordMatching;
+            if (wordMatching == null) {
+              return _ErrorScaffold(
+                error: const GamesFailure.unexpected(),
+                isEmpty: false,
+                onRetry: _start,
+              );
+            }
+            return WordMatchingGameScreen(
+              sessionId: response.session.id,
+              content: wordMatching,
+            );
+        }
       },
       loading: () => const _LoadingScaffold(),
       error: (error, _) => _ErrorScaffold(
