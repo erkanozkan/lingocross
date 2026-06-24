@@ -18,7 +18,6 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ResultReportState {
   AsyncValue<GameResultDto> get result => throw _privateConstructorUsedError;
-  ShareStatus get shareStatus => throw _privateConstructorUsedError;
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.
@@ -34,7 +33,7 @@ abstract class $ResultReportStateCopyWith<$Res> {
     $Res Function(ResultReportState) then,
   ) = _$ResultReportStateCopyWithImpl<$Res, ResultReportState>;
   @useResult
-  $Res call({AsyncValue<GameResultDto> result, ShareStatus shareStatus});
+  $Res call({AsyncValue<GameResultDto> result});
 }
 
 /// @nodoc
@@ -51,7 +50,7 @@ class _$ResultReportStateCopyWithImpl<$Res, $Val extends ResultReportState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? result = null, Object? shareStatus = null}) {
+  $Res call({Object? result = null}) {
     return _then(
       _value.copyWith(
             result:
@@ -59,11 +58,6 @@ class _$ResultReportStateCopyWithImpl<$Res, $Val extends ResultReportState>
                     ? _value.result
                     : result // ignore: cast_nullable_to_non_nullable
                         as AsyncValue<GameResultDto>,
-            shareStatus:
-                null == shareStatus
-                    ? _value.shareStatus
-                    : shareStatus // ignore: cast_nullable_to_non_nullable
-                        as ShareStatus,
           )
           as $Val,
     );
@@ -79,7 +73,7 @@ abstract class _$$ResultReportStateImplCopyWith<$Res>
   ) = __$$ResultReportStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AsyncValue<GameResultDto> result, ShareStatus shareStatus});
+  $Res call({AsyncValue<GameResultDto> result});
 }
 
 /// @nodoc
@@ -95,7 +89,7 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? result = null, Object? shareStatus = null}) {
+  $Res call({Object? result = null}) {
     return _then(
       _$ResultReportStateImpl(
         result:
@@ -103,11 +97,6 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
                 ? _value.result
                 : result // ignore: cast_nullable_to_non_nullable
                     as AsyncValue<GameResultDto>,
-        shareStatus:
-            null == shareStatus
-                ? _value.shareStatus
-                : shareStatus // ignore: cast_nullable_to_non_nullable
-                    as ShareStatus,
       ),
     );
   }
@@ -116,20 +105,14 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ResultReportStateImpl implements _ResultReportState {
-  const _$ResultReportStateImpl({
-    required this.result,
-    this.shareStatus = ShareStatus.idle,
-  });
+  const _$ResultReportStateImpl({required this.result});
 
   @override
   final AsyncValue<GameResultDto> result;
-  @override
-  @JsonKey()
-  final ShareStatus shareStatus;
 
   @override
   String toString() {
-    return 'ResultReportState(result: $result, shareStatus: $shareStatus)';
+    return 'ResultReportState(result: $result)';
   }
 
   @override
@@ -137,13 +120,11 @@ class _$ResultReportStateImpl implements _ResultReportState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ResultReportStateImpl &&
-            (identical(other.result, result) || other.result == result) &&
-            (identical(other.shareStatus, shareStatus) ||
-                other.shareStatus == shareStatus));
+            (identical(other.result, result) || other.result == result));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, result, shareStatus);
+  int get hashCode => Object.hash(runtimeType, result);
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.
@@ -160,13 +141,10 @@ class _$ResultReportStateImpl implements _ResultReportState {
 abstract class _ResultReportState implements ResultReportState {
   const factory _ResultReportState({
     required final AsyncValue<GameResultDto> result,
-    final ShareStatus shareStatus,
   }) = _$ResultReportStateImpl;
 
   @override
   AsyncValue<GameResultDto> get result;
-  @override
-  ShareStatus get shareStatus;
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.

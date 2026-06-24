@@ -20,6 +20,7 @@ import 'helpers/fake_games_repository.dart';
 import 'helpers/fake_student_stats_repository.dart';
 
 String? lastGameId;
+String? lastResultId;
 
 Widget _wrap({
   required FakeEnrollmentRepository enrollmentRepo,
@@ -27,6 +28,7 @@ Widget _wrap({
   FakeStudentStatsRepository? statsRepo,
 }) {
   lastGameId = null;
+  lastResultId = null;
   final router = GoRouter(
     initialLocation: '/student',
     routes: [
@@ -39,9 +41,19 @@ Widget _wrap({
           return const Scaffold(body: Text('game-screen'));
         },
       ),
+      // Sonuç/istatistik ekranı (tamamlanan bulmacadan buraya gidilir).
+      // Not: en spesifik route (/student/results) önce gelmeli ki sonuç listesi
+      // ile detay (/student/results/:resultId) çakışmasın.
       GoRoute(
           path: '/student/results',
           builder: (_, __) => const Scaffold(body: Text('results-screen'))),
+      GoRoute(
+        path: '/student/results/:resultId',
+        builder: (_, state) {
+          lastResultId = state.pathParameters['resultId'];
+          return const Scaffold(body: Text('result-detail-screen'));
+        },
+      ),
       GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
     ],
   );
@@ -87,6 +99,10 @@ AssignedGameDto _game({
   String lessonTitle = 'Ünite 3',
   String teacherName = 'Ayşe',
   int words = 5,
+  bool isCompleted = false,
+  String? resultId,
+  int? score,
+  DateTime? completedAt,
 }) {
   return AssignedGameDto(
     id: id,
@@ -97,6 +113,10 @@ AssignedGameDto _game({
     wordCount: words,
     teacherName: teacherName,
     publishedAt: DateTime(2026, 6, 23),
+    isCompleted: isCompleted,
+    resultId: resultId,
+    score: score,
+    completedAt: completedAt,
   );
 }
 
@@ -183,6 +203,115 @@ void main() {
 
     expect(find.text('Atanan Bulmacalar'), findsOneWidget);
     expect(find.text('İkinci Bulmaca'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Tamamlanan bulmaca: "Tamamlanan Bulmacalar" bölümünde + skor; '
+      'atanan listesinden çıkar', (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [
+          _game(id: 'g1', title: 'Atanan Bulmaca'),
+          _game(
+            id: 'g2',
+            title: 'Bitmiş Bulmaca',
+            isCompleted: true,
+            resultId: 'r2',
+            score: 85,
+          ),
+        ],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // Oynanabilir g1 günün oyunu olur; tamamlanan g2 ayrı bölümde.
+    expect(find.text('GÜNÜN OYUNU'), findsOneWidget);
+    expect(find.text('Atanan Bulmaca'), findsOneWidget);
+    expect(find.text('Tamamlanan Bulmacalar'), findsOneWidget);
+    expect(find.text('Bitmiş Bulmaca'), findsOneWidget);
+    expect(find.text('%85'), findsOneWidget);
+    // "Atanan Bulmacalar" listesi yalnız oynanabilirler için; g1 tek olduğundan
+    // (günün oyunu) bu başlık görünmez ama tamamlanan da burada DEĞİL.
+    expect(find.text('İstatistikleri Gör'), findsOneWidget);
+  });
+
+  testWidgets('Tamamlanan bulmacaya dokununca resultId ile istatistik ekranına '
+      'gider (launcher\'a DEĞİL)', (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [
+          _game(id: 'g1', title: 'Atanan Bulmaca'),
+          _game(
+            id: 'g2',
+            title: 'Bitmiş Bulmaca',
+            isCompleted: true,
+            resultId: 'res-77',
+            score: 90,
+          ),
+        ],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // Tamamlanan satır listenin altındadır; önce görünür hale getir.
+    await tester.scrollUntilVisible(find.text('Bitmiş Bulmaca'), 200,
+        scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(find.text('Bitmiş Bulmaca'));
+    await tester.pump();
+    await tester.tap(find.text('Bitmiş Bulmaca'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('result-detail-screen'), findsOneWidget);
+    expect(lastResultId, 'res-77');
+    // Asla oyun launcher'ına gitmemeli.
+    expect(lastGameId, isNull);
+    expect(find.text('game-screen'), findsNothing);
+  });
+
+  testWidgets('Tümü tamamlanmış: atanan boş durumu + tamamlanan bölüm görünür',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [
+          _game(
+            id: 'g1',
+            title: 'Bitmiş Bulmaca',
+            isCompleted: true,
+            resultId: 'r1',
+            score: 70,
+          ),
+        ],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // Oynanabilir yok → boş bulmaca durumu makul gösterilir.
+    expect(find.text('Öğretmenin henüz bulmaca atamadı'), findsOneWidget);
+    expect(find.text('GÜNÜN OYUNU'), findsNothing);
+    // Tamamlanan bölüm yine de görünür.
+    expect(find.text('Tamamlanan Bulmacalar'), findsOneWidget);
+    expect(find.text('Bitmiş Bulmaca'), findsOneWidget);
+    expect(find.text('%70'), findsOneWidget);
+  });
+
+  testWidgets('Tamamlanan yoksa "Tamamlanan Bulmacalar" bölümü gizli',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [_game(id: 'g1', title: 'Atanan Bulmaca')],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.text('Tamamlanan Bulmacalar'), findsNothing);
   });
 
   testWidgets('Gelişim Özeti: oyun oynanmışsa gerçek oyun + doğruluk gösterir',

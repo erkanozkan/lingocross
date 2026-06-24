@@ -94,7 +94,10 @@ public class ResultService : IResultService
             TotalItems = totalItems,
             CorrectItems = correctItems,
             Score = CalculateScore(totalItems, correctItems),
-            SharedWithTeacher = false,
+            // Otomatik paylaşım: bulmaca tamamlanır tamamlanmaz sonuç öğretmenle paylaşılır.
+            // (Artık manuel ShareWithTeacher gerekmez; o metot geriye dönük uyum için no-op'a yakın kalır.)
+            SharedWithTeacher = true,
+            SharedAt = DateTime.UtcNow,
         };
 
         if (hasItems)
@@ -118,6 +121,14 @@ public class ResultService : IResultService
         session.CompletedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        // Best-effort push: sonuç otomatik paylaşıldığı için öğretmene "sonuç paylaşıldı" bildirimi
+        // burada (yeni sonuç oluşturulduğunda) tetiklenir. İdempotentlik: ikinci submit mevcut sonucu
+        // yukarıda döndürdüğü için buraya yalnız ilk (yeni) kayıtta gelinir → push tam 1 kez gider.
+        if (_push is not null)
+        {
+            await NotifyTeacherSharedAsync(result, studentId, cancellationToken);
+        }
 
         return await ToDtoAsync(result, cancellationToken);
     }

@@ -362,6 +362,10 @@ mixin _$AssignedGameDto {
   int get wordCount => throw _privateConstructorUsedError;
   String get teacherName => throw _privateConstructorUsedError;
   DateTime? get publishedAt => throw _privateConstructorUsedError;
+  bool get isCompleted => throw _privateConstructorUsedError;
+  String? get resultId => throw _privateConstructorUsedError;
+  int? get score => throw _privateConstructorUsedError;
+  DateTime? get completedAt => throw _privateConstructorUsedError;
 
   /// Serializes this AssignedGameDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -389,6 +393,10 @@ abstract class $AssignedGameDtoCopyWith<$Res> {
     int wordCount,
     String teacherName,
     DateTime? publishedAt,
+    bool isCompleted,
+    String? resultId,
+    int? score,
+    DateTime? completedAt,
   });
 }
 
@@ -415,6 +423,10 @@ class _$AssignedGameDtoCopyWithImpl<$Res, $Val extends AssignedGameDto>
     Object? wordCount = null,
     Object? teacherName = null,
     Object? publishedAt = freezed,
+    Object? isCompleted = null,
+    Object? resultId = freezed,
+    Object? score = freezed,
+    Object? completedAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -458,6 +470,26 @@ class _$AssignedGameDtoCopyWithImpl<$Res, $Val extends AssignedGameDto>
                     ? _value.publishedAt
                     : publishedAt // ignore: cast_nullable_to_non_nullable
                         as DateTime?,
+            isCompleted:
+                null == isCompleted
+                    ? _value.isCompleted
+                    : isCompleted // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            resultId:
+                freezed == resultId
+                    ? _value.resultId
+                    : resultId // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            score:
+                freezed == score
+                    ? _value.score
+                    : score // ignore: cast_nullable_to_non_nullable
+                        as int?,
+            completedAt:
+                freezed == completedAt
+                    ? _value.completedAt
+                    : completedAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
           )
           as $Val,
     );
@@ -482,6 +514,10 @@ abstract class _$$AssignedGameDtoImplCopyWith<$Res>
     int wordCount,
     String teacherName,
     DateTime? publishedAt,
+    bool isCompleted,
+    String? resultId,
+    int? score,
+    DateTime? completedAt,
   });
 }
 
@@ -507,6 +543,10 @@ class __$$AssignedGameDtoImplCopyWithImpl<$Res>
     Object? wordCount = null,
     Object? teacherName = null,
     Object? publishedAt = freezed,
+    Object? isCompleted = null,
+    Object? resultId = freezed,
+    Object? score = freezed,
+    Object? completedAt = freezed,
   }) {
     return _then(
       _$AssignedGameDtoImpl(
@@ -550,6 +590,26 @@ class __$$AssignedGameDtoImplCopyWithImpl<$Res>
                 ? _value.publishedAt
                 : publishedAt // ignore: cast_nullable_to_non_nullable
                     as DateTime?,
+        isCompleted:
+            null == isCompleted
+                ? _value.isCompleted
+                : isCompleted // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        resultId:
+            freezed == resultId
+                ? _value.resultId
+                : resultId // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        score:
+            freezed == score
+                ? _value.score
+                : score // ignore: cast_nullable_to_non_nullable
+                    as int?,
+        completedAt:
+            freezed == completedAt
+                ? _value.completedAt
+                : completedAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
       ),
     );
   }
@@ -567,6 +627,10 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
     required this.wordCount,
     required this.teacherName,
     this.publishedAt,
+    this.isCompleted = false,
+    this.resultId,
+    this.score,
+    this.completedAt,
   });
 
   factory _$AssignedGameDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -589,10 +653,19 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
   final String teacherName;
   @override
   final DateTime? publishedAt;
+  @override
+  @JsonKey()
+  final bool isCompleted;
+  @override
+  final String? resultId;
+  @override
+  final int? score;
+  @override
+  final DateTime? completedAt;
 
   @override
   String toString() {
-    return 'AssignedGameDto(id: $id, lessonId: $lessonId, lessonTitle: $lessonTitle, type: $type, title: $title, wordCount: $wordCount, teacherName: $teacherName, publishedAt: $publishedAt)';
+    return 'AssignedGameDto(id: $id, lessonId: $lessonId, lessonTitle: $lessonTitle, type: $type, title: $title, wordCount: $wordCount, teacherName: $teacherName, publishedAt: $publishedAt, isCompleted: $isCompleted, resultId: $resultId, score: $score, completedAt: $completedAt)';
   }
 
   @override
@@ -612,7 +685,14 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
             (identical(other.teacherName, teacherName) ||
                 other.teacherName == teacherName) &&
             (identical(other.publishedAt, publishedAt) ||
-                other.publishedAt == publishedAt));
+                other.publishedAt == publishedAt) &&
+            (identical(other.isCompleted, isCompleted) ||
+                other.isCompleted == isCompleted) &&
+            (identical(other.resultId, resultId) ||
+                other.resultId == resultId) &&
+            (identical(other.score, score) || other.score == score) &&
+            (identical(other.completedAt, completedAt) ||
+                other.completedAt == completedAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -627,6 +707,10 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
     wordCount,
     teacherName,
     publishedAt,
+    isCompleted,
+    resultId,
+    score,
+    completedAt,
   );
 
   /// Create a copy of AssignedGameDto
@@ -656,6 +740,10 @@ abstract class _AssignedGameDto implements AssignedGameDto {
     required final int wordCount,
     required final String teacherName,
     final DateTime? publishedAt,
+    final bool isCompleted,
+    final String? resultId,
+    final int? score,
+    final DateTime? completedAt,
   }) = _$AssignedGameDtoImpl;
 
   factory _AssignedGameDto.fromJson(Map<String, dynamic> json) =
@@ -678,6 +766,14 @@ abstract class _AssignedGameDto implements AssignedGameDto {
   String get teacherName;
   @override
   DateTime? get publishedAt;
+  @override
+  bool get isCompleted;
+  @override
+  String? get resultId;
+  @override
+  int? get score;
+  @override
+  DateTime? get completedAt;
 
   /// Create a copy of AssignedGameDto
   /// with the given fields replaced by the non-null parameter values.

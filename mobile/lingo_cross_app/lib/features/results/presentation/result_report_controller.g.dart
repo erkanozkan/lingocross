@@ -7,7 +7,7 @@ part of 'result_report_controller.dart';
 // **************************************************************************
 
 String _$resultReportControllerHash() =>
-    r'f56a3260129d80371f4ad2bacb536b0990c98ae8';
+    r'f8000702d49544386f3246877a469e88afa02b1b';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -41,12 +41,11 @@ abstract class _$ResultReportController
 ///
 /// İki giriş yolu:
 /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-/// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-///
-/// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-/// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+/// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+///   sözleşmesi).
 ///
 /// Copied from [ResultReportController].
 @ProviderFor(ResultReportController)
@@ -56,12 +55,11 @@ const resultReportControllerProvider = ResultReportControllerFamily();
 ///
 /// İki giriş yolu:
 /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-/// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-///
-/// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-/// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+/// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+///   sözleşmesi).
 ///
 /// Copied from [ResultReportController].
 class ResultReportControllerFamily extends Family<ResultReportState> {
@@ -69,12 +67,11 @@ class ResultReportControllerFamily extends Family<ResultReportState> {
   ///
   /// İki giriş yolu:
   /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-  /// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-  ///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-  ///
-  /// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-  /// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+  ///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+  /// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+  ///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+  ///   sözleşmesi).
   ///
   /// Copied from [ResultReportController].
   const ResultReportControllerFamily();
@@ -83,12 +80,11 @@ class ResultReportControllerFamily extends Family<ResultReportState> {
   ///
   /// İki giriş yolu:
   /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-  /// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-  ///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-  ///
-  /// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-  /// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+  ///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+  /// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+  ///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+  ///   sözleşmesi).
   ///
   /// Copied from [ResultReportController].
   ResultReportControllerProvider call(String resultId) {
@@ -121,12 +117,11 @@ class ResultReportControllerFamily extends Family<ResultReportState> {
 ///
 /// İki giriş yolu:
 /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-/// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-///
-/// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-/// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+/// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+///   sözleşmesi).
 ///
 /// Copied from [ResultReportController].
 class ResultReportControllerProvider
@@ -139,12 +134,11 @@ class ResultReportControllerProvider
   ///
   /// İki giriş yolu:
   /// - **Oyun sonu:** sonuç [SubmitResultController]'dan gelir; ekran onu
-  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz).
-  /// - **Geçmiş:** ekran yalnız `resultId` ile açılır; rapor `GET /results/me`'den
-  ///   bulunur (ayrı `GET /results/{id}` ucu yok — M5 sözleşmesi).
-  ///
-  /// Paylaşım tek-yön kilitlidir: `sharedWithTeacher` true ise doğrudan
-  /// [ShareStatus.shared] gösterilir; başarılı paylaşımdan sonra geri alınamaz.
+  ///   [seed] ile yerleştirir (ağ çağrısı tekrarlanmaz). Submit'ten dönen sonuç
+  ///   zaten `sharedWithTeacher = true`'dur (otomatik paylaşım).
+  /// - **Geçmiş / tamamlanan bulmaca:** ekran yalnız `resultId` ile açılır; rapor
+  ///   `GET /results/me`'den bulunur (ayrı `GET /results/{id}` ucu yok — M5
+  ///   sözleşmesi).
   ///
   /// Copied from [ResultReportController].
   ResultReportControllerProvider(String resultId)

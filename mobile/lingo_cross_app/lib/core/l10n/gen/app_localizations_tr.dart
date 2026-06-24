@@ -1052,6 +1052,20 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get studentDashboardCompletedTitle => 'Tamamlanan Bulmacalar';
+
+  @override
+  String studentDashboardCompletedScore(int percent) {
+    return '%$percent';
+  }
+
+  @override
+  String get studentDashboardCompletedSeeStats => 'İstatistikleri Gör';
+
+  @override
+  String get studentDashboardCompletedBadge => 'Tamamlandı';
+
+  @override
   String get studentDashboardStatsSoon => 'Yakında — ilk oyununu oynayınca burada görünecek.';
 
   @override
@@ -1425,34 +1439,10 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get gameResultShare => 'Öğretmene Gönder';
-
-  @override
-  String get gameResultShareSending => 'Gönderiliyor…';
-
-  @override
-  String get gameResultShareShared => 'Öğretmene Gönderildi';
-
-  @override
-  String get gameResultShareToastSuccess => 'Sonucun öğretmenine gönderildi.';
-
-  @override
-  String get gameResultShareToastError => 'Gönderilemedi, tekrar dene.';
-
-  @override
-  String get gameResultPlayAgain => 'Tekrar Oyna';
+  String get gameResultSharedNote => 'Öğretmeninle paylaşıldı';
 
   @override
   String get gameResultErrorTitle => 'Sonuç yüklenemedi';
-
-  @override
-  String get gameResultA11ySending => 'Gönderiliyor';
-
-  @override
-  String get gameResultA11yShared => 'Gönderildi';
-
-  @override
-  String get gameResultA11yError => 'Gönderilemedi';
 
   @override
   String get resultsHistoryTitle => 'Sonuçlarım';

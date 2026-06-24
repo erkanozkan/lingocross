@@ -203,18 +203,41 @@ public class GameService : IGameService
                         && m.StudentId == studentId
                         && m.Status == ClassMemberStatus.Active)))
             .OrderByDescending(g => g.PublishedAt)
+            .Select(g => new
+            {
+                g.Id,
+                g.LessonId,
+                LessonTitle = g.Lesson.Title,
+                g.Type,
+                g.Title,
+                WordCount = g.Lesson.Words.Count,
+                TeacherName = g.Lesson.Teacher.DisplayName,
+                g.PublishedAt,
+                // Bu öğrencinin bu oyuna ait (varsa) en güncel tamamlanmış sonucu (oturum→sonuç).
+                // Aynı oyuna birden çok oturum oluşabilir (yarım kalan vb.); sonucu olan en yeni alınır.
+                Result = _db.GameResults
+                    .Where(r => r.Session.GameId == g.Id && r.Session.StudentId == studentId)
+                    .OrderByDescending(r => r.CreatedAt)
+                    .Select(r => new { r.Id, r.Score, r.CreatedAt })
+                    .FirstOrDefault(),
+            })
+            .ToListAsync(cancellationToken);
+
+        return assigned
             .Select(g => new AssignedGameDto(
                 g.Id,
                 g.LessonId,
-                g.Lesson.Title,
+                g.LessonTitle,
                 g.Type,
                 g.Title,
-                g.Lesson.Words.Count,
-                g.Lesson.Teacher.DisplayName,
-                g.PublishedAt))
-            .ToListAsync(cancellationToken);
-
-        return assigned;
+                g.WordCount,
+                g.TeacherName,
+                g.PublishedAt,
+                g.Result is not null,
+                g.Result?.Id,
+                g.Result?.Score,
+                g.Result?.CreatedAt))
+            .ToList();
     }
 
     public async Task<StartGameSessionResponse> StartSessionAsync(Guid gameId, CancellationToken cancellationToken = default)
@@ -230,6 +253,16 @@ public class GameService : IGameService
 
         // Ders erişimi (enrolled + published) doğrula; aksi 404.
         await GetAccessibleLessonAsync(game.LessonId, cancellationToken);
+
+        // Tek seferlik oynanır: öğrencinin bu oyuna ait TAMAMLANMIŞ (sonuçlu) bir oturumu varsa
+        // yeniden başlatılamaz (409). Yarım kalmış (sonuçsuz) InProgress oturum engel değildir;
+        // öğrenci yeniden başlayabilir.
+        var alreadyCompleted = await _db.GameResults
+            .AnyAsync(r => r.Session.GameId == gameId && r.Session.StudentId == studentId, cancellationToken);
+        if (alreadyCompleted)
+        {
+            throw AppException.Conflict("Bu bulmacayı zaten tamamladın.");
+        }
 
         // İçerik tür-duyarlı üretilir. Yeterli/uygun kelime yoksa içerik üreticisi 400 atar ve
         // (SaveChanges'tan önce olduğu için) oturum oluşturulmaz.

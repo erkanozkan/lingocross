@@ -2069,6 +2069,30 @@ abstract class AppLocalizations {
   /// **'{lesson} • {count} kelime'**
   String studentDashboardPuzzleLesson(String lesson, int count);
 
+  /// No description provided for @studentDashboardCompletedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanan Bulmacalar'**
+  String get studentDashboardCompletedTitle;
+
+  /// No description provided for @studentDashboardCompletedScore.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent}'**
+  String studentDashboardCompletedScore(int percent);
+
+  /// No description provided for @studentDashboardCompletedSeeStats.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikleri Gör'**
+  String get studentDashboardCompletedSeeStats;
+
+  /// No description provided for @studentDashboardCompletedBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlandı'**
+  String get studentDashboardCompletedBadge;
+
   /// No description provided for @studentDashboardStatsSoon.
   ///
   /// In tr, this message translates to:
@@ -2759,65 +2783,17 @@ abstract class AppLocalizations {
   /// **'{found} / {total}'**
   String gameResultWordsValue(int found, int total);
 
-  /// No description provided for @gameResultShare.
+  /// No description provided for @gameResultSharedNote.
   ///
   /// In tr, this message translates to:
-  /// **'Öğretmene Gönder'**
-  String get gameResultShare;
-
-  /// No description provided for @gameResultShareSending.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gönderiliyor…'**
-  String get gameResultShareSending;
-
-  /// No description provided for @gameResultShareShared.
-  ///
-  /// In tr, this message translates to:
-  /// **'Öğretmene Gönderildi'**
-  String get gameResultShareShared;
-
-  /// No description provided for @gameResultShareToastSuccess.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sonucun öğretmenine gönderildi.'**
-  String get gameResultShareToastSuccess;
-
-  /// No description provided for @gameResultShareToastError.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gönderilemedi, tekrar dene.'**
-  String get gameResultShareToastError;
-
-  /// No description provided for @gameResultPlayAgain.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tekrar Oyna'**
-  String get gameResultPlayAgain;
+  /// **'Öğretmeninle paylaşıldı'**
+  String get gameResultSharedNote;
 
   /// No description provided for @gameResultErrorTitle.
   ///
   /// In tr, this message translates to:
   /// **'Sonuç yüklenemedi'**
   String get gameResultErrorTitle;
-
-  /// No description provided for @gameResultA11ySending.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gönderiliyor'**
-  String get gameResultA11ySending;
-
-  /// No description provided for @gameResultA11yShared.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gönderildi'**
-  String get gameResultA11yShared;
-
-  /// No description provided for @gameResultA11yError.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gönderilemedi'**
-  String get gameResultA11yError;
 
   /// No description provided for @resultsHistoryTitle.
   ///

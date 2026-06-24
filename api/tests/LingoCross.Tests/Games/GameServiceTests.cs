@@ -407,6 +407,92 @@ public class GameServiceTests
     }
 
     [Fact]
+    public async Task StartSession_AlreadyCompleted_Throws409()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+        // Bu öğrenci bu oyunu zaten tamamlamış (sonuçlu oturum).
+        await SeedCompletedResultAsync(db, game.Id, student.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
+        Assert.Equal(409, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task StartSession_HalfFinishedInProgressSession_DoesNotBlock_StartsAgain()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+        // Yarım kalmış (sonuçsuz) InProgress oturum engel DEĞİL.
+        db.GameSessions.Add(new GameSession
+        {
+            GameId = game.Id,
+            StudentId = student.Id,
+            Status = GameSessionStatus.InProgress,
+            StartedAt = DateTime.UtcNow,
+        });
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var response = await svc.StartSessionAsync(game.Id);
+        Assert.Equal(GameSessionStatus.InProgress, response.Session.Status);
+    }
+
+    [Fact]
+    public async Task ListAssigned_CompletedGame_CarriesCompletionInfo()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+        await SeedCompletedResultAsync(db, game.Id, student.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var assigned = await svc.ListAssignedForStudentAsync();
+
+        Assert.Single(assigned);
+        Assert.True(assigned[0].IsCompleted);
+        Assert.NotNull(assigned[0].ResultId);
+        Assert.Equal(100, assigned[0].Score);
+        Assert.NotNull(assigned[0].CompletedAt);
+    }
+
+    [Fact]
+    public async Task ListAssigned_NotCompletedGame_HasNoCompletionInfo()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var assigned = await svc.ListAssignedForStudentAsync();
+
+        Assert.Single(assigned);
+        Assert.False(assigned[0].IsCompleted);
+        Assert.Null(assigned[0].ResultId);
+        Assert.Null(assigned[0].Score);
+        Assert.Null(assigned[0].CompletedAt);
+    }
+
+    [Fact]
     public async Task StartSession_CapsPairsAtMax_AndProducesDistractors()
     {
         var db = NewDb();

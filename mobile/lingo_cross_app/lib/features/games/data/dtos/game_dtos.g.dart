@@ -47,6 +47,13 @@ _$AssignedGameDtoImpl _$$AssignedGameDtoImplFromJson(
       json['publishedAt'] == null
           ? null
           : DateTime.parse(json['publishedAt'] as String),
+  isCompleted: json['isCompleted'] as bool? ?? false,
+  resultId: json['resultId'] as String?,
+  score: (json['score'] as num?)?.toInt(),
+  completedAt:
+      json['completedAt'] == null
+          ? null
+          : DateTime.parse(json['completedAt'] as String),
 );
 
 Map<String, dynamic> _$$AssignedGameDtoImplToJson(
@@ -60,6 +67,10 @@ Map<String, dynamic> _$$AssignedGameDtoImplToJson(
   'wordCount': instance.wordCount,
   'teacherName': instance.teacherName,
   'publishedAt': instance.publishedAt?.toIso8601String(),
+  'isCompleted': instance.isCompleted,
+  'resultId': instance.resultId,
+  'score': instance.score,
+  'completedAt': instance.completedAt?.toIso8601String(),
 };
 
 _$TeacherPuzzleDtoImpl _$$TeacherPuzzleDtoImplFromJson(

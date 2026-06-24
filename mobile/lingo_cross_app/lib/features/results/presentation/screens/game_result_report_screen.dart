@@ -17,10 +17,12 @@ import '../widgets/accuracy_ring.dart';
 
 /// Oyun Sonu Raporu ekranı (game-result-report.md — Stitch `4786e952…` birebir).
 ///
-/// İki giriş yolu: oyun-sonu (sonuç [seed] ile gelir) ve geçmiş (`resultId` ile
-/// `GET /results/me`'den yüklenir). İçerik: doğruluk radyali (skor%), Geçen Süre,
-/// Bulunan Kelime, "Öğretmene Gönder" (3D, tek-yön kilit) + "Tekrar Oyna".
-/// Streak/XP statik/gizli (Sapma 1). Yükleniyor/hata + paylaşım durumları (§5–6).
+/// İki giriş yolu: oyun-sonu (sonuç [seedResult] ile gelir) ve geçmiş/tamamlanan
+/// bulmaca (`resultId` ile `GET /results/me`'den yüklenir). İçerik: doğruluk
+/// radyali (skor%), Geçen Süre, Bulunan Kelime. Sonuç gönderimde otomatik olarak
+/// öğretmene paylaşıldığı için elle "Öğretmene Gönder" + "Tekrar Oyna" yoktur;
+/// yerine statik "Öğretmeninle paylaşıldı" bilgi notu gösterilir.
+/// Streak/XP statik/gizli (Sapma 1). Yükleniyor/hata durumları (§5).
 class GameResultReportScreen extends ConsumerStatefulWidget {
   const GameResultReportScreen({
     super.key,
@@ -40,8 +42,6 @@ class GameResultReportScreen extends ConsumerStatefulWidget {
 
 class _GameResultReportScreenState
     extends ConsumerState<GameResultReportScreen> {
-  ProviderSubscription<ResultReportState>? _shareSub;
-
   @override
   void initState() {
     super.initState();
@@ -55,65 +55,10 @@ class _GameResultReportScreenState
         notifier.load();
       }
     });
-
-    // Paylaşım durum değişimlerini dinleyip toast göster (başarı/hata).
-    _shareSub = ref.listenManual<ResultReportState>(
-      resultReportControllerProvider(widget.resultId),
-      (prev, next) {
-        if (prev?.shareStatus == next.shareStatus) return;
-        final l10n = AppLocalizations.of(context);
-        // Yalnız kullanıcı tetiklemeli paylaşımda (sending → shared) toast;
-        // zaten-paylaşılmış sonuç yüklendiğinde toast gösterme.
-        if (next.shareStatus == ShareStatus.shared &&
-            prev?.shareStatus == ShareStatus.sending) {
-          _showToast(l10n.gameResultShareToastSuccess, success: true);
-        } else if (next.shareStatus == ShareStatus.error) {
-          _showToast(l10n.gameResultShareToastError, success: false);
-          // Toast gösterildi → buton yeniden denenebilir idle'a döner.
-          ref
-              .read(resultReportControllerProvider(widget.resultId).notifier)
-              .acknowledgeShareError();
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _shareSub?.close();
-    super.dispose();
-  }
-
-  void _showToast(String message, {required bool success}) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor:
-              success ? AppColors.tertiaryContainer : AppColors.errorContainer,
-          content: Text(
-            message,
-            style: AppTypography.labelLg.copyWith(
-              color:
-                  success ? AppColors.onTertiary : AppColors.onErrorContainer,
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-          ),
-        ),
-      );
   }
 
   void _exitToDashboard() {
     context.go(AppRoutes.student);
-  }
-
-  /// "Tekrar Oyna" — aynı oyun için yeni oturum (oyun launcher'ı yeniden).
-  /// Route gameId bekler; lessonId değil (aksi halde StartSession 404 döner).
-  void _playAgain(String gameId) {
-    context.go(AppRoutes.studentGame(gameId));
   }
 
   @override
@@ -159,21 +104,7 @@ class _GameResultReportScreenState
                             )
                             .load(),
               ),
-          data:
-              (result) => _ReportBody(
-                result: result,
-                shareStatus: state.shareStatus,
-                onShare:
-                    () =>
-                        ref
-                            .read(
-                              resultReportControllerProvider(
-                                widget.resultId,
-                              ).notifier,
-                            )
-                            .share(),
-                onPlayAgain: () => _playAgain(result.gameId),
-              ),
+          data: (result) => _ReportBody(result: result),
         ),
       ),
     );
@@ -266,19 +197,11 @@ class ResultTopAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Rapor gövdesi (başarı hâli) — başlık + radyal + bento + aksiyonlar.
+/// Rapor gövdesi (başarı hâli) — başlık + radyal + bento + paylaşıldı notu.
 class _ReportBody extends StatelessWidget {
-  const _ReportBody({
-    required this.result,
-    required this.shareStatus,
-    required this.onShare,
-    required this.onPlayAgain,
-  });
+  const _ReportBody({required this.result});
 
   final GameResultDto result;
-  final ShareStatus shareStatus;
-  final VoidCallback onShare;
-  final VoidCallback onPlayAgain;
 
   @override
   Widget build(BuildContext context) {
@@ -368,10 +291,8 @@ class _ReportBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.xl),
-        // §3.4 Aksiyonlar.
-        _ShareButton(status: shareStatus, onShare: onShare),
-        const SizedBox(height: AppSpacing.lg),
-        _PlayAgainButton(onTap: onPlayAgain),
+        // §3.4 Paylaşıldı bilgi notu (sonuç otomatik öğretmene paylaşıldı).
+        const _SharedNote(),
       ],
     );
   }
@@ -427,152 +348,59 @@ class _BentoStat extends StatelessWidget {
   }
 }
 
-/// "Öğretmene Gönder" 3D primary buton — idle/gönderiliyor/paylaşıldı (§6).
+/// "Öğretmeninle paylaşıldı" statik bilgi notu (tertiary/onaylı stil).
 ///
-/// Buton yerinde durum değiştirir: paylaşıldı → tertiary yeşil + tik, pasif
-/// (tek-yön kilit). Gönderiliyor → spinner + pasif. Hata durumu idle'a dönüp
-/// toast ile bildirilir (üst seviyede ele alınır).
-class _ShareButton extends StatefulWidget {
-  const _ShareButton({required this.status, required this.onShare});
-
-  final ShareStatus status;
-  final VoidCallback onShare;
-
-  @override
-  State<_ShareButton> createState() => _ShareButtonState();
-}
-
-class _ShareButtonState extends State<_ShareButton> {
-  bool _pressed = false;
+/// Sonuç gönderimde otomatik olarak öğretmenle paylaşıldığı için artık elle
+/// gönderme butonu yoktur; bu yalnız bilgilendirme amaçlı, etkileşimsizdir.
+class _SharedNote extends StatelessWidget {
+  const _SharedNote();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final sending = widget.status == ShareStatus.sending;
-    final shared = widget.status == ShareStatus.shared;
-    final interactive = !sending && !shared;
-
-    final bgColor = shared ? AppColors.tertiary : AppColors.primaryContainer;
-    final shadowColor =
-        shared ? AppColors.tertiaryContainer : AppColors.primaryShadow;
-    final sunk = _pressed && interactive;
-
-    final liveLabel =
-        sending
-            ? l10n.gameResultA11ySending
-            : shared
-            ? l10n.gameResultA11yShared
-            : '';
-
     return Semantics(
-      button: true,
-      enabled: interactive,
-      liveRegion: sending || shared,
-      label: liveLabel.isEmpty ? null : liveLabel,
-      child: Opacity(
-        opacity: sending ? 0.7 : 1,
-        child: GestureDetector(
-          onTapDown:
-              interactive ? (_) => setState(() => _pressed = true) : null,
-          onTapUp: interactive ? (_) => setState(() => _pressed = false) : null,
-          onTapCancel:
-              interactive ? () => setState(() => _pressed = false) : null,
-          onTap: interactive ? widget.onShare : null,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 80),
-            transform: Matrix4.translationValues(0, sunk ? 4 : 0, 0),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(AppRadius.md),
-              boxShadow: [
-                BoxShadow(color: shadowColor, offset: Offset(0, sunk ? 0 : 4)),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-            child: Center(
-              child:
-                  sending
-                      ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            AppColors.onPrimaryContainer,
-                          ),
-                        ),
-                      )
-                      : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            shared ? Icons.check_circle : Icons.send,
-                            color:
-                                shared
-                                    ? AppColors.onTertiary
-                                    : AppColors.onPrimaryContainer,
-                            size: 22,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(
-                            shared
-                                ? l10n.gameResultShareShared
-                                : l10n.gameResultShare,
-                            style: AppTypography.headlineMd.copyWith(
-                              color:
-                                  shared
-                                      ? AppColors.onTertiary
-                                      : AppColors.onPrimaryContainer,
-                            ),
-                          ),
-                        ],
-                      ),
-            ),
+      label: l10n.gameResultSharedNote,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.tertiary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: AppColors.tertiary.withValues(alpha: 0.3),
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// "Tekrar Oyna" ikincil buton (yumuşak gri).
-class _PlayAgainButton extends StatelessWidget {
-  const _PlayAgainButton({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Material(
-      color: AppColors.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Container(
-          height: 52,
-          alignment: Alignment.center,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.replay, color: AppColors.onSurfaceVariant),
-              const SizedBox(width: AppSpacing.xs),
-              Text(
-                l10n.gameResultPlayAgain,
-                style: AppTypography.labelLg.copyWith(
-                  color: AppColors.onSurfaceVariant,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.check_circle,
+              color: AppColors.tertiary,
+              size: 22,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Flexible(
+              child: ExcludeSemantics(
+                child: Text(
+                  l10n.gameResultSharedNote,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.labelLg.copyWith(
+                    color: AppColors.tertiary,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-/// §5 Yükleniyor — skeleton (radyal + bento + butonlar shimmer/pasif).
+/// §5 Yükleniyor — skeleton (radyal + bento + not shimmer/pasif).
 class _ReportSkeleton extends StatelessWidget {
   const _ReportSkeleton();
 
@@ -610,8 +438,6 @@ class _ReportSkeleton extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.xl),
-        block(52),
-        const SizedBox(height: AppSpacing.lg),
         block(52),
       ],
     );
