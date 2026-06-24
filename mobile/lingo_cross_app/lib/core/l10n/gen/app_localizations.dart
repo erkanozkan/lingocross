@@ -1677,6 +1677,12 @@ abstract class AppLocalizations {
   /// **'Taranıyor…'**
   String get ocrCaptureScanning;
 
+  /// OCR yakalama ekranında bulut AI zenginleştirmesi sürerken gösterilen yükleme metni.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zeka ile düzeltiliyor…'**
+  String get ocrCaptureEnriching;
+
   /// No description provided for @ocrCaptureOr.
   ///
   /// In tr, this message translates to:
@@ -1724,6 +1730,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.'**
   String get ocrReviewConfidenceNote;
+
+  /// AI zenginleştirme (503/çevrimdışı) başarısız olup yerel ML Kit sonucuna düşüldüğünde gösterilen bilgi notu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zeka düzeltmesi şu an kullanılamadı; cihazda tanınan sonuç gösteriliyor.'**
+  String get ocrReviewAiUnavailable;
 
   /// No description provided for @ocrReviewTermLabel.
   ///

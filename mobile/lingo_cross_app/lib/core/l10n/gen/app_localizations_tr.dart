@@ -827,6 +827,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ocrCaptureScanning => 'Taranıyor…';
 
   @override
+  String get ocrCaptureEnriching => 'Yapay zeka ile düzeltiliyor…';
+
+  @override
   String get ocrCaptureOr => 'VEYA';
 
   @override
@@ -853,6 +856,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ocrReviewConfidenceNote => 'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.';
+
+  @override
+  String get ocrReviewAiUnavailable => 'Yapay zeka düzeltmesi şu an kullanılamadı; cihazda tanınan sonuç gösteriliyor.';
 
   @override
   String ocrReviewTermLabel(String sourceLang) {
