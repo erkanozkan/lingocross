@@ -53,6 +53,52 @@ void main() {
       'correctItems': 17,
     });
   });
+
+  test('SubmitResultRequest items null iken JSON gövdesine yazılmaz', () {
+    const req = SubmitResultRequest(
+      durationMs: 1000,
+      totalItems: 3,
+      correctItems: 2,
+    );
+    expect(req.toJson().containsKey('items'), isFalse);
+  });
+
+  test('SubmitResultItem (F7.5) camelCase JSON; null studentAnswer korunur', () {
+    const item = SubmitResultItem(
+      ordinal: 0,
+      term: 'apple',
+      expectedAnswer: 'elma',
+      studentAnswer: null,
+      isCorrect: false,
+    );
+    expect(item.toJson(), {
+      'ordinal': 0,
+      'term': 'apple',
+      'expectedAnswer': 'elma',
+      'studentAnswer': null,
+      'isCorrect': false,
+    });
+  });
+
+  test('SubmitResultRequest items doluysa gövdeye eklenir', () {
+    const req = SubmitResultRequest(
+      durationMs: 1000,
+      totalItems: 1,
+      correctItems: 1,
+      items: [
+        SubmitResultItem(
+          ordinal: 0,
+          term: 'bread',
+          expectedAnswer: 'ekmek',
+          studentAnswer: 'ekmek',
+          isCorrect: true,
+        ),
+      ],
+    );
+    final json = req.toJson();
+    expect(json['items'], isA<List<dynamic>>());
+    expect((json['items'] as List).length, 1);
+  });
 }
 
 GameResultDto _result({int score = 85, int durationMs = 1000}) => GameResultDto(

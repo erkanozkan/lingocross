@@ -25,6 +25,13 @@ mixin _$SubmitResultRequest {
   int get totalItems => throw _privateConstructorUsedError;
   int get correctItems => throw _privateConstructorUsedError;
 
+  /// Kelime-bazlı döküm (F7.5). Opsiyonel; doluysa öğretmen "Sonuç Detayı"
+  /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
+  /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
+  /// null iken JSON'a yazılmaz (gövde temiz kalır).
+  @JsonKey(includeIfNull: false)
+  List<SubmitResultItem>? get items => throw _privateConstructorUsedError;
+
   /// Serializes this SubmitResultRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -42,7 +49,12 @@ abstract class $SubmitResultRequestCopyWith<$Res> {
     $Res Function(SubmitResultRequest) then,
   ) = _$SubmitResultRequestCopyWithImpl<$Res, SubmitResultRequest>;
   @useResult
-  $Res call({int durationMs, int totalItems, int correctItems});
+  $Res call({
+    int durationMs,
+    int totalItems,
+    int correctItems,
+    @JsonKey(includeIfNull: false) List<SubmitResultItem>? items,
+  });
 }
 
 /// @nodoc
@@ -63,6 +75,7 @@ class _$SubmitResultRequestCopyWithImpl<$Res, $Val extends SubmitResultRequest>
     Object? durationMs = null,
     Object? totalItems = null,
     Object? correctItems = null,
+    Object? items = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -81,6 +94,11 @@ class _$SubmitResultRequestCopyWithImpl<$Res, $Val extends SubmitResultRequest>
                     ? _value.correctItems
                     : correctItems // ignore: cast_nullable_to_non_nullable
                         as int,
+            items:
+                freezed == items
+                    ? _value.items
+                    : items // ignore: cast_nullable_to_non_nullable
+                        as List<SubmitResultItem>?,
           )
           as $Val,
     );
@@ -96,7 +114,12 @@ abstract class _$$SubmitResultRequestImplCopyWith<$Res>
   ) = __$$SubmitResultRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int durationMs, int totalItems, int correctItems});
+  $Res call({
+    int durationMs,
+    int totalItems,
+    int correctItems,
+    @JsonKey(includeIfNull: false) List<SubmitResultItem>? items,
+  });
 }
 
 /// @nodoc
@@ -116,6 +139,7 @@ class __$$SubmitResultRequestImplCopyWithImpl<$Res>
     Object? durationMs = null,
     Object? totalItems = null,
     Object? correctItems = null,
+    Object? items = freezed,
   }) {
     return _then(
       _$SubmitResultRequestImpl(
@@ -134,6 +158,11 @@ class __$$SubmitResultRequestImplCopyWithImpl<$Res>
                 ? _value.correctItems
                 : correctItems // ignore: cast_nullable_to_non_nullable
                     as int,
+        items:
+            freezed == items
+                ? _value._items
+                : items // ignore: cast_nullable_to_non_nullable
+                    as List<SubmitResultItem>?,
       ),
     );
   }
@@ -146,7 +175,8 @@ class _$SubmitResultRequestImpl implements _SubmitResultRequest {
     required this.durationMs,
     required this.totalItems,
     required this.correctItems,
-  });
+    @JsonKey(includeIfNull: false) final List<SubmitResultItem>? items,
+  }) : _items = items;
 
   factory _$SubmitResultRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$SubmitResultRequestImplFromJson(json);
@@ -158,9 +188,29 @@ class _$SubmitResultRequestImpl implements _SubmitResultRequest {
   @override
   final int correctItems;
 
+  /// Kelime-bazlı döküm (F7.5). Opsiyonel; doluysa öğretmen "Sonuç Detayı"
+  /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
+  /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
+  /// null iken JSON'a yazılmaz (gövde temiz kalır).
+  final List<SubmitResultItem>? _items;
+
+  /// Kelime-bazlı döküm (F7.5). Opsiyonel; doluysa öğretmen "Sonuç Detayı"
+  /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
+  /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
+  /// null iken JSON'a yazılmaz (gövde temiz kalır).
+  @override
+  @JsonKey(includeIfNull: false)
+  List<SubmitResultItem>? get items {
+    final value = _items;
+    if (value == null) return null;
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   String toString() {
-    return 'SubmitResultRequest(durationMs: $durationMs, totalItems: $totalItems, correctItems: $correctItems)';
+    return 'SubmitResultRequest(durationMs: $durationMs, totalItems: $totalItems, correctItems: $correctItems, items: $items)';
   }
 
   @override
@@ -173,13 +223,19 @@ class _$SubmitResultRequestImpl implements _SubmitResultRequest {
             (identical(other.totalItems, totalItems) ||
                 other.totalItems == totalItems) &&
             (identical(other.correctItems, correctItems) ||
-                other.correctItems == correctItems));
+                other.correctItems == correctItems) &&
+            const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, durationMs, totalItems, correctItems);
+  int get hashCode => Object.hash(
+    runtimeType,
+    durationMs,
+    totalItems,
+    correctItems,
+    const DeepCollectionEquality().hash(_items),
+  );
 
   /// Create a copy of SubmitResultRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -203,6 +259,7 @@ abstract class _SubmitResultRequest implements SubmitResultRequest {
     required final int durationMs,
     required final int totalItems,
     required final int correctItems,
+    @JsonKey(includeIfNull: false) final List<SubmitResultItem>? items,
   }) = _$SubmitResultRequestImpl;
 
   factory _SubmitResultRequest.fromJson(Map<String, dynamic> json) =
@@ -215,11 +272,285 @@ abstract class _SubmitResultRequest implements SubmitResultRequest {
   @override
   int get correctItems;
 
+  /// Kelime-bazlı döküm (F7.5). Opsiyonel; doluysa öğretmen "Sonuç Detayı"
+  /// ekranında her terimin doğru/yanlış durumu + öğrenci cevabı gösterilir.
+  /// Boş/null ise backend yalnız [totalItems]/[correctItems]'ten türetir.
+  /// null iken JSON'a yazılmaz (gövde temiz kalır).
+  @override
+  @JsonKey(includeIfNull: false)
+  List<SubmitResultItem>? get items;
+
   /// Create a copy of SubmitResultRequest
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SubmitResultRequestImplCopyWith<_$SubmitResultRequestImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SubmitResultItem _$SubmitResultItemFromJson(Map<String, dynamic> json) {
+  return _SubmitResultItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SubmitResultItem {
+  int get ordinal => throw _privateConstructorUsedError;
+  String get term => throw _privateConstructorUsedError;
+  String get expectedAnswer => throw _privateConstructorUsedError;
+  String? get studentAnswer => throw _privateConstructorUsedError;
+  bool get isCorrect => throw _privateConstructorUsedError;
+
+  /// Serializes this SubmitResultItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of SubmitResultItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SubmitResultItemCopyWith<SubmitResultItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SubmitResultItemCopyWith<$Res> {
+  factory $SubmitResultItemCopyWith(
+    SubmitResultItem value,
+    $Res Function(SubmitResultItem) then,
+  ) = _$SubmitResultItemCopyWithImpl<$Res, SubmitResultItem>;
+  @useResult
+  $Res call({
+    int ordinal,
+    String term,
+    String expectedAnswer,
+    String? studentAnswer,
+    bool isCorrect,
+  });
+}
+
+/// @nodoc
+class _$SubmitResultItemCopyWithImpl<$Res, $Val extends SubmitResultItem>
+    implements $SubmitResultItemCopyWith<$Res> {
+  _$SubmitResultItemCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of SubmitResultItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? ordinal = null,
+    Object? term = null,
+    Object? expectedAnswer = null,
+    Object? studentAnswer = freezed,
+    Object? isCorrect = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            ordinal:
+                null == ordinal
+                    ? _value.ordinal
+                    : ordinal // ignore: cast_nullable_to_non_nullable
+                        as int,
+            term:
+                null == term
+                    ? _value.term
+                    : term // ignore: cast_nullable_to_non_nullable
+                        as String,
+            expectedAnswer:
+                null == expectedAnswer
+                    ? _value.expectedAnswer
+                    : expectedAnswer // ignore: cast_nullable_to_non_nullable
+                        as String,
+            studentAnswer:
+                freezed == studentAnswer
+                    ? _value.studentAnswer
+                    : studentAnswer // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            isCorrect:
+                null == isCorrect
+                    ? _value.isCorrect
+                    : isCorrect // ignore: cast_nullable_to_non_nullable
+                        as bool,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$SubmitResultItemImplCopyWith<$Res>
+    implements $SubmitResultItemCopyWith<$Res> {
+  factory _$$SubmitResultItemImplCopyWith(
+    _$SubmitResultItemImpl value,
+    $Res Function(_$SubmitResultItemImpl) then,
+  ) = __$$SubmitResultItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    int ordinal,
+    String term,
+    String expectedAnswer,
+    String? studentAnswer,
+    bool isCorrect,
+  });
+}
+
+/// @nodoc
+class __$$SubmitResultItemImplCopyWithImpl<$Res>
+    extends _$SubmitResultItemCopyWithImpl<$Res, _$SubmitResultItemImpl>
+    implements _$$SubmitResultItemImplCopyWith<$Res> {
+  __$$SubmitResultItemImplCopyWithImpl(
+    _$SubmitResultItemImpl _value,
+    $Res Function(_$SubmitResultItemImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of SubmitResultItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? ordinal = null,
+    Object? term = null,
+    Object? expectedAnswer = null,
+    Object? studentAnswer = freezed,
+    Object? isCorrect = null,
+  }) {
+    return _then(
+      _$SubmitResultItemImpl(
+        ordinal:
+            null == ordinal
+                ? _value.ordinal
+                : ordinal // ignore: cast_nullable_to_non_nullable
+                    as int,
+        term:
+            null == term
+                ? _value.term
+                : term // ignore: cast_nullable_to_non_nullable
+                    as String,
+        expectedAnswer:
+            null == expectedAnswer
+                ? _value.expectedAnswer
+                : expectedAnswer // ignore: cast_nullable_to_non_nullable
+                    as String,
+        studentAnswer:
+            freezed == studentAnswer
+                ? _value.studentAnswer
+                : studentAnswer // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        isCorrect:
+            null == isCorrect
+                ? _value.isCorrect
+                : isCorrect // ignore: cast_nullable_to_non_nullable
+                    as bool,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SubmitResultItemImpl implements _SubmitResultItem {
+  const _$SubmitResultItemImpl({
+    required this.ordinal,
+    required this.term,
+    required this.expectedAnswer,
+    this.studentAnswer,
+    required this.isCorrect,
+  });
+
+  factory _$SubmitResultItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SubmitResultItemImplFromJson(json);
+
+  @override
+  final int ordinal;
+  @override
+  final String term;
+  @override
+  final String expectedAnswer;
+  @override
+  final String? studentAnswer;
+  @override
+  final bool isCorrect;
+
+  @override
+  String toString() {
+    return 'SubmitResultItem(ordinal: $ordinal, term: $term, expectedAnswer: $expectedAnswer, studentAnswer: $studentAnswer, isCorrect: $isCorrect)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SubmitResultItemImpl &&
+            (identical(other.ordinal, ordinal) || other.ordinal == ordinal) &&
+            (identical(other.term, term) || other.term == term) &&
+            (identical(other.expectedAnswer, expectedAnswer) ||
+                other.expectedAnswer == expectedAnswer) &&
+            (identical(other.studentAnswer, studentAnswer) ||
+                other.studentAnswer == studentAnswer) &&
+            (identical(other.isCorrect, isCorrect) ||
+                other.isCorrect == isCorrect));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    ordinal,
+    term,
+    expectedAnswer,
+    studentAnswer,
+    isCorrect,
+  );
+
+  /// Create a copy of SubmitResultItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SubmitResultItemImplCopyWith<_$SubmitResultItemImpl> get copyWith =>
+      __$$SubmitResultItemImplCopyWithImpl<_$SubmitResultItemImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SubmitResultItemImplToJson(this);
+  }
+}
+
+abstract class _SubmitResultItem implements SubmitResultItem {
+  const factory _SubmitResultItem({
+    required final int ordinal,
+    required final String term,
+    required final String expectedAnswer,
+    final String? studentAnswer,
+    required final bool isCorrect,
+  }) = _$SubmitResultItemImpl;
+
+  factory _SubmitResultItem.fromJson(Map<String, dynamic> json) =
+      _$SubmitResultItemImpl.fromJson;
+
+  @override
+  int get ordinal;
+  @override
+  String get term;
+  @override
+  String get expectedAnswer;
+  @override
+  String? get studentAnswer;
+  @override
+  bool get isCorrect;
+
+  /// Create a copy of SubmitResultItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SubmitResultItemImplCopyWith<_$SubmitResultItemImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

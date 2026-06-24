@@ -13,6 +13,9 @@ abstract final class AppColors {
   static const Color primaryFixed = Color(0xFFD8E2FF);
   static const Color primaryFixedDim = Color(0xFFADC6FF);
 
+  /// primary-fixed üzerindeki koyu metin (Stitch `on-primary-fixed-variant`).
+  static const Color onPrimaryFixedVariant = Color(0xFF004395);
+
   /// Primary 3D buton alt gölge rengi (on-primary-fixed-variant tonu).
   static const Color primaryShadow = Color(0xFF004395);
 
@@ -34,9 +37,14 @@ abstract final class AppColors {
   static const Color onTertiary = Color(0xFFFFFFFF);
   static const Color onTertiaryFixed = Color(0xFF002113);
 
+  /// tertiary-container üzerindeki çok açık yeşil zemin (Stitch
+  /// `on-tertiary-container`) — doğru kelime kartı arka planı.
+  static const Color onTertiaryContainer = Color(0xFFF5FFF6);
+
   // Error ailesi
   static const Color error = Color(0xFFBA1A1A);
   static const Color errorContainer = Color(0xFFFFDAD6);
+  static const Color onError = Color(0xFFFFFFFF);
   static const Color onErrorContainer = Color(0xFF93000A);
 
   // Yüzey / arka plan tonal katmanlar

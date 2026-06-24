@@ -2,11 +2,24 @@ using LingoCross.Domain.Enums;
 
 namespace LingoCross.Application.Results.Dtos;
 
-/// <summary>Bir oyun sonucunun gönderimi (öğrenci, oyun sonunda).</summary>
+/// <summary>
+/// Bir oyun sonucunun gönderimi (öğrenci, oyun sonunda). <see cref="Items"/> opsiyoneldir
+/// (F7.5): doluysa kelime-bazlı kırılım kaydedilir ve toplam/doğru sayıları item listesinden
+/// türetilir; null/boş ise eski davranış korunur (istemciden gelen sayılar kullanılır).
+/// </summary>
 public record SubmitResultRequest(
     int DurationMs,
     int TotalItems,
-    int CorrectItems);
+    int CorrectItems,
+    IReadOnlyList<SubmitResultItem>? Items = null);
+
+/// <summary>Sonuç gönderiminde tek bir kelime-bazlı kalem (F7.5).</summary>
+public record SubmitResultItem(
+    int Ordinal,
+    string Term,
+    string ExpectedAnswer,
+    string? StudentAnswer,
+    bool IsCorrect);
 
 /// <summary>
 /// Bir oyun sonucunun tam görünümü (oturum + ders/oyun özetiyle). ListMine ve submit/share

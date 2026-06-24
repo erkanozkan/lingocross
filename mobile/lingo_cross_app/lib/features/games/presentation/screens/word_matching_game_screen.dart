@@ -120,6 +120,7 @@ class _WordMatchingGameScreenState
           durationMs: _durationMs,
           totalItems: _engine.total,
           correctItems: _correctItems,
+          items: _engine.resultItems(),
         );
     if (!mounted) return;
     if (result == null) {

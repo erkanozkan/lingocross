@@ -167,4 +167,32 @@ void main() {
       expect(e.terms[_termIndex(e, 'w2')].status, TermCardStatus.selected);
     });
   });
+
+  group('resultItems (F7.5) — kelime-bazlı döküm', () {
+    test('her terim için item; doğru/yanlış/boş türetilir', () {
+      var e = _engine();
+      // w1 doğru, w2 yanlış (su çeldirici değil ama w3 cevabı), w3 boş.
+      e = _match(e, 'w1', 'elma'); // doğru
+      e = _match(e, 'w2', 'su'); // yanlış (kitap olmalıydı)
+
+      final items = e.resultItems();
+      expect(items.length, 3);
+
+      final apple = items.firstWhere((i) => i.term == 'apple');
+      expect(apple.ordinal, _termIndex(e, 'w1'));
+      expect(apple.expectedAnswer, 'elma');
+      expect(apple.studentAnswer, 'elma');
+      expect(apple.isCorrect, isTrue);
+
+      final book = items.firstWhere((i) => i.term == 'book');
+      expect(book.expectedAnswer, 'kitap');
+      expect(book.studentAnswer, 'su');
+      expect(book.isCorrect, isFalse);
+
+      final water = items.firstWhere((i) => i.term == 'water');
+      expect(water.expectedAnswer, 'su');
+      expect(water.studentAnswer, isNull); // eşleştirilmedi
+      expect(water.isCorrect, isFalse);
+    });
+  });
 }

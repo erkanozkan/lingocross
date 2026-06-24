@@ -1,3 +1,4 @@
+import '../../results/data/dtos/result_dtos.dart';
 import '../data/dtos/game_dtos.dart';
 import 'game_type.dart';
 
@@ -314,6 +315,48 @@ class CrosswordEngine {
       if (statusOf(i) == EntryStatus.correct) n++;
     }
     return n;
+  }
+
+  /// Bir girişin o an girilmiş harfleri (boş hücreler atlanır, büyük harf).
+  String _enteredAnswer(CrosswordEntry entry) {
+    final buffer = StringBuffer();
+    for (var i = 0; i < entry.length; i++) {
+      final r = entry.direction == CrosswordDirection.down
+          ? entry.row + i
+          : entry.row;
+      final c = entry.direction == CrosswordDirection.across
+          ? entry.col + i
+          : entry.col;
+      buffer.write(letters[r][c]);
+    }
+    return buffer.toString();
+  }
+
+  /// "Bitir" anında her kelime için kelime-bazlı sonuç dökümü (F7.5).
+  ///
+  /// - [SubmitResultItem.ordinal] = girişin [entries] içindeki sırası (0-tabanlı).
+  /// - [SubmitResultItem.term] = ipucu (clue); ipucu boşsa cevabın kendisi.
+  /// - [SubmitResultItem.expectedAnswer] = doğru cevap (kelime).
+  /// - [SubmitResultItem.studentAnswer] = öğrencinin doldurduğu harfler; hiç harf
+  ///   girilmediyse null.
+  /// - [SubmitResultItem.isCorrect] = giriş tam ve doğru mu.
+  ///
+  /// Mevcut skorlama mantığı korunur; bu yalnız bitişte çağrılan türetimdir.
+  List<SubmitResultItem> resultItems() {
+    final items = <SubmitResultItem>[];
+    for (var i = 0; i < entries.length; i++) {
+      final entry = entries[i];
+      final entered = _enteredAnswer(entry);
+      final term = entry.clue.trim().isNotEmpty ? entry.clue : entry.answer;
+      items.add(SubmitResultItem(
+        ordinal: i,
+        term: term,
+        expectedAnswer: entry.answer,
+        studentAnswer: entered.isEmpty ? null : entered,
+        isCorrect: statusOf(i) == EntryStatus.correct,
+      ));
+    }
+    return items;
   }
 
   /// Tüm hücreleri DOLU girişlerin sayısı (doğru/yanlış ayırt etmeden).

@@ -1537,6 +1537,99 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get resultDetailTitle => 'Sonuç Detayı';
+
+  @override
+  String resultDetailDateTime(String date, String time) {
+    return '$date • $time';
+  }
+
+  @override
+  String get resultDetailMetricAccuracy => 'Başarı';
+
+  @override
+  String get resultDetailMetricCorrect => 'Doğru';
+
+  @override
+  String get resultDetailMetricDuration => 'Süre';
+
+  @override
+  String resultDetailFilterAll(int count) {
+    return 'Tümü ($count)';
+  }
+
+  @override
+  String resultDetailFilterCorrect(int count) {
+    return 'Doğrular ($count)';
+  }
+
+  @override
+  String resultDetailFilterWrong(int count) {
+    return 'Yanlışlar ($count)';
+  }
+
+  @override
+  String get resultDetailBadgeCorrect => 'Doğru';
+
+  @override
+  String get resultDetailBadgeWrong => 'Yanlış';
+
+  @override
+  String resultDetailCorrectAnswer(String answer) {
+    return 'Doğru cevap: $answer';
+  }
+
+  @override
+  String resultDetailStudentAnswer(String answer) {
+    return 'Öğrencinin cevabı: $answer';
+  }
+
+  @override
+  String get resultDetailStudentAnswerEmpty => 'Öğrencinin cevabı: — (boş)';
+
+  @override
+  String get resultDetailAnalysisTitle => 'Bölüm Analizi';
+
+  @override
+  String get resultDetailSpeedScore => 'Hız Skoru';
+
+  @override
+  String get resultDetailSpeedGreat => 'Harika!';
+
+  @override
+  String get resultDetailSpeedGood => 'İyi';
+
+  @override
+  String get resultDetailSpeedFair => 'Orta';
+
+  @override
+  String get resultDetailSpeedSlow => 'Acele etme';
+
+  @override
+  String resultDetailSpeedDesc(String seconds) {
+    return 'Kelime başına ortalama $seconds sn.';
+  }
+
+  @override
+  String get resultDetailNoItemsTitle => 'Kelime detayı yok';
+
+  @override
+  String get resultDetailNoItemsDesc => 'Bu sonuç eski bir oynamadan geldiği için kelime bazlı döküm bulunmuyor.';
+
+  @override
+  String get resultDetailErrorTitle => 'Sonuç detayı yüklenemedi';
+
+  @override
+  String resultDetailItemCorrectA11y(String term, String answer) {
+    return '$term, karşılığı $answer, doğru';
+  }
+
+  @override
+  String resultDetailItemWrongA11y(String term, String expected, String given) {
+    return '$term, doğru cevap $expected, öğrencinin cevabı $given, yanlış';
+  }
+
+  @override
   String get gameTypeWordMatching => 'Kelime Eşleştirme';
 
   @override

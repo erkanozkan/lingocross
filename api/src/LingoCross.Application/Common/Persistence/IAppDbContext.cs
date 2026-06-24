@@ -31,6 +31,8 @@ public interface IAppDbContext
 
     DbSet<GameResult> GameResults { get; }
 
+    DbSet<GameResultItem> GameResultItems { get; }
+
     DbSet<Class> Classes { get; }
 
     DbSet<ClassMember> ClassMembers { get; }

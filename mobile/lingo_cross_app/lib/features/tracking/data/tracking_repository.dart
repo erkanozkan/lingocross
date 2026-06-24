@@ -56,6 +56,21 @@ class TrackingRepository {
     }
   }
 
+  /// Bir öğrencinin tek bir sonucunun kelime-bazlı detayı (F7.5).
+  Future<StudentResultDetailDto> getStudentResultDetail(
+    String studentId,
+    String resultId,
+  ) async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '$_base/teachers/me/students/$studentId/results/$resultId',
+      );
+      return StudentResultDetailDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   TrackingFailure _mapError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:

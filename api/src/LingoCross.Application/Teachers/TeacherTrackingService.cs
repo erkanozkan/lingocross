@@ -114,6 +114,68 @@ public class TeacherTrackingService : ITeacherTrackingService
         return rows;
     }
 
+    public async Task<StudentResultDetailDto> GetStudentResultDetailAsync(
+        Guid studentId, Guid resultId, CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        // Sahiplik: öğrenci öğretmenin arşivsiz sınıflarından birinde Active üye olmalı (aksi 404).
+        var enrolled = await _db.ClassMembers.AnyAsync(
+            m => m.Status == ClassMemberStatus.Active
+                && m.Class.TeacherId == teacherId
+                && !m.Class.IsArchived
+                && m.StudentId == studentId,
+            cancellationToken);
+
+        if (!enrolled)
+        {
+            throw AppException.NotFound("Sonuç bulunamadı.");
+        }
+
+        // Sonuç o öğrenciye ait VE paylaşılmış olmalı; aksi 404 (varlığı/gizliliği sızdırmamak için).
+        var detail = await _db.GameResults
+            .Where(r => r.Id == resultId
+                && r.SharedWithTeacher
+                && r.Session.StudentId == studentId)
+            .Select(r => new
+            {
+                r.Id,
+                StudentDisplayName = r.Session.Student.DisplayName,
+                LessonTitle = r.Session.Game.Lesson.Title,
+                GameType = r.Session.Game.Type,
+                r.Score,
+                r.DurationMs,
+                r.TotalItems,
+                r.CorrectItems,
+                r.SharedAt,
+                r.CreatedAt,
+                Items = r.Items
+                    .OrderBy(i => i.Ordinal)
+                    .Select(i => new ResultItemDto(
+                        i.Ordinal, i.Term, i.ExpectedAnswer, i.StudentAnswer, i.IsCorrect))
+                    .ToList(),
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (detail is null)
+        {
+            throw AppException.NotFound("Sonuç bulunamadı.");
+        }
+
+        return new StudentResultDetailDto(
+            detail.Id,
+            detail.StudentDisplayName,
+            detail.LessonTitle,
+            detail.GameType,
+            detail.Score,
+            detail.DurationMs,
+            detail.TotalItems,
+            detail.CorrectItems,
+            detail.SharedAt,
+            detail.CreatedAt,
+            detail.Items);
+    }
+
     public async Task<TeacherStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default)
     {
         var teacherId = RequireTeacher();

@@ -12,6 +12,10 @@ _$SubmitResultRequestImpl _$$SubmitResultRequestImplFromJson(
   durationMs: (json['durationMs'] as num).toInt(),
   totalItems: (json['totalItems'] as num).toInt(),
   correctItems: (json['correctItems'] as num).toInt(),
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => SubmitResultItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
 );
 
 Map<String, dynamic> _$$SubmitResultRequestImplToJson(
@@ -20,6 +24,28 @@ Map<String, dynamic> _$$SubmitResultRequestImplToJson(
   'durationMs': instance.durationMs,
   'totalItems': instance.totalItems,
   'correctItems': instance.correctItems,
+  if (instance.items?.map((e) => e.toJson()).toList() case final value?)
+    'items': value,
+};
+
+_$SubmitResultItemImpl _$$SubmitResultItemImplFromJson(
+  Map<String, dynamic> json,
+) => _$SubmitResultItemImpl(
+  ordinal: (json['ordinal'] as num).toInt(),
+  term: json['term'] as String,
+  expectedAnswer: json['expectedAnswer'] as String,
+  studentAnswer: json['studentAnswer'] as String?,
+  isCorrect: json['isCorrect'] as bool,
+);
+
+Map<String, dynamic> _$$SubmitResultItemImplToJson(
+  _$SubmitResultItemImpl instance,
+) => <String, dynamic>{
+  'ordinal': instance.ordinal,
+  'term': instance.term,
+  'expectedAnswer': instance.expectedAnswer,
+  'studentAnswer': instance.studentAnswer,
+  'isCorrect': instance.isCorrect,
 };
 
 _$GameResultDtoImpl _$$GameResultDtoImplFromJson(Map<String, dynamic> json) =>
