@@ -53,6 +53,9 @@ abstract final class AppColors {
   static const Color outline = Color(0xFF727785);
   static const Color outlineVariant = Color(0xFFC2C6D6);
 
+  /// Koyu yüzey (crossword boş/"siyah" hücreler) — Stitch `inverse-surface`.
+  static const Color inverseSurface = Color(0xFF213145);
+
   /// Level-2 difüz (mavi tonlu) yumuşak gölge rengi.
   static const Color ambientShadow = Color(0x143B82F6); // rgba(59,130,246,0.08)
 }

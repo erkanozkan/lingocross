@@ -35,3 +35,21 @@ enum GameSessionStatus {
         _ => GameSessionStatus.inProgress,
       };
 }
+
+/// Bulmaca kelime yönü (API `CrosswordDirection` enum'u ile birebir).
+///
+/// [across] (yatay) → harfler sütun artarak, [down] (dikey) → satır artarak yerleşir.
+enum CrosswordDirection {
+  across(0),
+  down(1);
+
+  const CrosswordDirection(this.value);
+
+  final int value;
+
+  static CrosswordDirection fromValue(int value) => switch (value) {
+        0 => CrosswordDirection.across,
+        1 => CrosswordDirection.down,
+        _ => CrosswordDirection.across,
+      };
+}

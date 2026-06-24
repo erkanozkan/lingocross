@@ -1140,9 +1140,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGameTypeCrosswordDesc => 'Klasik kare bulmaca formatında kelime tamamlama oyunu.';
 
   @override
-  String get createGameTypeComingSoon => 'Yakında';
-
-  @override
   String get createGameLessonLabel => 'Kullanılacak Kelime Listesi';
 
   @override
@@ -1174,6 +1171,40 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get createGameErrorGeneric => 'Bulmaca oluşturulamadı, tekrar dene.';
+
+  @override
+  String get gameCrosswordTitle => 'Günün Bulmacası';
+
+  @override
+  String gameCrosswordCounter(int correct, int total) {
+    return '$correct / $total';
+  }
+
+  @override
+  String get gameCrosswordAcross => 'SOLDAN SAĞA';
+
+  @override
+  String get gameCrosswordDown => 'YUKARIDAN AŞAĞI';
+
+  @override
+  String get gameCrosswordFinish => 'Bitir';
+
+  @override
+  String get gameCrosswordKeyDelete => 'Sil';
+
+  @override
+  String get gameCrosswordCompleteTitle => 'Bulmaca tamamlandı!';
+
+  @override
+  String get gameCrosswordCellSemantic => 'Bulmaca hücresi';
+
+  @override
+  String gameCrosswordCellNumberedSemantic(int number) {
+    return '$number numaralı kelimenin başlangıç hücresi';
+  }
+
+  @override
+  String get gameCrosswordCellEmpty => 'boş';
 
   @override
   String get teacherStudentsAppBarTitle => 'Öğrencilerim';

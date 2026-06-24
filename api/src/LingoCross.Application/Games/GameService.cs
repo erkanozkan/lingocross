@@ -36,23 +36,34 @@ public class GameService : IGameService
         // Yalnızca ders sahibi öğretmen oluşturabilir.
         var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
 
-        // MVP/F2.2: yalnız WordMatching desteklenir. Crossword (F2.4) rezerve.
-        if (request.Type == GameType.Crossword)
+        // F2.4: WordMatching ve Crossword desteklenir. QuestionSet hâlâ rezerve.
+        switch (request.Type)
         {
-            throw AppException.BadRequest("Bulmaca (crossword) oyunu henüz desteklenmiyor.");
-        }
+            case GameType.WordMatching:
+                // Oynanabilirlik: ders en az MinWordsToPlay çevirili kelime içermeli (StartSession ile aynı kural).
+                var translatedCount = await CountTranslatedWordsAsync(lesson.Id, cancellationToken);
+                if (translatedCount < MinWordsToPlay)
+                {
+                    throw AppException.BadRequest(
+                        $"Bu ders için oyun oluşturulamıyor; en az {MinWordsToPlay} çevirili kelime gerekir.");
+                }
 
-        if (request.Type != GameType.WordMatching)
-        {
-            throw AppException.BadRequest("Geçersiz oyun türü.");
-        }
+                break;
 
-        // Oynanabilirlik: ders en az MinWordsToPlay çevirili kelime içermeli (StartSession ile aynı kural).
-        var eligibleCount = await CountTranslatedWordsAsync(lesson.Id, cancellationToken);
-        if (eligibleCount < MinWordsToPlay)
-        {
-            throw AppException.BadRequest(
-                $"Bu ders için oyun oluşturulamıyor; en az {MinWordsToPlay} çevirili kelime gerekir.");
+            case GameType.Crossword:
+                // Crossword için: terim İngilizce (yalnız A–Z, ≥2 harf) VE birincil/ilk çevirisi (ipucu) dolu olmalı.
+                var crosswordEligible = await CountCrosswordEligibleWordsAsync(lesson.Id, cancellationToken);
+                if (crosswordEligible < CrosswordGenerator.MinEligibleWords)
+                {
+                    throw AppException.BadRequest(
+                        $"Bu ders için bulmaca oluşturulamıyor; en az {CrosswordGenerator.MinEligibleWords} " +
+                        "bulmaca-uygun (yalnız İngilizce A–Z harfli, çevirili) kelime gerekir.");
+                }
+
+                break;
+
+            default:
+                throw AppException.BadRequest("Geçersiz oyun türü.");
         }
 
         var now = DateTime.UtcNow;
@@ -142,7 +153,24 @@ public class GameService : IGameService
         // Ders erişimi (enrolled + published) doğrula; aksi 404.
         await GetAccessibleLessonAsync(game.LessonId, cancellationToken);
 
-        var content = await BuildWordMatchingContentAsync(game.LessonId, cancellationToken);
+        // İçerik tür-duyarlı üretilir. Yeterli/uygun kelime yoksa içerik üreticisi 400 atar ve
+        // (SaveChanges'tan önce olduğu için) oturum oluşturulmaz.
+        WordMatchingContent? wordMatching = null;
+        CrosswordContent? crossword = null;
+
+        switch (game.Type)
+        {
+            case GameType.WordMatching:
+                wordMatching = await BuildWordMatchingContentAsync(game.LessonId, cancellationToken);
+                break;
+
+            case GameType.Crossword:
+                crossword = await BuildCrosswordContentAsync(game.LessonId, cancellationToken);
+                break;
+
+            default:
+                throw AppException.BadRequest("Bu oyun türü oynatılamıyor.");
+        }
 
         var session = new GameSession
         {
@@ -154,7 +182,7 @@ public class GameService : IGameService
         _db.GameSessions.Add(session);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return new StartGameSessionResponse(ToDto(session), content);
+        return new StartGameSessionResponse(ToDto(session), game.Type, wordMatching, crossword);
     }
 
     public async Task<GameSessionDto> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken = default)
@@ -240,6 +268,50 @@ public class GameService : IGameService
         return new WordMatchingContent(pairs, distractors);
     }
 
+    /// <summary>
+    /// Dersin kelimelerinden crossword içeriği üretir. Uygun terimler (yalnız A–Z, ≥2 harf, birincil/ilk
+    /// çevirisi dolu) cevap=İngilizce terim (A–Z BÜYÜK), ipucu=birincil Türkçe karşılık olacak şekilde
+    /// alınır; greedy kesişim yerleştirmeyle bağlı bir ızgaraya konur. En az
+    /// <see cref="CrosswordGenerator.MinEligibleWords"/> kelime yerleştirilemezse AppException(400).
+    /// </summary>
+    private async Task<CrosswordContent> BuildCrosswordContentAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        var words = await _db.Words
+            .Where(w => w.LessonId == lessonId)
+            .Include(w => w.Translations)
+            .OrderBy(w => w.SortOrder)
+            .ThenBy(w => w.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        // Uygun aday: terim crossword-uygun (A–Z, ≥2 harf) VE bir ipucu (birincil/ilk çeviri) var.
+        var candidates = words
+            .Where(w => CrosswordGenerator.IsEligibleTerm(w.Term))
+            .Select(w => new
+            {
+                Answer = CrosswordGenerator.NormalizeAnswer(w.Term),
+                Clue = PrimaryTranslation(w),
+            })
+            .Where(x => x.Answer.Length >= 2 && x.Clue is not null)
+            .Select(x => (x.Answer, Clue: x.Clue!))
+            .ToList();
+
+        if (candidates.Count < CrosswordGenerator.MinEligibleWords)
+        {
+            throw AppException.BadRequest(
+                $"Bu ders için bulmaca oynatılamıyor; en az {CrosswordGenerator.MinEligibleWords} " +
+                "bulmaca-uygun (yalnız İngilizce A–Z harfli, çevirili) kelime gerekir.");
+        }
+
+        var result = CrosswordGenerator.Generate(candidates, _random);
+        if (result.PlacedCount < CrosswordGenerator.MinEligibleWords)
+        {
+            throw AppException.BadRequest(
+                "Bu ders için bağlantılı bir bulmaca üretilemedi (yeterli kesişen kelime yok).");
+        }
+
+        return result.Content;
+    }
+
     private static string? PrimaryTranslation(Word word)
     {
         var primary = word.Translations.FirstOrDefault(t => t.IsPrimary)
@@ -321,6 +393,23 @@ public class GameService : IGameService
             .Where(w => w.LessonId == lessonId
                 && w.Translations.Any(t => t.Text != null && t.Text.Trim() != ""))
             .CountAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Dersin crossword-uygun kelime sayısı: terim yalnız A–Z (≥2 harf) VE bir çevirisi (ipucu) dolu.
+    /// Terim eleme kuralı SQL'e çevrilemediği için bellekte değerlendirilir.
+    /// </summary>
+    private async Task<int> CountCrosswordEligibleWordsAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        var words = await _db.Words
+            .Where(w => w.LessonId == lessonId)
+            .Include(w => w.Translations)
+            .ToListAsync(cancellationToken);
+
+        return words.Count(w =>
+            CrosswordGenerator.IsEligibleTerm(w.Term)
+            && CrosswordGenerator.NormalizeAnswer(w.Term).Length >= 2
+            && PrimaryTranslation(w) is not null);
     }
 
     private static string? NormalizeTitle(string? title)

@@ -70,7 +70,8 @@ class FakeGamesRepository implements GamesRepository {
             status: GameSessionStatus.inProgress,
             startedAt: DateTime(2026, 6, 23),
           ),
-          content: const WordMatchingContent(pairs: [], distractors: []),
+          type: GameType.wordMatching,
+          wordMatching: const WordMatchingContent(pairs: [], distractors: []),
         );
   }
 

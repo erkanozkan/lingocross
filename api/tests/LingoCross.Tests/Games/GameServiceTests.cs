@@ -47,19 +47,42 @@ public class GameServiceTests
         return lesson;
     }
 
+    /// <summary>Belirli bir terim+birincil çeviriyle kelime ekler (crossword uygunluk testleri için).</summary>
+    private static void AddWord(Lesson lesson, string term, string translation, int sortOrder)
+    {
+        var word = new Word { Term = term, SortOrder = sortOrder, Source = WordSource.Manual };
+        word.Translations.Add(new WordTranslation { Text = translation, IsPrimary = true });
+        lesson.Words.Add(word);
+    }
+
+    /// <summary>Verilen (terim, çeviri) çiftleriyle bir ders kurar.</summary>
+    private static async Task<Lesson> SeedLessonWithTermsAsync(
+        AppDbContext db, Guid teacherId, bool published, params (string Term, string Translation)[] words)
+    {
+        var lesson = new Lesson { TeacherId = teacherId, Title = "Ders", IsPublished = published };
+        for (var i = 0; i < words.Length; i++)
+        {
+            AddWord(lesson, words[i].Term, words[i].Translation, i);
+        }
+        db.Lessons.Add(lesson);
+        await db.SaveChangesAsync();
+        return lesson;
+    }
+
     private static async Task EnrollAsync(AppDbContext db, Guid teacherId, Guid studentId, EnrollmentStatus status)
     {
         db.Enrollments.Add(new Enrollment { TeacherId = teacherId, StudentId = studentId, Status = status });
         await db.SaveChangesAsync();
     }
 
-    private static async Task<Game> SeedGameAsync(AppDbContext db, Guid lessonId, bool published = true)
+    private static async Task<Game> SeedGameAsync(
+        AppDbContext db, Guid lessonId, bool published = true, GameType type = GameType.WordMatching)
     {
         var game = new Game
         {
             LessonId = lessonId,
-            Type = GameType.WordMatching,
-            Title = "Kelime Eşleştirme",
+            Type = type,
+            Title = type == GameType.Crossword ? "Bulmaca" : "Kelime Eşleştirme",
             IsPublished = published,
             PublishedAt = published ? DateTime.UtcNow : null,
         };
@@ -116,16 +139,47 @@ public class GameServiceTests
     }
 
     [Fact]
-    public async Task Create_Crossword_Throws400_NotSupported()
+    public async Task Create_Crossword_WithEnoughEligibleWords_Returns201()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
-        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: false, translatedWordCount: 5);
+        // 5 crossword-uygun (A–Z) çevirili kelime → crossword oluşturulabilir.
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: false,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var game = await svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.Crossword, "Bulmaca 1"));
+
+        Assert.Equal(GameType.Crossword, game.Type);
+        Assert.Equal("Bulmaca 1", game.Title);
+        Assert.True(game.IsPublished);
+        Assert.NotNull(game.PublishedAt);
+    }
+
+    [Fact]
+    public async Task Create_Crossword_InsufficientEligibleWords_Throws400()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // 5 çevirili kelime ama yalnız 3'ü crossword-uygun (geri kalanların terimi Türkçe karakterli).
+        var lesson = new Lesson { TeacherId = teacher.Id, Title = "Ders", IsPublished = false };
+        AddWord(lesson, "apple", "elma", 0);
+        AddWord(lesson, "book", "kitap", 1);
+        AddWord(lesson, "table", "masa", 2);
+        AddWord(lesson, "çiçek", "flower-tr", 3); // Türkçe karakter → uygunsuz
+        AddWord(lesson, "kitap evi", "bookstore", 4); // boşluk → uygunsuz
+        db.Lessons.Add(lesson);
+        await db.SaveChangesAsync();
 
         var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(
             () => svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.Crossword, null)));
         Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.Games.CountAsync());
     }
 
     [Fact]
@@ -290,10 +344,15 @@ public class GameServiceTests
         Assert.Equal(game.Id, response.Session.GameId);
         Assert.Equal(1, await db.GameSessions.CountAsync());
 
+        // WordMatching oturumu: tür-duyarlı içerik WordMatching alanında.
+        Assert.Equal(GameType.WordMatching, response.Type);
+        Assert.NotNull(response.WordMatching);
+        Assert.Null(response.Crossword);
+
         // 6 kelime ≤ MaxPairs(8) → 6 çift.
-        Assert.Equal(6, response.Content.Pairs.Count);
+        Assert.Equal(6, response.WordMatching!.Pairs.Count);
         // Her çiftin term ve doğru çevirisi dolu.
-        Assert.All(response.Content.Pairs, p =>
+        Assert.All(response.WordMatching!.Pairs, p =>
         {
             Assert.False(string.IsNullOrWhiteSpace(p.Term));
             Assert.False(string.IsNullOrWhiteSpace(p.CorrectTranslation));
@@ -313,7 +372,7 @@ public class GameServiceTests
         var game = await SeedGameAsync(db, lesson.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
-        var content = (await svc.StartSessionAsync(game.Id)).Content;
+        var content = (await svc.StartSessionAsync(game.Id)).WordMatching!;
 
         Assert.Equal(GameService.MaxPairs, content.Pairs.Count);
         Assert.Equal(GameService.MaxDistractors, content.Distractors.Count);
@@ -389,6 +448,62 @@ public class GameServiceTests
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
         Assert.Equal(404, ex.StatusCode);
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
+
+    [Fact]
+    public async Task StartSession_Crossword_ReturnsCrosswordContent()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: true,
+            ("APPLE", "elma"),
+            ("PEAR", "armut"),
+            ("PLATE", "tabak"),
+            ("LEMON", "limon"),
+            ("MELON", "kavun"));
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Crossword);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var response = await svc.StartSessionAsync(game.Id);
+
+        Assert.Equal(GameType.Crossword, response.Type);
+        Assert.Null(response.WordMatching);
+        Assert.NotNull(response.Crossword);
+        Assert.Equal(GameSessionStatus.InProgress, response.Session.Status);
+        Assert.Equal(1, await db.GameSessions.CountAsync());
+
+        var content = response.Crossword!;
+        Assert.True(content.Entries.Count >= CrosswordGenerator.MinEligibleWords);
+        Assert.True(content.Rows > 0 && content.Cols > 0);
+        // Cevaplar yalnız A–Z BÜYÜK; ipuçları dolu.
+        Assert.All(content.Entries, e =>
+        {
+            Assert.Matches("^[A-Z]+$", e.Answer);
+            Assert.False(string.IsNullOrWhiteSpace(e.Clue));
+            Assert.Equal(e.Answer.Length, e.Length);
+        });
+    }
+
+    [Fact]
+    public async Task StartSession_Crossword_InsufficientEligible_Throws400_NoSession()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        // Yalnız 3 uygun terim → crossword oynatılamaz.
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: true,
+            ("APPLE", "elma"),
+            ("PEAR", "armut"),
+            ("PLATE", "tabak"));
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Crossword);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
+        Assert.Equal(400, ex.StatusCode);
         Assert.Equal(0, await db.GameSessions.CountAsync());
     }
 

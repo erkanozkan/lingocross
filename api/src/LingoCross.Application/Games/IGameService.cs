@@ -14,10 +14,11 @@ public interface IGameService
 {
     /// <summary>
     /// Öğretmen, kendi dersinde bir oyun oluşturur ve yayımlar (IsPublished=true, PublishedAt=now).
-    /// Ders en az <c>MinWordsToPlay</c> çevirili kelime içermeli; aksi 400. MVP'de yalnız
-    /// <see cref="GameType.WordMatching"/>; <see cref="GameType.Crossword"/> gelirse 400
-    /// "henüz desteklenmiyor". Aynı ders+tür için oyun zaten varsa idempotent davranır: mevcut
-    /// oyunu (gerekirse yeniden) yayımlayıp döndürür. Ders sahibi olmayan öğretmen/öğrenci → 404/403.
+    /// <see cref="GameType.WordMatching"/> için ders en az <c>MinWordsToPlay</c> çevirili kelime;
+    /// <see cref="GameType.Crossword"/> için (F2.4) en az 4 bulmaca-uygun (yalnız A–Z harfli, ≥2 harf,
+    /// çevirili) kelime içermeli; aksi 400. <see cref="GameType.QuestionSet"/> hâlâ rezerve → 400.
+    /// Aynı ders+tür için oyun zaten varsa idempotent davranır: mevcut oyunu (gerekirse yeniden)
+    /// yayımlayıp döndürür. Ders sahibi olmayan öğretmen/öğrenci → 404/403.
     /// </summary>
     Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default);
 

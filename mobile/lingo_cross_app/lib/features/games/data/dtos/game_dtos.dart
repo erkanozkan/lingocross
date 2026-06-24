@@ -122,12 +122,67 @@ class WordMatchingContent with _$WordMatchingContent {
       _$WordMatchingContentFromJson(json);
 }
 
-/// Oturum başlatma yanıtı (StartGameSessionResponse): oturum + içerik.
+/// API'deki int `CrosswordDirection` değerini ([CrosswordDirection]) enum'una çevirir.
+class CrosswordDirectionConverter
+    implements JsonConverter<CrosswordDirection, int> {
+  const CrosswordDirectionConverter();
+
+  @override
+  CrosswordDirection fromJson(int json) => CrosswordDirection.fromValue(json);
+
+  @override
+  int toJson(CrosswordDirection object) => object.value;
+}
+
+/// Bulmacadaki tek bir kelime girişi (CrosswordEntry) — API ile birebir.
+///
+/// [answer] yalnız A–Z BÜYÜK harfler (doğrulama istemcide). [clue] Türkçe ipucu.
+/// [row]/[col] başlangıç hücresi (0-tabanlı). across → harfler sütun artarak,
+/// down → satır artarak yerleşir. [number] klasik bulmaca numarasıdır.
+@freezed
+class CrosswordEntry with _$CrosswordEntry {
+  const factory CrosswordEntry({
+    required int number,
+    required String answer,
+    required String clue,
+    required int row,
+    required int col,
+    @CrosswordDirectionConverter() required CrosswordDirection direction,
+    required int length,
+  }) = _CrosswordEntry;
+
+  factory CrosswordEntry.fromJson(Map<String, dynamic> json) =>
+      _$CrosswordEntryFromJson(json);
+}
+
+/// Crossword (bulmaca) oyun içeriği (CrosswordContent) — API ile birebir.
+///
+/// Izgara [rows]×[cols] hücredir (0-tabanlı, satır-major). [entries] her biri bir
+/// kelimeyi temsil eder. Kesişen hücrelerde harfler tutarlıdır (üretim garanti eder).
+@freezed
+class CrosswordContent with _$CrosswordContent {
+  const factory CrosswordContent({
+    required int rows,
+    required int cols,
+    required List<CrosswordEntry> entries,
+  }) = _CrosswordContent;
+
+  factory CrosswordContent.fromJson(Map<String, dynamic> json) =>
+      _$CrosswordContentFromJson(json);
+}
+
+/// Oturum başlatma yanıtı (StartGameSessionResponse): oturum + tür-duyarlı içerik.
+///
+/// Yeni şekil: `{ session, type, wordMatching?, crossword? }`. [type] WordMatching
+/// ise [wordMatching] doludur (eski `content` ile aynı şekil); Crossword ise
+/// [crossword] doludur. İstemci [type]'a göre dallanır.
 @freezed
 class StartGameSessionResponse with _$StartGameSessionResponse {
   const factory StartGameSessionResponse({
     required GameSessionDto session,
-    required WordMatchingContent content,
+    @GameTypeConverter() required GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
   }) = _StartGameSessionResponse;
 
   factory StartGameSessionResponse.fromJson(Map<String, dynamic> json) =>
