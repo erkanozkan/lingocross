@@ -8,23 +8,25 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
+import '../../../classes/data/dtos/class_dtos.dart';
+import '../../../classes/presentation/classes_notifier.dart';
+import '../../../classes/presentation/widgets/class_badge.dart';
 import '../../../lessons/data/dtos/lesson_dtos.dart';
 import '../../../lessons/presentation/lessons_notifier.dart';
 import '../../domain/game_type.dart';
 import '../../domain/games_failure.dart';
 import '../create_game_controller.dart';
 
-/// Yeni Bulmaca Oluştur (Stitch `73fefb56…` birebir).
+/// Yeni Bulmaca Oluştur — Adımlı (Stitch `3a196b09…` birebir).
 ///
-/// Adım 1 "Oyun Türünü Seç": iki kart — Kelime Eşleştirme (aktif) ve Crossword
-/// (pasif/"Yakında", F2.4). Adım 2 "Ders Seçimi": öğretmenin dersleri dropdown.
-/// Önizleme placeholder. Alt sabit "Bulmacayı Oluştur ve Yayınla" →
-/// `POST /lessons/{id}/games`. Başarı → snackbar + geri; hata: yetersiz kelime
-/// (400) "ders en az 4 kelime içermeli", ağ/diğer → uygun mesaj.
+/// Üstte ilerleme çubuğu (3 pill). Adım 1: oyun türü (Kelime Eşleştirme /
+/// Çengel Bulmaca). Adım 2: ders seçimi (mevcut dropdown). Adım 3 (YENİ):
+/// öğretmenin sınıflarının çoklu-seçim listesi. Son adımda "Oluştur ve Yayınla"
+/// (≥1 sınıf seçili değilse pasif) → `POST /lessons/{id}/games` + classIds.
 class CreateGameScreen extends ConsumerStatefulWidget {
   const CreateGameScreen({super.key, this.initialLessonId});
 
-  /// Ders Detayı "Ödev Ataması Yap"tan gelince ön-seçili ders.
+  /// Ders Detayı / Sınıf Detayı "Ödev Ata"dan gelince ön-seçili ders.
   final String? initialLessonId;
 
   @override
@@ -32,8 +34,11 @@ class CreateGameScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
+  /// 1 = oyun türü, 2 = ders seçimi, 3 = sınıf seçimi.
+  int _step = 1;
   GameType _selectedType = GameType.wordMatching;
   String? _selectedLessonId;
+  final Set<String> _selectedClassIds = {};
 
   @override
   void initState() {
@@ -41,22 +46,26 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     _selectedLessonId = widget.initialLessonId;
   }
 
-  Future<void> _submit() async {
-    final l10n = AppLocalizations.of(context);
-    final lessonId = _selectedLessonId;
-    if (lessonId == null) return;
+  bool get _canGoStep2 => true; // tür her zaman seçili (varsayılan eşleştirme)
+  bool get _canGoStep3 => _selectedLessonId != null;
+  bool get _canSubmit => _selectedLessonId != null && _selectedClassIds.isNotEmpty;
 
+  void _goStep(int step) => setState(() => _step = step);
+
+  Future<void> _submit() async {
+    if (!_canSubmit) return;
+    final l10n = AppLocalizations.of(context);
+    final lessonId = _selectedLessonId!;
     final messenger = ScaffoldMessenger.of(context);
     final game = await ref.read(createGameControllerProvider.notifier).create(
           lessonId: lessonId,
           type: _selectedType,
+          classIds: _selectedClassIds.toList(),
         );
     if (!mounted) return;
 
     if (game != null) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.createGameSuccess)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.createGameSuccess)));
       context.pop();
     } else {
       final error = ref.read(createGameControllerProvider).error;
@@ -81,8 +90,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final lessonsAsync = ref.watch(lessonsNotifierProvider);
+    final classesAsync = ref.watch(classesNotifierProvider);
     final busy = ref.watch(createGameControllerProvider).isLoading;
-    final canSubmit = _selectedLessonId != null && !busy;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -90,12 +99,12 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
         backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.onSurfaceVariant),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => context.pop(),
         ),
         title: Text(
           l10n.createGameTitle,
-          style: AppTypography.headlineMd.copyWith(color: AppColors.onSurface),
+          style: AppTypography.headlineMd.copyWith(color: AppColors.primary),
         ),
       ),
       body: ListView(
@@ -106,36 +115,34 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           AppSpacing.xl,
         ),
         children: [
-          _StepHeader(number: 1, title: l10n.createGameStep1Title),
-          const SizedBox(height: AppSpacing.md),
-          _GameTypeCard(
-            icon: Icons.sports_esports,
-            title: l10n.createGameTypeMatchingTitle,
-            desc: l10n.createGameTypeMatchingDesc,
-            selected: _selectedType == GameType.wordMatching,
-            enabled: true,
-            onTap: () =>
-                setState(() => _selectedType = GameType.wordMatching),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _GameTypeCard(
-            icon: Icons.extension,
-            title: l10n.createGameTypeCrosswordTitle,
-            desc: l10n.createGameTypeCrosswordDesc,
-            selected: _selectedType == GameType.crossword,
-            enabled: true,
-            onTap: () => setState(() => _selectedType = GameType.crossword),
-          ),
+          _ProgressPills(step: _step),
           const SizedBox(height: AppSpacing.xl),
-          _StepHeader(number: 2, title: l10n.createGameStep2Title),
-          const SizedBox(height: AppSpacing.md),
-          _LessonDropdown(
-            lessonsAsync: lessonsAsync,
-            selectedLessonId: _selectedLessonId,
-            onChanged: (id) => setState(() => _selectedLessonId = id),
-          ),
+          if (_step == 1)
+            _StepGameType(
+              selectedType: _selectedType,
+              onSelect: (t) => setState(() => _selectedType = t),
+            )
+          else if (_step == 2)
+            _StepLesson(
+              lessonsAsync: lessonsAsync,
+              selectedLessonId: _selectedLessonId,
+              onChanged: (id) => setState(() => _selectedLessonId = id),
+            )
+          else
+            _StepClasses(
+              classesAsync: classesAsync,
+              selectedClassIds: _selectedClassIds,
+              onToggle: (id) => setState(() {
+                if (!_selectedClassIds.add(id)) _selectedClassIds.remove(id);
+              }),
+            ),
           const SizedBox(height: AppSpacing.xl),
-          const _PreviewPlaceholder(),
+          _StepNav(
+            step: _step,
+            canNext: _step == 1 ? _canGoStep2 : _canGoStep3,
+            onBack: _step > 1 ? () => _goStep(_step - 1) : null,
+            onNext: _step < 3 ? () => _goStep(_step + 1) : null,
+          ),
         ],
       ),
       bottomNavigationBar: Container(
@@ -151,8 +158,8 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               label: l10n.createGameSubmit,
               trailingIcon: Icons.rocket_launch,
               isLoading: busy,
-              enabled: canSubmit,
-              onPressed: canSubmit ? _submit : null,
+              enabled: _canSubmit && !busy,
+              onPressed: (_canSubmit && !busy) ? _submit : null,
             ),
           ),
         ),
@@ -161,113 +168,161 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   }
 }
 
-/// Adım başlığı: numaralı daire + başlık (Stitch §step header).
-class _StepHeader extends StatelessWidget {
-  const _StepHeader({required this.number, required this.title});
+/// Adım ilerleme çubuğu (Stitch §progress pills).
+class _ProgressPills extends StatelessWidget {
+  const _ProgressPills({required this.step});
 
-  final int number;
-  final String title;
+  final int step;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 32,
-          height: 32,
-          alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
+        for (var i = 1; i <= 3; i++) ...[
+          Expanded(
+            child: Container(
+              height: 12,
+              decoration: BoxDecoration(
+                color: i <= step
+                    ? AppColors.primaryContainer
+                    : AppColors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppRadius.full),
+              ),
+            ),
           ),
-          child: Text(
-            '$number',
-            style: AppTypography.labelLg.copyWith(color: AppColors.onPrimary),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Text(title, style: AppTypography.headlineMd),
+          if (i != 3) const SizedBox(width: AppSpacing.xs),
+        ],
       ],
     );
   }
 }
 
-/// Oyun türü kartı. Seçili → primary çerçeve + tonal zemin + dolgulu ikon.
-/// Pasif (enabled=false) → soluk, dokunulamaz. F2.4: her iki tür de aktif.
+/// Step başlık + alt açıklama (Stitch §step header).
+class _StepHeading extends StatelessWidget {
+  const _StepHeading({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTypography.headlineLg),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          subtitle,
+          style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+        ),
+      ],
+    );
+  }
+}
+
+/// Adım 1 — Oyun türü seçimi.
+class _StepGameType extends StatelessWidget {
+  const _StepGameType({required this.selectedType, required this.onSelect});
+
+  final GameType selectedType;
+  final ValueChanged<GameType> onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StepHeading(
+          title: l10n.createGameStep1Title,
+          subtitle: l10n.createGameStep1Subtitle,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _GameTypeCard(
+          icon: Icons.extension,
+          iconBg: AppColors.primaryContainer,
+          title: l10n.createGameTypeMatchingTitle,
+          desc: l10n.createGameTypeMatchingDesc,
+          selected: selectedType == GameType.wordMatching,
+          onTap: () => onSelect(GameType.wordMatching),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _GameTypeCard(
+          icon: Icons.grid_view,
+          iconBg: AppColors.tertiaryContainer,
+          title: l10n.createGameTypeCrosswordTitle,
+          desc: l10n.createGameTypeCrosswordDesc,
+          selected: selectedType == GameType.crossword,
+          onTap: () => onSelect(GameType.crossword),
+        ),
+      ],
+    );
+  }
+}
+
 class _GameTypeCard extends StatelessWidget {
   const _GameTypeCard({
     required this.icon,
+    required this.iconBg,
     required this.title,
     required this.desc,
     required this.selected,
-    required this.enabled,
     required this.onTap,
   });
 
   final IconData icon;
+  final Color iconBg;
   final String title;
   final String desc;
   final bool selected;
-  final bool enabled;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final Color border =
-        selected ? AppColors.primary : AppColors.outlineVariant;
-    final Color background =
-        selected ? AppColors.surfaceContainerLow : AppColors.surface;
-    final Color iconBoxColor =
-        selected ? AppColors.primary : AppColors.surfaceContainerHighest;
-    final Color iconColor =
-        selected ? AppColors.onPrimary : AppColors.primary;
-
-    final card = Opacity(
-      opacity: enabled ? 1 : 0.6,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: background,
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-          border: Border.all(color: border, width: selected ? 2 : 1),
-          boxShadow: selected ? AppShadows.level2 : null,
+    final card = Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: selected ? AppColors.surfaceContainerLow : AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(
+          color: selected ? AppColors.primary : AppColors.outlineVariant,
+          width: selected ? 2 : 1,
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: iconBoxColor,
-                borderRadius: BorderRadius.circular(AppRadius.xl),
-              ),
-              child: Icon(icon, color: iconColor, size: 28),
+        boxShadow: selected ? AppShadows.level2 : AppShadows.soft,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: AppTypography.headlineMd),
-                  const SizedBox(height: AppSpacing.base),
-                  Text(
-                    desc,
-                    style: AppTypography.bodyMd
-                        .copyWith(color: AppColors.onSurfaceVariant),
-                  ),
-                ],
-              ),
+            child: Icon(icon, color: AppColors.onPrimary, size: 30),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTypography.headlineMd),
+                const SizedBox(height: AppSpacing.base),
+                Text(
+                  desc,
+                  style: AppTypography.labelLg
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          _RadioDot(selected: selected),
+        ],
       ),
     );
-
-    if (!enabled || onTap == null) {
-      return Semantics(enabled: false, button: true, child: card);
-    }
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(AppRadius.xl),
@@ -280,10 +335,35 @@ class _GameTypeCard extends StatelessWidget {
   }
 }
 
-/// Ders seçim dropdown'u (Stitch §step 2). Boş/hata durumlarını anlamlı
-/// mesajla gösterir.
-class _LessonDropdown extends StatelessWidget {
-  const _LessonDropdown({
+class _RadioDot extends StatelessWidget {
+  const _RadioDot({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 24,
+      height: 24,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: selected ? AppColors.primary : Colors.transparent,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: selected ? AppColors.primary : AppColors.outlineVariant,
+          width: 2,
+        ),
+      ),
+      child: selected
+          ? const Icon(Icons.check, color: AppColors.onPrimary, size: 14)
+          : null,
+    );
+  }
+}
+
+/// Adım 2 — Ders seçimi (mevcut dropdown deseni korunur).
+class _StepLesson extends StatelessWidget {
+  const _StepLesson({
     required this.lessonsAsync,
     required this.selectedLessonId,
     required this.onChanged,
@@ -299,6 +379,11 @@ class _LessonDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _StepHeading(
+          title: l10n.createGameStep2Title,
+          subtitle: l10n.createGameStep2Subtitle,
+        ),
+        const SizedBox(height: AppSpacing.lg),
         Padding(
           padding: const EdgeInsets.only(left: AppSpacing.base),
           child: Text(
@@ -341,7 +426,6 @@ class _LessonDropdown extends StatelessWidget {
                 ),
               );
             }
-            // Ön-seçili ders artık listede yoksa hint'e düş.
             final valid = lessons.any((l) => l.id == selectedLessonId)
                 ? selectedLessonId
                 : null;
@@ -357,8 +441,7 @@ class _LessonDropdown extends StatelessWidget {
                     style: AppTypography.bodyMd
                         .copyWith(color: AppColors.onSurfaceVariant),
                   ),
-                  style: AppTypography.bodyMd
-                      .copyWith(color: AppColors.onSurface),
+                  style: AppTypography.bodyMd.copyWith(color: AppColors.onSurface),
                   borderRadius: BorderRadius.circular(AppRadius.lg),
                   onChanged: onChanged,
                   items: [
@@ -382,6 +465,227 @@ class _LessonDropdown extends StatelessWidget {
   }
 }
 
+/// Adım 3 — Sınıf seçimi (çoklu seçim).
+class _StepClasses extends StatelessWidget {
+  const _StepClasses({
+    required this.classesAsync,
+    required this.selectedClassIds,
+    required this.onToggle,
+  });
+
+  final AsyncValue<List<ClassDto>> classesAsync;
+  final Set<String> selectedClassIds;
+  final ValueChanged<String> onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StepHeading(
+          title: l10n.createGameStep3Title,
+          subtitle: l10n.createGameStep3Subtitle,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        classesAsync.when(
+          loading: () => const _Box(
+            child: SizedBox(
+              height: 24,
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.primary),
+                ),
+              ),
+            ),
+          ),
+          error: (_, __) => _Box(
+            child: Text(
+              l10n.createGameClassesError,
+              style: AppTypography.bodyMd.copyWith(color: AppColors.error),
+            ),
+          ),
+          data: (classes) {
+            if (classes.isEmpty) {
+              return _Box(
+                child: Text(
+                  l10n.createGameClassesEmpty,
+                  style: AppTypography.bodyMd
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                for (final c in classes) ...[
+                  _ClassSelectRow(
+                    classDto: c,
+                    selected: selectedClassIds.contains(c.id),
+                    onTap: () => onToggle(c.id),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _ClassSelectRow extends StatelessWidget {
+  const _ClassSelectRow({
+    required this.classDto,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final ClassDto classDto;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+              width: selected ? 2 : 1,
+            ),
+            boxShadow: AppShadows.soft,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: AppColors.secondaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  classBadgeLabel(classDto.name),
+                  style: AppTypography.labelLg
+                      .copyWith(color: AppColors.onSecondary),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      classDto.name,
+                      style: AppTypography.headlineMd,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      l10n.classesStudentCount(classDto.studentCount),
+                      style: AppTypography.labelSm
+                          .copyWith(color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              _Checkbox(checked: selected),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Checkbox extends StatelessWidget {
+  const _Checkbox({required this.checked});
+
+  final bool checked;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 24,
+      height: 24,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: checked ? AppColors.primary : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        border: Border.all(
+          color: checked ? AppColors.primary : AppColors.outlineVariant,
+          width: 2,
+        ),
+      ),
+      child: checked
+          ? const Icon(Icons.check, color: AppColors.onPrimary, size: 16)
+          : null,
+    );
+  }
+}
+
+/// Adımlar arası "Geri Dön" / "Sonraki Adım" navigasyonu.
+class _StepNav extends StatelessWidget {
+  const _StepNav({
+    required this.step,
+    required this.canNext,
+    required this.onBack,
+    required this.onNext,
+  });
+
+  final int step;
+  final bool canNext;
+  final VoidCallback? onBack;
+  final VoidCallback? onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Row(
+      children: [
+        if (onBack != null) ...[
+          Expanded(
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                side: const BorderSide(color: AppColors.outlineVariant),
+              ),
+              onPressed: onBack,
+              child: Text(l10n.createGameStepBack),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+        ],
+        if (onNext != null)
+          Expanded(
+            child: FilledButton(
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              ),
+              onPressed: canNext ? onNext : null,
+              child: Text(l10n.createGameStepNext),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
 /// Dropdown / durum kutusu çerçevesi (Stitch select stili).
 class _Box extends StatelessWidget {
   const _Box({required this.child});
@@ -395,61 +699,12 @@ class _Box extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(color: AppColors.outlineVariant),
         boxShadow: AppShadows.soft,
       ),
       child: child,
-    );
-  }
-}
-
-/// Önizleme placeholder (Stitch §preview): dashed kutu + ikon + metin.
-class _PreviewPlaceholder extends StatelessWidget {
-  const _PreviewPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.outlineVariant),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLowest,
-              shape: BoxShape.circle,
-              boxShadow: AppShadows.soft,
-            ),
-            child:
-                const Icon(Icons.auto_awesome, color: AppColors.outline, size: 28),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            l10n.createGamePreviewTitle,
-            textAlign: TextAlign.center,
-            style: AppTypography.headlineMd
-                .copyWith(color: AppColors.onSurfaceVariant),
-          ),
-          const SizedBox(height: AppSpacing.base),
-          Text(
-            l10n.createGamePreviewDesc,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyMd
-                .copyWith(color: AppColors.onSurfaceVariant),
-          ),
-        ],
-      ),
     );
   }
 }

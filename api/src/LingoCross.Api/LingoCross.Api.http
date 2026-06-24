@@ -95,3 +95,75 @@ GET {{LingoCross.Api_HostAddress}}/api/lessons
 Authorization: Bearer <student-access-token>
 
 ###
+
+### ───────── F4.3: Adlandırılmış Sınıflar ─────────
+
+### Sınıf oluştur (davet kodu üretilir) — Teacher
+POST {{LingoCross.Api_HostAddress}}/api/classes
+Authorization: Bearer <teacher-access-token>
+Content-Type: application/json
+
+{
+  "name": "9A"
+}
+
+### Sınıflarım (arşivlenmemiş, studentCount ile) — Teacher
+GET {{LingoCross.Api_HostAddress}}/api/classes
+Authorization: Bearer <teacher-access-token>
+
+### Sınıf detayı (aktif üyelerle) — Teacher
+GET {{LingoCross.Api_HostAddress}}/api/classes/<class-id>
+Authorization: Bearer <teacher-access-token>
+
+### Sınıf adını güncelle — Teacher
+PUT {{LingoCross.Api_HostAddress}}/api/classes/<class-id>
+Authorization: Bearer <teacher-access-token>
+Content-Type: application/json
+
+{
+  "name": "9A (Sabah)"
+}
+
+### Sınıfı arşivle — Teacher
+DELETE {{LingoCross.Api_HostAddress}}/api/classes/<class-id>
+Authorization: Bearer <teacher-access-token>
+
+### Sınıf davet kodu (yoksa üretir) — Teacher
+GET {{LingoCross.Api_HostAddress}}/api/classes/<class-id>/invite-code
+Authorization: Bearer <teacher-access-token>
+
+### Sınıf davet kodunu yenile — Teacher
+POST {{LingoCross.Api_HostAddress}}/api/classes/<class-id>/invite-code/regenerate
+Authorization: Bearer <teacher-access-token>
+
+### Sınıftan öğrenci çıkar — Teacher
+DELETE {{LingoCross.Api_HostAddress}}/api/classes/<class-id>/students/<student-id>
+Authorization: Bearer <teacher-access-token>
+
+### Sınıflarım (öğrenci) — Student
+GET {{LingoCross.Api_HostAddress}}/api/classes/me
+Authorization: Bearer <student-access-token>
+
+### Sınıfa koddan katıl (idempotent) — Student
+POST {{LingoCross.Api_HostAddress}}/api/classes/join
+Authorization: Bearer <student-access-token>
+Content-Type: application/json
+
+{
+  "code": "ABCD2345"
+}
+
+### Oyunu sınıflara ata (SET semantiği) — Teacher
+POST {{LingoCross.Api_HostAddress}}/api/games/<game-id>/assignments
+Authorization: Bearer <teacher-access-token>
+Content-Type: application/json
+
+{
+  "classIds": ["<class-id-1>", "<class-id-2>"]
+}
+
+### Oyunun atandığı sınıflar — Teacher
+GET {{LingoCross.Api_HostAddress}}/api/games/<game-id>/assignments
+Authorization: Bearer <teacher-access-token>
+
+###

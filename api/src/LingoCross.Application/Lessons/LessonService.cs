@@ -79,13 +79,17 @@ public class LessonService : ILessonService
             return await ListMineAsync(cancellationToken);
         }
 
-        // Öğrenci: Active eşleşmesi olan öğretmenlerin yayımlanmış dersleri.
+        // F4.3: ders öğrenciye, o derse ait + öğrencinin (arşivlenmemiş) sınıfına atanmış yayımlı bir
+        // oyun varsa görünür. Görünürlük sınıf üyeliğinden türetilir (enrollment değil).
         var lessons = await _db.Lessons
             .Where(l => l.IsPublished
-                && _db.Enrollments.Any(e =>
-                    e.StudentId == userId
-                    && e.TeacherId == l.TeacherId
-                    && e.Status == EnrollmentStatus.Active))
+                && _db.Games.Any(g => g.LessonId == l.Id
+                    && g.IsPublished
+                    && _db.GameAssignments.Any(a => a.GameId == g.Id
+                        && !a.Class.IsArchived
+                        && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                            && m.StudentId == userId
+                            && m.Status == ClassMemberStatus.Active))))
             .OrderByDescending(l => l.CreatedAt)
             .Select(l => new LessonDto(
                 l.Id,
@@ -226,11 +230,16 @@ public class LessonService : ILessonService
             return lesson;
         }
 
-        // Öğrenci: ders yayımlanmış olmalı ve öğretmenle Active eşleşme bulunmalı.
-        var hasAccess = lesson.IsPublished && await _db.Enrollments.AnyAsync(
-            e => e.StudentId == userId
-                && e.TeacherId == lesson.TeacherId
-                && e.Status == EnrollmentStatus.Active,
+        // F4.3: ders yayımlanmış olmalı ve derse ait + öğrencinin (arşivlenmemiş) sınıfına atanmış
+        // yayımlı bir oyun bulunmalı.
+        var hasAccess = lesson.IsPublished && await _db.Games.AnyAsync(
+            g => g.LessonId == lesson.Id
+                && g.IsPublished
+                && _db.GameAssignments.Any(a => a.GameId == g.Id
+                    && !a.Class.IsArchived
+                    && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                        && m.StudentId == userId
+                        && m.Status == ClassMemberStatus.Active)),
             cancellationToken);
 
         if (!hasAccess)

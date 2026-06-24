@@ -323,6 +323,7 @@ class _LessonsSection extends ConsumerWidget {
         _SectionHeader(
           title: l10n.teacherDashboardLessonsTitle,
           actionLabel: l10n.teacherDashboardSeeAll,
+          onAction: () => context.push(AppRoutes.lessons),
         ),
         const SizedBox(height: AppSpacing.sm),
         lessonsAsync.when(
@@ -358,10 +359,11 @@ class _LessonsSection extends ConsumerWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, this.actionLabel});
+  const _SectionHeader({required this.title, this.actionLabel, this.onAction});
 
   final String title;
   final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -370,16 +372,24 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Text(title, style: AppTypography.headlineMd),
         if (actionLabel != null)
-          Row(
-            children: [
-              Text(
-                actionLabel!,
-                style:
-                    AppTypography.labelLg.copyWith(color: AppColors.primary),
+          InkWell(
+            onTap: onAction,
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xs, vertical: AppSpacing.base),
+              child: Row(
+                children: [
+                  Text(
+                    actionLabel!,
+                    style:
+                        AppTypography.labelLg.copyWith(color: AppColors.primary),
+                  ),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.primary, size: 18),
+                ],
               ),
-              const Icon(Icons.chevron_right,
-                  color: AppColors.primary, size: 18),
-            ],
+            ),
           ),
       ],
     );

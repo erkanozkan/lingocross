@@ -29,11 +29,25 @@ public class TeacherTrackingServiceTests
         return user;
     }
 
+    /// <summary>
+    /// F4.3: Öğretmen takibi artık sınıf üyeliğinden türetilir. Bu yardımcı, geriye dönük test
+    /// niyetini korur: Active → öğretmenin bir sınıfına Active üye; Pending/Rejected → üyelik YOK
+    /// (öğrenci öğretmenin sınıfında değil → takip dışı). Enrollment kaydı da geri-uyum için yazılır.
+    /// </summary>
     private static async Task SeedEnrollmentAsync(
         AppDbContext db, Guid teacherId, Guid studentId, EnrollmentStatus status)
     {
         db.Enrollments.Add(new Enrollment { TeacherId = teacherId, StudentId = studentId, Status = status });
         await db.SaveChangesAsync();
+
+        if (status == EnrollmentStatus.Active)
+        {
+            var klass = new Class { TeacherId = teacherId, Name = "Sınıf", InviteCode = $"T{Guid.NewGuid():N}"[..8].ToUpperInvariant() };
+            db.Classes.Add(klass);
+            await db.SaveChangesAsync();
+            db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = studentId, Status = ClassMemberStatus.Active });
+            await db.SaveChangesAsync();
+        }
     }
 
     /// <summary>Ders + oyun + tamamlanmış oturum + sonuç seed eder; istenirse paylaşılmış işaretler.</summary>

@@ -22,6 +22,98 @@ namespace LingoCross.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Class", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("InviteCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("invite_code");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_archived");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("teacher_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_classes");
+
+                    b.HasIndex("InviteCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_classes_invite_code")
+                        .HasFilter("invite_code IS NOT NULL");
+
+                    b.HasIndex("TeacherId")
+                        .HasDatabaseName("ix_classes_teacher_id");
+
+                    b.ToTable("classes", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.ClassMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("class_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("StudentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("student_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_class_members");
+
+                    b.HasIndex("StudentId")
+                        .HasDatabaseName("ix_class_members_student_id");
+
+                    b.HasIndex("ClassId", "StudentId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_class_members_class_id_student_id");
+
+                    b.ToTable("class_members", (string)null);
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.Enrollment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -114,6 +206,43 @@ namespace LingoCross.Infrastructure.Migrations
                         .HasDatabaseName("ix_games_lesson_id_type");
 
                     b.ToTable("games", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.GameAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("class_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("game_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_game_assignments");
+
+                    b.HasIndex("ClassId")
+                        .HasDatabaseName("ix_game_assignments_class_id");
+
+                    b.HasIndex("GameId", "ClassId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_game_assignments_game_id_class_id");
+
+                    b.ToTable("game_assignments", (string)null);
                 });
 
             modelBuilder.Entity("LingoCross.Domain.Entities.GameResult", b =>
@@ -574,6 +703,39 @@ namespace LingoCross.Infrastructure.Migrations
                     b.ToTable("word_translations", (string)null);
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Class", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.User", "Teacher")
+                        .WithMany("Classes")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_classes_users_teacher_id");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.ClassMember", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Class", "Class")
+                        .WithMany("Members")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_class_members_classes_class_id");
+
+                    b.HasOne("LingoCross.Domain.Entities.User", "Student")
+                        .WithMany("ClassMemberships")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_class_members_users_student_id");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.Enrollment", b =>
                 {
                     b.HasOne("LingoCross.Domain.Entities.User", "Student")
@@ -605,6 +767,27 @@ namespace LingoCross.Infrastructure.Migrations
                         .HasConstraintName("fk_games_lessons_lesson_id");
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.GameAssignment", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Class", "Class")
+                        .WithMany("Assignments")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_game_assignments_classes_class_id");
+
+                    b.HasOne("LingoCross.Domain.Entities.Game", "Game")
+                        .WithMany("Assignments")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_game_assignments_games_game_id");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("LingoCross.Domain.Entities.GameResult", b =>
@@ -712,8 +895,17 @@ namespace LingoCross.Infrastructure.Migrations
                     b.Navigation("Word");
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Class", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Members");
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.Game", b =>
                 {
+                    b.Navigation("Assignments");
+
                     b.Navigation("Sessions");
                 });
 
@@ -731,6 +923,10 @@ namespace LingoCross.Infrastructure.Migrations
 
             modelBuilder.Entity("LingoCross.Domain.Entities.User", b =>
                 {
+                    b.Navigation("ClassMemberships");
+
+                    b.Navigation("Classes");
+
                     b.Navigation("GameSessions");
 
                     b.Navigation("Lessons");

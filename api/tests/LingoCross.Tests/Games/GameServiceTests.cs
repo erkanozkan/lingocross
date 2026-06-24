@@ -75,6 +75,24 @@ public class GameServiceTests
         await db.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// F4.3: Öğretmen için bir sınıf oluşturur, öğrenciyi Active üye yapar ve verilen oyunu o sınıfa atar.
+    /// Görünürlük artık sınıf üyeliği + atamadan türetilir. Oluşturulan sınıfı döndürür.
+    /// </summary>
+    private static async Task<Class> SeedClassWithMemberAndAssignmentAsync(
+        AppDbContext db, Guid teacherId, Guid studentId, Guid gameId,
+        ClassMemberStatus memberStatus = ClassMemberStatus.Active, bool archived = false)
+    {
+        var klass = new Class { TeacherId = teacherId, Name = "Sınıf", InviteCode = $"C{Guid.NewGuid():N}"[..8].ToUpperInvariant(), IsArchived = archived };
+        db.Classes.Add(klass);
+        await db.SaveChangesAsync();
+
+        db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = studentId, Status = memberStatus });
+        db.GameAssignments.Add(new GameAssignment { GameId = gameId, ClassId = klass.Id });
+        await db.SaveChangesAsync();
+        return klass;
+    }
+
     private static async Task<Game> SeedGameAsync(
         AppDbContext db, Guid lessonId, bool published = true, GameType type = GameType.WordMatching)
     {
@@ -282,7 +300,8 @@ public class GameServiceTests
         var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
-        await SeedGameAsync(db, lesson.Id, published: true);
+        var visibleGame = await SeedGameAsync(db, lesson.Id, published: true);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, visibleGame.Id);
         await db.SaveChangesAsync();
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
@@ -360,6 +379,7 @@ public class GameServiceTests
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 6);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var response = await svc.StartSessionAsync(game.Id);
@@ -395,6 +415,7 @@ public class GameServiceTests
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 12);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var content = (await svc.StartSessionAsync(game.Id)).WordMatching!;
@@ -423,6 +444,7 @@ public class GameServiceTests
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 3);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
@@ -490,6 +512,7 @@ public class GameServiceTests
             ("MELON", "kavun"));
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Crossword);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var response = await svc.StartSessionAsync(game.Id);
@@ -525,6 +548,7 @@ public class GameServiceTests
             ("PLATE", "tabak"));
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Crossword);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
@@ -541,6 +565,7 @@ public class GameServiceTests
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var started = await svc.StartSessionAsync(game.Id);
@@ -559,6 +584,7 @@ public class GameServiceTests
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
         await EnrollAsync(db, teacher.Id, owner.Id, EnrollmentStatus.Active);
         var game = await SeedGameAsync(db, lesson.Id);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, owner.Id, game.Id);
 
         var ownerSvc = new GameService(db, TestCurrentUser.Student(owner.Id), SeededRandom());
         var started = await ownerSvc.StartSessionAsync(game.Id);
@@ -596,7 +622,7 @@ public class GameServiceTests
     }
 
     [Fact]
-    public async Task ListMyPuzzles_AssignedStudentCount_EqualsActiveStudents()
+    public async Task ListMyPuzzles_AssignedStudentCount_EqualsAssignedClassActiveMembers()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
@@ -606,16 +632,60 @@ public class GameServiceTests
         var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
         var s2 = await SeedUserAsync(db, UserRole.Student, "s2@x.com");
         var s3 = await SeedUserAsync(db, UserRole.Student, "s3@x.com");
-        await EnrollAsync(db, teacher.Id, s1.Id, EnrollmentStatus.Active);
-        await EnrollAsync(db, teacher.Id, s2.Id, EnrollmentStatus.Active);
-        // Pending sayılmaz.
-        await EnrollAsync(db, teacher.Id, s3.Id, EnrollmentStatus.Pending);
+
+        // s1, s2 atanmış sınıfın üyesi; s3 sınıfta değil → 2 sayılır.
+        var klass = await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, s1.Id, game.Id);
+        db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = s2.Id, Status = ClassMemberStatus.Active });
+        await db.SaveChangesAsync();
 
         var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
         var puzzles = await svc.ListMyPuzzlesAsync();
 
         Assert.Single(puzzles);
         Assert.Equal(2, puzzles[0].AssignedStudentCount);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_AssignedStudentCount_CountsDistinctAcrossClasses()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+
+        var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        var s2 = await SeedUserAsync(db, UserRole.Student, "s2@x.com");
+
+        // İki sınıf, ikisine de oyun atanmış; s1 her ikisinde üye, s2 yalnız birinde → distinct 2.
+        var classA = await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, s1.Id, game.Id);
+        var classB = await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, s1.Id, game.Id);
+        db.ClassMembers.Add(new ClassMember { ClassId = classB.Id, StudentId = s2.Id, Status = ClassMemberStatus.Active });
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Single(puzzles);
+        Assert.Equal(2, puzzles[0].AssignedStudentCount);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_ArchivedClassMembers_NotCounted()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+
+        var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        // Oyun arşivli sınıfa atanmış → üye sayılmaz.
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, s1.Id, game.Id, archived: true);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Single(puzzles);
+        Assert.Equal(0, puzzles[0].AssignedStudentCount);
     }
 
     [Fact]

@@ -93,6 +93,8 @@ _$CreateGameRequestImpl _$$CreateGameRequestImplFromJson(
 ) => _$CreateGameRequestImpl(
   type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
   title: json['title'] as String?,
+  classIds:
+      (json['classIds'] as List<dynamic>?)?.map((e) => e as String).toList(),
 );
 
 Map<String, dynamic> _$$CreateGameRequestImplToJson(
@@ -100,6 +102,7 @@ Map<String, dynamic> _$$CreateGameRequestImplToJson(
 ) => <String, dynamic>{
   'type': const GameTypeConverter().toJson(instance.type),
   'title': instance.title,
+  'classIds': instance.classIds,
 };
 
 _$GameSessionDtoImpl _$$GameSessionDtoImplFromJson(Map<String, dynamic> json) =>

@@ -23,13 +23,14 @@ class CreateGameController extends _$CreateGameController {
     required String lessonId,
     required GameType type,
     String? title,
+    List<String>? classIds,
   }) async {
     state = const AsyncValue.loading();
     final result = await AsyncValue.guard(() async {
       final repo = ref.read(gamesRepositoryProvider);
       return repo.createGame(
         lessonId,
-        CreateGameRequest(type: type, title: title),
+        CreateGameRequest(type: type, title: title, classIds: classIds),
       );
     });
     state = result;

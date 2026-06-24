@@ -21,6 +21,7 @@ abstract final class AppColors {
   static const Color secondaryContainer = Color(0xFFFEA619);
   static const Color onSecondary = Color(0xFFFFFFFF);
   static const Color secondaryFixed = Color(0xFFFFDDB8);
+  static const Color secondaryFixedDim = Color(0xFFFFB95F);
   static const Color onSecondaryFixedVariant = Color(0xFF653E00);
 
   /// Primary container üzerindeki metin (near-white, on-primary-container).

@@ -26,10 +26,13 @@ public class TeacherTrackingService : ITeacherTrackingService
     {
         var teacherId = RequireTeacher();
 
-        // Bu öğretmenin Active eşleşmeli öğrencileri (öğrenci başına özet).
-        var students = await _db.Enrollments
-            .Where(e => e.TeacherId == teacherId && e.Status == EnrollmentStatus.Active)
-            .Select(e => new { e.StudentId, e.Student.DisplayName })
+        // F4.3: öğretmenin sınıflarındaki DISTINCT Active öğrenciler (öğrenci başına özet).
+        var students = await _db.ClassMembers
+            .Where(m => m.Status == ClassMemberStatus.Active
+                && m.Class.TeacherId == teacherId
+                && !m.Class.IsArchived)
+            .Select(m => new { m.StudentId, m.Student.DisplayName })
+            .Distinct()
             .ToListAsync(cancellationToken);
 
         if (students.Count == 0)
@@ -78,11 +81,12 @@ public class TeacherTrackingService : ITeacherTrackingService
     {
         var teacherId = RequireTeacher();
 
-        // Öğrenci bu öğretmene Active eşleşmeli değilse varlığı sızdırmamak için 404.
-        var enrolled = await _db.Enrollments.AnyAsync(
-            e => e.TeacherId == teacherId
-                && e.StudentId == studentId
-                && e.Status == EnrollmentStatus.Active,
+        // F4.3: öğrenci öğretmenin sınıflarından birinde Active üye değilse 404 (varlığı sızdırmamak için).
+        var enrolled = await _db.ClassMembers.AnyAsync(
+            m => m.Status == ClassMemberStatus.Active
+                && m.Class.TeacherId == teacherId
+                && !m.Class.IsArchived
+                && m.StudentId == studentId,
             cancellationToken);
 
         if (!enrolled)

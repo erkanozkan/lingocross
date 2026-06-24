@@ -35,12 +35,16 @@ public class EnrollmentServiceTests
         return user;
     }
 
+    // F4.3: EnrollmentService artık IClassService köprüsüne bağımlı; testlerde gerçek ClassService verilir.
+    private static EnrollmentService MakeService(AppDbContext db, TestCurrentUser currentUser)
+        => new(db, currentUser, new Application.Classes.ClassService(db, currentUser));
+
     [Fact]
     public async Task GetOrCreateInviteCode_AsTeacher_GeneratesAndPersists()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id));
+        var service = MakeService(db, TestCurrentUser.Teacher(teacher.Id));
 
         var dto = await service.GetOrCreateInviteCodeAsync();
 
@@ -54,7 +58,7 @@ public class EnrollmentServiceTests
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "ABCD2345");
-        var service = new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id));
+        var service = MakeService(db, TestCurrentUser.Teacher(teacher.Id));
 
         var dto = await service.GetOrCreateInviteCodeAsync();
 
@@ -66,7 +70,7 @@ public class EnrollmentServiceTests
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "ABCD2345");
-        var service = new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id));
+        var service = MakeService(db, TestCurrentUser.Teacher(teacher.Id));
 
         var dto = await service.RegenerateInviteCodeAsync();
 
@@ -79,7 +83,7 @@ public class EnrollmentServiceTests
     public async Task GetInviteCode_AsStudent_Throws403()
     {
         var db = NewDb();
-        var service = new EnrollmentService(db, TestCurrentUser.Student(Guid.NewGuid()));
+        var service = MakeService(db, TestCurrentUser.Student(Guid.NewGuid()));
 
         var ex = await Assert.ThrowsAsync<AppException>(() => service.GetOrCreateInviteCodeAsync());
         Assert.Equal(403, ex.StatusCode);
@@ -91,7 +95,7 @@ public class EnrollmentServiceTests
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "JOIN1234");
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Student(student.Id));
+        var service = MakeService(db, TestCurrentUser.Student(student.Id));
 
         var dto = await service.JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
 
@@ -110,7 +114,7 @@ public class EnrollmentServiceTests
         var db = NewDb();
         await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "JOIN1234");
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Student(student.Id));
+        var service = MakeService(db, TestCurrentUser.Student(student.Id));
 
         var dto = await service.JoinByCodeAsync(new JoinByCodeRequest("  join1234 "));
 
@@ -123,7 +127,7 @@ public class EnrollmentServiceTests
         var db = NewDb();
         await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "JOIN1234");
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Student(student.Id));
+        var service = MakeService(db, TestCurrentUser.Student(student.Id));
 
         var first = await service.JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
         var second = await service.JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
@@ -133,11 +137,50 @@ public class EnrollmentServiceTests
     }
 
     [Fact]
+    public async Task JoinByCode_ClassCode_BridgeCreatesMembershipAndEnrollment()
+    {
+        // F4.3 köprü: eski /enrollments/join ucu bir SINIF davet kodunu kabul eder; hem class_members
+        // hem de geriye-uyumlu enrollment(Active) yazar.
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
+
+        var klass = new Class { TeacherId = teacher.Id, Name = "9A", InviteCode = "CLASS123" };
+        db.Classes.Add(klass);
+        await db.SaveChangesAsync();
+
+        var dto = await MakeService(db, TestCurrentUser.Student(student.Id))
+            .JoinByCodeAsync(new JoinByCodeRequest("class123"));
+
+        Assert.Equal(EnrollmentStatus.Active, dto.Status);
+        Assert.Equal(teacher.Id, dto.TeacherId);
+        Assert.Equal(1, await db.ClassMembers.CountAsync(m => m.ClassId == klass.Id && m.StudentId == student.Id));
+        Assert.Equal(1, await db.Enrollments.CountAsync(e => e.TeacherId == teacher.Id && e.StudentId == student.Id));
+    }
+
+    [Fact]
+    public async Task JoinByCode_ClassCode_IsIdempotent()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
+        db.Classes.Add(new Class { TeacherId = teacher.Id, Name = "9A", InviteCode = "CLASS123" });
+        await db.SaveChangesAsync();
+
+        var svc = MakeService(db, TestCurrentUser.Student(student.Id));
+        await svc.JoinByCodeAsync(new JoinByCodeRequest("CLASS123"));
+        await svc.JoinByCodeAsync(new JoinByCodeRequest("CLASS123"));
+
+        Assert.Equal(1, await db.ClassMembers.CountAsync());
+        Assert.Equal(1, await db.Enrollments.CountAsync());
+    }
+
+    [Fact]
     public async Task JoinByCode_InvalidCode_Throws404()
     {
         var db = NewDb();
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Student(student.Id));
+        var service = MakeService(db, TestCurrentUser.Student(student.Id));
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
             service.JoinByCodeAsync(new JoinByCodeRequest("NOPE9999")));
@@ -149,7 +192,7 @@ public class EnrollmentServiceTests
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com", inviteCode: "JOIN1234");
-        var service = new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id));
+        var service = MakeService(db, TestCurrentUser.Teacher(teacher.Id));
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
             service.JoinByCodeAsync(new JoinByCodeRequest("JOIN1234")));
@@ -164,10 +207,10 @@ public class EnrollmentServiceTests
         var s1 = await SeedUserAsync(db, UserRole.Student, "s1@example.com");
         var s2 = await SeedUserAsync(db, UserRole.Student, "s2@example.com");
 
-        await new EnrollmentService(db, TestCurrentUser.Student(s1.Id)).JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
-        await new EnrollmentService(db, TestCurrentUser.Student(s2.Id)).JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
+        await MakeService(db, TestCurrentUser.Student(s1.Id)).JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
+        await MakeService(db, TestCurrentUser.Student(s2.Id)).JoinByCodeAsync(new JoinByCodeRequest("JOIN1234"));
 
-        var list = await new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id)).ListMineAsync();
+        var list = await MakeService(db, TestCurrentUser.Teacher(teacher.Id)).ListMineAsync();
 
         Assert.Equal(2, list.Count);
         Assert.All(list, e => Assert.Equal(teacher.Id, e.TeacherId));
@@ -183,7 +226,7 @@ public class EnrollmentServiceTests
         var t1 = await SeedUserAsync(db, UserRole.Teacher, "t1@example.com", inviteCode: "CODE1111");
         var t2 = await SeedUserAsync(db, UserRole.Teacher, "t2@example.com", inviteCode: "CODE2222");
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
-        var service = new EnrollmentService(db, TestCurrentUser.Student(student.Id));
+        var service = MakeService(db, TestCurrentUser.Student(student.Id));
 
         await service.JoinByCodeAsync(new JoinByCodeRequest("CODE1111"));
         await service.JoinByCodeAsync(new JoinByCodeRequest("CODE2222"));
@@ -206,7 +249,7 @@ public class EnrollmentServiceTests
         db.Enrollments.Add(enrollment);
         await db.SaveChangesAsync();
 
-        var dto = await new EnrollmentService(db, TestCurrentUser.Teacher(teacher.Id)).AcceptAsync(enrollment.Id);
+        var dto = await MakeService(db, TestCurrentUser.Teacher(teacher.Id)).AcceptAsync(enrollment.Id);
 
         Assert.Equal(EnrollmentStatus.Active, dto.Status);
     }
@@ -223,7 +266,7 @@ public class EnrollmentServiceTests
         await db.SaveChangesAsync();
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
-            new EnrollmentService(db, TestCurrentUser.Teacher(teacherB.Id)).AcceptAsync(enrollment.Id));
+            MakeService(db, TestCurrentUser.Teacher(teacherB.Id)).AcceptAsync(enrollment.Id));
         Assert.Equal(404, ex.StatusCode);
     }
 }

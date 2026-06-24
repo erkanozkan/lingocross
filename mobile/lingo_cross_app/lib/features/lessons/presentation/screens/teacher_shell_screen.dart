@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../classes/presentation/screens/classes_list_screen.dart';
 import '../widgets/teacher_bottom_nav.dart';
-import 'lessons_list_screen.dart';
 import 'teacher_dashboard_screen.dart';
 import 'teacher_profile_screen.dart';
 import 'teacher_reports_screen.dart';
@@ -36,11 +36,12 @@ class _TeacherShellScreenState extends State<TeacherShellScreen> {
         children: [
           // "Öğrenci Gelişimi" kartı → Raporlar sekmesi (index 2);
           // üst bar avatarı → Profil sekmesi (index 3).
+          // index 1 = "Sınıflarım" (F4.3 — eskiden yanlışlıkla Derslerim'di).
           TeacherDashboardScreen(
             onOpenReports: () => _go(2),
             onOpenProfile: () => _go(3),
           ),
-          const LessonsListScreen(),
+          const ClassesListScreen(),
           const TeacherReportsScreen(),
           TeacherProfileScreen(
             onOpenClasses: () => _go(1),

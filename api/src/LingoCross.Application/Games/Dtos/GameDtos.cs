@@ -42,10 +42,22 @@ public record TeacherPuzzleDto(
     int AssignedStudentCount,
     int SolveCount);
 
-/// <summary>Öğretmenin bir derste oyun oluşturma/yayımlama isteği.</summary>
+/// <summary>
+/// Öğretmenin bir derste oyun oluşturma/yayımlama isteği. <see cref="ClassIds"/> verilirse (F4.3)
+/// oyun, oluşturma ile aynı işlemde bu sınıflara atanır (set semantiği). null → atama dokunulmaz.
+/// </summary>
 public record CreateGameRequest(
     GameType Type,
-    string? Title);
+    string? Title,
+    IReadOnlyList<Guid>? ClassIds = null);
+
+/// <summary>Bir oyunun atandığı sınıf kimlikleri (F4.3, set semantiği).</summary>
+public record GameAssignmentsDto(
+    IReadOnlyList<Guid> ClassIds);
+
+/// <summary>Bir oyunu sınıflara atama isteği (gönderilen liste nihaidir; set semantiği).</summary>
+public record SetGameAssignmentsRequest(
+    IReadOnlyList<Guid> ClassIds);
 
 /// <summary>Bir oyun oturumunun durumu.</summary>
 public record GameSessionDto(

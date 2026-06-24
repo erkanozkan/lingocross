@@ -89,11 +89,15 @@ class TeacherPuzzleDto with _$TeacherPuzzleDto {
 }
 
 /// Öğretmenin bir derste oyun oluşturma/yayımlama isteği (CreateGameRequest).
+///
+/// [classIds] opsiyonel: F4.3 ile oyun oluştururken hedef sınıflar atanır
+/// (`POST /lessons/{id}/games` body'sine eklenir). Boş/null ise mevcut davranış.
 @freezed
 class CreateGameRequest with _$CreateGameRequest {
   const factory CreateGameRequest({
     @GameTypeConverter() required GameType type,
     String? title,
+    List<String>? classIds,
   }) = _CreateGameRequest;
 
   factory CreateGameRequest.fromJson(Map<String, dynamic> json) =>

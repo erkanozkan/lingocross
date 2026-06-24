@@ -157,10 +157,16 @@ public class WordService : IWordService
             return;
         }
 
-        var hasAccess = lesson.IsPublished && await _db.Enrollments.AnyAsync(
-            e => e.StudentId == userId
-                && e.TeacherId == lesson.TeacherId
-                && e.Status == EnrollmentStatus.Active,
+        // F4.3: ders yayımlanmış olmalı ve derse ait + öğrencinin (arşivlenmemiş) sınıfına atanmış
+        // yayımlı bir oyun bulunmalı (sınıf üyeliğinden türetilir).
+        var hasAccess = lesson.IsPublished && await _db.Games.AnyAsync(
+            g => g.LessonId == lesson.Id
+                && g.IsPublished
+                && _db.GameAssignments.Any(a => a.GameId == g.Id
+                    && !a.Class.IsArchived
+                    && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                        && m.StudentId == userId
+                        && m.Status == ClassMemberStatus.Active)),
             cancellationToken);
 
         if (!hasAccess)

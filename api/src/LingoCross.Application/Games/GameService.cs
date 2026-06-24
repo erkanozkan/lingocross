@@ -96,6 +96,13 @@ public class GameService : IGameService
         }
 
         await _db.SaveChangesAsync(cancellationToken);
+
+        // F4.3: classIds verilirse oyun oluşturma ile aynı akışta sınıflara atanır (set semantiği).
+        if (request.ClassIds is not null)
+        {
+            await ApplyAssignmentsAsync(game, lesson.TeacherId, request.ClassIds, cancellationToken);
+        }
+
         return ToDto(game);
     }
 
@@ -116,10 +123,6 @@ public class GameService : IGameService
     {
         var teacherId = RequireTeacher();
 
-        // Yayımlanmış bulmaca, öğretmenin TÜM Active eşleşmeli öğrencilerine atanmış sayılır.
-        var activeStudentCount = await _db.Enrollments
-            .CountAsync(e => e.TeacherId == teacherId && e.Status == EnrollmentStatus.Active, cancellationToken);
-
         // Yalnız öğretmenin sahip olduğu derslerdeki bulmacalar; yeniden → eskiye.
         var puzzles = await _db.Games
             .Where(g => g.Lesson.TeacherId == teacherId)
@@ -132,6 +135,15 @@ public class GameService : IGameService
                 g.Type,
                 g.IsPublished,
                 g.CreatedAt,
+                // F4.3: atanan öğrenci sayısı = oyunun atandığı (arşivlenmemiş) sınıfların DISTINCT
+                // Active üye sayısı. Bir öğrenci birden çok atanmış sınıfta üyeyse bir kez sayılır.
+                AssignedStudentCount = _db.ClassMembers
+                    .Where(m => m.Status == ClassMemberStatus.Active
+                        && !m.Class.IsArchived
+                        && _db.GameAssignments.Any(a => a.GameId == g.Id && a.ClassId == m.ClassId))
+                    .Select(m => m.StudentId)
+                    .Distinct()
+                    .Count(),
                 // Tamamlanmış sonuç sayısı: bu oyuna ait oturumların sonuçları.
                 SolveCount = _db.GameResults.Count(r => r.Session.GameId == g.Id),
             })
@@ -146,7 +158,7 @@ public class GameService : IGameService
                 p.IsPublished,
                 p.CreatedAt,
                 // Atanmış sayılan öğrenci sayısı yalnız yayımlanmış bulmaca için anlamlı.
-                p.IsPublished ? activeStudentCount : 0,
+                p.IsPublished ? p.AssignedStudentCount : 0,
                 p.SolveCount))
             .ToList();
     }
@@ -176,14 +188,16 @@ public class GameService : IGameService
     {
         var studentId = RequireStudent();
 
-        // Öğrencinin Active eşleşmeli öğretmenlerinin yayımlanmış derslerindeki yayımlanmış oyunlar.
+        // F4.3: öğrencinin üye olduğu (arşivlenmemiş) sınıflara atanmış, yayımlanmış oyunlar
+        // (ders de yayımlanmış olmalı). Görünürlük sınıf üyeliğinden türetilir.
         var assigned = await _db.Games
             .Where(g => g.IsPublished
                 && g.Lesson.IsPublished
-                && _db.Enrollments.Any(e =>
-                    e.StudentId == studentId
-                    && e.TeacherId == g.Lesson.TeacherId
-                    && e.Status == EnrollmentStatus.Active))
+                && _db.GameAssignments.Any(a => a.GameId == g.Id
+                    && !a.Class.IsArchived
+                    && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                        && m.StudentId == studentId
+                        && m.Status == ClassMemberStatus.Active)))
             .OrderByDescending(g => g.PublishedAt)
             .Select(g => new AssignedGameDto(
                 g.Id,
@@ -257,6 +271,90 @@ public class GameService : IGameService
         }
 
         return ToDto(session);
+    }
+
+    public async Task<GameAssignmentsDto> SetAssignmentsAsync(Guid gameId, SetGameAssignmentsRequest request, CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        // Sahiplik: oyun + dersi tek sorguda; ders sahibi değilse 404.
+        var game = await _db.Games
+            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+
+        if (game is null)
+        {
+            throw AppException.NotFound("Oyun bulunamadı.");
+        }
+
+        var classIds = await ApplyAssignmentsAsync(game, teacherId, request.ClassIds ?? [], cancellationToken);
+        return new GameAssignmentsDto(classIds);
+    }
+
+    public async Task<GameAssignmentsDto> GetAssignmentsAsync(Guid gameId, CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        var owns = await _db.Games
+            .AnyAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+
+        if (!owns)
+        {
+            throw AppException.NotFound("Oyun bulunamadı.");
+        }
+
+        var classIds = await _db.GameAssignments
+            .Where(a => a.GameId == gameId)
+            .Select(a => a.ClassId)
+            .ToListAsync(cancellationToken);
+
+        return new GameAssignmentsDto(classIds);
+    }
+
+    /// <summary>
+    /// SET semantiğiyle oyunun atamalarını uygular: yalnız öğretmenin kendi (arşivlenmemiş) sınıfları
+    /// kabul edilir; verilen listede olmayan mevcut atamalar silinir, yeni olanlar eklenir. Verilen bir
+    /// classId öğretmene ait değilse 404. Nihai atanmış sınıf kimliklerini döndürür.
+    /// </summary>
+    private async Task<IReadOnlyList<Guid>> ApplyAssignmentsAsync(
+        Game game, Guid teacherId, IReadOnlyList<Guid> requestedClassIds, CancellationToken cancellationToken)
+    {
+        var desired = requestedClassIds.Distinct().ToList();
+
+        if (desired.Count > 0)
+        {
+            // Her istenen sınıf öğretmene ait ve arşivlenmemiş olmalı; aksi 404.
+            var ownedCount = await _db.Classes
+                .CountAsync(c => desired.Contains(c.Id) && c.TeacherId == teacherId && !c.IsArchived, cancellationToken);
+
+            if (ownedCount != desired.Count)
+            {
+                throw AppException.NotFound("Sınıf bulunamadı.");
+            }
+        }
+
+        var existing = await _db.GameAssignments
+            .Where(a => a.GameId == game.Id)
+            .ToListAsync(cancellationToken);
+
+        var existingIds = existing.Select(a => a.ClassId).ToHashSet();
+        var desiredSet = desired.ToHashSet();
+
+        // Sil: istenmeyenler.
+        var toRemove = existing.Where(a => !desiredSet.Contains(a.ClassId)).ToList();
+        if (toRemove.Count > 0)
+        {
+            _db.GameAssignments.RemoveRange(toRemove);
+        }
+
+        // Ekle: yeni olanlar.
+        foreach (var classId in desired.Where(id => !existingIds.Contains(id)))
+        {
+            _db.GameAssignments.Add(new GameAssignment { GameId = game.Id, ClassId = classId });
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return desired;
     }
 
     /// <summary>
@@ -407,10 +505,16 @@ public class GameService : IGameService
             return lesson;
         }
 
-        var hasAccess = lesson.IsPublished && await _db.Enrollments.AnyAsync(
-            e => e.StudentId == userId
-                && e.TeacherId == lesson.TeacherId
-                && e.Status == EnrollmentStatus.Active,
+        // F4.3: öğrenci, derse ait + üye olduğu (arşivlenmemiş) sınıfa atanmış yayımlı bir oyun varsa
+        // derse erişebilir.
+        var hasAccess = lesson.IsPublished && await _db.Games.AnyAsync(
+            g => g.LessonId == lesson.Id
+                && g.IsPublished
+                && _db.GameAssignments.Any(a => a.GameId == g.Id
+                    && !a.Class.IsArchived
+                    && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                        && m.StudentId == userId
+                        && m.Status == ClassMemberStatus.Active)),
             cancellationToken);
 
         if (!hasAccess)

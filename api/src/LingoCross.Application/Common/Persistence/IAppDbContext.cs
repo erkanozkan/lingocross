@@ -31,5 +31,11 @@ public interface IAppDbContext
 
     DbSet<GameResult> GameResults { get; }
 
+    DbSet<Class> Classes { get; }
+
+    DbSet<ClassMember> ClassMembers { get; }
+
+    DbSet<GameAssignment> GameAssignments { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

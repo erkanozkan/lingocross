@@ -394,6 +394,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherProfileMenuClasses => 'Sınıf Yönetimi';
 
   @override
+  String get teacherProfileMenuLessons => 'Derslerim';
+
+  @override
   String get teacherProfileMenuReports => 'İstatistikler ve Raporlar';
 
   @override
@@ -968,19 +971,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentDashboardAchievementsTitle => 'Son Başarımlar';
 
   @override
-  String get studentDashboardJoinTeacherTitle => 'Bir Öğretmene Katıl';
+  String get studentDashboardJoinTeacherTitle => 'Bir Sınıfa Katıl';
 
   @override
-  String get studentDashboardJoinTeacherDesc => 'Öğretmeninden aldığın davet kodunu girerek derslerine eriş.';
+  String get studentDashboardJoinTeacherDesc => 'Öğretmeninden aldığın sınıf davet kodunu girerek derslerine eriş.';
 
   @override
-  String get studentDashboardJoinTeacherLinkShort => 'Yeni öğretmene katıl';
+  String get studentDashboardJoinTeacherLinkShort => 'Yeni sınıfa katıl';
 
   @override
-  String get studentDashboardEmptyNoTeacherTitle => 'Henüz bir derse katılmadın';
+  String get studentDashboardEmptyNoTeacherTitle => 'Henüz bir sınıfa katılmadın';
 
   @override
-  String get studentDashboardEmptyNoTeacherDesc => 'Öğretmeninden aldığın davet koduyla başla.';
+  String get studentDashboardEmptyNoTeacherDesc => 'Öğretmeninden aldığın sınıf davet koduyla başla.';
 
   @override
   String get studentDashboardEmptyNoLessonsTitle => 'Öğretmenin henüz ders yayınlamadı';
@@ -1167,13 +1170,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGameTypeMatchingTitle => 'Kelime Eşleştirme';
 
   @override
-  String get createGameTypeMatchingDesc => 'Görseller ve kelimeler arasında hızlı eşleştirme mücadelesi.';
+  String get createGameTypeMatchingDesc => 'Kelime ve anlamlarını eşleştirerek öğrenmeyi hızlandır.';
 
   @override
-  String get createGameTypeCrosswordTitle => 'Crossword';
+  String get createGameTypeCrosswordTitle => 'Çengel Bulmaca';
 
   @override
-  String get createGameTypeCrosswordDesc => 'Klasik kare bulmaca formatında kelime tamamlama oyunu.';
+  String get createGameTypeCrosswordDesc => 'İpuçları kullanarak kelimeleri bulmalarını sağla.';
 
   @override
   String get createGameLessonLabel => 'Kullanılacak Kelime Listesi';
@@ -1662,4 +1665,228 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get accountChangePasswordSavedSnack => 'Şifreniz değiştirildi';
+
+  @override
+  String get classesTitle => 'Sınıflarım';
+
+  @override
+  String get classesHeroTitle => 'Merhaba, Öğretmenim!';
+
+  @override
+  String classesHeroSubtitle(int count) {
+    return 'Bugün $count farklı sınıfınla dersin bulunuyor. Başarılar dileriz.';
+  }
+
+  @override
+  String get classesStatTotalStudents => 'Toplam Öğrenci';
+
+  @override
+  String get classesStatActivity => 'Aktiflik';
+
+  @override
+  String classesStatActivityValue(int percent) {
+    return '%$percent';
+  }
+
+  @override
+  String get classesActiveSectionTitle => 'Aktif Sınıflar';
+
+  @override
+  String get classesSeeAll => 'Tümünü Gör';
+
+  @override
+  String classesStudentCount(int count) {
+    return '$count öğrenci';
+  }
+
+  @override
+  String get classesInviteCodeChipLabel => 'Davet Kodu:';
+
+  @override
+  String get classesCreateButton => 'Yeni Sınıf Oluştur';
+
+  @override
+  String get classesEmptyTitle => 'Henüz sınıfın yok';
+
+  @override
+  String get classesEmptyDesc => 'İlk sınıfını oluştur ve davet koduyla öğrencilerini davet et.';
+
+  @override
+  String get classesError => 'Sınıflar yüklenemedi';
+
+  @override
+  String get classCreateTitle => 'Yeni Sınıf';
+
+  @override
+  String get classCreateNameLabel => 'Sınıf Adı';
+
+  @override
+  String get classCreateNamePlaceholder => 'örn. 6-A';
+
+  @override
+  String get classCreateInfo => 'Sınıfı oluşturduktan sonra öğrencilerinle paylaşacağın bir davet kodu üretilecek.';
+
+  @override
+  String get classCreatePerkProgress => 'İlerleme Takibi';
+
+  @override
+  String get classCreatePerkRewards => 'Ödül Sistemi';
+
+  @override
+  String get classCreateSubmit => 'Oluştur';
+
+  @override
+  String classCreateSuccess(String name) {
+    return '$name sınıfı oluşturuldu.';
+  }
+
+  @override
+  String get classCreateErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get classCreateErrorGeneric => 'Sınıf oluşturulamadı, tekrar dene.';
+
+  @override
+  String get classDetailFallbackTitle => 'Sınıf';
+
+  @override
+  String get classDetailCodeLabel => 'Sınıf Davet Kodu';
+
+  @override
+  String classDetailCodeSemantic(String spaced) {
+    return 'Sınıf davet kodu: $spaced';
+  }
+
+  @override
+  String get classDetailCopy => 'Kopyala';
+
+  @override
+  String get classDetailCodeCopied => 'Kod kopyalandı';
+
+  @override
+  String get classDetailShare => 'Paylaş';
+
+  @override
+  String classDetailShareMessage(String code) {
+    return 'LingoCross\'ta sınıfıma katıl. Davet kodu: $code';
+  }
+
+  @override
+  String get classDetailShareCopied => 'Davet metni kopyalandı';
+
+  @override
+  String get classDetailRegenerate => 'Yeni Kod Üret';
+
+  @override
+  String get classDetailRegenerateConfirm => 'Yeni kod oluşturursan eski kod çalışmayı durdurur. Devam edilsin mi?';
+
+  @override
+  String get classDetailRegenerated => 'Yeni davet kodu oluşturuldu';
+
+  @override
+  String get classDetailRegenerateError => 'Yeni kod oluşturulamadı, tekrar deneyin.';
+
+  @override
+  String classDetailStudents(int count) {
+    return 'Öğrenciler ($count)';
+  }
+
+  @override
+  String get classDetailAdd => 'Ekle';
+
+  @override
+  String get classDetailAddHint => 'Öğrenci eklemek için davet kodunu paylaş.';
+
+  @override
+  String get classDetailRemove => 'Çıkar';
+
+  @override
+  String classDetailRemoveConfirm(String name) {
+    return '$name bu sınıftan çıkarılsın mı?';
+  }
+
+  @override
+  String classDetailRemoved(String name) {
+    return '$name sınıftan çıkarıldı';
+  }
+
+  @override
+  String get classDetailRemoveError => 'Öğrenci çıkarılamadı, tekrar deneyin.';
+
+  @override
+  String get classDetailAssignHomework => 'Bu Sınıfa Ödev Ata';
+
+  @override
+  String get classDetailEmptyTitle => 'Henüz öğrenci yok';
+
+  @override
+  String get classDetailEmptyDesc => 'Yukarıdaki davet kodunu öğrencilerinle paylaş.';
+
+  @override
+  String get classDetailErrorCode => 'Davet kodu yüklenemedi';
+
+  @override
+  String get classDetailErrorList => 'Öğrenciler yüklenemedi';
+
+  @override
+  String get joinClassTitle => 'Sınıfa Katıl';
+
+  @override
+  String get joinClassHeroTitle => 'Yeni Bir Sınıf';
+
+  @override
+  String get joinClassHeroDesc => 'Öğretmeninin verdiği sınıf davet kodunu girerek öğrenme yolculuğuna başlayabilirsin.';
+
+  @override
+  String get joinClassCodePlaceholder => 'ABC123XY';
+
+  @override
+  String get joinClassCodeHint => 'Kodu öğretmeninden alabilirsin.';
+
+  @override
+  String get joinClassWhereTitle => 'Kod Nerede?';
+
+  @override
+  String get joinClassWhereDesc => 'Öğretmenin bu kodu tahtaya yansıtmış veya seninle paylaşmış olmalı.';
+
+  @override
+  String get joinClassSubmit => 'Katıl';
+
+  @override
+  String get joinClassSubmitting => 'Katılıyor…';
+
+  @override
+  String joinClassSuccess(String className) {
+    return '$className sınıfına katıldın';
+  }
+
+  @override
+  String get joinClassErrorInvalid => 'Bu kod geçerli değil. Kontrol edip tekrar dene.';
+
+  @override
+  String get joinClassErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get createGameStep1Subtitle => 'Öğrencilerin için en uygun etkileşimli bulmaca formatını belirle.';
+
+  @override
+  String get createGameStep2Subtitle => 'Bu bulmaca hangi kelime listesi kapsamında yer alacak?';
+
+  @override
+  String get createGameStep3Title => 'Sınıfları Ata';
+
+  @override
+  String get createGameStep3Subtitle => 'Bu bulmacayı çözecek hedef sınıfları belirle.';
+
+  @override
+  String get createGameStepBack => 'Geri Dön';
+
+  @override
+  String get createGameStepNext => 'Sonraki Adım';
+
+  @override
+  String get createGameClassesEmpty => 'Henüz sınıfın yok. Önce bir sınıf oluştur.';
+
+  @override
+  String get createGameClassesError => 'Sınıflar yüklenemedi.';
 }
