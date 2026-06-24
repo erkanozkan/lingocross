@@ -205,7 +205,7 @@ class _Content extends StatelessWidget {
         _GameOfDayCard(
           lesson: featured,
           teacherName: teacherNameById[featured.teacherId] ?? '',
-          onPlay: () => context.push(AppRoutes.studentLesson(featured.id)),
+          onPlay: () => context.push(AppRoutes.studentGame(featured.id)),
         ),
         if (rest.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),

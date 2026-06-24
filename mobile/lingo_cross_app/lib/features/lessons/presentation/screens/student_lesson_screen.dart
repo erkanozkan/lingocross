@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -46,9 +47,7 @@ class StudentLessonScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: _PlayBar(
-        onPlay: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.studentLessonPlayComingSoon)),
-        ),
+        onPlay: () => context.push(AppRoutes.studentGame(lessonId)),
       ),
       body: RefreshIndicator(
         onRefresh: () =>
