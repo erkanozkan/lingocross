@@ -78,12 +78,17 @@ flutter analyze
 
 ## Ekip & İş Akışı
 
-Ana oturum = **takım lideri/orchestrator**. Özel agent'lar `.claude/agents/` altında:
-`product-manager`, `ux-designer`, `api-developer`, `mobile-developer`.
+Ana oturum = **orchestrator**. Aktif agent'lar `.claude/agents/` altında: `api-developer`, `mobile-developer`.
 
-Akış (her milestone bir artım): PM kabul kriteri yazar → (gerekirse) UX ekran spec'i üretir →
-API & Mobil dev paralel uygular → PM + UX review → düzeltme task'ları. Devler DESIGN.md / UX
-spec dışına çıkamaz; Faz 2 işine girilmez.
+> Not: `product-manager` ve `ux-designer` agent'ları kapatıldı (kullanıcı kararı). Kapsam/kabul
+> kriteri ve Stitch tasarım sadakati artık doğrudan orchestrator tarafından yönetilir. (Dosyalar
+> git geçmişinde; gerekirse geri getirilebilir.)
+
+Akış (her milestone bir artım): orchestrator kapsamı/kabul kriterini ve (gerekiyorsa) Stitch
+ekran tasarımını belirler → API & Mobil dev paralel uygular → orchestrator build/test/**simülatör
+build** ile doğrular, commit + merge eder. Devler `docs/DESIGN.md` token'ları ve verilen Stitch
+ekranlarının dışına çıkmaz, Faz 2 işine girmez. Stitch'i "uyarlamak" değil **birebir** uygulamak esas;
+sapma gerekiyorsa orchestrator'a bildirilir.
 
 ## Git (lokal, geri alınabilirlik)
 
