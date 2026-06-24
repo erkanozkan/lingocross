@@ -31,31 +31,101 @@ public class GameService : IGameService
         _random = random ?? Random.Shared;
     }
 
-    public async Task<IReadOnlyList<GameDto>> ListOrCreateForLessonAsync(Guid lessonId, CancellationToken cancellationToken = default)
+    public async Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default)
     {
-        var lesson = await GetAccessibleLessonAsync(lessonId, cancellationToken);
+        // Yalnızca ders sahibi öğretmen oluşturabilir.
+        var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
+
+        // MVP/F2.2: yalnız WordMatching desteklenir. Crossword (F2.4) rezerve.
+        if (request.Type == GameType.Crossword)
+        {
+            throw AppException.BadRequest("Bulmaca (crossword) oyunu henüz desteklenmiyor.");
+        }
+
+        if (request.Type != GameType.WordMatching)
+        {
+            throw AppException.BadRequest("Geçersiz oyun türü.");
+        }
+
+        // Oynanabilirlik: ders en az MinWordsToPlay çevirili kelime içermeli (StartSession ile aynı kural).
+        var eligibleCount = await CountTranslatedWordsAsync(lesson.Id, cancellationToken);
+        if (eligibleCount < MinWordsToPlay)
+        {
+            throw AppException.BadRequest(
+                $"Bu ders için oyun oluşturulamıyor; en az {MinWordsToPlay} çevirili kelime gerekir.");
+        }
+
+        var now = DateTime.UtcNow;
+
+        // Idempotent: aynı ders+tür için oyun zaten varsa onu (gerekirse yeniden) yayımla.
+        var game = await _db.Games
+            .FirstOrDefaultAsync(g => g.LessonId == lesson.Id && g.Type == request.Type, cancellationToken);
+
+        if (game is null)
+        {
+            game = new Game
+            {
+                LessonId = lesson.Id,
+                Type = request.Type,
+                Title = NormalizeTitle(request.Title) ?? DefaultTitle(request.Type),
+                IsPublished = true,
+                PublishedAt = now,
+            };
+            _db.Games.Add(game);
+        }
+        else
+        {
+            if (!string.IsNullOrWhiteSpace(request.Title))
+            {
+                game.Title = NormalizeTitle(request.Title)!;
+            }
+
+            game.IsPublished = true;
+            game.PublishedAt ??= now;
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        return ToDto(game);
+    }
+
+    public async Task<IReadOnlyList<GameDto>> ListForLessonAsync(Guid lessonId, CancellationToken cancellationToken = default)
+    {
+        // Salt-okunur: yalnız ders sahibi öğretmen. Otomatik üretim YOK.
+        var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
 
         var games = await _db.Games
             .Where(g => g.LessonId == lesson.Id)
             .OrderBy(g => g.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        // Yalnızca öğretmen (ders sahibi) eksik oyunu üretebilir; öğrenci salt-okunur listeler.
-        var hasWordMatching = games.Any(g => g.Type == GameType.WordMatching);
-        if (!hasWordMatching && _currentUser.Role == UserRole.Teacher)
-        {
-            var game = new Game
-            {
-                LessonId = lesson.Id,
-                Type = GameType.WordMatching,
-                Title = "Kelime Eşleştirme",
-            };
-            _db.Games.Add(game);
-            await _db.SaveChangesAsync(cancellationToken);
-            games.Add(game);
-        }
-
         return games.Select(ToDto).ToList();
+    }
+
+    public async Task<IReadOnlyList<AssignedGameDto>> ListAssignedForStudentAsync(CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        // Öğrencinin Active eşleşmeli öğretmenlerinin yayımlanmış derslerindeki yayımlanmış oyunlar.
+        var assigned = await _db.Games
+            .Where(g => g.IsPublished
+                && g.Lesson.IsPublished
+                && _db.Enrollments.Any(e =>
+                    e.StudentId == studentId
+                    && e.TeacherId == g.Lesson.TeacherId
+                    && e.Status == EnrollmentStatus.Active))
+            .OrderByDescending(g => g.PublishedAt)
+            .Select(g => new AssignedGameDto(
+                g.Id,
+                g.LessonId,
+                g.Lesson.Title,
+                g.Type,
+                g.Title,
+                g.Lesson.Words.Count,
+                g.Lesson.Teacher.DisplayName,
+                g.PublishedAt))
+            .ToListAsync(cancellationToken);
+
+        return assigned;
     }
 
     public async Task<StartGameSessionResponse> StartSessionAsync(Guid gameId, CancellationToken cancellationToken = default)
@@ -63,7 +133,8 @@ public class GameService : IGameService
         var studentId = RequireStudent();
 
         var game = await _db.Games.FirstOrDefaultAsync(g => g.Id == gameId, cancellationToken);
-        if (game is null)
+        // Yayımlanmamış oyunun varlığını sızdırmamak için 404 (erişim öncesi).
+        if (game is null || !game.IsPublished)
         {
             throw AppException.NotFound("Oyun bulunamadı.");
         }
@@ -218,6 +289,50 @@ public class GameService : IGameService
         return lesson;
     }
 
+    /// <summary>
+    /// Dersi getirir ve sahiplik kontrolü yapar (yalnız öğretmen). Başkasının dersi de dahil
+    /// bulunamayan her durumda 404 (varlığı sızdırmamak için).
+    /// </summary>
+    private async Task<Lesson> GetOwnedLessonAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        if (_currentUser.UserId is not { } userId)
+        {
+            throw AppException.Unauthorized("Oturum gerekli.");
+        }
+
+        if (_currentUser.Role != UserRole.Teacher)
+        {
+            throw new AppException(403, "Bu işlem için öğretmen yetkisi gerekir.");
+        }
+
+        var lesson = await _db.Lessons.FirstOrDefaultAsync(l => l.Id == lessonId, cancellationToken);
+        if (lesson is null || lesson.TeacherId != userId)
+        {
+            throw AppException.NotFound("Ders bulunamadı.");
+        }
+
+        return lesson;
+    }
+
+    /// <summary>Dersin oynanabilir (birincil/ilk çevirisi dolu) kelime sayısı.</summary>
+    private async Task<int> CountTranslatedWordsAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        return await _db.Words
+            .Where(w => w.LessonId == lessonId
+                && w.Translations.Any(t => t.Text != null && t.Text.Trim() != ""))
+            .CountAsync(cancellationToken);
+    }
+
+    private static string? NormalizeTitle(string? title)
+        => string.IsNullOrWhiteSpace(title) ? null : title.Trim();
+
+    private static string DefaultTitle(GameType type) => type switch
+    {
+        GameType.WordMatching => "Kelime Eşleştirme",
+        GameType.Crossword => "Bulmaca",
+        _ => "Oyun",
+    };
+
     private Guid RequireStudent()
     {
         if (_currentUser.UserId is not { } userId)
@@ -247,7 +362,7 @@ public class GameService : IGameService
     }
 
     private static GameDto ToDto(Game g)
-        => new(g.Id, g.LessonId, g.Type, g.Title, g.CreatedAt, g.UpdatedAt);
+        => new(g.Id, g.LessonId, g.Type, g.Title, g.IsPublished, g.PublishedAt, g.CreatedAt, g.UpdatedAt);
 
     private static GameSessionDto ToDto(GameSession s)
         => new(s.Id, s.GameId, s.StudentId, s.Status, s.StartedAt, s.CompletedAt);

@@ -543,6 +543,18 @@ abstract class AppLocalizations {
   /// **'Kendi kelime listenizle dakikalar içinde yeni bir ders hazırlayın.'**
   String get teacherDashboardActionNewLessonDesc;
 
+  /// No description provided for @teacherDashboardActionNewPuzzleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Bulmaca Oluştur'**
+  String get teacherDashboardActionNewPuzzleTitle;
+
+  /// No description provided for @teacherDashboardActionNewPuzzleDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir dersin kelimelerinden öğrencilerine bulmaca hazırla ve yayınla.'**
+  String get teacherDashboardActionNewPuzzleDesc;
+
   /// No description provided for @teacherDashboardActionProgressTitle.
   ///
   /// In tr, this message translates to:
@@ -1863,6 +1875,30 @@ abstract class AppLocalizations {
   /// **'Yeni dersler burada görünecek.'**
   String get studentDashboardEmptyNoLessonsDesc;
 
+  /// No description provided for @studentDashboardPuzzlesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Atanan Bulmacalar'**
+  String get studentDashboardPuzzlesTitle;
+
+  /// No description provided for @studentDashboardEmptyNoPuzzlesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin henüz bulmaca atamadı'**
+  String get studentDashboardEmptyNoPuzzlesTitle;
+
+  /// No description provided for @studentDashboardEmptyNoPuzzlesDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin bir bulmaca yayınlayınca burada görünecek.'**
+  String get studentDashboardEmptyNoPuzzlesDesc;
+
+  /// No description provided for @studentDashboardPuzzleLesson.
+  ///
+  /// In tr, this message translates to:
+  /// **'{lesson} • {count} kelime'**
+  String studentDashboardPuzzleLesson(String lesson, int count);
+
   /// No description provided for @studentDashboardStatsSoon.
   ///
   /// In tr, this message translates to:
@@ -2156,6 +2192,120 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Oyun yüklenemedi'**
   String get gameMatchingError;
+
+  /// No description provided for @createGameTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Bulmaca Oluştur'**
+  String get createGameTitle;
+
+  /// No description provided for @createGameStep1Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun Türünü Seç'**
+  String get createGameStep1Title;
+
+  /// No description provided for @createGameStep2Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Seçimi'**
+  String get createGameStep2Title;
+
+  /// No description provided for @createGameTypeMatchingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Eşleştirme'**
+  String get createGameTypeMatchingTitle;
+
+  /// No description provided for @createGameTypeMatchingDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görseller ve kelimeler arasında hızlı eşleştirme mücadelesi.'**
+  String get createGameTypeMatchingDesc;
+
+  /// No description provided for @createGameTypeCrosswordTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Crossword'**
+  String get createGameTypeCrosswordTitle;
+
+  /// No description provided for @createGameTypeCrosswordDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Klasik kare bulmaca formatında kelime tamamlama oyunu.'**
+  String get createGameTypeCrosswordDesc;
+
+  /// No description provided for @createGameTypeComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yakında'**
+  String get createGameTypeComingSoon;
+
+  /// No description provided for @createGameLessonLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanılacak Kelime Listesi'**
+  String get createGameLessonLabel;
+
+  /// No description provided for @createGameLessonHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir ders seçin…'**
+  String get createGameLessonHint;
+
+  /// No description provided for @createGameLessonsEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz dersin yok. Önce bir ders oluştur.'**
+  String get createGameLessonsEmpty;
+
+  /// No description provided for @createGameLessonsError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersler yüklenemedi.'**
+  String get createGameLessonsError;
+
+  /// No description provided for @createGamePreviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önizleme Henüz Hazır Değil'**
+  String get createGamePreviewTitle;
+
+  /// No description provided for @createGamePreviewDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun türü ve kelime listesi seçtiğinizde burada bir özet görünecektir.'**
+  String get createGamePreviewDesc;
+
+  /// No description provided for @createGameSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmacayı Oluştur ve Yayınla'**
+  String get createGameSubmit;
+
+  /// No description provided for @createGameSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca oluşturuldu ve yayınlandı.'**
+  String get createGameSuccess;
+
+  /// No description provided for @createGameErrorInsufficientWords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca oluşturmak için ders en az 4 kelime içermeli.'**
+  String get createGameErrorInsufficientWords;
+
+  /// No description provided for @createGameErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlanılamadı. Tekrar dene.'**
+  String get createGameErrorNetwork;
+
+  /// No description provided for @createGameErrorGeneric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca oluşturulamadı, tekrar dene.'**
+  String get createGameErrorGeneric;
 
   /// No description provided for @teacherStudentsAppBarTitle.
   ///

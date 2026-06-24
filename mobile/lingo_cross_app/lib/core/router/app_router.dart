@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/enrollment/presentation/screens/join_teacher_screen.dart';
 import '../../features/enrollment/presentation/screens/student_dashboard_screen.dart';
 import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
+import '../../features/games/presentation/screens/create_game_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
@@ -43,8 +44,8 @@ abstract final class AppRoutes {
 
   static String studentLesson(String id) => '/student/lessons/$id';
 
-  /// Kelime eşleştirme oyununu başlatır (lessonId üzerinden — M4).
-  static String studentGame(String lessonId) => '/student/games/$lessonId';
+  /// Atanan bir bulmacanın oturumunu başlatır (gameId üzerinden — F2.2).
+  static String studentGame(String gameId) => '/student/games/$gameId';
 
   /// Oyun sonu raporu (resultId — M5; oyun-sonu seed veya geçmişten yükleme).
   static String studentResultDetail(String resultId) =>
@@ -54,6 +55,12 @@ abstract final class AppRoutes {
   static const String teacher = '/teacher';
   static const String teacherStudents = '/teacher/students';
   static const String lessonNew = '/teacher/lessons/new';
+
+  /// Yeni Bulmaca Oluştur (F2.2). Opsiyonel `?lessonId=` ile ön-seçili ders.
+  static const String gameNew = '/teacher/games/new';
+
+  static String gameNewForLesson(String lessonId) =>
+      '/teacher/games/new?lessonId=$lessonId';
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
   static String lessonWords(String id) => '/teacher/lessons/$id/words';
@@ -156,9 +163,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             StudentLessonScreen(lessonId: state.pathParameters['id']!),
       ),
       GoRoute(
-        path: '/student/games/:lessonId',
+        path: '/student/games/:gameId',
         builder: (context, state) =>
-            GameLauncherScreen(lessonId: state.pathParameters['lessonId']!),
+            GameLauncherScreen(gameId: state.pathParameters['gameId']!),
       ),
       // Geçmiş sonuçlar listesi (M5 — "Raporlar" sekmesi).
       GoRoute(
@@ -187,6 +194,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.lessonNew,
         builder: (context, state) => const LessonFormScreen(),
+      ),
+      // Yeni Bulmaca Oluştur (F2.2). Opsiyonel `?lessonId=` ön-seçili ders.
+      GoRoute(
+        path: AppRoutes.gameNew,
+        builder: (context, state) => CreateGameScreen(
+          initialLessonId: state.uri.queryParameters['lessonId'],
+        ),
       ),
       // Ders Detayı (F2.1) — Derslerim listesinden açılır.
       GoRoute(

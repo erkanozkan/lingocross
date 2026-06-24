@@ -240,6 +240,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherDashboardActionNewLessonDesc => 'Kendi kelime listenizle dakikalar içinde yeni bir ders hazırlayın.';
 
   @override
+  String get teacherDashboardActionNewPuzzleTitle => 'Yeni Bulmaca Oluştur';
+
+  @override
+  String get teacherDashboardActionNewPuzzleDesc => 'Bir dersin kelimelerinden öğrencilerine bulmaca hazırla ve yayınla.';
+
+  @override
   String get teacherDashboardActionProgressTitle => 'Öğrenci Gelişimi';
 
   @override
@@ -944,6 +950,20 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentDashboardEmptyNoLessonsDesc => 'Yeni dersler burada görünecek.';
 
   @override
+  String get studentDashboardPuzzlesTitle => 'Atanan Bulmacalar';
+
+  @override
+  String get studentDashboardEmptyNoPuzzlesTitle => 'Öğretmenin henüz bulmaca atamadı';
+
+  @override
+  String get studentDashboardEmptyNoPuzzlesDesc => 'Öğretmenin bir bulmaca yayınlayınca burada görünecek.';
+
+  @override
+  String studentDashboardPuzzleLesson(String lesson, int count) {
+    return '$lesson • $count kelime';
+  }
+
+  @override
   String get studentDashboardStatsSoon => 'Yakında — ilk oyununu oynayınca burada görünecek.';
 
   @override
@@ -1097,6 +1117,63 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gameMatchingError => 'Oyun yüklenemedi';
+
+  @override
+  String get createGameTitle => 'Yeni Bulmaca Oluştur';
+
+  @override
+  String get createGameStep1Title => 'Oyun Türünü Seç';
+
+  @override
+  String get createGameStep2Title => 'Ders Seçimi';
+
+  @override
+  String get createGameTypeMatchingTitle => 'Kelime Eşleştirme';
+
+  @override
+  String get createGameTypeMatchingDesc => 'Görseller ve kelimeler arasında hızlı eşleştirme mücadelesi.';
+
+  @override
+  String get createGameTypeCrosswordTitle => 'Crossword';
+
+  @override
+  String get createGameTypeCrosswordDesc => 'Klasik kare bulmaca formatında kelime tamamlama oyunu.';
+
+  @override
+  String get createGameTypeComingSoon => 'Yakında';
+
+  @override
+  String get createGameLessonLabel => 'Kullanılacak Kelime Listesi';
+
+  @override
+  String get createGameLessonHint => 'Bir ders seçin…';
+
+  @override
+  String get createGameLessonsEmpty => 'Henüz dersin yok. Önce bir ders oluştur.';
+
+  @override
+  String get createGameLessonsError => 'Dersler yüklenemedi.';
+
+  @override
+  String get createGamePreviewTitle => 'Önizleme Henüz Hazır Değil';
+
+  @override
+  String get createGamePreviewDesc => 'Oyun türü ve kelime listesi seçtiğinizde burada bir özet görünecektir.';
+
+  @override
+  String get createGameSubmit => 'Bulmacayı Oluştur ve Yayınla';
+
+  @override
+  String get createGameSuccess => 'Bulmaca oluşturuldu ve yayınlandı.';
+
+  @override
+  String get createGameErrorInsufficientWords => 'Bulmaca oluşturmak için ders en az 4 kelime içermeli.';
+
+  @override
+  String get createGameErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get createGameErrorGeneric => 'Bulmaca oluşturulamadı, tekrar dene.';
 
   @override
   String get teacherStudentsAppBarTitle => 'Öğrencilerim';

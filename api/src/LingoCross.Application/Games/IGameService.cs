@@ -1,24 +1,42 @@
 using LingoCross.Application.Games.Dtos;
+using LingoCross.Domain.Enums;
 
 namespace LingoCross.Application.Games;
 
 /// <summary>
-/// Kelime eşleştirme oyunlarının üretimi ve oturum yönetimi. Erişim/sahiplik kuralları bu
-/// katmanda uygulanır: öğretmen yalnızca kendi derslerine, öğrenci yalnızca Active eşleşmesi olan
-/// öğretmenin yayımlanmış derslerine erişebilir. Sonuç (game_results) M5 kapsamındadır.
+/// Kelime eşleştirme oyunlarının (bulmacaların) oluşturulması, yayımlanması ve oturum yönetimi.
+/// F2.2: Öğretmen oyunu açıkça oluşturup yayımlar; yayımlanan oyun, öğretmenin Active eşleşmeli
+/// öğrencilerine atanmış sayılır (enrollment'tan türetilir, ayrı atama tablosu yoktur).
+/// Erişim/sahiplik kuralları bu katmanda uygulanır: öğretmen yalnızca kendi derslerine, öğrenci
+/// yalnızca Active eşleşmesi olan öğretmenin yayımlanmış derslerine erişebilir.
 /// </summary>
 public interface IGameService
 {
     /// <summary>
-    /// Dersin oyunlarını döndürür; WordMatching oyunu yoksa üretip ekler (idempotent).
-    /// Öğretmen kendi dersi, öğrenci enrolled+published ders için erişebilir; aksi 404.
+    /// Öğretmen, kendi dersinde bir oyun oluşturur ve yayımlar (IsPublished=true, PublishedAt=now).
+    /// Ders en az <c>MinWordsToPlay</c> çevirili kelime içermeli; aksi 400. MVP'de yalnız
+    /// <see cref="GameType.WordMatching"/>; <see cref="GameType.Crossword"/> gelirse 400
+    /// "henüz desteklenmiyor". Aynı ders+tür için oyun zaten varsa idempotent davranır: mevcut
+    /// oyunu (gerekirse yeniden) yayımlayıp döndürür. Ders sahibi olmayan öğretmen/öğrenci → 404/403.
     /// </summary>
-    Task<IReadOnlyList<GameDto>> ListOrCreateForLessonAsync(Guid lessonId, CancellationToken cancellationToken = default);
+    Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Ders sahibinin o derse ait oyunlarını listeler (yalnız öğretmen, salt-okunur — otomatik
+    /// üretim YOK). Ders sahibi olmayan öğretmen/öğrenci → 404.
+    /// </summary>
+    Task<IReadOnlyList<GameDto>> ListForLessonAsync(Guid lessonId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Öğrencinin Active eşleşmeli öğretmenlerinin yayımlanmış derslerindeki yayımlanmış
+    /// (IsPublished=true) oyunlarını döndürür — öğrenciye atanmış bulmaca listesi.
+    /// </summary>
+    Task<IReadOnlyList<AssignedGameDto>> ListAssignedForStudentAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Bir oyun için (yalnızca öğrenci) yeni bir InProgress oturum oluşturur ve üretilmiş kelime
-    /// eşleştirme içeriğini döndürür. Dersin enrolled+published olması gerekir; içerik için yeterli
-    /// (en az 4) çevirili kelime yoksa AppException(400) atılır.
+    /// eşleştirme içeriğini döndürür. Oyun yayımlanmış (IsPublished) olmalı ve dersin enrolled+published
+    /// olması gerekir; aksi 403/404. İçerik için yeterli (en az 4) çevirili kelime yoksa AppException(400).
     /// </summary>
     Task<StartGameSessionResponse> StartSessionAsync(Guid gameId, CancellationToken cancellationToken = default);
 

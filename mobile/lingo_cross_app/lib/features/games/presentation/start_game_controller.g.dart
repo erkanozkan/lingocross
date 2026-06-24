@@ -7,13 +7,15 @@ part of 'start_game_controller.dart';
 // **************************************************************************
 
 String _$startGameControllerHash() =>
-    r'32634e61d7c89b755b4521b2006ab1c65ff22367';
+    r'dde97ee919d65290d59b590d4eec7275934c39fd';
 
-/// Ders için oyun başlatma akışı (öğrenci).
+/// Atanan bir bulmaca için oturum başlatma akışı (öğrenci).
 ///
-/// `GET /lessons/{lessonId}/games` ile WordMatching oyununu bulur, ardından
-/// `POST /games/{gameId}/sessions` ile oturum + içerik alır. Hata
-/// [GamesFailure] olarak `AsyncError`'a taşınır (UI i18n metnine çevirir).
+/// F2.2: oyunlar artık öğretmen tarafından açıkça oluşturulup yayınlanır; eski
+/// "oynarken otomatik üretim" (lessonId → games) akışı kaldırıldı. Öğrenci bir
+/// bulmacaya dokununca doğrudan `POST /games/{gameId}/sessions` ile oturum +
+/// içerik alınır. Hata [GamesFailure] olarak `AsyncError`'a taşınır (UI i18n
+/// metnine çevirir).
 ///
 /// Copied from [StartGameController].
 @ProviderFor(StartGameController)

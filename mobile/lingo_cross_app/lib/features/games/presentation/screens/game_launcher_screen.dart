@@ -11,15 +11,15 @@ import '../games_failure_messages.dart';
 import '../start_game_controller.dart';
 import 'word_matching_game_screen.dart';
 
-/// Oyun başlatma akışını yürüten launcher (`/student/games/:lessonId`).
+/// Oyun başlatma akışını yürüten launcher (`/student/games/:gameId`).
 ///
-/// `GET /lessons/{id}/games` → `POST /games/{gameId}/sessions` ile oturum +
-/// içerik alır; yükleniyor/hata/boş durumlarını gösterir, başarıda oyun
-/// ekranına geçer. Yetersiz kelime (400) → anlamlı boş-durum + geri.
+/// F2.2: atanan bulmacaya dokununca doğrudan `POST /games/{gameId}/sessions`
+/// ile oturum + içerik alır; yükleniyor/hata durumlarını gösterir, başarıda
+/// oyun ekranına geçer.
 class GameLauncherScreen extends ConsumerStatefulWidget {
-  const GameLauncherScreen({super.key, required this.lessonId});
+  const GameLauncherScreen({super.key, required this.gameId});
 
-  final String lessonId;
+  final String gameId;
 
   @override
   ConsumerState<GameLauncherScreen> createState() =>
@@ -35,7 +35,7 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
   }
 
   void _start() {
-    ref.read(startGameControllerProvider.notifier).start(widget.lessonId);
+    ref.read(startGameControllerProvider.notifier).start(widget.gameId);
   }
 
   @override
