@@ -27,6 +27,21 @@ public record AssignedGameDto(
     string TeacherName,
     DateTime? PublishedAt);
 
+/// <summary>
+/// Öğretmenin "Bulmacalarım" görünümü için tüm derslerindeki bir bulmacanın özeti. Yayımlanmış bir
+/// bulmaca, öğretmenin tüm Active eşleşmeli öğrencilerine atanmış sayılır (<see cref="AssignedStudentCount"/>);
+/// <see cref="SolveCount"/> bu bulmacaya ait tamamlanmış sonuç (game_results) sayısıdır.
+/// </summary>
+public record TeacherPuzzleDto(
+    Guid Id,
+    Guid LessonId,
+    string LessonTitle,
+    GameType Type,
+    bool IsPublished,
+    DateTime CreatedAt,
+    int AssignedStudentCount,
+    int SolveCount);
+
 /// <summary>Öğretmenin bir derste oyun oluşturma/yayımlama isteği.</summary>
 public record CreateGameRequest(
     GameType Type,

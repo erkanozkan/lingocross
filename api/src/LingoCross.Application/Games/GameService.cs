@@ -112,6 +112,66 @@ public class GameService : IGameService
         return games.Select(ToDto).ToList();
     }
 
+    public async Task<IReadOnlyList<TeacherPuzzleDto>> ListMyPuzzlesAsync(CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        // Yayımlanmış bulmaca, öğretmenin TÜM Active eşleşmeli öğrencilerine atanmış sayılır.
+        var activeStudentCount = await _db.Enrollments
+            .CountAsync(e => e.TeacherId == teacherId && e.Status == EnrollmentStatus.Active, cancellationToken);
+
+        // Yalnız öğretmenin sahip olduğu derslerdeki bulmacalar; yeniden → eskiye.
+        var puzzles = await _db.Games
+            .Where(g => g.Lesson.TeacherId == teacherId)
+            .OrderByDescending(g => g.CreatedAt)
+            .Select(g => new
+            {
+                g.Id,
+                g.LessonId,
+                LessonTitle = g.Lesson.Title,
+                g.Type,
+                g.IsPublished,
+                g.CreatedAt,
+                // Tamamlanmış sonuç sayısı: bu oyuna ait oturumların sonuçları.
+                SolveCount = _db.GameResults.Count(r => r.Session.GameId == g.Id),
+            })
+            .ToListAsync(cancellationToken);
+
+        return puzzles
+            .Select(p => new TeacherPuzzleDto(
+                p.Id,
+                p.LessonId,
+                p.LessonTitle,
+                p.Type,
+                p.IsPublished,
+                p.CreatedAt,
+                // Atanmış sayılan öğrenci sayısı yalnız yayımlanmış bulmaca için anlamlı.
+                p.IsPublished ? activeStudentCount : 0,
+                p.SolveCount))
+            .ToList();
+    }
+
+    public async Task<GameDto> ShareAsync(Guid gameId, CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        // Sahiplik servis katmanında: oyun + dersi tek sorguda al, sahibi değilse 404.
+        var game = await _db.Games
+            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+
+        if (game is null)
+        {
+            throw AppException.NotFound("Oyun bulunamadı.");
+        }
+
+        // İdempotent yeniden-yayınla: her zaman yayımlı yap, zamanı güncelle.
+        game.IsPublished = true;
+        game.PublishedAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return ToDto(game);
+    }
+
     public async Task<IReadOnlyList<AssignedGameDto>> ListAssignedForStudentAsync(CancellationToken cancellationToken = default)
     {
         var studentId = RequireStudent();
@@ -432,6 +492,21 @@ public class GameService : IGameService
         if (_currentUser.Role != UserRole.Student)
         {
             throw new AppException(403, "Bu işlem için öğrenci yetkisi gerekir.");
+        }
+
+        return userId;
+    }
+
+    private Guid RequireTeacher()
+    {
+        if (_currentUser.UserId is not { } userId)
+        {
+            throw AppException.Unauthorized("Oturum gerekli.");
+        }
+
+        if (_currentUser.Role != UserRole.Teacher)
+        {
+            throw new AppException(403, "Bu işlem için öğretmen yetkisi gerekir.");
         }
 
         return userId;

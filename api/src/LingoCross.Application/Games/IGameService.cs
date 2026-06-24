@@ -29,6 +29,20 @@ public interface IGameService
     Task<IReadOnlyList<GameDto>> ListForLessonAsync(Guid lessonId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// F3.2: Öğretmenin TÜM derslerindeki bulmacalarını listeler (yeniden → eskiye, createdAt desc).
+    /// Her bulmaca için <c>AssignedStudentCount</c> = öğretmenin Active eşleşmeli öğrenci sayısı
+    /// (yayımlanmış bulmaca tüm aktif öğrencilere atanmış sayılır), <c>SolveCount</c> = bu bulmacaya
+    /// ait tamamlanmış sonuç (game_results) sayısı. Yalnız öğretmenin sahip olduğu dersler.
+    /// </summary>
+    Task<IReadOnlyList<TeacherPuzzleDto>> ListMyPuzzlesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// F3.2: Bir bulmacayı idempotent olarak (yeniden) yayımlar: IsPublished=true, PublishedAt=now.
+    /// Yalnız ders sahibi öğretmen; başkasının/yok olan oyun → 404. Güncel <see cref="GameDto"/> döner.
+    /// </summary>
+    Task<GameDto> ShareAsync(Guid gameId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Öğrencinin Active eşleşmeli öğretmenlerinin yayımlanmış derslerindeki yayımlanmış
     /// (IsPublished=true) oyunlarını döndürür — öğrenciye atanmış bulmaca listesi.
     /// </summary>
