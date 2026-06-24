@@ -32,6 +32,14 @@ class FakeLessonsRepository implements LessonsRepository {
       throw UnimplementedError();
 
   @override
+  Future<LessonDto> unpublishLesson(String id) async =>
+      throw UnimplementedError();
+
+  @override
+  Future<LessonDto> completeLesson(String id) async =>
+      throw UnimplementedError();
+
+  @override
   Future<List<WordDto>> listWords(String lessonId) async => words;
 
   @override

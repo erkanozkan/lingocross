@@ -12,7 +12,7 @@ import 'dtos/word_dtos.dart';
 /// Tüm uçlar Teacher rolü + Bearer (token interceptor tarafından eklenir):
 /// - `GET/POST  /api/lessons`
 /// - `GET/PUT/DELETE /api/lessons/{id}`
-/// - `POST /api/lessons/{id}/publish`
+/// - `POST /api/lessons/{id}/publish` · `/unpublish` · `/complete`
 /// - `GET/POST /api/lessons/{id}/words`
 /// - `PUT/DELETE /api/words/{wordId}`
 class LessonsRepository {
@@ -80,6 +80,30 @@ class LessonsRepository {
     try {
       final res = await _dio.post<Map<String, dynamic>>(
         '$_base/lessons/$id/publish',
+      );
+      return LessonDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Dersi yayından kaldırır (`POST /lessons/{id}/unpublish`): Active → Draft.
+  Future<LessonDto> unpublishLesson(String id) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/lessons/$id/unpublish',
+      );
+      return LessonDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Dersi tamamlandı işaretler (`POST /lessons/{id}/complete`): Active → Completed.
+  Future<LessonDto> completeLesson(String id) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/lessons/$id/complete',
       );
       return LessonDto.fromJson(res.data!);
     } on DioException catch (e) {

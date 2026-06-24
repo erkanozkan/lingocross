@@ -11,6 +11,7 @@ import 'package:lingo_cross_app/features/enrollment/domain/enrollment_status.dar
 import 'package:lingo_cross_app/features/enrollment/presentation/screens/student_dashboard_screen.dart';
 import 'package:lingo_cross_app/features/lessons/data/dtos/lesson_dtos.dart';
 import 'package:lingo_cross_app/features/lessons/data/lessons_repository.dart';
+import 'package:lingo_cross_app/features/lessons/domain/lesson_status.dart';
 
 import 'helpers/fake_enrollment_repository.dart';
 import 'helpers/fake_lessons_repository.dart';
@@ -76,6 +77,7 @@ LessonDto _lesson({
     description: null,
     sourceLanguage: 'en',
     targetLanguage: 'tr',
+    status: published ? LessonStatus.active : LessonStatus.draft,
     isPublished: published,
     wordCount: words,
     createdAt: DateTime(2026, 6, 23),

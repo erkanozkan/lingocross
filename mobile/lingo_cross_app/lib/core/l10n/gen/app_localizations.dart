@@ -627,6 +627,426 @@ abstract class AppLocalizations {
   /// **'Taslak'**
   String get teacherDashboardLessonDraft;
 
+  /// No description provided for @navClasses.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıflar'**
+  String get navClasses;
+
+  /// No description provided for @lessonStatusDraft.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taslak'**
+  String get lessonStatusDraft;
+
+  /// No description provided for @lessonStatusActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get lessonStatusActive;
+
+  /// No description provided for @lessonStatusCompleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlandı'**
+  String get lessonStatusCompleted;
+
+  /// No description provided for @lessonStatusDraftUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'TASLAK'**
+  String get lessonStatusDraftUpper;
+
+  /// No description provided for @lessonStatusActiveUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'AKTİF'**
+  String get lessonStatusActiveUpper;
+
+  /// No description provided for @lessonStatusCompletedUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'TAMAMLANDI'**
+  String get lessonStatusCompletedUpper;
+
+  /// No description provided for @lessonsListTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derslerim'**
+  String get lessonsListTitle;
+
+  /// No description provided for @lessonsListCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'+ Yeni Ders Oluştur'**
+  String get lessonsListCreate;
+
+  /// No description provided for @lessonsListSectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yaklaşan Dersler'**
+  String get lessonsListSectionTitle;
+
+  /// No description provided for @lessonsListTotal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam: {count}'**
+  String lessonsListTotal(int count);
+
+  /// No description provided for @lessonsListWordCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} Kelime'**
+  String lessonsListWordCount(int count);
+
+  /// No description provided for @lessonsListEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz dersiniz yok'**
+  String get lessonsListEmptyTitle;
+
+  /// No description provided for @lessonsListEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk dersinizi oluşturarak başlayın.'**
+  String get lessonsListEmptyDesc;
+
+  /// No description provided for @lessonsListError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersler yüklenemedi'**
+  String get lessonsListError;
+
+  /// No description provided for @lessonsListNoDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarih belirtilmedi'**
+  String get lessonsListNoDate;
+
+  /// No description provided for @lessonsListFooterHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçmiş derslerinizi görmek için kaydırın'**
+  String get lessonsListFooterHint;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlar'**
+  String get reportsTitle;
+
+  /// No description provided for @reportsComingSoonTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlar yakında'**
+  String get reportsComingSoonTitle;
+
+  /// No description provided for @reportsComingSoonDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf ve öğrenci performans raporları burada görünecek.'**
+  String get reportsComingSoonDesc;
+
+  /// No description provided for @teacherProfileRoleLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen'**
+  String get teacherProfileRoleLabel;
+
+  /// No description provided for @teacherProfileStatClasses.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf'**
+  String get teacherProfileStatClasses;
+
+  /// No description provided for @teacherProfileStatStudents.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci'**
+  String get teacherProfileStatStudents;
+
+  /// No description provided for @teacherProfileStatParticipation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katılım'**
+  String get teacherProfileStatParticipation;
+
+  /// No description provided for @teacherProfileWeeklyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık Ödev Tamamlama'**
+  String get teacherProfileWeeklyTitle;
+
+  /// No description provided for @teacherProfileWeeklyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'{done}/{total} ödev tamamlandı'**
+  String teacherProfileWeeklyDesc(int done, int total);
+
+  /// No description provided for @teacherProfileWeeklyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıflarınızın ödev tamamlama oranı geçen haftaya göre %{percent} arttı!'**
+  String teacherProfileWeeklyHint(int percent);
+
+  /// No description provided for @teacherProfileBadgesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen Rozetleri'**
+  String get teacherProfileBadgesTitle;
+
+  /// No description provided for @teacherProfileBadgePopular.
+  ///
+  /// In tr, this message translates to:
+  /// **'Popüler Eğitmen'**
+  String get teacherProfileBadgePopular;
+
+  /// No description provided for @teacherProfileBadgeFast.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı Değerlendirici'**
+  String get teacherProfileBadgeFast;
+
+  /// No description provided for @teacherProfileBadgeInspiring.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlham Veren'**
+  String get teacherProfileBadgeInspiring;
+
+  /// No description provided for @teacherProfileMenuClasses.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf Yönetimi'**
+  String get teacherProfileMenuClasses;
+
+  /// No description provided for @teacherProfileMenuReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler ve Raporlar'**
+  String get teacherProfileMenuReports;
+
+  /// No description provided for @teacherProfileMenuSettings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap Ayarları'**
+  String get teacherProfileMenuSettings;
+
+  /// No description provided for @teacherProfileMenuLogout.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış Yap'**
+  String get teacherProfileMenuLogout;
+
+  /// No description provided for @teacherProfileStatsSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler yakında — öğrenciler oyun oynadıkça dolacak.'**
+  String get teacherProfileStatsSoon;
+
+  /// No description provided for @lessonFormHeroTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika bir ders planla!'**
+  String get lessonFormHeroTitle;
+
+  /// No description provided for @lessonFormHeroDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencilerin yeni şeyler öğrenmeye hazır.'**
+  String get lessonFormHeroDesc;
+
+  /// No description provided for @lessonFormFieldScheduleLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Tarihi / Haftası'**
+  String get lessonFormFieldScheduleLabel;
+
+  /// No description provided for @lessonFormFieldSchedulePlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn: 15-21 Temmuz 2024'**
+  String get lessonFormFieldSchedulePlaceholder;
+
+  /// No description provided for @lessonFormFieldUnitLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ünite Adı veya Numarası'**
+  String get lessonFormFieldUnitLabel;
+
+  /// No description provided for @lessonFormFieldUnitPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn: Unit 4: Food & Drinks'**
+  String get lessonFormFieldUnitPlaceholder;
+
+  /// No description provided for @lessonFormFieldTopicsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Detayları ve Konular'**
+  String get lessonFormFieldTopicsLabel;
+
+  /// No description provided for @lessonFormFieldTopicsPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu derste hangi konuları işleyeceksiniz? Önemli notları buraya ekleyin...'**
+  String get lessonFormFieldTopicsPlaceholder;
+
+  /// No description provided for @lessonFormVocabTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ünite Kelime Listesi'**
+  String get lessonFormVocabTitle;
+
+  /// No description provided for @lessonFormVocabDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu üniteye ait kelimeleri görüntüle veya yeni kelimeler ekle.'**
+  String get lessonFormVocabDesc;
+
+  /// No description provided for @lessonFormVocabSaveFirst.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce dersi kaydedin, sonra kelime ekleyin.'**
+  String get lessonFormVocabSaveFirst;
+
+  /// No description provided for @lessonFormInfoNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi kaydettiğinizde tüm öğrencileriniz bildirim alacaktır. Planlamalarınızı istediğiniz zaman düzenleyebilirsiniz.'**
+  String get lessonFormInfoNote;
+
+  /// No description provided for @lessonFormSaveAndShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Kaydet ve Paylaş'**
+  String get lessonFormSaveAndShare;
+
+  /// No description provided for @lessonDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Detayı'**
+  String get lessonDetailTitle;
+
+  /// No description provided for @lessonDetailScheduleNone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tarih belirtilmedi'**
+  String get lessonDetailScheduleNone;
+
+  /// No description provided for @lessonDetailSharedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşılan Sınıflar'**
+  String get lessonDetailSharedTitle;
+
+  /// No description provided for @lessonDetailSharedCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} öğrenciye açık'**
+  String lessonDetailSharedCount(int count);
+
+  /// No description provided for @lessonDetailSharedNone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz öğrenciye açık değil'**
+  String get lessonDetailSharedNone;
+
+  /// No description provided for @lessonDetailSharedDraft.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders taslakta — yayınlanınca öğrencilere açılır'**
+  String get lessonDetailSharedDraft;
+
+  /// No description provided for @lessonDetailContentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders İçeriği'**
+  String get lessonDetailContentTitle;
+
+  /// No description provided for @lessonDetailContentEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ders için içerik girilmemiş.'**
+  String get lessonDetailContentEmpty;
+
+  /// No description provided for @lessonDetailWordsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Listesi'**
+  String get lessonDetailWordsTitle;
+
+  /// No description provided for @lessonDetailWordsSeeAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümünü Gör'**
+  String get lessonDetailWordsSeeAll;
+
+  /// No description provided for @lessonDetailWordsEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz kelime eklenmemiş.'**
+  String get lessonDetailWordsEmpty;
+
+  /// No description provided for @lessonDetailEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersi Düzenle'**
+  String get lessonDetailEdit;
+
+  /// No description provided for @lessonDetailAssignHomework.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödev Ataması Yap'**
+  String get lessonDetailAssignHomework;
+
+  /// No description provided for @lessonDetailPublish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayınla'**
+  String get lessonDetailPublish;
+
+  /// No description provided for @lessonDetailUnpublish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yayından Kaldır'**
+  String get lessonDetailUnpublish;
+
+  /// No description provided for @lessonDetailComplete.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlandı İşaretle'**
+  String get lessonDetailComplete;
+
+  /// No description provided for @lessonDetailPublishedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders yayınlandı'**
+  String get lessonDetailPublishedSnack;
+
+  /// No description provided for @lessonDetailUnpublishedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders yayından kaldırıldı'**
+  String get lessonDetailUnpublishedSnack;
+
+  /// No description provided for @lessonDetailCompletedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders tamamlandı olarak işaretlendi'**
+  String get lessonDetailCompletedSnack;
+
+  /// No description provided for @lessonDetailActionError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem başarısız, tekrar deneyin.'**
+  String get lessonDetailActionError;
+
+  /// No description provided for @lessonDetailError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders yüklenemedi'**
+  String get lessonDetailError;
+
   /// No description provided for @lessonFormTitleCreate.
   ///
   /// In tr, this message translates to:

@@ -13,7 +13,6 @@ import '../../data/dtos/lesson_dtos.dart';
 import '../lessons_notifier.dart';
 import '../widgets/lesson_card.dart';
 import '../widgets/skeleton_card.dart';
-import '../widgets/teacher_bottom_nav.dart';
 
 /// Öğretmen Paneli (teacher-dashboard.md). Giriş sonrası öğretmenin ana ekranı:
 /// karşılama, birincil aksiyon kartları (bento), "Derslerim" listesi (boş/
@@ -41,24 +40,9 @@ class TeacherDashboardScreen extends ConsumerWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.marginMobile),
-            child: _Avatar(name: name, onTap: () => context.push(AppRoutes.profile)),
+            child: _Avatar(name: name),
           ),
         ],
-      ),
-      bottomNavigationBar: TeacherBottomNav(
-        currentIndex: 0,
-        onTap: (i) {
-          switch (i) {
-            case 2:
-              context.push(AppRoutes.profile);
-            case 1:
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.commonComingSoon)),
-              );
-            default:
-              break;
-          }
-        },
       ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(lessonsNotifierProvider.notifier).refresh(),
@@ -88,35 +72,25 @@ class TeacherDashboardScreen extends ConsumerWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.name, required this.onTap});
+  const _Avatar({required this.name});
 
   final String name;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final initial = name.isNotEmpty ? name.characters.first.toUpperCase() : '?';
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.full),
-      child: Container(
-        width: 48,
-        height: 48,
-        alignment: Alignment.center,
-        child: Container(
-          width: 40,
-          height: 40,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceContainer,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.primaryContainer, width: 2),
-          ),
-          child: Text(
-            initial,
-            style: AppTypography.labelLg.copyWith(color: AppColors.primary),
-          ),
-        ),
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainer,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.primaryContainer, width: 2),
+      ),
+      child: Text(
+        initial,
+        style: AppTypography.labelLg.copyWith(color: AppColors.primary),
       ),
     );
   }

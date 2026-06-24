@@ -25,6 +25,7 @@ mixin _$CreateLessonRequest {
   String? get description => throw _privateConstructorUsedError;
   String? get sourceLanguage => throw _privateConstructorUsedError;
   String? get targetLanguage => throw _privateConstructorUsedError;
+  String? get scheduledLabel => throw _privateConstructorUsedError;
 
   /// Serializes this CreateLessonRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,6 +49,7 @@ abstract class $CreateLessonRequestCopyWith<$Res> {
     String? description,
     String? sourceLanguage,
     String? targetLanguage,
+    String? scheduledLabel,
   });
 }
 
@@ -70,6 +72,7 @@ class _$CreateLessonRequestCopyWithImpl<$Res, $Val extends CreateLessonRequest>
     Object? description = freezed,
     Object? sourceLanguage = freezed,
     Object? targetLanguage = freezed,
+    Object? scheduledLabel = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -93,6 +96,11 @@ class _$CreateLessonRequestCopyWithImpl<$Res, $Val extends CreateLessonRequest>
                     ? _value.targetLanguage
                     : targetLanguage // ignore: cast_nullable_to_non_nullable
                         as String?,
+            scheduledLabel:
+                freezed == scheduledLabel
+                    ? _value.scheduledLabel
+                    : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                        as String?,
           )
           as $Val,
     );
@@ -113,6 +121,7 @@ abstract class _$$CreateLessonRequestImplCopyWith<$Res>
     String? description,
     String? sourceLanguage,
     String? targetLanguage,
+    String? scheduledLabel,
   });
 }
 
@@ -134,6 +143,7 @@ class __$$CreateLessonRequestImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? sourceLanguage = freezed,
     Object? targetLanguage = freezed,
+    Object? scheduledLabel = freezed,
   }) {
     return _then(
       _$CreateLessonRequestImpl(
@@ -157,6 +167,11 @@ class __$$CreateLessonRequestImplCopyWithImpl<$Res>
                 ? _value.targetLanguage
                 : targetLanguage // ignore: cast_nullable_to_non_nullable
                     as String?,
+        scheduledLabel:
+            freezed == scheduledLabel
+                ? _value.scheduledLabel
+                : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                    as String?,
       ),
     );
   }
@@ -170,6 +185,7 @@ class _$CreateLessonRequestImpl implements _CreateLessonRequest {
     this.description,
     this.sourceLanguage,
     this.targetLanguage,
+    this.scheduledLabel,
   });
 
   factory _$CreateLessonRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -183,10 +199,12 @@ class _$CreateLessonRequestImpl implements _CreateLessonRequest {
   final String? sourceLanguage;
   @override
   final String? targetLanguage;
+  @override
+  final String? scheduledLabel;
 
   @override
   String toString() {
-    return 'CreateLessonRequest(title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage)';
+    return 'CreateLessonRequest(title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage, scheduledLabel: $scheduledLabel)';
   }
 
   @override
@@ -200,7 +218,9 @@ class _$CreateLessonRequestImpl implements _CreateLessonRequest {
             (identical(other.sourceLanguage, sourceLanguage) ||
                 other.sourceLanguage == sourceLanguage) &&
             (identical(other.targetLanguage, targetLanguage) ||
-                other.targetLanguage == targetLanguage));
+                other.targetLanguage == targetLanguage) &&
+            (identical(other.scheduledLabel, scheduledLabel) ||
+                other.scheduledLabel == scheduledLabel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -211,6 +231,7 @@ class _$CreateLessonRequestImpl implements _CreateLessonRequest {
     description,
     sourceLanguage,
     targetLanguage,
+    scheduledLabel,
   );
 
   /// Create a copy of CreateLessonRequest
@@ -236,6 +257,7 @@ abstract class _CreateLessonRequest implements CreateLessonRequest {
     final String? description,
     final String? sourceLanguage,
     final String? targetLanguage,
+    final String? scheduledLabel,
   }) = _$CreateLessonRequestImpl;
 
   factory _CreateLessonRequest.fromJson(Map<String, dynamic> json) =
@@ -249,6 +271,8 @@ abstract class _CreateLessonRequest implements CreateLessonRequest {
   String? get sourceLanguage;
   @override
   String? get targetLanguage;
+  @override
+  String? get scheduledLabel;
 
   /// Create a copy of CreateLessonRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -268,6 +292,7 @@ mixin _$UpdateLessonRequest {
   String? get description => throw _privateConstructorUsedError;
   String? get sourceLanguage => throw _privateConstructorUsedError;
   String? get targetLanguage => throw _privateConstructorUsedError;
+  String? get scheduledLabel => throw _privateConstructorUsedError;
 
   /// Serializes this UpdateLessonRequest to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -291,6 +316,7 @@ abstract class $UpdateLessonRequestCopyWith<$Res> {
     String? description,
     String? sourceLanguage,
     String? targetLanguage,
+    String? scheduledLabel,
   });
 }
 
@@ -313,6 +339,7 @@ class _$UpdateLessonRequestCopyWithImpl<$Res, $Val extends UpdateLessonRequest>
     Object? description = freezed,
     Object? sourceLanguage = freezed,
     Object? targetLanguage = freezed,
+    Object? scheduledLabel = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -336,6 +363,11 @@ class _$UpdateLessonRequestCopyWithImpl<$Res, $Val extends UpdateLessonRequest>
                     ? _value.targetLanguage
                     : targetLanguage // ignore: cast_nullable_to_non_nullable
                         as String?,
+            scheduledLabel:
+                freezed == scheduledLabel
+                    ? _value.scheduledLabel
+                    : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                        as String?,
           )
           as $Val,
     );
@@ -356,6 +388,7 @@ abstract class _$$UpdateLessonRequestImplCopyWith<$Res>
     String? description,
     String? sourceLanguage,
     String? targetLanguage,
+    String? scheduledLabel,
   });
 }
 
@@ -377,6 +410,7 @@ class __$$UpdateLessonRequestImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? sourceLanguage = freezed,
     Object? targetLanguage = freezed,
+    Object? scheduledLabel = freezed,
   }) {
     return _then(
       _$UpdateLessonRequestImpl(
@@ -400,6 +434,11 @@ class __$$UpdateLessonRequestImplCopyWithImpl<$Res>
                 ? _value.targetLanguage
                 : targetLanguage // ignore: cast_nullable_to_non_nullable
                     as String?,
+        scheduledLabel:
+            freezed == scheduledLabel
+                ? _value.scheduledLabel
+                : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                    as String?,
       ),
     );
   }
@@ -413,6 +452,7 @@ class _$UpdateLessonRequestImpl implements _UpdateLessonRequest {
     this.description,
     this.sourceLanguage,
     this.targetLanguage,
+    this.scheduledLabel,
   });
 
   factory _$UpdateLessonRequestImpl.fromJson(Map<String, dynamic> json) =>
@@ -426,10 +466,12 @@ class _$UpdateLessonRequestImpl implements _UpdateLessonRequest {
   final String? sourceLanguage;
   @override
   final String? targetLanguage;
+  @override
+  final String? scheduledLabel;
 
   @override
   String toString() {
-    return 'UpdateLessonRequest(title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage)';
+    return 'UpdateLessonRequest(title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage, scheduledLabel: $scheduledLabel)';
   }
 
   @override
@@ -443,7 +485,9 @@ class _$UpdateLessonRequestImpl implements _UpdateLessonRequest {
             (identical(other.sourceLanguage, sourceLanguage) ||
                 other.sourceLanguage == sourceLanguage) &&
             (identical(other.targetLanguage, targetLanguage) ||
-                other.targetLanguage == targetLanguage));
+                other.targetLanguage == targetLanguage) &&
+            (identical(other.scheduledLabel, scheduledLabel) ||
+                other.scheduledLabel == scheduledLabel));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -454,6 +498,7 @@ class _$UpdateLessonRequestImpl implements _UpdateLessonRequest {
     description,
     sourceLanguage,
     targetLanguage,
+    scheduledLabel,
   );
 
   /// Create a copy of UpdateLessonRequest
@@ -479,6 +524,7 @@ abstract class _UpdateLessonRequest implements UpdateLessonRequest {
     final String? description,
     final String? sourceLanguage,
     final String? targetLanguage,
+    final String? scheduledLabel,
   }) = _$UpdateLessonRequestImpl;
 
   factory _UpdateLessonRequest.fromJson(Map<String, dynamic> json) =
@@ -492,6 +538,8 @@ abstract class _UpdateLessonRequest implements UpdateLessonRequest {
   String? get sourceLanguage;
   @override
   String? get targetLanguage;
+  @override
+  String? get scheduledLabel;
 
   /// Create a copy of UpdateLessonRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -513,6 +561,9 @@ mixin _$LessonDto {
   String? get description => throw _privateConstructorUsedError;
   String get sourceLanguage => throw _privateConstructorUsedError;
   String get targetLanguage => throw _privateConstructorUsedError;
+  String? get scheduledLabel => throw _privateConstructorUsedError;
+  @LessonStatusConverter()
+  LessonStatus get status => throw _privateConstructorUsedError;
   bool get isPublished => throw _privateConstructorUsedError;
   int get wordCount => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -540,6 +591,8 @@ abstract class $LessonDtoCopyWith<$Res> {
     String? description,
     String sourceLanguage,
     String targetLanguage,
+    String? scheduledLabel,
+    @LessonStatusConverter() LessonStatus status,
     bool isPublished,
     int wordCount,
     DateTime createdAt,
@@ -568,6 +621,8 @@ class _$LessonDtoCopyWithImpl<$Res, $Val extends LessonDto>
     Object? description = freezed,
     Object? sourceLanguage = null,
     Object? targetLanguage = null,
+    Object? scheduledLabel = freezed,
+    Object? status = null,
     Object? isPublished = null,
     Object? wordCount = null,
     Object? createdAt = null,
@@ -605,6 +660,16 @@ class _$LessonDtoCopyWithImpl<$Res, $Val extends LessonDto>
                     ? _value.targetLanguage
                     : targetLanguage // ignore: cast_nullable_to_non_nullable
                         as String,
+            scheduledLabel:
+                freezed == scheduledLabel
+                    ? _value.scheduledLabel
+                    : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            status:
+                null == status
+                    ? _value.status
+                    : status // ignore: cast_nullable_to_non_nullable
+                        as LessonStatus,
             isPublished:
                 null == isPublished
                     ? _value.isPublished
@@ -647,6 +712,8 @@ abstract class _$$LessonDtoImplCopyWith<$Res>
     String? description,
     String sourceLanguage,
     String targetLanguage,
+    String? scheduledLabel,
+    @LessonStatusConverter() LessonStatus status,
     bool isPublished,
     int wordCount,
     DateTime createdAt,
@@ -674,6 +741,8 @@ class __$$LessonDtoImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? sourceLanguage = null,
     Object? targetLanguage = null,
+    Object? scheduledLabel = freezed,
+    Object? status = null,
     Object? isPublished = null,
     Object? wordCount = null,
     Object? createdAt = null,
@@ -711,6 +780,16 @@ class __$$LessonDtoImplCopyWithImpl<$Res>
                 ? _value.targetLanguage
                 : targetLanguage // ignore: cast_nullable_to_non_nullable
                     as String,
+        scheduledLabel:
+            freezed == scheduledLabel
+                ? _value.scheduledLabel
+                : scheduledLabel // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        status:
+            null == status
+                ? _value.status
+                : status // ignore: cast_nullable_to_non_nullable
+                    as LessonStatus,
         isPublished:
             null == isPublished
                 ? _value.isPublished
@@ -746,6 +825,8 @@ class _$LessonDtoImpl implements _LessonDto {
     this.description,
     required this.sourceLanguage,
     required this.targetLanguage,
+    this.scheduledLabel,
+    @LessonStatusConverter() required this.status,
     required this.isPublished,
     required this.wordCount,
     required this.createdAt,
@@ -768,6 +849,11 @@ class _$LessonDtoImpl implements _LessonDto {
   @override
   final String targetLanguage;
   @override
+  final String? scheduledLabel;
+  @override
+  @LessonStatusConverter()
+  final LessonStatus status;
+  @override
   final bool isPublished;
   @override
   final int wordCount;
@@ -778,7 +864,7 @@ class _$LessonDtoImpl implements _LessonDto {
 
   @override
   String toString() {
-    return 'LessonDto(id: $id, teacherId: $teacherId, title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage, isPublished: $isPublished, wordCount: $wordCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'LessonDto(id: $id, teacherId: $teacherId, title: $title, description: $description, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage, scheduledLabel: $scheduledLabel, status: $status, isPublished: $isPublished, wordCount: $wordCount, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -796,6 +882,9 @@ class _$LessonDtoImpl implements _LessonDto {
                 other.sourceLanguage == sourceLanguage) &&
             (identical(other.targetLanguage, targetLanguage) ||
                 other.targetLanguage == targetLanguage) &&
+            (identical(other.scheduledLabel, scheduledLabel) ||
+                other.scheduledLabel == scheduledLabel) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.isPublished, isPublished) ||
                 other.isPublished == isPublished) &&
             (identical(other.wordCount, wordCount) ||
@@ -816,6 +905,8 @@ class _$LessonDtoImpl implements _LessonDto {
     description,
     sourceLanguage,
     targetLanguage,
+    scheduledLabel,
+    status,
     isPublished,
     wordCount,
     createdAt,
@@ -844,6 +935,8 @@ abstract class _LessonDto implements LessonDto {
     final String? description,
     required final String sourceLanguage,
     required final String targetLanguage,
+    final String? scheduledLabel,
+    @LessonStatusConverter() required final LessonStatus status,
     required final bool isPublished,
     required final int wordCount,
     required final DateTime createdAt,
@@ -865,6 +958,11 @@ abstract class _LessonDto implements LessonDto {
   String get sourceLanguage;
   @override
   String get targetLanguage;
+  @override
+  String? get scheduledLabel;
+  @override
+  @LessonStatusConverter()
+  LessonStatus get status;
   @override
   bool get isPublished;
   @override

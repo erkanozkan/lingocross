@@ -13,6 +13,7 @@ _$CreateLessonRequestImpl _$$CreateLessonRequestImplFromJson(
   description: json['description'] as String?,
   sourceLanguage: json['sourceLanguage'] as String?,
   targetLanguage: json['targetLanguage'] as String?,
+  scheduledLabel: json['scheduledLabel'] as String?,
 );
 
 Map<String, dynamic> _$$CreateLessonRequestImplToJson(
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$CreateLessonRequestImplToJson(
   'description': instance.description,
   'sourceLanguage': instance.sourceLanguage,
   'targetLanguage': instance.targetLanguage,
+  'scheduledLabel': instance.scheduledLabel,
 };
 
 _$UpdateLessonRequestImpl _$$UpdateLessonRequestImplFromJson(
@@ -31,6 +33,7 @@ _$UpdateLessonRequestImpl _$$UpdateLessonRequestImplFromJson(
   description: json['description'] as String?,
   sourceLanguage: json['sourceLanguage'] as String?,
   targetLanguage: json['targetLanguage'] as String?,
+  scheduledLabel: json['scheduledLabel'] as String?,
 );
 
 Map<String, dynamic> _$$UpdateLessonRequestImplToJson(
@@ -40,6 +43,7 @@ Map<String, dynamic> _$$UpdateLessonRequestImplToJson(
   'description': instance.description,
   'sourceLanguage': instance.sourceLanguage,
   'targetLanguage': instance.targetLanguage,
+  'scheduledLabel': instance.scheduledLabel,
 };
 
 _$LessonDtoImpl _$$LessonDtoImplFromJson(Map<String, dynamic> json) =>
@@ -50,6 +54,10 @@ _$LessonDtoImpl _$$LessonDtoImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       sourceLanguage: json['sourceLanguage'] as String,
       targetLanguage: json['targetLanguage'] as String,
+      scheduledLabel: json['scheduledLabel'] as String?,
+      status: const LessonStatusConverter().fromJson(
+        (json['status'] as num).toInt(),
+      ),
       isPublished: json['isPublished'] as bool,
       wordCount: (json['wordCount'] as num).toInt(),
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -64,6 +72,8 @@ Map<String, dynamic> _$$LessonDtoImplToJson(_$LessonDtoImpl instance) =>
       'description': instance.description,
       'sourceLanguage': instance.sourceLanguage,
       'targetLanguage': instance.targetLanguage,
+      'scheduledLabel': instance.scheduledLabel,
+      'status': const LessonStatusConverter().toJson(instance.status),
       'isPublished': instance.isPublished,
       'wordCount': instance.wordCount,
       'createdAt': instance.createdAt.toIso8601String(),
