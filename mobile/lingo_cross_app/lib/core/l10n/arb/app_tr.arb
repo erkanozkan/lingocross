@@ -559,5 +559,29 @@
 
   "trackingErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
   "trackingErrorNotFound": "Öğrenci bulunamadı.",
-  "trackingErrorForbidden": "Bu işlem için yetkiniz yok."
+  "trackingErrorForbidden": "Bu işlem için yetkiniz yok.",
+
+  "teacherDashboardActionMyPuzzlesTitle": "Bulmacalarım",
+  "teacherDashboardActionMyPuzzlesDesc": "Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.",
+
+  "myPuzzlesTitle": "Bulmacalarım",
+  "myPuzzlesCreateCta": "Yeni Bulmaca Oluştur",
+  "myPuzzlesFilterAll": "Tümü",
+  "myPuzzlesFilterActive": "Aktif ({count})",
+  "@myPuzzlesFilterActive": { "placeholders": { "count": { "type": "int" } } },
+  "myPuzzlesTypeWordMatching": "Kelime Eşleştirme",
+  "myPuzzlesTypeCrossword": "Crossword",
+  "myPuzzlesStatusActive": "Aktif",
+  "myPuzzlesCreatedAt": "Oluşturulma: {date}",
+  "@myPuzzlesCreatedAt": { "placeholders": { "date": { "type": "String" } } },
+  "myPuzzlesSharedWith": "Paylaşılan: {count} öğrenci",
+  "@myPuzzlesSharedWith": { "placeholders": { "count": { "type": "int" } } },
+  "myPuzzlesShare": "Paylaş",
+  "myPuzzlesShared": "Bulmaca paylaşıldı.",
+  "myPuzzlesSeeDetails": "Detayları Gör",
+  "myPuzzlesStatTotal": "Toplam Bulmaca",
+  "myPuzzlesStatSolves": "Öğrenci Çözümü",
+  "myPuzzlesEmptyTitle": "Henüz bulmaca yok",
+  "myPuzzlesEmptyDesc": "İlk bulmacanı oluşturarak başla.",
+  "myPuzzlesErrorTitle": "Bulmacalar yüklenemedi"
 }

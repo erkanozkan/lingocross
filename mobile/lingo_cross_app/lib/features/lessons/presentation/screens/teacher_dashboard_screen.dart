@@ -63,6 +63,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
             _PrimaryActions(
               onNewLesson: () => context.push(AppRoutes.lessonNew),
               onNewPuzzle: () => context.push(AppRoutes.gameNew),
+              onMyPuzzles: () => context.push(AppRoutes.teacherPuzzles),
               onProgress: onOpenReports ??
                   () => context.push(AppRoutes.teacherStudents),
             ),
@@ -129,11 +130,13 @@ class _PrimaryActions extends StatelessWidget {
   const _PrimaryActions({
     required this.onNewLesson,
     required this.onNewPuzzle,
+    required this.onMyPuzzles,
     required this.onProgress,
   });
 
   final VoidCallback onNewLesson;
   final VoidCallback onNewPuzzle;
+  final VoidCallback onMyPuzzles;
   final VoidCallback onProgress;
 
   @override
@@ -163,6 +166,19 @@ class _PrimaryActions extends StatelessWidget {
           title: l10n.teacherDashboardActionNewPuzzleTitle,
           desc: l10n.teacherDashboardActionNewPuzzleDesc,
           onTap: onNewPuzzle,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _BentoCard(
+          background: AppColors.secondaryContainer,
+          foreground: AppColors.onSurface,
+          descColor: AppColors.onSurfaceVariant,
+          iconBoxColor: AppColors.surfaceContainerLowest,
+          icon: Icons.extension,
+          iconColor: AppColors.secondary,
+          decorIcon: Icons.grid_view,
+          title: l10n.teacherDashboardActionMyPuzzlesTitle,
+          desc: l10n.teacherDashboardActionMyPuzzlesDesc,
+          onTap: onMyPuzzles,
         ),
         const SizedBox(height: AppSpacing.md),
         _BentoCard(

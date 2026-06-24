@@ -91,6 +91,31 @@ public class GameServiceTests
         return game;
     }
 
+    /// <summary>Bir oyun için tamamlanmış bir oturum + sonuç (game_result) ekler (solveCount testleri için).</summary>
+    private static async Task SeedCompletedResultAsync(AppDbContext db, Guid gameId, Guid studentId)
+    {
+        var session = new GameSession
+        {
+            GameId = gameId,
+            StudentId = studentId,
+            Status = GameSessionStatus.Completed,
+            StartedAt = DateTime.UtcNow,
+            CompletedAt = DateTime.UtcNow,
+        };
+        db.GameSessions.Add(session);
+        await db.SaveChangesAsync();
+
+        db.GameResults.Add(new GameResult
+        {
+            SessionId = session.Id,
+            DurationMs = 1000,
+            TotalItems = 5,
+            CorrectItems = 5,
+            Score = 100,
+        });
+        await db.SaveChangesAsync();
+    }
+
     // ---- F2.2: CreateForLesson (öğretmen oluşturma + yayımlama) ----
 
     [Fact]
@@ -541,5 +566,210 @@ public class GameServiceTests
         var intruderSvc = new GameService(db, TestCurrentUser.Student(intruder.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(() => intruderSvc.GetSessionAsync(started.Session.Id));
         Assert.Equal(404, ex.StatusCode);
+    }
+
+    // ---- F3.2: ListMyPuzzles (öğretmenin tüm derslerindeki bulmacaları) ----
+
+    [Fact]
+    public async Task ListMyPuzzles_ReturnsGamesAcrossAllOwnedLessons_NewestFirst()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lessonA = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var lessonB = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+
+        // Oluşturma zamanları farklı olsun: önce A, sonra B.
+        var older = await SeedGameAsync(db, lessonA.Id);
+        older.CreatedAt = DateTime.UtcNow.AddHours(-2);
+        var newer = await SeedGameAsync(db, lessonB.Id);
+        newer.CreatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Equal(2, puzzles.Count);
+        // Yeniden → eskiye: B önce.
+        Assert.Equal(newer.Id, puzzles[0].Id);
+        Assert.Equal(lessonB.Id, puzzles[0].LessonId);
+        Assert.Equal(older.Id, puzzles[1].Id);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_AssignedStudentCount_EqualsActiveStudents()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+
+        var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        var s2 = await SeedUserAsync(db, UserRole.Student, "s2@x.com");
+        var s3 = await SeedUserAsync(db, UserRole.Student, "s3@x.com");
+        await EnrollAsync(db, teacher.Id, s1.Id, EnrollmentStatus.Active);
+        await EnrollAsync(db, teacher.Id, s2.Id, EnrollmentStatus.Active);
+        // Pending sayılmaz.
+        await EnrollAsync(db, teacher.Id, s3.Id, EnrollmentStatus.Pending);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Single(puzzles);
+        Assert.Equal(2, puzzles[0].AssignedStudentCount);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_UnpublishedGame_AssignedStudentCountIsZero()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        await SeedGameAsync(db, lesson.Id, published: false);
+
+        var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        await EnrollAsync(db, teacher.Id, s1.Id, EnrollmentStatus.Active);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Single(puzzles);
+        Assert.False(puzzles[0].IsPublished);
+        Assert.Equal(0, puzzles[0].AssignedStudentCount);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_SolveCount_CountsCompletedResults()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+        var other = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Crossword);
+
+        var s1 = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        var s2 = await SeedUserAsync(db, UserRole.Student, "s2@x.com");
+        // game için 2 tamamlanmış sonuç, other için 1.
+        await SeedCompletedResultAsync(db, game.Id, s1.Id);
+        await SeedCompletedResultAsync(db, game.Id, s2.Id);
+        await SeedCompletedResultAsync(db, other.Id, s1.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Equal(2, puzzles.Single(p => p.Id == game.Id).SolveCount);
+        Assert.Equal(1, puzzles.Single(p => p.Id == other.Id).SolveCount);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_DoesNotReturnOtherTeachersGames()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var other = await SeedUserAsync(db, UserRole.Teacher, "o@x.com");
+        var mine = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var theirs = await SeedLessonWithWordsAsync(db, other.Id, published: true, translatedWordCount: 5);
+        var myGame = await SeedGameAsync(db, mine.Id);
+        await SeedGameAsync(db, theirs.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var puzzles = await svc.ListMyPuzzlesAsync();
+
+        Assert.Single(puzzles);
+        Assert.Equal(myGame.Id, puzzles[0].Id);
+    }
+
+    [Fact]
+    public async Task ListMyPuzzles_AsStudent_Throws403()
+    {
+        var db = NewDb();
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.ListMyPuzzlesAsync());
+        Assert.Equal(403, ex.StatusCode);
+    }
+
+    // ---- F3.2: Share (idempotent yeniden-yayınla) ----
+
+    [Fact]
+    public async Task Share_AsOwner_PublishesAndSetsPublishedAt()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: false);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var result = await svc.ShareAsync(game.Id);
+
+        Assert.True(result.IsPublished);
+        Assert.NotNull(result.PublishedAt);
+
+        var reloaded = await db.Games.FirstAsync(g => g.Id == game.Id);
+        Assert.True(reloaded.IsPublished);
+        Assert.NotNull(reloaded.PublishedAt);
+    }
+
+    [Fact]
+    public async Task Share_IsIdempotent_RefreshesPublishedAt()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+        // Eski bir yayımlama zamanı koy.
+        game.PublishedAt = DateTime.UtcNow.AddDays(-3);
+        await db.SaveChangesAsync();
+        var before = game.PublishedAt!.Value;
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var result = await svc.ShareAsync(game.Id);
+
+        Assert.True(result.IsPublished);
+        Assert.NotNull(result.PublishedAt);
+        Assert.True(result.PublishedAt > before);
+    }
+
+    [Fact]
+    public async Task Share_OtherTeachersGame_Throws404()
+    {
+        var db = NewDb();
+        var owner = await SeedUserAsync(db, UserRole.Teacher, "o@x.com");
+        var other = await SeedUserAsync(db, UserRole.Teacher, "x@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, owner.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: false);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(other.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.ShareAsync(game.Id));
+        Assert.Equal(404, ex.StatusCode);
+
+        // Başkasının oyunu değişmemeli.
+        var reloaded = await db.Games.FirstAsync(g => g.Id == game.Id);
+        Assert.False(reloaded.IsPublished);
+    }
+
+    [Fact]
+    public async Task Share_NonexistentGame_Throws404()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.ShareAsync(Guid.NewGuid()));
+        Assert.Equal(404, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task Share_AsStudent_Throws403()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: true, translatedWordCount: 5);
+        var game = await SeedGameAsync(db, lesson.Id, published: false);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.ShareAsync(game.Id));
+        Assert.Equal(403, ex.StatusCode);
     }
 }

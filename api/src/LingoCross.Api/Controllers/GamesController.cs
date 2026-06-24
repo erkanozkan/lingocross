@@ -44,6 +44,30 @@ public class GamesController : ControllerBase
     }
 
     /// <summary>
+    /// F3.2 "Bulmacalarım": öğretmenin tüm derslerindeki bulmacaları (yeniden → eskiye) listeler;
+    /// her biri için atanan aktif öğrenci sayısı ve tamamlanan çözüm sayısıyla.
+    /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpGet("api/teachers/me/games")]
+    public async Task<ActionResult<IReadOnlyList<TeacherPuzzleDto>>> ListMyPuzzles(CancellationToken ct)
+    {
+        var puzzles = await _gameService.ListMyPuzzlesAsync(ct);
+        return Ok(puzzles);
+    }
+
+    /// <summary>
+    /// F3.2 "Paylaş": bir bulmacayı idempotent olarak (yeniden) yayımlar. Yalnız ders sahibi öğretmen;
+    /// başkasının oyunu → 404. Güncel oyun bilgisini döner.
+    /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("api/games/{id:guid}/share")]
+    public async Task<ActionResult<GameDto>> Share(Guid id, CancellationToken ct)
+    {
+        var game = await _gameService.ShareAsync(id, ct);
+        return Ok(game);
+    }
+
+    /// <summary>
     /// Öğrenciye atanmış (Active eşleşmeli öğretmenlerin yayımlanmış derslerindeki yayımlanmış)
     /// bulmacaları döndürür.
     /// </summary>

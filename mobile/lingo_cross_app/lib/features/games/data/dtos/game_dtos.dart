@@ -65,6 +65,29 @@ class AssignedGameDto with _$AssignedGameDto {
       _$AssignedGameDtoFromJson(json);
 }
 
+/// Öğretmenin "Bulmacalarım" görünümü için tüm derslerindeki bir bulmacanın
+/// özeti (TeacherPuzzleDto) — API ile birebir.
+///
+/// [assignedStudentCount] yayımlı bulmacanın atandığı Active öğrenci sayısı
+/// (bireysel model; sınıf/grup yok). [solveCount] bu bulmacaya ait tamamlanmış
+/// sonuç (game_results) sayısıdır.
+@freezed
+class TeacherPuzzleDto with _$TeacherPuzzleDto {
+  const factory TeacherPuzzleDto({
+    required String id,
+    required String lessonId,
+    required String lessonTitle,
+    @GameTypeConverter() required GameType type,
+    required bool isPublished,
+    required DateTime createdAt,
+    required int assignedStudentCount,
+    required int solveCount,
+  }) = _TeacherPuzzleDto;
+
+  factory TeacherPuzzleDto.fromJson(Map<String, dynamic> json) =>
+      _$TeacherPuzzleDtoFromJson(json);
+}
+
 /// Öğretmenin bir derste oyun oluşturma/yayımlama isteği (CreateGameRequest).
 @freezed
 class CreateGameRequest with _$CreateGameRequest {

@@ -10,6 +10,8 @@ import 'dtos/game_dtos.dart';
 ///
 /// - `POST /api/lessons/{lessonId}/games` (Teacher) → oyun oluştur + yayınla
 /// - `GET  /api/lessons/{lessonId}/games` (Teacher) → dersin oyunları
+/// - `GET  /api/teachers/me/games`        (Teacher) → tüm bulmacaları (Bulmacalarım)
+/// - `POST /api/games/{gameId}/share`     (Teacher) → bulmacayı yeniden yayınla
 /// - `GET  /api/games/assigned`           (Student) → atanan (yayımlı) oyunlar
 /// - `POST /api/games/{gameId}/sessions`  (Student) → oturum + içerik
 /// - `GET  /api/game-sessions/{sessionId}` (Student) → oturum durumu
@@ -46,6 +48,32 @@ class GamesRepository {
       return (res.data ?? const [])
           .map((e) => GameDto.fromJson(e as Map<String, dynamic>))
           .toList();
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: tüm derslerindeki bulmacaları döndürür (Bulmacalarım —
+  /// `GET /api/teachers/me/games`).
+  Future<List<TeacherPuzzleDto>> listMyPuzzles() async {
+    try {
+      final res = await _dio.get<List<dynamic>>('$_base/teachers/me/games');
+      return (res.data ?? const [])
+          .map((e) => TeacherPuzzleDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: bir bulmacayı (yeniden) paylaşır/yayınlar — idempotent
+  /// (`POST /api/games/{gameId}/share`).
+  Future<GameDto> sharePuzzle(String gameId) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/games/$gameId/share',
+      );
+      return GameDto.fromJson(res.data!);
     } on DioException catch (e) {
       throw _mapError(e);
     }
