@@ -25,6 +25,10 @@ import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_shell_screen.dart';
 import '../../features/account/presentation/screens/account_settings_screen.dart';
+import '../../features/account/presentation/screens/help_center_screen.dart';
+import '../../features/account/presentation/screens/language_preference_screen.dart';
+import '../../features/account/presentation/screens/notification_settings_screen.dart';
+import '../../features/account/presentation/screens/privacy_policy_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 import '../../features/profile/presentation/screens/student_profile_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
@@ -44,6 +48,12 @@ abstract final class AppRoutes {
   /// Hesap Ayarları (F4.2) — profilden push'lanır. `/account/...` prefix'i
   /// teacher/student'a uymadığı için her iki rol erişir (guard'da authed yeter).
   static const String accountSettings = '/account/settings';
+
+  /// Hesap Ayarları'ndan push'lanan alt ekranlar (F7.3 — her iki rol).
+  static const String accountNotifications = '/account/notifications';
+  static const String accountLanguage = '/account/language';
+  static const String accountHelp = '/account/help';
+  static const String accountPrivacy = '/account/privacy';
 
   // Öğrenci (M3) — korumalı + yalnız Student.
   static const String student = '/student';
@@ -180,6 +190,23 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.accountSettings,
         builder: (context, state) => const AccountSettingsScreen(),
+      ),
+      // Hesap Ayarları alt ekranları (F7.3) — her iki rol için ortak.
+      GoRoute(
+        path: AppRoutes.accountNotifications,
+        builder: (context, state) => const NotificationSettingsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.accountLanguage,
+        builder: (context, state) => const LanguagePreferenceScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.accountHelp,
+        builder: (context, state) => const HelpCenterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.accountPrivacy,
+        builder: (context, state) => const PrivacyPolicyScreen(),
       ),
       // --- Öğrenci (M3) ---
       GoRoute(
