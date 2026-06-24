@@ -1979,6 +1979,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationQuietHoursCta => 'Şimdi Ayarla';
 
   @override
+  String get notificationPrefsLoadError => 'Bildirim tercihleri yüklenemedi.';
+
+  @override
+  String get notificationPrefsSaveError => 'Bildirim tercihi kaydedilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get pushNotificationTitle => 'Bildirim';
+
+  @override
   String get languagePreferenceTitle => 'Dil Tercihi';
 
   @override

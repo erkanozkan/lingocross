@@ -2,6 +2,7 @@ using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
 using LingoCross.Application.Games.Dtos;
+using LingoCross.Application.Notifications;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +23,16 @@ public class GameService : IGameService
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
     private readonly Random _random;
+    private readonly PushDispatcher? _push;
 
-    public GameService(IAppDbContext db, ICurrentUser currentUser, Random? random = null)
+    public GameService(IAppDbContext db, ICurrentUser currentUser, Random? random = null, PushDispatcher? push = null)
     {
         _db = db;
         _currentUser = currentUser;
         // Determinizm: testler tohumlanmış bir Random enjekte edebilir.
         _random = random ?? Random.Shared;
+        // Push opsiyonel: enjekte edilmezse tetikler atlanır (testler için no-op).
+        _push = push;
     }
 
     public async Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default)
@@ -347,14 +351,71 @@ public class GameService : IGameService
         }
 
         // Ekle: yeni olanlar.
-        foreach (var classId in desired.Where(id => !existingIds.Contains(id)))
+        var newlyAdded = desired.Where(id => !existingIds.Contains(id)).ToList();
+        foreach (var classId in newlyAdded)
         {
             _db.GameAssignments.Add(new GameAssignment { GameId = game.Id, ClassId = classId });
         }
 
         await _db.SaveChangesAsync(cancellationToken);
 
+        // Best-effort push: yalnız YENİ eklenen sınıfların aktif öğrencilerine "yeni ödev" bildirimi.
+        // İsteği başarısız etmemek için try/catch ile sarılır.
+        if (_push is not null && newlyAdded.Count > 0)
+        {
+            await NotifyAssignedStudentsAsync(game, newlyAdded, cancellationToken);
+        }
+
         return desired;
+    }
+
+    /// <summary>
+    /// Yeni atanan sınıfların aktif (arşivlenmemiş sınıf) öğrencilerine "yeni ödev" push'u gönderir.
+    /// Best-effort: herhangi bir hata yutulur, atama akışını etkilemez.
+    /// </summary>
+    private async Task NotifyAssignedStudentsAsync(Game game, IReadOnlyList<Guid> newClassIds, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var studentIds = await _db.ClassMembers
+                .Where(m => newClassIds.Contains(m.ClassId)
+                    && m.Status == ClassMemberStatus.Active
+                    && !m.Class.IsArchived)
+                .Select(m => m.StudentId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            if (studentIds.Count == 0)
+            {
+                return;
+            }
+
+            // Ders adını oyunun dersinden al (deep-link/metin için).
+            var lessonInfo = await _db.Lessons
+                .Where(l => l.Id == game.LessonId)
+                .Select(l => new { l.Id, l.Title })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var lessonTitle = lessonInfo?.Title ?? "Ders";
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = "assigned",
+                ["lessonId"] = game.LessonId.ToString(),
+                ["gameId"] = game.Id.ToString(),
+            };
+
+            await _push!.NotifyUsersAsync(
+                studentIds,
+                PushType.Assigned,
+                "Yeni ödev",
+                $"{lessonTitle} için yeni bir oyun atandı",
+                data,
+                cancellationToken);
+        }
+        catch
+        {
+            // Bildirim hatası atama işlemini bozmaz.
+        }
     }
 
     /// <summary>

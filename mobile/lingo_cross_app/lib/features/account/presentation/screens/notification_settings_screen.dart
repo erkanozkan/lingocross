@@ -8,44 +8,24 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/auth_notifier.dart';
+import '../../../notifications/data/dtos/notification_preferences_dto.dart';
+import '../../../notifications/presentation/notification_prefs_notifier.dart';
 import '../../data/notification_prefs.dart';
 
 /// Bildirim Ayarları (Stitch `a814e0d9…` — birebir). Hesap Ayarları'ndan
 /// push'lanır (`/account/notifications`).
 ///
 /// Üstte ana anahtar kartı + üç grup (ÖDEV & BULMACA / SONUÇLAR / GENEL) +
-/// "Sessiz Saatler" bilgi kartı. Toggle durumları cihazda saklanır
-/// (`NotificationPrefs`); ana anahtar kapalıyken alt satırlar soluk/pasif.
-/// Push altyapısı YOK — şimdilik yalnız tercih kaydı. "Şimdi Ayarla" → Yakında.
-class NotificationSettingsScreen extends ConsumerStatefulWidget {
+/// "Sessiz Saatler" bilgi kartı. Toggle durumları **backend'de** saklanır
+/// (`GET|PUT /api/me/notification-preferences` — `NotificationPrefsNotifier`);
+/// ana anahtar kapalıyken alt satırlar soluk/pasif. "Şimdi Ayarla" → Yakında.
+class NotificationSettingsScreen extends ConsumerWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  ConsumerState<NotificationSettingsScreen> createState() =>
-      _NotificationSettingsScreenState();
-}
-
-class _NotificationSettingsScreenState
-    extends ConsumerState<NotificationSettingsScreen> {
-  late Map<NotificationToggle, bool> _values;
-
-  @override
-  void initState() {
-    super.initState();
-    _values = ref.read(notificationPrefsProvider).readAll();
-  }
-
-  void _set(NotificationToggle toggle, bool value) {
-    setState(() => _values[toggle] = value);
-    ref.read(notificationPrefsProvider).write(toggle, value);
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final master = _values[NotificationToggle.master] ?? true;
-    final isTeacher =
-        ref.watch(authNotifierProvider).user?.role.isTeacher ?? false;
+    final async = ref.watch(notificationPrefsNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -61,80 +41,188 @@ class _NotificationSettingsScreenState
           style: AppTypography.headlineMd.copyWith(color: AppColors.primary),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.marginMobile,
-          AppSpacing.md,
-          AppSpacing.marginMobile,
-          AppSpacing.xl,
+      body: async.when(
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
-        children: [
-          // Ana anahtar kartı.
-          _MasterCard(
-            title: l10n.notificationMasterTitle,
-            desc: l10n.notificationMasterDesc,
-            value: master,
-            onChanged: (v) => _set(NotificationToggle.master, v),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // ÖDEV & BULMACA
-          _ToggleGroup(
-            title: l10n.notificationGroupAssignments,
-            enabled: master,
-            rows: [
-              _ToggleRowData(
-                title: l10n.notificationAssignedTitle,
-                desc: l10n.notificationAssignedDesc,
-                value: _values[NotificationToggle.assigned] ?? true,
-                onChanged: (v) => _set(NotificationToggle.assigned, v),
+        error: (_, __) => _ErrorState(
+          message: l10n.notificationPrefsLoadError,
+          retryLabel: l10n.commonRetry,
+          onRetry: () =>
+              ref.read(notificationPrefsNotifierProvider.notifier).refresh(),
+        ),
+        data: (prefs) => _Content(prefs: prefs),
+      ),
+    );
+  }
+}
+
+/// Yüklenen tercihlerle ekran içeriği. Toggle değişince notifier'a PUT eder;
+/// hata olursa SnackBar gösterir (değer geri alınır).
+class _Content extends ConsumerWidget {
+  const _Content({required this.prefs});
+
+  final NotificationPreferencesDto prefs;
+
+  Future<void> _set(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationToggle toggle,
+    bool value,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await ref
+          .read(notificationPrefsNotifierProvider.notifier)
+          .setToggle(toggle, value);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.notificationPrefsSaveError)));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final master = prefs.master;
+    final isTeacher =
+        ref.watch(authNotifierProvider).user?.role.isTeacher ?? false;
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.marginMobile,
+        AppSpacing.md,
+        AppSpacing.marginMobile,
+        AppSpacing.xl,
+      ),
+      children: [
+        // Ana anahtar kartı.
+        _MasterCard(
+          title: l10n.notificationMasterTitle,
+          desc: l10n.notificationMasterDesc,
+          value: master,
+          onChanged: (v) => _set(context, ref, NotificationToggle.master, v),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // ÖDEV & BULMACA
+        _ToggleGroup(
+          title: l10n.notificationGroupAssignments,
+          enabled: master,
+          rows: [
+            _ToggleRowData(
+              title: l10n.notificationAssignedTitle,
+              desc: l10n.notificationAssignedDesc,
+              value: prefs.assigned,
+              onChanged: (v) =>
+                  _set(context, ref, NotificationToggle.assigned, v),
+            ),
+            _ToggleRowData(
+              title: l10n.notificationReminderTitle,
+              desc: l10n.notificationReminderDesc,
+              value: prefs.reminder,
+              onChanged: (v) =>
+                  _set(context, ref, NotificationToggle.reminder, v),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // SONUÇLAR
+        _ToggleGroup(
+          title: l10n.notificationGroupResults,
+          enabled: master,
+          rows: [
+            _ToggleRowData(
+              title: isTeacher
+                  ? l10n.notificationResultTeacherTitle
+                  : l10n.notificationResultStudentTitle,
+              value: prefs.results,
+              onChanged: (v) =>
+                  _set(context, ref, NotificationToggle.results, v),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // GENEL
+        _ToggleGroup(
+          title: l10n.notificationGroupGeneral,
+          enabled: master,
+          rows: [
+            _ToggleRowData(
+              title: l10n.notificationAnnouncementsTitle,
+              value: prefs.announcements,
+              onChanged: (v) =>
+                  _set(context, ref, NotificationToggle.announcements, v),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        // Sessiz Saatler bilgi kartı.
+        _QuietHoursCard(
+          title: l10n.notificationQuietHoursTitle,
+          desc: l10n.notificationQuietHoursDesc,
+          cta: l10n.notificationQuietHoursCta,
+          onTap: () => ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(l10n.commonComingSoon))),
+        ),
+      ],
+    );
+  }
+}
+
+/// Tercihler yüklenemediğinde gösterilen hata + tekrar dene durumu.
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({
+    required this.message,
+    required this.retryLabel,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String retryLabel;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.notifications_off_outlined,
+              size: 48,
+              color: AppColors.onSurfaceVariant,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyLg
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.onPrimary,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.sm,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
               ),
-              _ToggleRowData(
-                title: l10n.notificationReminderTitle,
-                desc: l10n.notificationReminderDesc,
-                value: _values[NotificationToggle.reminder] ?? true,
-                onChanged: (v) => _set(NotificationToggle.reminder, v),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // SONUÇLAR
-          _ToggleGroup(
-            title: l10n.notificationGroupResults,
-            enabled: master,
-            rows: [
-              _ToggleRowData(
-                title: isTeacher
-                    ? l10n.notificationResultTeacherTitle
-                    : l10n.notificationResultStudentTitle,
-                value: _values[NotificationToggle.results] ?? true,
-                onChanged: (v) => _set(NotificationToggle.results, v),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // GENEL
-          _ToggleGroup(
-            title: l10n.notificationGroupGeneral,
-            enabled: master,
-            rows: [
-              _ToggleRowData(
-                title: l10n.notificationAnnouncementsTitle,
-                value: _values[NotificationToggle.announcements] ?? false,
-                onChanged: (v) => _set(NotificationToggle.announcements, v),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          // Sessiz Saatler bilgi kartı.
-          _QuietHoursCard(
-            title: l10n.notificationQuietHoursTitle,
-            desc: l10n.notificationQuietHoursDesc,
-            cta: l10n.notificationQuietHoursCta,
-            onTap: () => ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(content: Text(l10n.commonComingSoon))),
-          ),
-        ],
+              child: Text(retryLabel, style: AppTypography.labelLg),
+            ),
+          ],
+        ),
       ),
     );
   }

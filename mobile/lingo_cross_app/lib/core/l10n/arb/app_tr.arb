@@ -738,6 +738,9 @@
   "notificationQuietHoursTitle": "Sessiz Saatler",
   "notificationQuietHoursDesc": "Gece saatlerinde bildirimleri susturarak odağınızı koruyun.",
   "notificationQuietHoursCta": "Şimdi Ayarla",
+  "notificationPrefsLoadError": "Bildirim tercihleri yüklenemedi.",
+  "notificationPrefsSaveError": "Bildirim tercihi kaydedilemedi. Lütfen tekrar deneyin.",
+  "pushNotificationTitle": "Bildirim",
 
   "languagePreferenceTitle": "Dil Tercihi",
   "languageOptionTurkish": "Türkçe",

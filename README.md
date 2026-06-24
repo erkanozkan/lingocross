@@ -71,11 +71,14 @@ flutter run
    ASPNETCORE_ENVIRONMENT  = Production
    # Email__Host/Port/Username/Password/FromAddress/FromName  (opsiyonel)
    Anthropic__ApiKey       = <anthropic key>   # opsiyonel — OCR AI zenginleştirme için
+   Firebase__ServiceAccountJson = <gizli service account JSON>   # opsiyonel — push için
    ```
    > `PORT` Railway tarafından otomatik verilir; `Program.cs` okur. `Email__*` ayarlanmazsa
    > şifre-sıfırlama e-postası gönderilmez (stub log'a yazar) — beta için kabul edilebilir.
    > `Anthropic__ApiKey` ayarlanmazsa `POST /api/ocr/enrich` **503** döner ve mobil istemci
    > yerel (cihaz-içi) ayrıştırmaya düşer; gerçek anahtar **repoya yazılmaz**.
+   > `Firebase__ServiceAccountJson` ayarlanmazsa push bildirim gönderimi **devre dışıdır** (no-op,
+   > başlangıçta uyarı loglanır); cihaz kaydı/tercih API'leri yine çalışır. Gerçek JSON **repoya yazılmaz**.
 4. Migration'lar uygulama başlangıcında otomatik uygulanır (`Database.MigrateAsync()`).
 5. **Doğrula:** `https://<railway-domain>/health` → `{ "status": "ok" }`. (Swagger yalnız Development'ta açık.)
 

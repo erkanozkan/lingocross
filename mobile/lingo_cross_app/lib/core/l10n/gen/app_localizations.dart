@@ -3789,6 +3789,24 @@ abstract class AppLocalizations {
   /// **'Şimdi Ayarla'**
   String get notificationQuietHoursCta;
 
+  /// No description provided for @notificationPrefsLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim tercihleri yüklenemedi.'**
+  String get notificationPrefsLoadError;
+
+  /// No description provided for @notificationPrefsSaveError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim tercihi kaydedilemedi. Lütfen tekrar deneyin.'**
+  String get notificationPrefsSaveError;
+
+  /// No description provided for @pushNotificationTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim'**
+  String get pushNotificationTitle;
+
   /// No description provided for @languagePreferenceTitle.
   ///
   /// In tr, this message translates to:
