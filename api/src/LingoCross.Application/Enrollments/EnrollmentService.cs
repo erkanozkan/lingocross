@@ -69,6 +69,10 @@ public class EnrollmentService : IEnrollmentService
             throw AppException.NotFound("Davet kodu geçersiz.");
         }
 
+        // Çoklu öğretmen kapısı: yalnız YENİ bir öğretmene katılınıyorsa limit uygulanır
+        // (aynı öğretmene tekrar katılım idempotenttir, 402 yok). ClassService köprüsünde merkezi tutulur.
+        await _classService.RequireTeacherJoinAllowedAsync(studentId, teacher.Id, cancellationToken);
+
         if (matchedClass is not null)
         {
             await _classService.EnsureClassMembershipAsync(matchedClass.Id, studentId, cancellationToken);

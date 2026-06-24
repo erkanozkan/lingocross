@@ -2,6 +2,7 @@ using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
 using LingoCross.Application.Lessons.Dtos;
+using LingoCross.Application.Subscriptions;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +13,26 @@ public class LessonService : ILessonService
 {
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntitlementService? _entitlement;
 
-    public LessonService(IAppDbContext db, ICurrentUser currentUser)
+    // entitlement opsiyoneldir: null verildiğinde limit uygulanmaz (Premium gibi davranır). Üretimde
+    // DI her zaman gerçek servisi enjekte eder; testler limit dışı senaryolarda null bırakabilir.
+    public LessonService(IAppDbContext db, ICurrentUser currentUser, IEntitlementService? entitlement = null)
     {
         _db = db;
         _currentUser = currentUser;
+        _entitlement = entitlement;
     }
 
     public async Task<LessonDto> CreateAsync(CreateLessonRequest request, CancellationToken cancellationToken = default)
     {
         var teacherId = RequireTeacher();
+
+        if (_entitlement is not null)
+        {
+            var lessonCount = await _db.Lessons.CountAsync(l => l.TeacherId == teacherId, cancellationToken);
+            await _entitlement.RequireLessonQuotaAsync(lessonCount, cancellationToken);
+        }
 
         var lesson = new Lesson
         {

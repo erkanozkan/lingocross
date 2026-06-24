@@ -6,6 +6,7 @@ using LingoCross.Application.Ocr;
 using LingoCross.Infrastructure.Auth;
 using LingoCross.Infrastructure.Email;
 using LingoCross.Infrastructure.Notifications;
+using LingoCross.Application.Subscriptions;
 using LingoCross.Infrastructure.Ocr;
 using LingoCross.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,9 @@ public static class DependencyInjection
 
         // Push gönderimi (FCM). Firebase:ServiceAccountJson boşsa no-op; FirebaseApp singleton.
         services.AddSingleton<IPushSender, FcmPushSender>();
+
+        // Abonelik/entitlement ayarları (Free limitleri, stub anahtarı, trial süresi).
+        services.Configure<SubscriptionOptions>(configuration.GetSection(SubscriptionOptions.SectionName));
 
         return services;
     }

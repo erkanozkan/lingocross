@@ -45,6 +45,14 @@ public class AppExceptionHandler : IExceptionHandler
                     Status = appException.StatusCode,
                     Title = appException.Message,
                 };
+                if (!string.IsNullOrEmpty(appException.Code))
+                {
+                    problemDetails.Extensions["code"] = appException.Code;
+                }
+                if (!string.IsNullOrEmpty(appException.Feature))
+                {
+                    problemDetails.Extensions["feature"] = appException.Feature;
+                }
                 break;
 
             default:

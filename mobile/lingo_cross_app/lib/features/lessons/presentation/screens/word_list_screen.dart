@@ -7,6 +7,9 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/locked_feature_badge.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/word_dtos.dart';
 import '../../domain/language_option.dart';
 import '../lessons_notifier.dart';
@@ -30,6 +33,14 @@ class WordListScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final lessonAsync = ref.watch(lessonProvider(lessonId));
     final wordsAsync = ref.watch(wordsNotifierProvider(lessonId));
+
+    // OCR proaktif kilit (F8.2): ücretsiz kullanıcıda OCR kilitli ise tarama
+    // butonu doğrudan paywall'a yönlenir (sunucuya gitmeden). Durum belirsizse
+    // (loading/error) kilitsiz kabul edilir → reaktif 402 güvenlik ağıdır.
+    final ocrLocked = ref.watch(subscriptionNotifierProvider).maybeWhen(
+          data: (sub) => sub.ocrLocked,
+          orElse: () => false,
+        );
 
     final title = lessonAsync.maybeWhen(
       data: (l) => l.title,
@@ -55,6 +66,10 @@ class WordListScreen extends ConsumerWidget {
     }
 
     void openScan() {
+      if (ocrLocked) {
+        context.push(AppRoutes.paywallFor('ocr'));
+        return;
+      }
       context.push(AppRoutes.lessonOcrCapture(lessonId));
     }
 
@@ -119,6 +134,7 @@ class WordListScreen extends ConsumerWidget {
               targetCode: targetLang,
               onScan: openScan,
               onAdd: openAdd,
+              ocrLocked: ocrLocked,
             ),
             const SizedBox(height: AppSpacing.lg),
             wordsAsync.when(
@@ -133,6 +149,7 @@ class WordListScreen extends ConsumerWidget {
                   return _EmptyWords(
                     onScan: openScan,
                     onAdd: openAdd,
+                    ocrLocked: ocrLocked,
                   );
                 }
                 // En son eklenen üstte (createdAt desc).
@@ -199,6 +216,7 @@ class _Summary extends StatelessWidget {
     required this.targetCode,
     required this.onScan,
     required this.onAdd,
+    required this.ocrLocked,
   });
 
   final AsyncValue<List<WordDto>> countAsync;
@@ -206,6 +224,7 @@ class _Summary extends StatelessWidget {
   final String targetCode;
   final VoidCallback onScan;
   final VoidCallback onAdd;
+  final bool ocrLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +277,7 @@ class _Summary extends StatelessWidget {
             Expanded(
               child: FilledButton.icon(
                 onPressed: onScan,
-                icon: const Icon(Icons.camera_alt),
+                icon: Icon(ocrLocked ? Icons.lock : Icons.camera_alt),
                 label: Text(l10n.wordsListScan),
               ),
             ),
@@ -278,10 +297,15 @@ class _Summary extends StatelessWidget {
 }
 
 class _EmptyWords extends StatelessWidget {
-  const _EmptyWords({required this.onScan, required this.onAdd});
+  const _EmptyWords({
+    required this.onScan,
+    required this.onAdd,
+    required this.ocrLocked,
+  });
 
   final VoidCallback onScan;
   final VoidCallback onAdd;
+  final bool ocrLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -310,9 +334,13 @@ class _EmptyWords extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           FilledButton.icon(
             onPressed: onScan,
-            icon: const Icon(Icons.camera_alt),
+            icon: Icon(ocrLocked ? Icons.lock : Icons.camera_alt),
             label: Text(l10n.wordsListScan),
           ),
+          if (ocrLocked) ...[
+            const SizedBox(height: AppSpacing.xs),
+            const LockedFeatureBadge(),
+          ],
           const SizedBox(height: AppSpacing.xs),
           OutlinedButton.icon(
             onPressed: onAdd,

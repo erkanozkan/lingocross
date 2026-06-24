@@ -678,6 +678,70 @@ namespace LingoCross.Infrastructure.Migrations
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("LatestReceiptRef")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("latest_receipt_ref");
+
+                    b.Property<int?>("Period")
+                        .HasColumnType("integer")
+                        .HasColumnName("period");
+
+                    b.Property<int>("Plan")
+                        .HasColumnType("integer")
+                        .HasColumnName("plan");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("integer")
+                        .HasColumnName("source");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("StoreTransactionId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("store_transaction_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_subscriptions");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_subscriptions_user_id");
+
+                    b.ToTable("subscriptions", (string)null);
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1050,6 +1114,18 @@ namespace LingoCross.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_refresh_tokens_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.Subscription", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.User", "User")
+                        .WithOne()
+                        .HasForeignKey("LingoCross.Domain.Entities.Subscription", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_subscriptions_users_user_id");
 
                     b.Navigation("User");
                 });

@@ -2225,4 +2225,85 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyContactEmailSubject => 'LingoCross Gizlilik Sorusu';
+
+  @override
+  String get paywallTitle => 'Premium';
+
+  @override
+  String get paywallHeadline => 'LingoCross Premium';
+
+  @override
+  String get paywallSubtitle => 'Tüm özelliklerin kilidini aç';
+
+  @override
+  String get paywallBannerOcr => 'AI ile kelime tarama Premium\'da';
+
+  @override
+  String get paywallBannerClassLimit => 'Sınırsız sınıf Premium\'da';
+
+  @override
+  String get paywallBannerLessonLimit => 'Sınırsız ders Premium\'da';
+
+  @override
+  String get paywallBannerMultiTeacher => 'Birden fazla öğretmen Premium\'da';
+
+  @override
+  String get paywallBannerDefault => 'Tüm özellikler Premium\'da';
+
+  @override
+  String get paywallBenefitUnlimitedClasses => 'Sınırsız sınıf ve ders';
+
+  @override
+  String get paywallBenefitOcr => 'AI ile kelime tarama';
+
+  @override
+  String get paywallBenefitMultiTeacher => 'Birden fazla öğretmene katılma';
+
+  @override
+  String get paywallBenefitReports => 'Tüm raporlar ve istatistikler';
+
+  @override
+  String get paywallPlanMonthlyTitle => 'Aylık';
+
+  @override
+  String get paywallPlanMonthlySubtitle => 'Her ay otomatik yenilenir';
+
+  @override
+  String get paywallPlanMonthlyPeriod => '/ay';
+
+  @override
+  String get paywallPlanAnnualTitle => 'Yıllık';
+
+  @override
+  String get paywallPlanAnnualSubtitle => 'Yıllık ödeme, karlı seçim';
+
+  @override
+  String get paywallPlanAnnualPeriod => '/yıl';
+
+  @override
+  String get paywallPlanBestValue => 'En Avantajlı';
+
+  @override
+  String get paywallPlanPriceComingSoon => '—';
+
+  @override
+  String get paywallTrialNote => '7 gün ücretsiz dene, istediğin zaman iptal et.';
+
+  @override
+  String get paywallCta => 'Premium\'a Yükselt';
+
+  @override
+  String get paywallSkip => 'Şimdilik geç';
+
+  @override
+  String get paywallActivateSuccess => 'Premium etkinleştirildi.';
+
+  @override
+  String get paywallPurchaseDisabled => 'Şu an satın alma kapalı (test).';
+
+  @override
+  String get paywallActivateError => 'Bir hata oluştu, lütfen tekrar deneyin.';
+
+  @override
+  String get lockedFeatureLabel => 'Premium';
 }

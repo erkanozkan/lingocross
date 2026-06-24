@@ -3,6 +3,7 @@ using LingoCross.Application.Classes.Dtos;
 using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
+using LingoCross.Application.Subscriptions;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -17,16 +18,28 @@ public class ClassService : IClassService
 {
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly IEntitlementService? _entitlement;
 
-    public ClassService(IAppDbContext db, ICurrentUser currentUser)
+    // entitlement opsiyoneldir: null verildiğinde limit uygulanmaz (Premium gibi davranır). Üretimde
+    // DI her zaman gerçek servisi enjekte eder; testler limit dışı senaryolarda null bırakabilir.
+    public ClassService(IAppDbContext db, ICurrentUser currentUser, IEntitlementService? entitlement = null)
     {
         _db = db;
         _currentUser = currentUser;
+        _entitlement = entitlement;
     }
 
     public async Task<ClassDto> CreateAsync(SaveClassRequest request, CancellationToken cancellationToken = default)
     {
         var teacherId = RequireTeacher();
+
+        if (_entitlement is not null)
+        {
+            // Yalnız aktif (arşivlenmemiş) sınıflar limite sayılır.
+            var activeClassCount = await _db.Classes
+                .CountAsync(c => c.TeacherId == teacherId && !c.IsArchived, cancellationToken);
+            await _entitlement.RequireClassQuotaAsync(activeClassCount, cancellationToken);
+        }
 
         var entity = new Class
         {
@@ -167,6 +180,13 @@ public class ClassService : IClassService
             throw AppException.NotFound("Davet kodu geçersiz.");
         }
 
+        // Çoklu öğretmen kapısı: yalnız YENİ bir öğretmene katılınıyorsa limit uygulanır
+        // (aynı öğretmenin başka sınıfı / tekrar katılım idempotenttir, 402 yok).
+        if (_entitlement is not null)
+        {
+            await RequireTeacherJoinAllowedAsync(studentId, entity.TeacherId, cancellationToken);
+        }
+
         await EnsureClassMembershipAsync(entity.Id, studentId, cancellationToken);
 
         // Geri uyum: öğrenci panelinin "katıldı" durumu ve eski sürümler öğretmen↔öğrenci
@@ -225,6 +245,43 @@ public class ClassService : IClassService
             Status = ClassMemberStatus.Active,
         });
         await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RequireTeacherJoinAllowedAsync(Guid studentId, Guid teacherId, CancellationToken cancellationToken)
+    {
+        if (_entitlement is null)
+        {
+            return;
+        }
+
+        var teacherIds = await GetDistinctTeacherIdsAsync(studentId, cancellationToken);
+
+        // Aynı öğretmene tekrar/aynı öğretmenin başka sınıfı → kümede zaten var → limit uygulanmaz.
+        if (teacherIds.Contains(teacherId))
+        {
+            return;
+        }
+
+        await _entitlement.RequireMultiTeacherJoinAsync(teacherIds.Count, cancellationToken);
+    }
+
+    /// <summary>
+    /// Öğrencinin halihazırda ilişkili olduğu farklı öğretmenlerin kümesi: sınıf üyeliklerinden
+    /// (class_members → class.teacher_id) ve geriye-uyumlu enrollment'lardan (enrollment.teacher_id) türetilir.
+    /// </summary>
+    private async Task<HashSet<Guid>> GetDistinctTeacherIdsAsync(Guid studentId, CancellationToken cancellationToken)
+    {
+        var fromClasses = await _db.ClassMembers
+            .Where(m => m.StudentId == studentId)
+            .Select(m => m.Class.TeacherId)
+            .ToListAsync(cancellationToken);
+
+        var fromEnrollments = await _db.Enrollments
+            .Where(e => e.StudentId == studentId)
+            .Select(e => e.TeacherId)
+            .ToListAsync(cancellationToken);
+
+        return fromClasses.Concat(fromEnrollments).ToHashSet();
     }
 
     private async Task<Class> RequireOwnedClassAsync(Guid classId, CancellationToken cancellationToken)

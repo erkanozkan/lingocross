@@ -55,4 +55,13 @@ public interface IClassService
     /// köprüsü tarafından kullanılır.
     /// </summary>
     Task EnsureClassMembershipAsync(Guid classId, Guid studentId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// (Entitlement köprüsü) Öğrenci verilen <paramref name="teacherId"/>'ye katılmak istediğinde,
+    /// bu öğretmen öğrencinin mevcut DISTINCT öğretmen kümesinde DEĞİLSE (yani yeni bir öğretmense)
+    /// çoklu-öğretmen limitini uygular (Free için 402 feature="multi_teacher"). Zaten kümedeyse
+    /// hiçbir şey yapmaz (idempotent). Entitlement servisi yoksa (testlerde null) no-op.
+    /// EnrollmentService köprüsü tarafından da kullanılır.
+    /// </summary>
+    Task RequireTeacherJoinAllowedAsync(Guid studentId, Guid teacherId, CancellationToken cancellationToken);
 }

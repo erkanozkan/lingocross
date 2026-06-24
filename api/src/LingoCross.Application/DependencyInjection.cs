@@ -8,6 +8,7 @@ using LingoCross.Application.Games;
 using LingoCross.Application.Lessons;
 using LingoCross.Application.Notifications;
 using LingoCross.Application.Results;
+using LingoCross.Application.Subscriptions;
 using LingoCross.Application.Teachers;
 using LingoCross.Application.Words;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +20,22 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IWordService, WordService>();
         services.AddScoped<IEnrollmentService, EnrollmentService>();
-        services.AddScoped<IClassService, ClassService>();
+        // ClassService/LessonService'in opsiyonel IEntitlementService parametresi gerçek servisle
+        // doldurulsun diye (üretimde limit enforcement çalışsın) açık factory ile kaydedilir. Testler
+        // limit dışı senaryolarda parametreyi null bırakıp Premium gibi davranabilir.
+        services.AddScoped<IEntitlementService, EntitlementService>();
+        services.AddScoped<IClassService>(sp =>
+            new ClassService(
+                sp.GetRequiredService<IAppDbContext>(),
+                sp.GetRequiredService<ICurrentUser>(),
+                sp.GetRequiredService<IEntitlementService>()));
+        services.AddScoped<ILessonService>(sp =>
+            new LessonService(
+                sp.GetRequiredService<IAppDbContext>(),
+                sp.GetRequiredService<ICurrentUser>(),
+                sp.GetRequiredService<IEntitlementService>()));
         // GameService'in opsiyonel Random parametresi DI tarafından çözülmez; üretimde
         // Random.Shared kullanılması için açık factory ile kaydedilir (testler kendi Random'ını verir).
         services.AddScoped<PushDispatcher>();
@@ -40,6 +53,7 @@ public static class DependencyInjection
         services.AddScoped<ITeacherTrackingService, TeacherTrackingService>();
         services.AddScoped<IDeviceService, DeviceService>();
         services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
+        services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;
