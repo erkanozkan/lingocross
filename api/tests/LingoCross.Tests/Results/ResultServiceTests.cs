@@ -128,6 +128,55 @@ public class ResultServiceTests
     }
 
     [Fact]
+    public async Task Submit_NegativeDuration_Throws400()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.SubmitResultAsync(session.Id, new SubmitResultRequest(-1, 8, 8)));
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.GameResults.CountAsync());
+    }
+
+    [Fact]
+    public async Task Submit_ExcessiveDuration_Throws400()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // 6 saat sınırını 1 ms aşan değer reddedilir.
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.SubmitResultAsync(session.Id, new SubmitResultRequest(ResultService.MaxDurationMs + 1, 8, 8)));
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.GameResults.CountAsync());
+    }
+
+    [Fact]
+    public async Task Submit_DurationAtUpperBound_Succeeds()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // Tam sınırdaki (6 saat) değer geçerli.
+        var result = await svc.SubmitResultAsync(
+            session.Id, new SubmitResultRequest(ResultService.MaxDurationMs, 8, 8));
+
+        Assert.Equal(ResultService.MaxDurationMs, result.DurationMs);
+        Assert.Equal(100, result.Score);
+        Assert.Equal(1, await db.GameResults.CountAsync());
+    }
+
+    [Fact]
     public async Task Submit_OtherStudentsSession_Throws404()
     {
         var db = NewDb();

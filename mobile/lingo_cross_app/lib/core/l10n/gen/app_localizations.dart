@@ -747,18 +747,6 @@ abstract class AppLocalizations {
   /// **'Raporlar'**
   String get reportsTitle;
 
-  /// No description provided for @reportsComingSoonTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Raporlar yakında'**
-  String get reportsComingSoonTitle;
-
-  /// No description provided for @reportsComingSoonDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sınıf ve öğrenci performans raporları burada görünecek.'**
-  String get reportsComingSoonDesc;
-
   /// No description provided for @teacherProfileRoleLabel.
   ///
   /// In tr, this message translates to:
@@ -1341,12 +1329,6 @@ abstract class AppLocalizations {
   /// **'Dersi Sil'**
   String get wordsListMenuDeleteLesson;
 
-  /// No description provided for @wordsListScanComingSoon.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kameradan tarama yakında eklenecek.'**
-  String get wordsListScanComingSoon;
-
   /// No description provided for @wordsFormTitleAdd.
   ///
   /// In tr, this message translates to:
@@ -1548,7 +1530,7 @@ abstract class AppLocalizations {
   /// No description provided for @ocrCaptureSourceCamera.
   ///
   /// In tr, this message translates to:
-  /// **'Kamera'**
+  /// **'Kamera ile çek'**
   String get ocrCaptureSourceCamera;
 
   /// No description provided for @ocrCaptureSourceGallery.
@@ -1587,12 +1569,6 @@ abstract class AppLocalizations {
   /// **'Manuel Giriş'**
   String get ocrCaptureManual;
 
-  /// No description provided for @ocrCaptureNoCamera.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu cihazda kamera yok — galeriden seçin.'**
-  String get ocrCaptureNoCamera;
-
   /// No description provided for @ocrCapturePermissionTitle.
   ///
   /// In tr, this message translates to:
@@ -1604,18 +1580,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Devam etmek için ayarlardan kamera veya galeri erişimine izin verin.'**
   String get ocrCapturePermissionDesc;
-
-  /// No description provided for @ocrCaptureOpenSettings.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ayarları Aç'**
-  String get ocrCaptureOpenSettings;
-
-  /// No description provided for @ocrCaptureError.
-  ///
-  /// In tr, this message translates to:
-  /// **'Fotoğraf alınamadı, tekrar deneyin.'**
-  String get ocrCaptureError;
 
   /// No description provided for @ocrReviewTitle.
   ///
@@ -2000,12 +1964,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Oyna'**
   String get studentLessonPlay;
-
-  /// No description provided for @studentLessonPlayComingSoon.
-  ///
-  /// In tr, this message translates to:
-  /// **'Oyun yakında eklenecek.'**
-  String get studentLessonPlayComingSoon;
 
   /// No description provided for @studentLessonEmptyTitle.
   ///

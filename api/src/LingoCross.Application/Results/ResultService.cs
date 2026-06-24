@@ -17,6 +17,12 @@ public class ResultService : IResultService
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
 
+    /// <summary>
+    /// Oyun süresi için makul üst sınır (6 saat, ms). İstemciden gelen <c>durationMs</c> bu sınırı
+    /// aşarsa (ör. arka planda unutulmuş/manipüle edilmiş oturum) sonuç reddedilir.
+    /// </summary>
+    public const int MaxDurationMs = 6 * 60 * 60 * 1000;
+
     public ResultService(IAppDbContext db, ICurrentUser currentUser)
     {
         _db = db;
@@ -43,7 +49,8 @@ public class ResultService : IResultService
     {
         var studentId = RequireStudent();
 
-        if (request.DurationMs < 0 || request.TotalItems < 0 || request.CorrectItems < 0
+        if (request.DurationMs < 0 || request.DurationMs > MaxDurationMs
+            || request.TotalItems < 0 || request.CorrectItems < 0
             || request.CorrectItems > request.TotalItems)
         {
             throw AppException.BadRequest("Geçersiz sonuç değerleri.");

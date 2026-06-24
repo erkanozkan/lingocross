@@ -132,8 +132,6 @@
   "lessonsListFooterHint": "Geçmiş derslerinizi görmek için kaydırın",
 
   "reportsTitle": "Raporlar",
-  "reportsComingSoonTitle": "Raporlar yakında",
-  "reportsComingSoonDesc": "Sınıf ve öğrenci performans raporları burada görünecek.",
 
   "teacherProfileRoleLabel": "Öğretmen",
   "teacherProfileStatClasses": "Sınıf",
@@ -242,7 +240,6 @@
   "wordsListError": "Kelimeler yüklenemedi",
   "wordsListMenuEditLesson": "Dersi Düzenle",
   "wordsListMenuDeleteLesson": "Dersi Sil",
-  "wordsListScanComingSoon": "Kameradan tarama yakında eklenecek.",
 
   "wordsFormTitleAdd": "Kelime Ekle",
   "wordsFormTitleEdit": "Kelimeyi Düzenle",
@@ -281,18 +278,15 @@
   "ocrCaptureStep3": "Onayla",
   "ocrCaptureTriggerTitle": "Kamera ile Tara",
   "ocrCaptureTriggerSubtitle": "Veya galeriden bir fotoğraf seçin",
-  "ocrCaptureSourceCamera": "Kamera",
+  "ocrCaptureSourceCamera": "Kamera ile çek",
   "ocrCaptureSourceGallery": "Galeriden Seç",
   "ocrCapturePhotoRemoveLabel": "Fotoğrafı kaldır",
   "ocrCaptureExtract": "Kelimeleri Çıkart",
   "ocrCaptureScanning": "Taranıyor…",
   "ocrCaptureOr": "VEYA",
   "ocrCaptureManual": "Manuel Giriş",
-  "ocrCaptureNoCamera": "Bu cihazda kamera yok — galeriden seçin.",
   "ocrCapturePermissionTitle": "Kamera/galeri erişimi gerekli",
   "ocrCapturePermissionDesc": "Devam etmek için ayarlardan kamera veya galeri erişimine izin verin.",
-  "ocrCaptureOpenSettings": "Ayarları Aç",
-  "ocrCaptureError": "Fotoğraf alınamadı, tekrar deneyin.",
 
   "ocrReviewTitle": "Tanınan Kelimeler",
   "ocrReviewSummary": "{count} kelime tanındı",
@@ -376,7 +370,6 @@
   "@studentJoinSuccess": { "placeholders": { "teacher": { "type": "String" } } },
 
   "studentLessonPlay": "Oyna",
-  "studentLessonPlayComingSoon": "Oyun yakında eklenecek.",
   "studentLessonEmptyTitle": "Bu derste henüz kelime yok",
   "studentLessonEmptyDesc": "Öğretmenin kelime ekleyince burada görünecek.",
   "studentLessonError": "Kelimeler yüklenemedi",

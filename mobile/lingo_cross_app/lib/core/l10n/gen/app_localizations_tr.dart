@@ -348,12 +348,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reportsTitle => 'Raporlar';
 
   @override
-  String get reportsComingSoonTitle => 'Raporlar yakında';
-
-  @override
-  String get reportsComingSoonDesc => 'Sınıf ve öğrenci performans raporları burada görünecek.';
-
-  @override
   String get teacherProfileRoleLabel => 'Öğretmen';
 
   @override
@@ -655,9 +649,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wordsListMenuDeleteLesson => 'Dersi Sil';
 
   @override
-  String get wordsListScanComingSoon => 'Kameradan tarama yakında eklenecek.';
-
-  @override
   String get wordsFormTitleAdd => 'Kelime Ekle';
 
   @override
@@ -761,7 +752,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ocrCaptureTriggerSubtitle => 'Veya galeriden bir fotoğraf seçin';
 
   @override
-  String get ocrCaptureSourceCamera => 'Kamera';
+  String get ocrCaptureSourceCamera => 'Kamera ile çek';
 
   @override
   String get ocrCaptureSourceGallery => 'Galeriden Seç';
@@ -782,19 +773,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ocrCaptureManual => 'Manuel Giriş';
 
   @override
-  String get ocrCaptureNoCamera => 'Bu cihazda kamera yok — galeriden seçin.';
-
-  @override
   String get ocrCapturePermissionTitle => 'Kamera/galeri erişimi gerekli';
 
   @override
   String get ocrCapturePermissionDesc => 'Devam etmek için ayarlardan kamera veya galeri erişimine izin verin.';
-
-  @override
-  String get ocrCaptureOpenSettings => 'Ayarları Aç';
-
-  @override
-  String get ocrCaptureError => 'Fotoğraf alınamadı, tekrar deneyin.';
 
   @override
   String get ocrReviewTitle => 'Tanınan Kelimeler';
@@ -1015,9 +997,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get studentLessonPlay => 'Oyna';
-
-  @override
-  String get studentLessonPlayComingSoon => 'Oyun yakında eklenecek.';
 
   @override
   String get studentLessonEmptyTitle => 'Bu derste henüz kelime yok';
