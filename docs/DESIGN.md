@@ -66,14 +66,26 @@ Tüm boşluk/yükseklik 4px'in katı; ana ritim 8px ve 16px.
 
 ## Köşe Yarıçapı
 
+**Tek kanonik ölçek.** Stitch'in **render edilen** ekranları esastır; tasarım-sistemi
+YAML'ındaki `xl=24` ile çakışma, render edilen Stitch lehine çözülmüştür. Aşağıdaki ölçek
+tüm UI için bağlayıcıdır; bileşen tipine göre tek bir token seçilir (keyfi ara değer yok).
+
 | Token | Değer | Kullanım |
 |---|---|---|
-| sm | 0.25rem (4px) | |
-| DEFAULT | 0.5rem (8px) | |
-| md | 0.75rem (12px) | |
-| lg | 1rem (16px) | Buton, input, küçük kart |
-| xl | 1.5rem (24px) | Büyük modül / profil kartı |
+| sm | 8px | Chip / Badge |
+| md | 12px | Input, küçük kart |
+| lg | 16px | Buton, standart kart, oyun kartı |
+| xl | 20–24px | Büyük modül / hero / bottom-sheet / profil kartı |
 | full | 9999px | Progress bar (pill), rozet |
+
+> Eşleme kuralları:
+> - **chip/badge → sm (8)**
+> - **input + küçük kart → md (12)** (form input fill `surface-container-low`, kenarlık `outline-variant`)
+> - **buton + standart kart + oyun kartı → lg (16)**
+> - **büyük modül / hero / sheet / profil kartı → xl (20–24)**
+>
+> Kod tarafı `AppRadius` sabitleri bu ölçekle bire bir uyumludur
+> (`sm=8, md=12, lg=16, xl=24, full=9999`). Eski 4px köşe kullanımı kaldırılmıştır.
 
 ## Yükseklik & Derinlik (Tonal Layers + Soft Ambient Shadow)
 

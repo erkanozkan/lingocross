@@ -13,14 +13,19 @@ abstract final class AppSpacing {
   static const double marginMobile = 20;
 }
 
-/// Köşe yarıçapı token'ları (docs/DESIGN.md).
+/// Köşe yarıçapı token'ları (docs/DESIGN.md — tek kanonik ölçek).
+///
+/// sm=8 (chip/badge), md=12 (input/küçük kart), lg=16 (buton/standart kart),
+/// xl=24 (büyük modül/hero/sheet), full=9999 (pill/rozet).
 abstract final class AppRadius {
   AppRadius._();
 
-  static const double sm = 4;
-  static const double base = 8;
+  static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;
   static const double xl = 24;
   static const double full = 9999;
+
+  /// Geriye dönük alias (sm ile aynı). Yeni kodda `sm` kullanın.
+  static const double base = sm;
 }

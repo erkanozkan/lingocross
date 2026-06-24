@@ -7,7 +7,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/word_matching_engine.dart';
 
-/// Kart taban kalıbı: min-h 80, rounded-xl, ortalı body-lg semibold.
+/// Kart taban kalıbı: min-h 80, köşe lg (16), ortalı body-lg semibold.
 const double _kCardMinHeight = 80;
 
 /// Sol sütun terim kartı (nötr / seçili / eşleşti).
@@ -238,7 +238,7 @@ class _CardSurfaceState extends State<_CardSurface> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: widget.bg,
-            borderRadius: BorderRadius.circular(AppRadius.xl),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(color: widget.border, width: widget.borderWidth),
           ),
           child: widget.child,

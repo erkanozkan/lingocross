@@ -166,11 +166,9 @@ class OcrCaptureScreen extends ConsumerWidget {
                       color: AppColors.primary),
                   title: Text(l10n.ocrCaptureSourceCamera,
                       style: AppTypography.bodyMd),
-                  subtitle: Text(
-                    l10n.ocrCaptureNoCamera,
-                    style: AppTypography.labelSm
-                        .copyWith(color: AppColors.onSurfaceVariant),
-                  ),
+                  // Kamera erişilemezse pick() PickImageException atar →
+                  // controller permissionError'a geçer → _PermissionCard gösterilir
+                  // ve kullanıcı galeriden devam edebilir (graceful fallback).
                   onTap: () =>
                       Navigator.of(sheetContext).pop(OcrImageSource.camera),
                 ),

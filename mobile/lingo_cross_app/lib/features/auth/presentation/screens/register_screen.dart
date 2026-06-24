@@ -257,18 +257,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 24,
-              height: 24,
+              width: 48,
+              height: 48,
               child: Checkbox(
                 value: _termsAccepted,
                 activeColor: AppColors.primary,
+                // ≥48px dokunma hedefi (a11y).
+                materialTapTargetSize: MaterialTapTargetSize.padded,
                 onChanged: (v) => setState(() {
                   _termsAccepted = v ?? false;
                   if (_termsAccepted) _termsError = false;
                 }),
               ),
             ),
-            const SizedBox(width: AppSpacing.xs),
             Expanded(
               child: GestureDetector(
                 onTap: () => setState(() {
