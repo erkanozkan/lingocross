@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -70,9 +72,7 @@ class TeacherProfileScreen extends ConsumerWidget {
           _Menu(
             onOpenClasses: onOpenClasses,
             onOpenReports: onOpenReports,
-            onSettings: () => ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.commonComingSoon)),
-            ),
+            onSettings: () => context.push(AppRoutes.accountSettings),
             onLogout: () => ref.read(authNotifierProvider.notifier).logout(),
           ),
         ],

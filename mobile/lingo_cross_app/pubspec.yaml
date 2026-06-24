@@ -53,6 +53,10 @@ dependencies:
   google_fonts: ^6.3.2
   google_mlkit_text_recognition: ^0.15.0
   image_picker: ^1.2.1
+  # Login "Beni Hatırla" tercihi (e-posta + checkbox; ŞİFRE SAKLANMAZ)
+  shared_preferences: ^2.3.2
+  # Hesap Ayarları sürüm satırı
+  package_info_plus: ^8.1.1
 
 dev_dependencies:
   flutter_test:

@@ -148,4 +148,62 @@ public class AuthServiceTests
 
         Assert.Null(email.LastToken);
     }
+
+    [Fact]
+    public async Task ChangePassword_Throws400_OnWrongCurrentPassword()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var ex = await Assert.ThrowsAsync<AppException>(() =>
+            service.ChangePasswordAsync(userId, new ChangePasswordRequest("wrong-current", "YeniSifre9!")));
+
+        Assert.Equal(400, ex.StatusCode);
+
+        // Şifre değişmemiş olmalı: eski şifre hâlâ geçerli.
+        var login = await service.LoginAsync(new LoginRequest("teacher@example.com", "Sifre1234!"));
+        Assert.False(string.IsNullOrWhiteSpace(login.AccessToken));
+    }
+
+    [Fact]
+    public async Task ChangePassword_Succeeds_IssuesNewTokens_RevokesOld_AndSwapsPassword()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var response = await service.ChangePasswordAsync(
+            userId, new ChangePasswordRequest("Sifre1234!", "YeniSifre9!"));
+
+        // Yeni token çifti dönmeli.
+        Assert.False(string.IsNullOrWhiteSpace(response.AccessToken));
+        Assert.False(string.IsNullOrWhiteSpace(response.RefreshToken));
+        Assert.NotEqual(reg.RefreshToken, response.RefreshToken);
+
+        // Register sırasında verilen refresh token iptal edilmiş, yenisi aktif olmalı.
+        Assert.True(await db.RefreshTokens.AnyAsync(t => t.RevokedAt != null));
+        Assert.Equal(1, await db.RefreshTokens.CountAsync(t => t.RevokedAt == null));
+
+        // Eski şifre artık geçersiz, yenisi geçerli.
+        await Assert.ThrowsAsync<AppException>(() =>
+            service.LoginAsync(new LoginRequest("teacher@example.com", "Sifre1234!")));
+        var login = await service.LoginAsync(new LoginRequest("teacher@example.com", "YeniSifre9!"));
+        Assert.False(string.IsNullOrWhiteSpace(login.AccessToken));
+    }
+
+    [Fact]
+    public async Task UpdateProfile_TrimsAndUpdatesDisplayName()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var dto = await service.UpdateProfileAsync(userId, new UpdateProfileRequest("  Yeni Ad  "));
+
+        Assert.Equal("Yeni Ad", dto.DisplayName);
+
+        var persisted = await db.Users.FirstAsync(u => u.Id == userId);
+        Assert.Equal("Yeni Ad", persisted.DisplayName);
+    }
 }

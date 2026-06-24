@@ -72,6 +72,42 @@ class AuthRepository {
     return UserDto.fromJson(res.data!);
   }
 
+  /// Görünen adı günceller (PUT /auth/me → 200 UserDto).
+  Future<UserDto> updateProfile({required String displayName}) async {
+    try {
+      final res = await _dio.put<Map<String, dynamic>>(
+        '$_base/auth/me',
+        data: UpdateProfileRequest(displayName: displayName).toJson(),
+      );
+      return UserDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapNetworkOrGeneric(e);
+    }
+  }
+
+  /// Şifre değiştirir (POST /auth/change-password → 200 AuthResponse, yeni
+  /// token'larla). Yanlış mevcut şifre → 400 → [WrongCurrentPassword].
+  Future<AuthResponse> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/auth/change-password',
+        data: ChangePasswordRequest(
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        ).toJson(),
+      );
+      return AuthResponse.fromJson(res.data!);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw const AuthFailure.wrongCurrentPassword();
+      }
+      throw _mapNetworkOrGeneric(e);
+    }
+  }
+
   Future<void> logout({required String refreshToken}) async {
     try {
       await _dio.post<dynamic>(

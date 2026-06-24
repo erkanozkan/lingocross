@@ -74,16 +74,50 @@ public class AuthController : ControllerBase
     [HttpGet("me")]
     public async Task<ActionResult<UserDto>> Me(CancellationToken ct)
     {
-        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
-            ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(sub, out var userId))
+        if (GetUserId() is not { } userId)
         {
             return Unauthorized();
         }
 
         var user = await _authService.GetMeAsync(userId, ct);
         return Ok(user);
+    }
+
+    [Authorize]
+    [HttpPut("me")]
+    public async Task<ActionResult<UserDto>> UpdateProfile(UpdateProfileRequest request, CancellationToken ct)
+    {
+        await ValidateAsync(request, ct);
+        if (GetUserId() is not { } userId)
+        {
+            return Unauthorized();
+        }
+
+        var user = await _authService.UpdateProfileAsync(userId, request, ct);
+        return Ok(user);
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<ActionResult<AuthResponse>> ChangePassword(ChangePasswordRequest request, CancellationToken ct)
+    {
+        await ValidateAsync(request, ct);
+        if (GetUserId() is not { } userId)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _authService.ChangePasswordAsync(userId, request, ct);
+        return Ok(result);
+    }
+
+    /// <summary>JWT sub (veya NameIdentifier) claim'inden kullanıcı kimliğini okur; geçersizse null.</summary>
+    private Guid? GetUserId()
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        return Guid.TryParse(sub, out var userId) ? userId : null;
     }
 
     private async Task ValidateAsync<T>(T instance, CancellationToken ct)

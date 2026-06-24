@@ -23,6 +23,7 @@
   "authLoginSignupCta": "Ücretsiz kayıt ol",
   "authLoginErrorInvalidCredentials": "E-posta veya şifre hatalı.",
   "authLoginErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
+  "authLoginRememberMe": "Beni Hatırla",
 
   "authRegisterAppbarLogin": "Giriş Yap",
   "authRegisterTitle": "Yolculuğuna Başla",
@@ -108,6 +109,7 @@
   "@teacherDashboardWordCount": { "placeholders": { "count": { "type": "int" } } },
   "teacherDashboardLessonPublished": "Yayında",
   "teacherDashboardLessonDraft": "Taslak",
+  "teacherDashboardOpenProfile": "Profili aç",
 
   "navClasses": "Sınıflar",
 
@@ -583,5 +585,39 @@
   "myPuzzlesStatSolves": "Öğrenci Çözümü",
   "myPuzzlesEmptyTitle": "Henüz bulmaca yok",
   "myPuzzlesEmptyDesc": "İlk bulmacanı oluşturarak başla.",
-  "myPuzzlesErrorTitle": "Bulmacalar yüklenemedi"
+  "myPuzzlesErrorTitle": "Bulmacalar yüklenemedi",
+
+  "accountSettingsTitle": "Hesap Ayarları",
+  "accountEditProfileCta": "Profili Düzenle",
+  "accountGroupGeneral": "GENEL",
+  "accountGroupSecurity": "GÜVENLİK",
+  "accountGroupSupport": "DESTEK & HAKKIMIZDA",
+  "accountRowNotifications": "Bildirim Ayarları",
+  "accountRowLanguage": "Dil Tercihi",
+  "accountRowTheme": "Tema",
+  "accountRowThemeValueLight": "Açık",
+  "accountRowChangePassword": "Şifre Değiştir",
+  "accountRowTwoFactor": "İki Faktörlü Doğrulama",
+  "accountRowHelpCenter": "Yardım Merkezi",
+  "accountRowPrivacy": "Gizlilik Politikası",
+  "accountLogout": "Çıkış Yap",
+  "accountVersion": "LingoCross v{version}",
+  "@accountVersion": { "placeholders": { "version": { "type": "String" } } },
+
+  "accountSaveLabel": "Kaydet",
+  "accountSavingLabel": "Kaydediliyor…",
+
+  "accountEditProfileTitle": "Profili Düzenle",
+  "accountEditProfileNameLabel": "Ad Soyad",
+  "accountEditProfileNamePlaceholder": "Adınızı girin",
+  "accountEditProfileSavedSnack": "Profiliniz güncellendi",
+
+  "accountChangePasswordTitle": "Şifre Değiştir",
+  "accountChangePasswordCurrentLabel": "Mevcut Şifre",
+  "accountChangePasswordNewLabel": "Yeni Şifre",
+  "accountChangePasswordConfirmLabel": "Yeni Şifre (Tekrar)",
+  "accountChangePasswordMismatch": "Yeni şifreler eşleşmiyor.",
+  "accountChangePasswordWrongCurrent": "Mevcut şifre hatalı.",
+  "accountChangePasswordSubmit": "Şifreyi Güncelle",
+  "accountChangePasswordSavedSnack": "Şifreniz değiştirildi"
 }

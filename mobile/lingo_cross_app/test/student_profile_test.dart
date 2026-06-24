@@ -124,11 +124,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final account = find.text('Hesap Ayarları');
-    await tester.scrollUntilVisible(account, 200,
+    // Hesap Ayarları artık /account/settings'e push'lar (F4.2); kalan
+    // placeholder satırı "Bildirim Tercihleri" hâlâ "Yakında" snackbar gösterir.
+    final notifications = find.text('Bildirim Tercihleri');
+    await tester.scrollUntilVisible(notifications, 200,
         scrollable: find.byType(Scrollable).first);
     await tester.pumpAndSettle();
-    await tester.tap(account);
+    await tester.tap(notifications);
     await tester.pump();
 
     expect(find.text('Yakında'), findsWidgets);

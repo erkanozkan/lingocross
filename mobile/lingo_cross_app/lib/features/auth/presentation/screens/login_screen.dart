@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,6 +12,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/error_banner.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
+import '../../data/login_prefs.dart';
 import '../../domain/auth_failure.dart';
 import '../auth_failure_messages.dart';
 import '../auth_notifier.dart';
@@ -38,7 +40,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   bool _obscure = true;
   bool _loading = false;
+  bool _rememberMe = true;
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    // Açılışta "Beni Hatırla" tercihini ve kayıtlı e-postayı doldur.
+    final prefs = ref.read(loginPrefsProvider);
+    _rememberMe = prefs.rememberMe;
+    if (_rememberMe) _emailController.text = prefs.savedEmail;
+  }
 
   @override
   void dispose() {
@@ -53,11 +65,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
+    final email = _emailController.text.trim();
     try {
       await ref.read(authNotifierProvider.notifier).login(
-            email: _emailController.text.trim(),
+            email: email,
             password: _passwordController.text,
           );
+      // "Beni Hatırla" tercihini ve (açıksa) e-postayı kaydet — ŞİFRE DEĞİL.
+      await ref
+          .read(loginPrefsProvider)
+          .save(remember: _rememberMe, email: email);
+      // Sistem şifre kasasının autofill önerisini sunması için bağlamı kapat.
+      TextInput.finishAutofillContext();
       // Başarıda router guard otomatik /home'a yönlendirir.
     } on AuthFailure catch (failure) {
       if (!mounted) return;
@@ -122,7 +141,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
       child: Form(
         key: _formKey,
-        child: Column(
+        child: AutofillGroup(
+          child: Column(
           children: [
             if (_errorMessage != null) ...[
               ErrorBanner(message: _errorMessage!),
@@ -167,6 +187,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.xs),
+            _RememberMe(
+              value: _rememberMe,
+              enabled: !_loading,
+              onChanged: (v) => setState(() => _rememberMe = v),
+            ),
             const SizedBox(height: AppSpacing.md),
             PrimaryButton3D(
               label: l10n.authLoginSubmit,
@@ -194,6 +220,58 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ],
+            ),
+          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Beni Hatırla" checkbox satırı — Lumina Learning (primary tik, ≥48px hedef).
+///
+/// Stitch login ekranında YOKTUR; kullanıcı isteğiyle eklendi (bkz. DESIGN.md
+/// sapma notu). Yalnız e-posta + tercih saklanır; şifre asla saklanmaz.
+class _RememberMe extends StatelessWidget {
+  const _RememberMe({
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      onTap: enabled ? () => onChanged(!value) : null,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 48),
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                value: value,
+                onChanged: enabled ? (v) => onChanged(v ?? false) : null,
+                activeColor: AppColors.primary,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              l10n.authLoginRememberMe,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
           ],
         ),

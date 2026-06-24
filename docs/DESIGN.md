@@ -115,7 +115,7 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 ### MVP ekranları
 | Ekran | screenId | Not |
 |---|---|---|
-| Karşılama + Giriş (birleşik) | `c6188f694eea4fc3966753bd2c3a262c` | **Onboarding + Login tek ekran** (Stitch: "Giriş Yap (Marka Güncellenmiş)"). Hero (maskot + Hi!/Merhaba! rozetleri + hoş geldiniz) + giriş formu (e-posta/şifre/şifremi unuttum/giriş) + kayıt CTA. Rolsüz giriş; yönlendirme `user.role`'a göre. Sosyal giriş + "VEYA" divider **gizli** (OAuth yok). Telif "© 2026 LingoCross". Spec: `docs/ux-specs/auth-login.md` |
+| Karşılama + Giriş (birleşik) | `c6188f694eea4fc3966753bd2c3a262c` | **Onboarding + Login tek ekran** (Stitch: "Giriş Yap (Marka Güncellenmiş)"). Hero (maskot + Hi!/Merhaba! rozetleri + hoş geldiniz) + giriş formu (e-posta/şifre/şifremi unuttum/giriş) + kayıt CTA. Rolsüz giriş; yönlendirme `user.role`'a göre. Sosyal giriş + "VEYA" divider **gizli** (OAuth yok). Telif "© 2026 LingoCross". **Sapma (F4.1, kullanıcı isteği):** Stitch login'de OLMAYAN "Beni Hatırla" checkbox'ı şifre alanının altına eklendi (varsayılan AÇIK, ≥48px hedef, Lumina primary tik). Yalnız e-posta + tercih `shared_preferences` ile saklanır — **şifre saklanmaz**; form `AutofillGroup` + username/password autofill ipuçlarıyla sistem şifre kasasıyla uyumlu. Spec: `docs/ux-specs/auth-login.md` |
 | ~~Hoşgeldiniz (Kayıt Odaklı)~~ | ~~`301bfb0772794b30884fd261d36b293c`~~ | **KALDIRILDI / BİRLEŞTİRİLDİ** → `c6188f69…`. Eski Welcome sürümleri de kaldırıldı: `401622fe1fb94433969185ca4f6c139b`. Eski spec `auth-welcome.md` silindi (içerik `auth-login.md`'ye taşındı). |
 | ~~Giriş Yap~~ | ~~`4d9957e6df9745db8ddf21e61b6e3737`~~ | **KALDIRILDI / BİRLEŞTİRİLDİ** → `c6188f69…` (birleşik karşılama + giriş ekranı). |
 | Hesap Oluştur | `c9cc078da3414805bdf36385cbf832ba` | Register (rol seçimi: öğretmen/öğrenci) |
@@ -127,6 +127,7 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 | Kelime Eşleştirme Oyunu | `27338ce47339494f9785df101d50892c` | MVP oyunu |
 | Oyun Sonu Raporu | `4786e952cc504b9c8247865e80ab7daf` | Süre + başarı + paylaş |
 | Ünite Kelime Listesi | `2ec4360ad6cc4a6395255fa6298905e1` | Kelime listeleme (OCR/MANUEL rozet, primary chip) |
+| Hesap Ayarları | `cd1f1f7191d449c8847af39eb22a38db` | F4.2 — profilden push'lanan ortak ekran (`/account/settings`, her iki rol). Profil başlığı (avatar+ad+e-posta+"Profili Düzenle") + GENEL (Bildirim/Dil=Türkçe/Tema=Açık → "Yakında") + GÜVENLİK (Şifre Değiştir=GERÇEK, İki Faktörlü=placeholder) + DESTEK & HAKKINDA (Yardım/Gizlilik=placeholder) + kırmızı Çıkış Yap (gerçek logout) + sürüm satırı (`package_info_plus`). Profil Düzenle + Şifre Değiştir **bottom-sheet**. Stitch'in alt nav'ı UYGULANMAZ (mevcut nav korunur). |
 
 ### Faz 2 ekranları (öğretmen otoring + bulmaca — F2.1/F2.2/F2.4)
 | Ekran | screenId | Not |

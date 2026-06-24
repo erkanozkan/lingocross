@@ -7,8 +7,10 @@ import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/storage/token_storage.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
 import 'package:lingo_cross_app/core/widgets/primary_button_3d.dart';
+import 'package:lingo_cross_app/features/auth/data/login_prefs.dart';
 import 'package:lingo_cross_app/features/auth/domain/user_role.dart';
 import 'package:lingo_cross_app/features/auth/presentation/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/fake_secure_storage.dart';
 
@@ -24,6 +26,8 @@ void main() {
 
   testWidgets('Boş form submit edilince e-posta/şifre hataları gösterilir',
       (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
     final router = GoRouter(
       initialLocation: '/login',
       routes: [
@@ -39,6 +43,7 @@ void main() {
       ProviderScope(
         overrides: [
           secureStorageProvider.overrideWithValue(FakeSecureStorage()),
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: MaterialApp.router(
           theme: AppTheme.light,

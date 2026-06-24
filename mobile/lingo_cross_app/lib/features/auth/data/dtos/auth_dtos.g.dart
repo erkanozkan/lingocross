@@ -54,6 +54,28 @@ Map<String, dynamic> _$$ForgotPasswordRequestImplToJson(
   _$ForgotPasswordRequestImpl instance,
 ) => <String, dynamic>{'email': instance.email};
 
+_$UpdateProfileRequestImpl _$$UpdateProfileRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$UpdateProfileRequestImpl(displayName: json['displayName'] as String);
+
+Map<String, dynamic> _$$UpdateProfileRequestImplToJson(
+  _$UpdateProfileRequestImpl instance,
+) => <String, dynamic>{'displayName': instance.displayName};
+
+_$ChangePasswordRequestImpl _$$ChangePasswordRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$ChangePasswordRequestImpl(
+  currentPassword: json['currentPassword'] as String,
+  newPassword: json['newPassword'] as String,
+);
+
+Map<String, dynamic> _$$ChangePasswordRequestImplToJson(
+  _$ChangePasswordRequestImpl instance,
+) => <String, dynamic>{
+  'currentPassword': instance.currentPassword,
+  'newPassword': instance.newPassword,
+};
+
 _$ResetPasswordRequestImpl _$$ResetPasswordRequestImplFromJson(
   Map<String, dynamic> json,
 ) => _$ResetPasswordRequestImpl(

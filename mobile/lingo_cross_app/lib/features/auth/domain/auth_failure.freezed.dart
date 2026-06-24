@@ -21,6 +21,7 @@ mixin _$AuthFailure {
   TResult when<TResult extends Object?>({
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) => throw _privateConstructorUsedError;
@@ -28,6 +29,7 @@ mixin _$AuthFailure {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) => throw _privateConstructorUsedError;
@@ -35,6 +37,7 @@ mixin _$AuthFailure {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -43,6 +46,7 @@ mixin _$AuthFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) => throw _privateConstructorUsedError;
@@ -50,6 +54,7 @@ mixin _$AuthFailure {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) => throw _privateConstructorUsedError;
@@ -57,6 +62,7 @@ mixin _$AuthFailure {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -130,6 +136,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult when<TResult extends Object?>({
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -141,6 +148,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -152,6 +160,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -167,6 +176,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult map<TResult extends Object?>({
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -178,6 +188,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -189,6 +200,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -249,6 +261,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult when<TResult extends Object?>({
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -260,6 +273,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -271,6 +285,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -286,6 +301,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult map<TResult extends Object?>({
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -297,6 +313,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -308,6 +325,7 @@ class _$EmailTakenImpl implements EmailTaken {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -321,6 +339,132 @@ class _$EmailTakenImpl implements EmailTaken {
 
 abstract class EmailTaken implements AuthFailure {
   const factory EmailTaken() = _$EmailTakenImpl;
+}
+
+/// @nodoc
+abstract class _$$WrongCurrentPasswordImplCopyWith<$Res> {
+  factory _$$WrongCurrentPasswordImplCopyWith(
+    _$WrongCurrentPasswordImpl value,
+    $Res Function(_$WrongCurrentPasswordImpl) then,
+  ) = __$$WrongCurrentPasswordImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$WrongCurrentPasswordImplCopyWithImpl<$Res>
+    extends _$AuthFailureCopyWithImpl<$Res, _$WrongCurrentPasswordImpl>
+    implements _$$WrongCurrentPasswordImplCopyWith<$Res> {
+  __$$WrongCurrentPasswordImplCopyWithImpl(
+    _$WrongCurrentPasswordImpl _value,
+    $Res Function(_$WrongCurrentPasswordImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AuthFailure
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
+  const _$WrongCurrentPasswordImpl();
+
+  @override
+  String toString() {
+    return 'AuthFailure.wrongCurrentPassword()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WrongCurrentPasswordImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() invalidCredentials,
+    required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
+    required TResult Function() network,
+    required TResult Function() unexpected,
+  }) {
+    return wrongCurrentPassword();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? invalidCredentials,
+    TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
+    TResult? Function()? network,
+    TResult? Function()? unexpected,
+  }) {
+    return wrongCurrentPassword?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? invalidCredentials,
+    TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
+    TResult Function()? network,
+    TResult Function()? unexpected,
+    required TResult orElse(),
+  }) {
+    if (wrongCurrentPassword != null) {
+      return wrongCurrentPassword();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(InvalidCredentials value) invalidCredentials,
+    required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(NetworkFailure value) network,
+    required TResult Function(UnexpectedFailure value) unexpected,
+  }) {
+    return wrongCurrentPassword(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(InvalidCredentials value)? invalidCredentials,
+    TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(NetworkFailure value)? network,
+    TResult? Function(UnexpectedFailure value)? unexpected,
+  }) {
+    return wrongCurrentPassword?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(InvalidCredentials value)? invalidCredentials,
+    TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(NetworkFailure value)? network,
+    TResult Function(UnexpectedFailure value)? unexpected,
+    required TResult orElse(),
+  }) {
+    if (wrongCurrentPassword != null) {
+      return wrongCurrentPassword(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class WrongCurrentPassword implements AuthFailure {
+  const factory WrongCurrentPassword() = _$WrongCurrentPasswordImpl;
 }
 
 /// @nodoc
@@ -368,6 +512,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult when<TResult extends Object?>({
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -379,6 +524,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -390,6 +536,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -405,6 +552,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -416,6 +564,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -427,6 +576,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -487,6 +637,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult when<TResult extends Object?>({
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -498,6 +649,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -509,6 +661,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -524,6 +677,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult map<TResult extends Object?>({
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -535,6 +689,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -546,6 +701,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),

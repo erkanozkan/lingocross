@@ -20,6 +20,7 @@ import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_shell_screen.dart';
+import '../../features/account/presentation/screens/account_settings_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 import '../../features/profile/presentation/screens/student_profile_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
@@ -35,6 +36,10 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
+
+  /// Hesap Ayarları (F4.2) — profilden push'lanır. `/account/...` prefix'i
+  /// teacher/student'a uymadığı için her iki rol erişir (guard'da authed yeter).
+  static const String accountSettings = '/account/settings';
 
   // Öğrenci (M3) — korumalı + yalnız Student.
   static const String student = '/student';
@@ -156,6 +161,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      // Hesap Ayarları (F4.2) — her iki rol için ortak (authed yeterli).
+      GoRoute(
+        path: AppRoutes.accountSettings,
+        builder: (context, state) => const AccountSettingsScreen(),
       ),
       // --- Öğrenci (M3) ---
       GoRoute(

@@ -85,6 +85,30 @@ class AuthNotifier extends _$AuthNotifier {
     state = AuthState(status: AuthStatus.authenticated, user: res.user);
   }
 
+  /// Görünen adı günceller (PUT /auth/me) ve state'teki kullanıcıyı tazeler.
+  /// Hata yukarı fırlatılır (sunum katmanı yakalar).
+  Future<void> updateProfile({required String displayName}) async {
+    final user = await _repository.updateProfile(displayName: displayName);
+    state = state.copyWith(user: user);
+  }
+
+  /// Şifreyi değiştirir (POST /auth/change-password). Dönen yeni token'lar
+  /// saklanır, oturum korunur. Hata yukarı fırlatılır.
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final res = await _repository.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+    await _storage.saveTokens(
+      accessToken: res.accessToken,
+      refreshToken: res.refreshToken,
+    );
+    state = AuthState(status: AuthStatus.authenticated, user: res.user);
+  }
+
   Future<void> logout() async {
     final refresh = await _storage.readRefreshToken();
     if (refresh != null && refresh.isNotEmpty) {

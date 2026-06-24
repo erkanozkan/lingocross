@@ -187,6 +187,43 @@ public class AuthService : IAuthService
         return ToDto(user);
     }
 
+    public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken cancellationToken = default)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (user is null)
+        {
+            throw AppException.NotFound("Kullanıcı bulunamadı.");
+        }
+
+        user.DisplayName = request.DisplayName.Trim();
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return ToDto(user);
+    }
+
+    public async Task<AuthResponse> ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (user is null)
+        {
+            throw AppException.NotFound("Kullanıcı bulunamadı.");
+        }
+
+        if (!_passwordHasher.Verify(request.CurrentPassword, user.PasswordHash))
+        {
+            throw AppException.BadRequest("Mevcut şifre hatalı.");
+        }
+
+        user.PasswordHash = _passwordHasher.Hash(request.NewPassword);
+
+        // Güvenlik: şifre değişince mevcut tüm aktif refresh token'ları iptal et.
+        await RevokeAllActiveTokensAsync(userId, cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        // Çağıran istemcinin oturumu düşmesin diye yeni access+refresh çifti üret.
+        return await IssueTokensAsync(user, cancellationToken);
+    }
+
     private async Task<AuthResponse> IssueTokensAsync(User user, CancellationToken cancellationToken)
     {
         var access = _tokenService.CreateAccessToken(user);

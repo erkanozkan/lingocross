@@ -282,6 +282,10 @@ class _WordFormSheetState extends ConsumerState<WordFormSheet> {
                       controller: _termController,
                       enabled: !submitting,
                       style: AppTypography.bodyMd,
+                      // Dil terimleri için otomatik düzeltme/öneri kapalı.
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      textCapitalization: TextCapitalization.none,
                       decoration: InputDecoration(
                         hintText: l10n.wordsFormTermPlaceholder,
                         errorText:
@@ -402,6 +406,9 @@ class _MeaningField extends StatelessWidget {
               controller: row.controller,
               enabled: enabled,
               style: AppTypography.bodyMd,
+              autocorrect: false,
+              enableSuggestions: false,
+              textCapitalization: TextCapitalization.none,
               decoration: InputDecoration(hintText: l10n.wordsFormMeaningPlaceholder),
             ),
           ),
@@ -464,6 +471,9 @@ class _SynonymInput extends StatelessWidget {
           controller: controller,
           enabled: enabled,
           style: AppTypography.bodyMd,
+          autocorrect: false,
+          enableSuggestions: false,
+          textCapitalization: TextCapitalization.none,
           textInputAction: TextInputAction.done,
           inputFormatters: [
             // Virgül ile chip ekleme tetiklenir.

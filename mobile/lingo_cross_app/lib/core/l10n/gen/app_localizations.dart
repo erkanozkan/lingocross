@@ -201,6 +201,12 @@ abstract class AppLocalizations {
   /// **'Bağlantı hatası. Lütfen tekrar deneyin.'**
   String get authLoginErrorNetwork;
 
+  /// No description provided for @authLoginRememberMe.
+  ///
+  /// In tr, this message translates to:
+  /// **'Beni Hatırla'**
+  String get authLoginRememberMe;
+
   /// No description provided for @authRegisterAppbarLogin.
   ///
   /// In tr, this message translates to:
@@ -638,6 +644,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Taslak'**
   String get teacherDashboardLessonDraft;
+
+  /// No description provided for @teacherDashboardOpenProfile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profili aç'**
+  String get teacherDashboardOpenProfile;
 
   /// No description provided for @navClasses.
   ///
@@ -3020,6 +3032,180 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bulmacalar yüklenemedi'**
   String get myPuzzlesErrorTitle;
+
+  /// No description provided for @accountSettingsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap Ayarları'**
+  String get accountSettingsTitle;
+
+  /// No description provided for @accountEditProfileCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profili Düzenle'**
+  String get accountEditProfileCta;
+
+  /// No description provided for @accountGroupGeneral.
+  ///
+  /// In tr, this message translates to:
+  /// **'GENEL'**
+  String get accountGroupGeneral;
+
+  /// No description provided for @accountGroupSecurity.
+  ///
+  /// In tr, this message translates to:
+  /// **'GÜVENLİK'**
+  String get accountGroupSecurity;
+
+  /// No description provided for @accountGroupSupport.
+  ///
+  /// In tr, this message translates to:
+  /// **'DESTEK & HAKKIMIZDA'**
+  String get accountGroupSupport;
+
+  /// No description provided for @accountRowNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim Ayarları'**
+  String get accountRowNotifications;
+
+  /// No description provided for @accountRowLanguage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dil Tercihi'**
+  String get accountRowLanguage;
+
+  /// No description provided for @accountRowTheme.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tema'**
+  String get accountRowTheme;
+
+  /// No description provided for @accountRowThemeValueLight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get accountRowThemeValueLight;
+
+  /// No description provided for @accountRowChangePassword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifre Değiştir'**
+  String get accountRowChangePassword;
+
+  /// No description provided for @accountRowTwoFactor.
+  ///
+  /// In tr, this message translates to:
+  /// **'İki Faktörlü Doğrulama'**
+  String get accountRowTwoFactor;
+
+  /// No description provided for @accountRowHelpCenter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardım Merkezi'**
+  String get accountRowHelpCenter;
+
+  /// No description provided for @accountRowPrivacy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get accountRowPrivacy;
+
+  /// No description provided for @accountLogout.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış Yap'**
+  String get accountLogout;
+
+  /// No description provided for @accountVersion.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross v{version}'**
+  String accountVersion(String version);
+
+  /// No description provided for @accountSaveLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get accountSaveLabel;
+
+  /// No description provided for @accountSavingLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydediliyor…'**
+  String get accountSavingLabel;
+
+  /// No description provided for @accountEditProfileTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profili Düzenle'**
+  String get accountEditProfileTitle;
+
+  /// No description provided for @accountEditProfileNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad Soyad'**
+  String get accountEditProfileNameLabel;
+
+  /// No description provided for @accountEditProfileNamePlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adınızı girin'**
+  String get accountEditProfileNamePlaceholder;
+
+  /// No description provided for @accountEditProfileSavedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profiliniz güncellendi'**
+  String get accountEditProfileSavedSnack;
+
+  /// No description provided for @accountChangePasswordTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifre Değiştir'**
+  String get accountChangePasswordTitle;
+
+  /// No description provided for @accountChangePasswordCurrentLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut Şifre'**
+  String get accountChangePasswordCurrentLabel;
+
+  /// No description provided for @accountChangePasswordNewLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Şifre'**
+  String get accountChangePasswordNewLabel;
+
+  /// No description provided for @accountChangePasswordConfirmLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Şifre (Tekrar)'**
+  String get accountChangePasswordConfirmLabel;
+
+  /// No description provided for @accountChangePasswordMismatch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni şifreler eşleşmiyor.'**
+  String get accountChangePasswordMismatch;
+
+  /// No description provided for @accountChangePasswordWrongCurrent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut şifre hatalı.'**
+  String get accountChangePasswordWrongCurrent;
+
+  /// No description provided for @accountChangePasswordSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreyi Güncelle'**
+  String get accountChangePasswordSubmit;
+
+  /// No description provided for @accountChangePasswordSavedSnack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreniz değiştirildi'**
+  String get accountChangePasswordSavedSnack;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
