@@ -22,11 +22,17 @@ class WordFormSheet extends ConsumerStatefulWidget {
     super.key,
     required this.lessonId,
     required this.sourceLangLabel,
+    required this.targetLangLabel,
     this.word,
   });
 
   final String lessonId;
+
+  /// Dersin KAYNAK dili (terim etiketi için), lokalize ad.
   final String sourceLangLabel;
+
+  /// Dersin HEDEF dili (karşılık etiketi için), lokalize ad.
+  final String targetLangLabel;
 
   /// null → ekle, dolu → düzenle.
   final WordDto? word;
@@ -38,6 +44,7 @@ class WordFormSheet extends ConsumerStatefulWidget {
     BuildContext context, {
     required String lessonId,
     required String sourceLangLabel,
+    required String targetLangLabel,
     WordDto? word,
   }) {
     return showModalBottomSheet<bool>(
@@ -51,6 +58,7 @@ class WordFormSheet extends ConsumerStatefulWidget {
       builder: (_) => WordFormSheet(
         lessonId: lessonId,
         sourceLangLabel: sourceLangLabel,
+        targetLangLabel: targetLangLabel,
         word: word,
       ),
     );
@@ -293,7 +301,7 @@ class _WordFormSheetState extends ConsumerState<WordFormSheet> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    _Label(l10n.wordsFormMeaningLabel),
+                    _Label(l10n.wordsFormMeaningLabel(widget.targetLangLabel)),
                     const SizedBox(height: AppSpacing.xs),
                     for (var i = 0; i < _meanings.length; i++)
                       _MeaningField(

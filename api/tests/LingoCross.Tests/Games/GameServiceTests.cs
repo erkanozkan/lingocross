@@ -208,12 +208,13 @@ public class GameServiceTests
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
-        // 5 çevirili kelime ama yalnız 3'ü crossword-uygun (geri kalanların terimi Türkçe karakterli).
+        // 5 çevirili kelime ama yalnız 3'ü crossword-uygun (geri kalanlar çok kelimeli/tireli → uygunsuz).
+        // Not: tek kelime aksanlı terimler (örn. "çiçek") artık UYGUN; o yüzden burada boşluk/tire kullanıyoruz.
         var lesson = new Lesson { TeacherId = teacher.Id, Title = "Ders", IsPublished = false };
         AddWord(lesson, "apple", "elma", 0);
         AddWord(lesson, "book", "kitap", 1);
         AddWord(lesson, "table", "masa", 2);
-        AddWord(lesson, "çiçek", "flower-tr", 3); // Türkçe karakter → uygunsuz
+        AddWord(lesson, "book store", "kitapçı", 3); // boşluk → uygunsuz
         AddWord(lesson, "kitap evi", "bookstore", 4); // boşluk → uygunsuz
         db.Lessons.Add(lesson);
         await db.SaveChangesAsync();

@@ -35,9 +35,10 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   final _descriptionController = TextEditingController();
   final _scheduleController = TextEditingController();
 
-  // Stitch'te ayrı dil seçici yok → EN→TR varsayılanı korunur, picker gizli.
-  static const LanguageOption _source = LanguageOption.en;
-  static const LanguageOption _target = LanguageOption.tr;
+  // F9.2: ders bazlı kaynak→hedef dil çifti. Yeni derste en→tr varsayılan;
+  // düzenlemede mevcut dersin değerleri yüklenir. Aynı dil iki tarafta seçilemez.
+  LanguageOption _source = LanguageOption.fromCode(LanguageOption.defaultSource);
+  LanguageOption _target = LanguageOption.fromCode(LanguageOption.defaultTarget);
 
   bool _loaded = false;
   bool _dirty = false;
@@ -45,6 +46,10 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   String _initialTitle = '';
   String _initialDescription = '';
   String _initialSchedule = '';
+  LanguageOption _initialSource =
+      LanguageOption.fromCode(LanguageOption.defaultSource);
+  LanguageOption _initialTarget =
+      LanguageOption.fromCode(LanguageOption.defaultTarget);
 
   @override
   void initState() {
@@ -68,19 +73,48 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
     _titleController.text = lesson.title;
     _descriptionController.text = lesson.description ?? '';
     _scheduleController.text = lesson.scheduledLabel ?? '';
+    _source = LanguageOption.fromCode(lesson.sourceLanguage);
+    _target = LanguageOption.fromCode(lesson.targetLanguage);
+    // Aynı dil gelirse (eski/bozuk veri) hedefi farklı bir dile kaydır.
+    if (_target == _source) _target = _firstDifferentFrom(_source);
     _initialTitle = lesson.title;
     _initialDescription = lesson.description ?? '';
     _initialSchedule = lesson.scheduledLabel ?? '';
+    _initialSource = _source;
+    _initialTarget = _target;
+    _recomputeDirty();
+  }
+
+  /// [exclude] dışındaki ilk dil seçeneği — aynı-dil çakışmasını çözmek için.
+  LanguageOption _firstDifferentFrom(LanguageOption exclude) =>
+      LanguageOption.values.firstWhere((o) => o != exclude);
+
+  void _onSourceChanged(LanguageOption value) {
+    setState(() {
+      _source = value;
+      // Kaynak hedefe eşitlenirse hedefi otomatik farklı bir dile taşı.
+      if (_target == _source) _target = _firstDifferentFrom(_source);
+    });
+    _recomputeDirty();
+  }
+
+  void _onTargetChanged(LanguageOption value) {
+    if (value == _source) return; // aynı dil seçilemez (UI zaten engeller).
+    setState(() => _target = value);
     _recomputeDirty();
   }
 
   void _recomputeDirty() {
     final dirty =
         !widget.isEdit
-            ? _titleController.text.trim().isNotEmpty
+            ? _titleController.text.trim().isNotEmpty ||
+                _source != _initialSource ||
+                _target != _initialTarget
             : _titleController.text != _initialTitle ||
                 _descriptionController.text != _initialDescription ||
-                _scheduleController.text != _initialSchedule;
+                _scheduleController.text != _initialSchedule ||
+                _source != _initialSource ||
+                _target != _initialTarget;
     if (dirty != _dirty) {
       setState(() => _dirty = dirty);
     }
@@ -193,6 +227,14 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
               hintText: l10n.lessonFormFieldTopicsPlaceholder,
               enabled: !submitting,
               maxLines: 4,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _LanguagePair(
+              source: _source,
+              target: _target,
+              enabled: !submitting,
+              onSourceChanged: _onSourceChanged,
+              onTargetChanged: _onTargetChanged,
             ),
             const SizedBox(height: AppSpacing.lg),
             _VocabCard(
@@ -335,6 +377,134 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
       style: AppTypography.labelLg.copyWith(color: AppColors.onTertiary),
     ),
   );
+}
+
+/// Kaynak → hedef dil çifti seçici (F9.2). İki dropdown yan yana; aralarında
+/// yön oku. Hedef dropdown'da kaynakla aynı dil seçenek dışıdır (aynı dil
+/// engeli). Lumina form alanı stiliyle uyumlu (tonal zemin, lg köşe).
+class _LanguagePair extends StatelessWidget {
+  const _LanguagePair({
+    required this.source,
+    required this.target,
+    required this.enabled,
+    required this.onSourceChanged,
+    required this.onTargetChanged,
+  });
+
+  final LanguageOption source;
+  final LanguageOption target;
+  final bool enabled;
+  final ValueChanged<LanguageOption> onSourceChanged;
+  final ValueChanged<LanguageOption> onTargetChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(
+          child: _LanguageDropdown(
+            label: l10n.lessonFormFieldSourceLangLabel,
+            value: source,
+            // Kaynak tüm dilleri seçebilir.
+            options: LanguageOption.values,
+            enabled: enabled,
+            onChanged: onSourceChanged,
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Icon(Icons.arrow_forward, color: AppColors.onSurfaceVariant),
+        ),
+        Expanded(
+          child: _LanguageDropdown(
+            label: l10n.lessonFormFieldTargetLangLabel,
+            value: target,
+            // Hedef, kaynakla aynı dili seçemez (aynı-dil engeli).
+            options: LanguageOption.values.where((o) => o != source).toList(),
+            enabled: enabled,
+            onChanged: onTargetChanged,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LanguageDropdown extends StatelessWidget {
+  const _LanguageDropdown({
+    required this.label,
+    required this.value,
+    required this.options,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final String label;
+  final LanguageOption value;
+  final List<LanguageOption> options;
+  final bool enabled;
+  final ValueChanged<LanguageOption> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: AppSpacing.base),
+          child: Text(
+            label,
+            style: AppTypography.labelLg
+                .copyWith(color: AppColors.onSurfaceVariant),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        DropdownButtonFormField<LanguageOption>(
+          value: value,
+          isExpanded: true,
+          style: AppTypography.bodyMd.copyWith(color: AppColors.onSurface),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColors.surfaceContainerLowest,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            ),
+          ),
+          items: [
+            for (final option in options)
+              DropdownMenuItem<LanguageOption>(
+                value: option,
+                child: Text(
+                  option.label(l10n),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+          onChanged: enabled
+              ? (v) {
+                  if (v != null) onChanged(v);
+                }
+              : null,
+        ),
+      ],
+    );
+  }
 }
 
 class _Scaffold extends StatelessWidget {

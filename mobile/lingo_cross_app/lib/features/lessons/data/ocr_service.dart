@@ -52,14 +52,25 @@ class OcrService {
   /// Sonuç hem yerel adayları ([OcrRecognition.candidates]) hem de ham metni
   /// ([OcrRecognition.rawText]) içerir. Ham metin bulut AI zenginleştirmesi
   /// (`/api/ocr/enrich`) için kullanılır; başarısızlıkta yerel adaylara düşülür.
-  Future<OcrRecognition> recognize(String imagePath) async {
+  ///
+  /// [sourceLanguage]/[targetLanguage] dersin dil çiftidir (ISO kodu, F9.2);
+  /// dil-yönü düzeltmesi bu çifte göre yapılır. Verilmezse en→tr varsayılır.
+  Future<OcrRecognition> recognize(
+    String imagePath, {
+    String sourceLanguage = 'en',
+    String targetLanguage = 'tr',
+  }) async {
     final input = InputImage.fromFile(File(imagePath));
     final result = await _recognizer.processImage(input);
     final rawLines = <String>[
       for (final block in result.blocks)
         for (final line in block.lines) line.text,
     ];
-    final candidates = await _orienter.orient(parseOcrLines(rawLines));
+    final candidates = await _orienter.orient(
+      parseOcrLines(rawLines),
+      sourceLang: sourceLanguage,
+      targetLang: targetLanguage,
+    );
     return OcrRecognition(
       candidates: candidates,
       rawText: rawLines.join('\n'),

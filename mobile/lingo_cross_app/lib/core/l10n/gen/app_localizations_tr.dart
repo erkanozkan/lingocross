@@ -680,6 +680,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get langTurkish => 'Türkçe';
 
   @override
+  String get langNameEnglish => 'İngilizce';
+
+  @override
+  String get langNameTurkish => 'Türkçe';
+
+  @override
+  String get langNameGerman => 'Almanca';
+
+  @override
+  String get langNameSpanish => 'İspanyolca';
+
+  @override
+  String get langNameFrench => 'Fransızca';
+
+  @override
+  String get langNameItalian => 'İtalyanca';
+
+  @override
   String wordsListCount(int count) {
     return '$count kelime';
   }
@@ -743,7 +761,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wordsFormTermRequired => 'Terim gerekli';
 
   @override
-  String get wordsFormMeaningLabel => 'Türkçe Karşılık(lar)';
+  String wordsFormMeaningLabel(String lang) {
+    return '$lang Karşılık(lar)';
+  }
 
   @override
   String get wordsFormMeaningPlaceholder => 'Örn. çevre';
@@ -752,7 +772,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wordsFormMeaningAddMore => 'Karşılık Ekle';
 
   @override
-  String get wordsFormMeaningRequired => 'En az bir Türkçe karşılık girin';
+  String get wordsFormMeaningRequired => 'En az bir karşılık girin';
 
   @override
   String get wordsFormMeaningPrimaryLabel => 'Birincil karşılık';

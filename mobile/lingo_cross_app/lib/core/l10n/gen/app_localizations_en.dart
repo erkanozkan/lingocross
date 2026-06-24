@@ -680,6 +680,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get langTurkish => 'Turkish';
 
   @override
+  String get langNameEnglish => 'English';
+
+  @override
+  String get langNameTurkish => 'Turkish';
+
+  @override
+  String get langNameGerman => 'German';
+
+  @override
+  String get langNameSpanish => 'Spanish';
+
+  @override
+  String get langNameFrench => 'French';
+
+  @override
+  String get langNameItalian => 'Italian';
+
+  @override
   String wordsListCount(int count) {
     return '$count words';
   }
@@ -743,7 +761,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wordsFormTermRequired => 'Term is required';
 
   @override
-  String get wordsFormMeaningLabel => 'Turkish Meaning(s)';
+  String wordsFormMeaningLabel(String lang) {
+    return '$lang meaning(s)';
+  }
 
   @override
   String get wordsFormMeaningPlaceholder => 'e.g. çevre';
@@ -752,7 +772,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wordsFormMeaningAddMore => 'Add Meaning';
 
   @override
-  String get wordsFormMeaningRequired => 'Enter at least one Turkish meaning';
+  String get wordsFormMeaningRequired => 'Enter at least one meaning';
 
   @override
   String get wordsFormMeaningPrimaryLabel => 'Primary meaning';

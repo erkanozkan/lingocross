@@ -42,6 +42,7 @@ class OcrCaptureScreen extends ConsumerWidget {
       orElse: () => LanguageOption.defaultTarget,
     );
     final sourceLabel = LanguageOption.fromCode(sourceLang).label(l10n);
+    final targetLabel = LanguageOption.fromCode(targetLang).label(l10n);
 
     Future<void> pick(OcrImageSource source) async {
       await controller.pick(source);
@@ -57,6 +58,7 @@ class OcrCaptureScreen extends ConsumerWidget {
         context,
         lessonId: lessonId,
         sourceLangLabel: sourceLabel,
+        targetLangLabel: targetLabel,
       );
     }
 
@@ -77,6 +79,7 @@ class OcrCaptureScreen extends ConsumerWidget {
         extra: OcrReviewArgs(
           candidates: result?.candidates ?? const [],
           sourceLangLabel: sourceLabel,
+          targetLangLabel: targetLabel,
           failed: failed,
           enriched: result?.enriched ?? false,
         ),

@@ -8,6 +8,7 @@ import 'package:lingo_cross_app/core/theme/app_theme.dart';
 import 'package:lingo_cross_app/core/widgets/app_text_field.dart';
 import 'package:lingo_cross_app/core/widgets/primary_button_3d.dart';
 import 'package:lingo_cross_app/features/lessons/data/lessons_repository.dart';
+import 'package:lingo_cross_app/features/lessons/domain/language_option.dart';
 import 'package:lingo_cross_app/features/lessons/presentation/screens/lesson_form_screen.dart';
 
 import 'helpers/fake_lessons_repository.dart';
@@ -75,5 +76,78 @@ void main() {
     expect(scaffold.bottomNavigationBar, isNull,
         reason: 'Submit bar body içinde olmalı, bottomNavigationBar slotunda değil');
     expect(scaffold.resizeToAvoidBottomInset, isTrue);
+  });
+
+  // Dil seçiciler ListView'in alt kısmında; test viewport'una sığması için
+  // önce kaydır.
+  Future<void> revealLanguagePair(WidgetTester tester) async {
+    await tester.scrollUntilVisible(
+      find.text('Hedef Dil'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets(
+      'F9.2: kaynak + hedef dil seçici görünür, varsayılan en→tr (İngilizce→Türkçe)',
+      (tester) async {
+    await tester.pumpWidget(_wrap());
+    await tester.pumpAndSettle();
+    await revealLanguagePair(tester);
+
+    // İki dil dropdown'ı (kaynak + hedef).
+    expect(
+      find.byType(DropdownButtonFormField<LanguageOption>),
+      findsNWidgets(2),
+    );
+
+    // Alan etiketleri (tr).
+    expect(find.text('Kaynak Dil'), findsOneWidget);
+    expect(find.text('Hedef Dil'), findsOneWidget);
+
+    // Varsayılan seçili değerler: kaynak İngilizce, hedef Türkçe.
+    expect(find.text('İngilizce'), findsOneWidget);
+    expect(find.text('Türkçe'), findsOneWidget);
+  });
+
+  testWidgets(
+      'F9.2: kaynağı hedefle aynı dile (Türkçe) çevirince hedef otomatik farklı dile kayar',
+      (tester) async {
+    await tester.pumpWidget(_wrap());
+    await tester.pumpAndSettle();
+    await revealLanguagePair(tester);
+
+    final dropdowns = find.byType(DropdownButtonFormField<LanguageOption>);
+    // Kaynak dropdown'ı aç (ilk dropdown) ve "Türkçe" seç.
+    await tester.tap(dropdowns.first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Türkçe').last);
+    await tester.pumpAndSettle();
+
+    // Kaynak artık Türkçe (iki tarafta aynı dil olamaz → hedef farklı dile
+    // kaydı). Yani "Türkçe" yalnız bir kez (kaynakta) görünmeli; hedef başka
+    // bir dile (İngilizce'ye) düşer.
+    expect(find.text('Türkçe'), findsOneWidget);
+    expect(find.text('İngilizce'), findsOneWidget);
+  });
+
+  testWidgets(
+      'F9.2: hedef dropdown\'ında kaynakla aynı dil (İngilizce) öğe olarak listelenmez',
+      (tester) async {
+    await tester.pumpWidget(_wrap());
+    await tester.pumpAndSettle();
+    await revealLanguagePair(tester);
+
+    final dropdowns = find.byType(DropdownButtonFormField<LanguageOption>);
+    // Hedef dropdown'ı aç (ikinci dropdown). Kaynak = İngilizce olduğundan
+    // hedef menüsünde "İngilizce" öğesi bulunmamalı; ekranda yalnız kaynaktaki
+    // tek "İngilizce" görünür (menüde ekstra bir kopya çıkmaz).
+    await tester.tap(dropdowns.at(1));
+    await tester.pumpAndSettle();
+
+    expect(find.text('İngilizce'), findsOneWidget);
+    // Menü diğer dilleri (örn. Almanca) öğe olarak içerir.
+    expect(find.text('Almanca'), findsWidgets);
   });
 }

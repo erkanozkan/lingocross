@@ -6,8 +6,11 @@ import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../lessons/domain/language_option.dart';
+import '../../../lessons/presentation/lessons_notifier.dart';
 import '../../domain/game_type.dart';
 import '../../domain/games_failure.dart';
+import '../assigned_games_notifier.dart';
 import '../games_failure_messages.dart';
 import '../start_game_controller.dart';
 import 'crossword_game_screen.dart';
@@ -38,6 +41,41 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
 
   void _start() {
     ref.read(startGameControllerProvider.notifier).start(widget.gameId);
+  }
+
+  /// Oyunun ait olduğu dersin dil çiftini (ISO kodu) çözer (F9.2).
+  ///
+  /// Oturum başlatma yanıtı dil taşımadığından (DTO değişmiyor), atanan
+  /// bulmacalar listesinden bu oyunun dersini (`lessonId`) bulup
+  /// `lessonProvider` ile dersin kaynak/hedef dillerini okur. Liste/ders henüz
+  /// yüklenmemişse veya oyun bulunamazsa güvenli varsayılan en→tr döner; sütun
+  /// başlıkları yalnız etiket içindir, oyun verisini etkilemez.
+  ({String source, String target}) _languagePair() {
+    final lessonId = ref
+        .watch(assignedGamesNotifierProvider)
+        .maybeWhen(
+          data: (games) {
+            for (final g in games) {
+              if (g.id == widget.gameId) return g.lessonId;
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
+    if (lessonId == null) {
+      return (
+        source: LanguageOption.defaultSource,
+        target: LanguageOption.defaultTarget,
+      );
+    }
+    return ref.watch(lessonProvider(lessonId)).maybeWhen(
+          data: (lesson) =>
+              (source: lesson.sourceLanguage, target: lesson.targetLanguage),
+          orElse: () => (
+            source: LanguageOption.defaultSource,
+            target: LanguageOption.defaultTarget,
+          ),
+        );
   }
 
   @override
@@ -76,9 +114,12 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
                 onRetry: _start,
               );
             }
+            final langs = _languagePair();
             return WordMatchingGameScreen(
               sessionId: response.session.id,
               content: wordMatching,
+              sourceLanguage: langs.source,
+              targetLanguage: langs.target,
             );
         }
       },

@@ -26,10 +26,16 @@ public class CrosswordGeneratorTests
 
     [Theory]
     [InlineData("apple", "APPLE")]
-    [InlineData("Book Store", "BOOKSTORE")]
-    [InlineData("re-use", "REUSE")]
-    [InlineData("çiçek", "IEK")] // Türkçe karakterler düşer (ç,ç düşer; i,e,k kalır)
-    public void NormalizeAnswer_StripsNonAZ_AndUppercases(string input, string expected)
+    [InlineData("Book Store", "BOOKSTORE")] // boşluk atılır → birleşir
+    [InlineData("re-use", "REUSE")] // tire atılır → birleşir
+    [InlineData("çiçek", "CICEK")] // ç→C, i→I, ç→C, e→E, k→K
+    [InlineData("şeker", "SEKER")] // ş→S
+    [InlineData("naïve", "NAIVE")] // ï→I
+    [InlineData("schön", "SCHON")] // ö→O
+    [InlineData("niño", "NINO")] // ñ→N
+    [InlineData("ışık", "ISIK")] // ı→I, ş→S, ı→I, k→K (Türkçe-i bug kontrolü)
+    [InlineData("İstanbul", "ISTANBUL")] // İ→I (Türkçe büyük noktalı I)
+    public void NormalizeAnswer_FoldsAccents_StripsNonAZ_AndUppercases(string input, string expected)
     {
         Assert.Equal(expected, CrosswordGenerator.NormalizeAnswer(input));
     }
@@ -38,13 +44,15 @@ public class CrosswordGeneratorTests
     [InlineData("apple", true)]
     [InlineData("AB", true)]
     [InlineData("a", false)] // tek harf
-    [InlineData("book store", false)] // boşluk
-    [InlineData("re-use", false)] // tire
-    [InlineData("çiçek", false)] // Türkçe karakter
-    [InlineData("şeker", false)]
-    [InlineData("naïve", false)]
+    [InlineData("book store", false)] // boşluk → çok kelimeli, elenir
+    [InlineData("re-use", false)] // tire → elenir
+    [InlineData("çiçek", true)] // tek kelime aksanlı → CICEK (5 harf)
+    [InlineData("şeker", true)] // SEKER
+    [InlineData("naïve", true)] // NAIVE
+    [InlineData("ışık", true)] // ISIK (tek kelime → eligible)
+    [InlineData("İstanbul", true)] // ISTANBUL
     [InlineData("", false)]
-    public void IsEligibleTerm_OnlyAlphaMinTwo(string term, bool expected)
+    public void IsEligibleTerm_SingleWord_MinTwoAfterFold(string term, bool expected)
     {
         Assert.Equal(expected, CrosswordGenerator.IsEligibleTerm(term));
     }

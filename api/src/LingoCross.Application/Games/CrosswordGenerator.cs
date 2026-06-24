@@ -286,8 +286,50 @@ public static class CrosswordGenerator
     }
 
     /// <summary>
-    /// Bir İngilizce terimi crossword cevabına normalize eder: harfleri BÜYÜK yapar, A–Z dışındaki tüm
-    /// karakterleri (boşluk, tire, Türkçe karakterler dahil) atar. Sonuç A–Z dışı karakter içermez.
+    /// Latin aksan-katlama tablosu (büyük/küçük tüm varyantlar dahil). Aksanlı / Latin-türevi harfleri
+    /// A–Z karşılığına indirger; böylece DE/ES/FR/IT/TR (schön, niño, élève, şeker, çiçek) gibi kelimeler
+    /// crossword ızgarasında temel Latin harflere dönüşür.
+    ///
+    /// Türkçe-i kültür hatası uyarısı: 'i'→'I' ve 'ı'→'I' ile 'İ'→'I' eşlemeleri burada AÇIK olarak
+    /// tablolanır; <see cref="ToUpperInvariant"/>/<c>ToUpper(tr)</c> davranışına GÜVENİLMEZ. Tüm i/ı/İ/I → 'I'.
+    /// </summary>
+    private static readonly Dictionary<char, string> AccentFold = BuildAccentFold();
+
+    private static Dictionary<char, string> BuildAccentFold()
+    {
+        var map = new Dictionary<char, string>();
+
+        void Add(string variants, string target)
+        {
+            foreach (var ch in variants)
+            {
+                map[ch] = target;
+            }
+        }
+
+        Add("àâäáãåÀÂÄÁÃÅ", "A");
+        Add("éèêëÉÈÊË", "E");
+        // i-grubu: Türkçe ı/İ dahil; tüm i/ı/İ/I → 'I'.
+        Add("íìîïıÍÌÎÏİ", "I");
+        Add("óòôöõÓÒÔÖÕ", "O");
+        Add("úùûüÚÙÛÜ", "U");
+        Add("çÇ", "C");
+        Add("ñÑ", "N");
+        Add("ğĞ", "G");
+        Add("şŞ", "S");
+        Add("ÿŸ", "Y");
+        Add("ßẞ", "SS");
+
+        return map;
+    }
+
+    /// <summary>
+    /// Bir terimi crossword cevabına normalize eder. Önce açık Latin aksan-katlama tablosu uygulanır
+    /// (aksanlı harfler A–Z karşılığına indirilir), ardından A–Z dışındaki her şey (boşluk, tire, rakam,
+    /// kalan Latin-dışı karakterler) atılır. Sonuç yalnız A–Z BÜYÜK harf içerir.
+    ///
+    /// Türkçe-i kültür hatasına karşı büyütme açık tablo + <see cref="ToUpperInvariant"/> ile yapılır;
+    /// i/ı/İ/I'nın hepsi 'I'ya gider (örn. "çiçek"→"CICEK", "ışık"→"ISIK", "İstanbul"→"ISTANBUL").
     /// </summary>
     public static string NormalizeAnswer(string term)
     {
@@ -297,20 +339,35 @@ public static class CrosswordGenerator
         }
 
         var sb = new StringBuilder(term.Length);
-        foreach (var ch in term.ToUpperInvariant())
+        foreach (var ch in term)
         {
-            if (ch is >= 'A' and <= 'Z')
+            // 1) Açık katlama tablosu (aksanlı/Latin-türevi harfler → A–Z).
+            if (AccentFold.TryGetValue(ch, out var folded))
             {
-                sb.Append(ch);
+                sb.Append(folded);
+                continue;
             }
+
+            // 2) Tablo dışı: kültür-bağımsız büyüt, sonra yalnız A–Z bırak.
+            var upper = char.ToUpperInvariant(ch);
+            if (upper is >= 'A' and <= 'Z')
+            {
+                sb.Append(upper);
+            }
+
+            // Tablo + A–Z dışı (boşluk, tire, rakam, kalan Latin-dışı) atılır.
         }
 
         return sb.ToString();
     }
 
     /// <summary>
-    /// Bir terimin crossword'e uygun olup olmadığı: yalnız A–Z harfler, boşluk/tire/Türkçe karakter yok,
-    /// ve en az 2 harf. (Türkçe karakterli veya çok-kelimeli terimler ELENİR.)
+    /// Bir terimin crossword'e uygun olup olmadığı. Kural: orijinal terim trim sonrası TEK kelime olmalı
+    /// (boşluk/tire içermez) VE aksan-katlama sonrası en az 2 A–Z harf üretmeli.
+    ///
+    /// Böylece tek-kelime aksanlı terimler (çiçek, şeker, naïve, schön, ışık) artık ELIGIBLE olur; çok
+    /// kelimeli ("book store") veya tireli ("re-use") ifadeler — katlama harfleri birleştirse de —
+    /// MEVCUT davranışla tutarlı şekilde ELENİR.
     /// </summary>
     public static bool IsEligibleTerm(string term)
     {
@@ -320,22 +377,18 @@ public static class CrosswordGenerator
         }
 
         var trimmed = term.Trim();
-        if (trimmed.Length < 2)
-        {
-            return false;
-        }
 
-        // Her karakter A–Z (büyük/küçük) olmalı; aksi (boşluk, tire, ç/ğ/ı/ö/ş/ü vs.) → uygunsuz.
+        // Çok-kelimeli / tireli ifadeler elenir (mevcut davranış korunur).
         foreach (var ch in trimmed)
         {
-            var upper = char.ToUpperInvariant(ch);
-            if (upper is < 'A' or > 'Z')
+            if (char.IsWhiteSpace(ch) || ch is '-' or '‐' or '‑' or '‒' or '–' or '—')
             {
                 return false;
             }
         }
 
-        return true;
+        // Katlama sonrası en az 2 A–Z harf.
+        return NormalizeAnswer(trimmed).Length >= 2;
     }
 
     /// <summary>Crossword için bir kelimenin oynanabilmesi için minimum uygun terim sayısı.</summary>

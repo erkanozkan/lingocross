@@ -27,6 +27,35 @@ void main() {
     test('her ikisi null → takas yok (false)', () {
       expect(shouldSwapForLanguages(null, null), isFalse);
     });
+
+    test('F9.2: de→tr ders, terim tr + karşılık de → takas (true)', () {
+      expect(
+        shouldSwapForLanguages('tr', 'de', sourceLang: 'de', targetLang: 'tr'),
+        isTrue,
+      );
+    });
+
+    test('F9.2: de→tr ders, terim de + karşılık tr → takas yok (doğru yön)', () {
+      expect(
+        shouldSwapForLanguages('de', 'tr', sourceLang: 'de', targetLang: 'tr'),
+        isFalse,
+      );
+    });
+
+    test('F9.2: de→tr ders, eski tr/en kombinasyonu artık takas etmez', () {
+      // Ders çifti de→tr iken, en/tr satırı bu çifte uymaz → takas yok.
+      expect(
+        shouldSwapForLanguages('tr', 'en', sourceLang: 'de', targetLang: 'tr'),
+        isFalse,
+      );
+    });
+
+    test('F9.2: eşit kaynak/hedef dil → takas yok (false)', () {
+      expect(
+        shouldSwapForLanguages('en', 'en', sourceLang: 'en', targetLang: 'en'),
+        isFalse,
+      );
+    });
   });
 
   group('OcrLanguageOrienter.orient (sahte identify)', () {
