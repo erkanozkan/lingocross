@@ -7,6 +7,7 @@ String authFailureMessage(Object error, AppLocalizations l10n) {
     return switch (error) {
       InvalidCredentials() => l10n.authLoginErrorInvalidCredentials,
       EmailTaken() => l10n.authRegisterErrorEmailTaken,
+      WrongCurrentPassword() => l10n.accountChangePasswordWrongCurrent,
       NetworkFailure() => l10n.authLoginErrorNetwork,
       UnexpectedFailure() => l10n.commonErrorGeneric,
     };

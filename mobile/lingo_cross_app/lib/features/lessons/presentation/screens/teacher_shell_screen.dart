@@ -34,8 +34,12 @@ class _TeacherShellScreenState extends State<TeacherShellScreen> {
       body: IndexedStack(
         index: _index,
         children: [
-          // "Öğrenci Gelişimi" kartı → Raporlar sekmesi (index 2).
-          TeacherDashboardScreen(onOpenReports: () => _go(2)),
+          // "Öğrenci Gelişimi" kartı → Raporlar sekmesi (index 2);
+          // üst bar avatarı → Profil sekmesi (index 3).
+          TeacherDashboardScreen(
+            onOpenReports: () => _go(2),
+            onOpenProfile: () => _go(3),
+          ),
           const LessonsListScreen(),
           const TeacherReportsScreen(),
           TeacherProfileScreen(

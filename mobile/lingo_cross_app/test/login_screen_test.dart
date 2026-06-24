@@ -7,7 +7,9 @@ import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/storage/token_storage.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
 import 'package:lingo_cross_app/core/widgets/primary_button_3d.dart';
+import 'package:lingo_cross_app/features/auth/data/login_prefs.dart';
 import 'package:lingo_cross_app/features/auth/presentation/screens/login_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/fake_secure_storage.dart';
 
@@ -39,10 +41,11 @@ GoRouter _router({
   );
 }
 
-Widget _wrap(GoRouter router) {
+Widget _wrap(GoRouter router, SharedPreferences prefs) {
   return ProviderScope(
     overrides: [
       secureStorageProvider.overrideWithValue(FakeSecureStorage()),
+      sharedPreferencesProvider.overrideWithValue(prefs),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -60,9 +63,17 @@ Widget _wrap(GoRouter router) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  late SharedPreferences prefs;
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    prefs = await SharedPreferences.getInstance();
+  });
+
   testWidgets('Birleşik ekran hero + giriş formunu birlikte gösterir',
       (tester) async {
-    await tester.pumpWidget(_wrap(_router()));
+    await tester.pumpWidget(_wrap(_router(), prefs));
     await tester.pumpAndSettle();
 
     // Hero (karşılama).
@@ -81,7 +92,7 @@ void main() {
   });
 
   testWidgets('Rol kartları ve sosyal giriş gösterilmez', (tester) async {
-    await tester.pumpWidget(_wrap(_router()));
+    await tester.pumpWidget(_wrap(_router(), prefs));
     await tester.pumpAndSettle();
 
     // Welcome rol kartları kaldırıldı.
@@ -95,7 +106,7 @@ void main() {
 
   testWidgets('"Ücretsiz kayıt ol" → /register (rolsüz)', (tester) async {
     String? last;
-    await tester.pumpWidget(_wrap(_router(onRoute: (l) => last = l)));
+    await tester.pumpWidget(_wrap(_router(onRoute: (l) => last = l), prefs));
     await tester.pumpAndSettle();
 
     final cta = find.text('Ücretsiz kayıt ol');
@@ -110,7 +121,7 @@ void main() {
 
   testWidgets('"Şifremi Unuttum?" → /forgot-password', (tester) async {
     String? last;
-    await tester.pumpWidget(_wrap(_router(onRoute: (l) => last = l)));
+    await tester.pumpWidget(_wrap(_router(onRoute: (l) => last = l), prefs));
     await tester.pumpAndSettle();
 
     final link = find.text('Şifremi Unuttum?');

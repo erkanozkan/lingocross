@@ -63,6 +63,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authLoginErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';
 
   @override
+  String get authLoginRememberMe => 'Beni Hatırla';
+
+  @override
   String get authRegisterAppbarLogin => 'Giriş Yap';
 
   @override
@@ -288,6 +291,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get teacherDashboardLessonDraft => 'Taslak';
+
+  @override
+  String get teacherDashboardOpenProfile => 'Profili aç';
 
   @override
   String get navClasses => 'Sınıflar';
@@ -1567,4 +1573,93 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get myPuzzlesErrorTitle => 'Bulmacalar yüklenemedi';
+
+  @override
+  String get accountSettingsTitle => 'Hesap Ayarları';
+
+  @override
+  String get accountEditProfileCta => 'Profili Düzenle';
+
+  @override
+  String get accountGroupGeneral => 'GENEL';
+
+  @override
+  String get accountGroupSecurity => 'GÜVENLİK';
+
+  @override
+  String get accountGroupSupport => 'DESTEK & HAKKIMIZDA';
+
+  @override
+  String get accountRowNotifications => 'Bildirim Ayarları';
+
+  @override
+  String get accountRowLanguage => 'Dil Tercihi';
+
+  @override
+  String get accountRowTheme => 'Tema';
+
+  @override
+  String get accountRowThemeValueLight => 'Açık';
+
+  @override
+  String get accountRowChangePassword => 'Şifre Değiştir';
+
+  @override
+  String get accountRowTwoFactor => 'İki Faktörlü Doğrulama';
+
+  @override
+  String get accountRowHelpCenter => 'Yardım Merkezi';
+
+  @override
+  String get accountRowPrivacy => 'Gizlilik Politikası';
+
+  @override
+  String get accountLogout => 'Çıkış Yap';
+
+  @override
+  String accountVersion(String version) {
+    return 'LingoCross v$version';
+  }
+
+  @override
+  String get accountSaveLabel => 'Kaydet';
+
+  @override
+  String get accountSavingLabel => 'Kaydediliyor…';
+
+  @override
+  String get accountEditProfileTitle => 'Profili Düzenle';
+
+  @override
+  String get accountEditProfileNameLabel => 'Ad Soyad';
+
+  @override
+  String get accountEditProfileNamePlaceholder => 'Adınızı girin';
+
+  @override
+  String get accountEditProfileSavedSnack => 'Profiliniz güncellendi';
+
+  @override
+  String get accountChangePasswordTitle => 'Şifre Değiştir';
+
+  @override
+  String get accountChangePasswordCurrentLabel => 'Mevcut Şifre';
+
+  @override
+  String get accountChangePasswordNewLabel => 'Yeni Şifre';
+
+  @override
+  String get accountChangePasswordConfirmLabel => 'Yeni Şifre (Tekrar)';
+
+  @override
+  String get accountChangePasswordMismatch => 'Yeni şifreler eşleşmiyor.';
+
+  @override
+  String get accountChangePasswordWrongCurrent => 'Mevcut şifre hatalı.';
+
+  @override
+  String get accountChangePasswordSubmit => 'Şifreyi Güncelle';
+
+  @override
+  String get accountChangePasswordSavedSnack => 'Şifreniz değiştirildi';
 }

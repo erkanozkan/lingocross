@@ -12,6 +12,9 @@ sealed class AuthFailure with _$AuthFailure {
   /// 409 — register'da e-posta zaten kayıtlı.
   const factory AuthFailure.emailTaken() = EmailTaken;
 
+  /// 400 — şifre değiştirmede mevcut şifre hatalı.
+  const factory AuthFailure.wrongCurrentPassword() = WrongCurrentPassword;
+
   /// Ağ/bağlantı hatası.
   const factory AuthFailure.network() = NetworkFailure;
 

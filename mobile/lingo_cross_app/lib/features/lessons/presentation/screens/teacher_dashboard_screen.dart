@@ -18,11 +18,15 @@ import '../widgets/skeleton_card.dart';
 /// karşılama, birincil aksiyon kartları (bento), "Derslerim" listesi (boş/
 /// yükleniyor/hata durumları) ve M2 iskelet "Yeni Öğrenci Raporları" bölümü.
 class TeacherDashboardScreen extends ConsumerWidget {
-  const TeacherDashboardScreen({super.key, this.onOpenReports});
+  const TeacherDashboardScreen({super.key, this.onOpenReports, this.onOpenProfile});
 
   /// "Öğrenci Gelişimi" kartına dokununca Raporlar sekmesine geçer (kabuk verir).
   /// Verilmezse (örn. doğrudan bağlantı) öğrenci listesine `push` ile gider.
   final VoidCallback? onOpenReports;
+
+  /// Üst bardaki avatara dokununca Profil sekmesine geçer (kabuk verir).
+  /// Verilmezse avatar dekoratif kalır (no-op).
+  final VoidCallback? onOpenProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +48,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: AppSpacing.marginMobile),
-            child: _Avatar(name: name),
+            child: _Avatar(name: name, onTap: onOpenProfile),
           ),
         ],
       ),
@@ -79,14 +83,16 @@ class TeacherDashboardScreen extends ConsumerWidget {
 }
 
 class _Avatar extends StatelessWidget {
-  const _Avatar({required this.name});
+  const _Avatar({required this.name, this.onTap});
 
   final String name;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final initial = name.isNotEmpty ? name.characters.first.toUpperCase() : '?';
-    return Container(
+    final avatar = Container(
       width: 40,
       height: 40,
       alignment: Alignment.center,
@@ -98,6 +104,21 @@ class _Avatar extends StatelessWidget {
       child: Text(
         initial,
         style: AppTypography.labelLg.copyWith(color: AppColors.primary),
+      ),
+    );
+    if (onTap == null) return avatar;
+    // ≥48px dokunma hedefi için InkResponse'u büyüt; avatar 40px ortalı kalır.
+    return Semantics(
+      button: true,
+      label: l10n.teacherDashboardOpenProfile,
+      child: InkResponse(
+        onTap: onTap,
+        radius: 28,
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.base),
+          child: avatar,
+        ),
       ),
     );
   }

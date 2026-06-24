@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -76,7 +78,7 @@ class StudentProfileScreen extends ConsumerWidget {
           const _Achievements(),
           const SizedBox(height: AppSpacing.lg),
           _Menu(
-            onAccountSettings: comingSoon,
+            onAccountSettings: () => context.push(AppRoutes.accountSettings),
             onNotifications: comingSoon,
             onHelp: comingSoon,
             onLogout: () => ref.read(authNotifierProvider.notifier).logout(),

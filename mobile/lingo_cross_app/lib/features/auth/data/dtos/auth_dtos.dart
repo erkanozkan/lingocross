@@ -71,6 +71,28 @@ class ForgotPasswordRequest with _$ForgotPasswordRequest {
       _$ForgotPasswordRequestFromJson(json);
 }
 
+/// PUT /api/auth/me isteği — görünen ad güncelleme (UpdateProfileRequest).
+@freezed
+class UpdateProfileRequest with _$UpdateProfileRequest {
+  const factory UpdateProfileRequest({required String displayName}) =
+      _UpdateProfileRequest;
+
+  factory UpdateProfileRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateProfileRequestFromJson(json);
+}
+
+/// POST /api/auth/change-password isteği (ChangePasswordRequest).
+@freezed
+class ChangePasswordRequest with _$ChangePasswordRequest {
+  const factory ChangePasswordRequest({
+    required String currentPassword,
+    required String newPassword,
+  }) = _ChangePasswordRequest;
+
+  factory ChangePasswordRequest.fromJson(Map<String, dynamic> json) =>
+      _$ChangePasswordRequestFromJson(json);
+}
+
 /// POST /api/auth/reset-password isteği (ResetPasswordRequest).
 @freezed
 class ResetPasswordRequest with _$ResetPasswordRequest {

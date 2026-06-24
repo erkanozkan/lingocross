@@ -905,6 +905,355 @@ abstract class _ForgotPasswordRequest implements ForgotPasswordRequest {
   get copyWith => throw _privateConstructorUsedError;
 }
 
+UpdateProfileRequest _$UpdateProfileRequestFromJson(Map<String, dynamic> json) {
+  return _UpdateProfileRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UpdateProfileRequest {
+  String get displayName => throw _privateConstructorUsedError;
+
+  /// Serializes this UpdateProfileRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UpdateProfileRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UpdateProfileRequestCopyWith<UpdateProfileRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UpdateProfileRequestCopyWith<$Res> {
+  factory $UpdateProfileRequestCopyWith(
+    UpdateProfileRequest value,
+    $Res Function(UpdateProfileRequest) then,
+  ) = _$UpdateProfileRequestCopyWithImpl<$Res, UpdateProfileRequest>;
+  @useResult
+  $Res call({String displayName});
+}
+
+/// @nodoc
+class _$UpdateProfileRequestCopyWithImpl<
+  $Res,
+  $Val extends UpdateProfileRequest
+>
+    implements $UpdateProfileRequestCopyWith<$Res> {
+  _$UpdateProfileRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UpdateProfileRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? displayName = null}) {
+    return _then(
+      _value.copyWith(
+            displayName:
+                null == displayName
+                    ? _value.displayName
+                    : displayName // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$UpdateProfileRequestImplCopyWith<$Res>
+    implements $UpdateProfileRequestCopyWith<$Res> {
+  factory _$$UpdateProfileRequestImplCopyWith(
+    _$UpdateProfileRequestImpl value,
+    $Res Function(_$UpdateProfileRequestImpl) then,
+  ) = __$$UpdateProfileRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String displayName});
+}
+
+/// @nodoc
+class __$$UpdateProfileRequestImplCopyWithImpl<$Res>
+    extends _$UpdateProfileRequestCopyWithImpl<$Res, _$UpdateProfileRequestImpl>
+    implements _$$UpdateProfileRequestImplCopyWith<$Res> {
+  __$$UpdateProfileRequestImplCopyWithImpl(
+    _$UpdateProfileRequestImpl _value,
+    $Res Function(_$UpdateProfileRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UpdateProfileRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? displayName = null}) {
+    return _then(
+      _$UpdateProfileRequestImpl(
+        displayName:
+            null == displayName
+                ? _value.displayName
+                : displayName // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
+  const _$UpdateProfileRequestImpl({required this.displayName});
+
+  factory _$UpdateProfileRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UpdateProfileRequestImplFromJson(json);
+
+  @override
+  final String displayName;
+
+  @override
+  String toString() {
+    return 'UpdateProfileRequest(displayName: $displayName)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UpdateProfileRequestImpl &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, displayName);
+
+  /// Create a copy of UpdateProfileRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UpdateProfileRequestImplCopyWith<_$UpdateProfileRequestImpl>
+  get copyWith =>
+      __$$UpdateProfileRequestImplCopyWithImpl<_$UpdateProfileRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UpdateProfileRequestImplToJson(this);
+  }
+}
+
+abstract class _UpdateProfileRequest implements UpdateProfileRequest {
+  const factory _UpdateProfileRequest({required final String displayName}) =
+      _$UpdateProfileRequestImpl;
+
+  factory _UpdateProfileRequest.fromJson(Map<String, dynamic> json) =
+      _$UpdateProfileRequestImpl.fromJson;
+
+  @override
+  String get displayName;
+
+  /// Create a copy of UpdateProfileRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UpdateProfileRequestImplCopyWith<_$UpdateProfileRequestImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
+ChangePasswordRequest _$ChangePasswordRequestFromJson(
+  Map<String, dynamic> json,
+) {
+  return _ChangePasswordRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ChangePasswordRequest {
+  String get currentPassword => throw _privateConstructorUsedError;
+  String get newPassword => throw _privateConstructorUsedError;
+
+  /// Serializes this ChangePasswordRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ChangePasswordRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ChangePasswordRequestCopyWith<ChangePasswordRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ChangePasswordRequestCopyWith<$Res> {
+  factory $ChangePasswordRequestCopyWith(
+    ChangePasswordRequest value,
+    $Res Function(ChangePasswordRequest) then,
+  ) = _$ChangePasswordRequestCopyWithImpl<$Res, ChangePasswordRequest>;
+  @useResult
+  $Res call({String currentPassword, String newPassword});
+}
+
+/// @nodoc
+class _$ChangePasswordRequestCopyWithImpl<
+  $Res,
+  $Val extends ChangePasswordRequest
+>
+    implements $ChangePasswordRequestCopyWith<$Res> {
+  _$ChangePasswordRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ChangePasswordRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? currentPassword = null, Object? newPassword = null}) {
+    return _then(
+      _value.copyWith(
+            currentPassword:
+                null == currentPassword
+                    ? _value.currentPassword
+                    : currentPassword // ignore: cast_nullable_to_non_nullable
+                        as String,
+            newPassword:
+                null == newPassword
+                    ? _value.newPassword
+                    : newPassword // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$ChangePasswordRequestImplCopyWith<$Res>
+    implements $ChangePasswordRequestCopyWith<$Res> {
+  factory _$$ChangePasswordRequestImplCopyWith(
+    _$ChangePasswordRequestImpl value,
+    $Res Function(_$ChangePasswordRequestImpl) then,
+  ) = __$$ChangePasswordRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String currentPassword, String newPassword});
+}
+
+/// @nodoc
+class __$$ChangePasswordRequestImplCopyWithImpl<$Res>
+    extends
+        _$ChangePasswordRequestCopyWithImpl<$Res, _$ChangePasswordRequestImpl>
+    implements _$$ChangePasswordRequestImplCopyWith<$Res> {
+  __$$ChangePasswordRequestImplCopyWithImpl(
+    _$ChangePasswordRequestImpl _value,
+    $Res Function(_$ChangePasswordRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ChangePasswordRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? currentPassword = null, Object? newPassword = null}) {
+    return _then(
+      _$ChangePasswordRequestImpl(
+        currentPassword:
+            null == currentPassword
+                ? _value.currentPassword
+                : currentPassword // ignore: cast_nullable_to_non_nullable
+                    as String,
+        newPassword:
+            null == newPassword
+                ? _value.newPassword
+                : newPassword // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ChangePasswordRequestImpl implements _ChangePasswordRequest {
+  const _$ChangePasswordRequestImpl({
+    required this.currentPassword,
+    required this.newPassword,
+  });
+
+  factory _$ChangePasswordRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ChangePasswordRequestImplFromJson(json);
+
+  @override
+  final String currentPassword;
+  @override
+  final String newPassword;
+
+  @override
+  String toString() {
+    return 'ChangePasswordRequest(currentPassword: $currentPassword, newPassword: $newPassword)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ChangePasswordRequestImpl &&
+            (identical(other.currentPassword, currentPassword) ||
+                other.currentPassword == currentPassword) &&
+            (identical(other.newPassword, newPassword) ||
+                other.newPassword == newPassword));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, currentPassword, newPassword);
+
+  /// Create a copy of ChangePasswordRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ChangePasswordRequestImplCopyWith<_$ChangePasswordRequestImpl>
+  get copyWith =>
+      __$$ChangePasswordRequestImplCopyWithImpl<_$ChangePasswordRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ChangePasswordRequestImplToJson(this);
+  }
+}
+
+abstract class _ChangePasswordRequest implements ChangePasswordRequest {
+  const factory _ChangePasswordRequest({
+    required final String currentPassword,
+    required final String newPassword,
+  }) = _$ChangePasswordRequestImpl;
+
+  factory _ChangePasswordRequest.fromJson(Map<String, dynamic> json) =
+      _$ChangePasswordRequestImpl.fromJson;
+
+  @override
+  String get currentPassword;
+  @override
+  String get newPassword;
+
+  /// Create a copy of ChangePasswordRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ChangePasswordRequestImplCopyWith<_$ChangePasswordRequestImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}
+
 ResetPasswordRequest _$ResetPasswordRequestFromJson(Map<String, dynamic> json) {
   return _ResetPasswordRequest.fromJson(json);
 }

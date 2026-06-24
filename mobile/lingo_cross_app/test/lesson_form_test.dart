@@ -59,4 +59,21 @@ void main() {
     final screenH = tester.view.physicalSize.height / tester.view.devicePixelRatio;
     expect(btnSize.height, lessThan(screenH / 2));
   });
+
+  testWidgets(
+      'Klavye açıkken (viewInsets) form kaydırılabilir kalır ve submit bar görünür',
+      (tester) async {
+    // F4.1: klavye yüksekliği viewInsets.bottom olarak simüle edilir.
+    tester.view.viewInsets = const FakeViewPadding(bottom: 320);
+    addTearDown(tester.view.resetViewInsets);
+
+    await tester.pumpWidget(_wrap());
+    await tester.pumpAndSettle();
+
+    // Klavye altında dahi alanlar oluşur (ListView alt padding'ine viewInsets
+    // eklendiği için 0-yükseklik gövde regresyonu olmaz).
+    expect(find.byType(AppTextField), findsNWidgets(3));
+    // Submit bar (klavye üstünde, bottomNavigationBar yuvasında) görünür kalır.
+    expect(find.byType(PrimaryButton3D), findsOneWidget);
+  });
 }

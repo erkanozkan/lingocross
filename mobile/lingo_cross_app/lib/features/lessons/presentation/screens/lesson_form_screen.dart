@@ -145,11 +145,13 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
           onSubmit: () => _submit(context, l10n),
         ),
         body: ListView(
-          padding: const EdgeInsets.fromLTRB(
+          // Klavye açıkken son alanların görünür kalması için alt boşluğa
+          // klavye yüksekliği eklenir (referans: word_form_sheet.dart).
+          padding: EdgeInsets.fromLTRB(
             AppSpacing.marginMobile,
             AppSpacing.md,
             AppSpacing.marginMobile,
-            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
           ),
           children: [
             if (hasError) ...[
@@ -334,6 +336,9 @@ class _Scaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
+      // Klavye açıldığında gövde küçülür; _SubmitBar (bottomNavigationBar)
+      // klavyenin üstünde kalır.
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
