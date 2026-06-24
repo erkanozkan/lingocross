@@ -169,7 +169,31 @@ public class ClassService : IClassService
 
         await EnsureClassMembershipAsync(entity.Id, studentId, cancellationToken);
 
+        // Geri uyum: öğrenci panelinin "katıldı" durumu ve eski sürümler öğretmen↔öğrenci
+        // enrollment'ına güvenir. /enrollments/join köprüsüyle simetrik olsun diye burada da yaz.
+        await EnsureEnrollmentAsync(entity.TeacherId, studentId, cancellationToken);
+
         return new StudentClassDto(entity.Id, entity.Name, entity.Teacher.DisplayName);
+    }
+
+    /// <summary>(teacher, student) için Active enrollment yoksa oluşturur (idempotent).</summary>
+    private async Task EnsureEnrollmentAsync(Guid teacherId, Guid studentId, CancellationToken cancellationToken)
+    {
+        var exists = await _db.Enrollments
+            .AnyAsync(e => e.TeacherId == teacherId && e.StudentId == studentId, cancellationToken);
+
+        if (exists)
+        {
+            return;
+        }
+
+        _db.Enrollments.Add(new Enrollment
+        {
+            TeacherId = teacherId,
+            StudentId = studentId,
+            Status = EnrollmentStatus.Active,
+        });
+        await _db.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>

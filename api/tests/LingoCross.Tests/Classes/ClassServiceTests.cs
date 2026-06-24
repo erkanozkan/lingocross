@@ -193,6 +193,9 @@ public class ClassServiceTests
         Assert.Equal(created.Id, first.ClassId);
         Assert.Equal(created.Id, second.ClassId);
         Assert.Equal(1, await db.ClassMembers.CountAsync());
+        // Geri uyum: sınıfa katılım, öğrenci panelinin güvendiği Active enrollment'ı da yazar (idempotent).
+        Assert.Equal(1, await db.Enrollments.CountAsync(e =>
+            e.TeacherId == teacher.Id && e.StudentId == student.Id && e.Status == EnrollmentStatus.Active));
     }
 
     [Fact]
