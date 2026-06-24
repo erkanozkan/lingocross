@@ -1569,6 +1569,174 @@ abstract class AppLocalizations {
   /// **'Kelimeler yüklenemedi'**
   String get studentLessonError;
 
+  /// No description provided for @gameStarting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun hazırlanıyor…'**
+  String get gameStarting;
+
+  /// No description provided for @gameStartErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlanılamadı. Tekrar dene.'**
+  String get gameStartErrorNetwork;
+
+  /// No description provided for @gameStartErrorNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun bulunamadı.'**
+  String get gameStartErrorNotFound;
+
+  /// No description provided for @gameStartErrorForbidden.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu oyuna erişim iznin yok.'**
+  String get gameStartErrorForbidden;
+
+  /// No description provided for @gameStartErrorInsufficientWords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu derste oyun için yeterli kelime yok. Öğretmenin kelime ekleyince oyun hazır olacak.'**
+  String get gameStartErrorInsufficientWords;
+
+  /// No description provided for @gameMatchingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Eşleştirme'**
+  String get gameMatchingTitle;
+
+  /// No description provided for @gameMatchingCurrentGameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut Oyun'**
+  String get gameMatchingCurrentGameLabel;
+
+  /// No description provided for @gameMatchingCounter.
+  ///
+  /// In tr, this message translates to:
+  /// **'{matched} / {total}'**
+  String gameMatchingCounter(int matched, int total);
+
+  /// No description provided for @gameMatchingColEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'İngilizce'**
+  String get gameMatchingColEnglish;
+
+  /// No description provided for @gameMatchingColTurkish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get gameMatchingColTurkish;
+
+  /// No description provided for @gameMatchingColEnglishUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'İNGİLİZCE'**
+  String get gameMatchingColEnglishUpper;
+
+  /// No description provided for @gameMatchingColTurkishUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'TÜRKÇE'**
+  String get gameMatchingColTurkishUpper;
+
+  /// No description provided for @gameMatchingCurrentGameLabelUpper.
+  ///
+  /// In tr, this message translates to:
+  /// **'MEVCUT OYUN'**
+  String get gameMatchingCurrentGameLabelUpper;
+
+  /// No description provided for @gameMatchingTimerSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçen süre {time}'**
+  String gameMatchingTimerSemantic(String time);
+
+  /// No description provided for @gameMatchingEncouragement.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika gidiyorsun! Kelimeleri birleştirerek hız kazan.'**
+  String get gameMatchingEncouragement;
+
+  /// No description provided for @gameMatchingQuit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vazgeç'**
+  String get gameMatchingQuit;
+
+  /// No description provided for @gameMatchingQuitConfirmTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyundan çık?'**
+  String get gameMatchingQuitConfirmTitle;
+
+  /// No description provided for @gameMatchingQuitConfirmDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkarsan ilerlemen kaydedilmeyecek.'**
+  String get gameMatchingQuitConfirmDesc;
+
+  /// No description provided for @gameMatchingQuitConfirmConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çık'**
+  String get gameMatchingQuitConfirmConfirm;
+
+  /// No description provided for @gameMatchingQuitConfirmCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam Et'**
+  String get gameMatchingQuitConfirmCancel;
+
+  /// No description provided for @gameMatchingA11yMatched.
+  ///
+  /// In tr, this message translates to:
+  /// **'eşleşti'**
+  String get gameMatchingA11yMatched;
+
+  /// No description provided for @gameMatchingA11yWrong.
+  ///
+  /// In tr, this message translates to:
+  /// **'yanlış, tekrar dene'**
+  String get gameMatchingA11yWrong;
+
+  /// No description provided for @gameMatchingCompleteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tebrikler!'**
+  String get gameMatchingCompleteTitle;
+
+  /// No description provided for @gameMatchingCompleteMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm kelimeleri {matched}/{total} eşleştirdin. Süre: {time}.'**
+  String gameMatchingCompleteMessage(int matched, int total, String time);
+
+  /// No description provided for @gameMatchingCompleteFinish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitir'**
+  String get gameMatchingCompleteFinish;
+
+  /// No description provided for @gameMatchingEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu derste henüz oyun yok'**
+  String get gameMatchingEmptyTitle;
+
+  /// No description provided for @gameMatchingEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen yeterli kelime ekleyince oyun hazır olacak.'**
+  String get gameMatchingEmptyDesc;
+
+  /// No description provided for @gameMatchingError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun yüklenemedi'**
+  String get gameMatchingError;
+
   /// No description provided for @teacherStudentsAppBarTitle.
   ///
   /// In tr, this message translates to:

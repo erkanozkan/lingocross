@@ -23,4 +23,6 @@ public class Lesson : Entity
     public bool IsPublished { get; set; }
 
     public ICollection<Word> Words { get; set; } = new List<Word>();
+
+    public ICollection<Game> Games { get; set; } = new List<Game>();
 }

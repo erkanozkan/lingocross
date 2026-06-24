@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/enrollment/presentation/screens/join_teacher_screen.dart';
 import '../../features/enrollment/presentation/screens/student_dashboard_screen.dart';
 import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
+import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
@@ -34,6 +35,9 @@ abstract final class AppRoutes {
   static const String studentJoin = '/student/join';
 
   static String studentLesson(String id) => '/student/lessons/$id';
+
+  /// Kelime eşleştirme oyununu başlatır (lessonId üzerinden — M4).
+  static String studentGame(String lessonId) => '/student/games/$lessonId';
 
   // Öğretmen (M2) — korumalı + yalnız Teacher.
   static const String teacher = '/teacher';
@@ -138,6 +142,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/student/lessons/:id',
         builder: (context, state) =>
             StudentLessonScreen(lessonId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/student/games/:lessonId',
+        builder: (context, state) =>
+            GameLauncherScreen(lessonId: state.pathParameters['lessonId']!),
       ),
       // --- Öğretmen (M2/M3) ---
       GoRoute(

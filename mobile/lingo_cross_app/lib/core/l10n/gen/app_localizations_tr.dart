@@ -789,6 +789,96 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentLessonError => 'Kelimeler yüklenemedi';
 
   @override
+  String get gameStarting => 'Oyun hazırlanıyor…';
+
+  @override
+  String get gameStartErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get gameStartErrorNotFound => 'Oyun bulunamadı.';
+
+  @override
+  String get gameStartErrorForbidden => 'Bu oyuna erişim iznin yok.';
+
+  @override
+  String get gameStartErrorInsufficientWords => 'Bu derste oyun için yeterli kelime yok. Öğretmenin kelime ekleyince oyun hazır olacak.';
+
+  @override
+  String get gameMatchingTitle => 'Kelime Eşleştirme';
+
+  @override
+  String get gameMatchingCurrentGameLabel => 'Mevcut Oyun';
+
+  @override
+  String gameMatchingCounter(int matched, int total) {
+    return '$matched / $total';
+  }
+
+  @override
+  String get gameMatchingColEnglish => 'İngilizce';
+
+  @override
+  String get gameMatchingColTurkish => 'Türkçe';
+
+  @override
+  String get gameMatchingColEnglishUpper => 'İNGİLİZCE';
+
+  @override
+  String get gameMatchingColTurkishUpper => 'TÜRKÇE';
+
+  @override
+  String get gameMatchingCurrentGameLabelUpper => 'MEVCUT OYUN';
+
+  @override
+  String gameMatchingTimerSemantic(String time) {
+    return 'Geçen süre $time';
+  }
+
+  @override
+  String get gameMatchingEncouragement => 'Harika gidiyorsun! Kelimeleri birleştirerek hız kazan.';
+
+  @override
+  String get gameMatchingQuit => 'Vazgeç';
+
+  @override
+  String get gameMatchingQuitConfirmTitle => 'Oyundan çık?';
+
+  @override
+  String get gameMatchingQuitConfirmDesc => 'Çıkarsan ilerlemen kaydedilmeyecek.';
+
+  @override
+  String get gameMatchingQuitConfirmConfirm => 'Çık';
+
+  @override
+  String get gameMatchingQuitConfirmCancel => 'Devam Et';
+
+  @override
+  String get gameMatchingA11yMatched => 'eşleşti';
+
+  @override
+  String get gameMatchingA11yWrong => 'yanlış, tekrar dene';
+
+  @override
+  String get gameMatchingCompleteTitle => 'Tebrikler!';
+
+  @override
+  String gameMatchingCompleteMessage(int matched, int total, String time) {
+    return 'Tüm kelimeleri $matched/$total eşleştirdin. Süre: $time.';
+  }
+
+  @override
+  String get gameMatchingCompleteFinish => 'Bitir';
+
+  @override
+  String get gameMatchingEmptyTitle => 'Bu derste henüz oyun yok';
+
+  @override
+  String get gameMatchingEmptyDesc => 'Öğretmen yeterli kelime ekleyince oyun hazır olacak.';
+
+  @override
+  String get gameMatchingError => 'Oyun yüklenemedi';
+
+  @override
   String get teacherStudentsAppBarTitle => 'Öğrencilerim';
 
   @override

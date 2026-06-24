@@ -25,5 +25,9 @@ public interface IAppDbContext
 
     DbSet<WordSynonym> WordSynonyms { get; }
 
+    DbSet<Game> Games { get; }
+
+    DbSet<GameSession> GameSessions { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
