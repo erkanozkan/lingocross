@@ -141,6 +141,25 @@ public class ResultService : IResultService
             .ToList();
     }
 
+    public async Task<StudentStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        // Tamamlanmış sonuçlar = öğrencinin oturumlarına bağlı game_results kayıtları.
+        var scores = await _db.GameResults
+            .Where(r => r.Session.StudentId == studentId)
+            .Select(r => r.Score)
+            .ToListAsync(cancellationToken);
+
+        if (scores.Count == 0)
+        {
+            return new StudentStatsDto(0, 0);
+        }
+
+        var average = (int)Math.Round(scores.Average(), MidpointRounding.AwayFromZero);
+        return new StudentStatsDto(scores.Count, average);
+    }
+
     private async Task<GameResultDto> ToDtoAsync(GameResult result, CancellationToken cancellationToken)
     {
         // Submit/Share dönüşünde ders/oyun özetini doldurmak için oturum→oyun→ders zincirini çek.

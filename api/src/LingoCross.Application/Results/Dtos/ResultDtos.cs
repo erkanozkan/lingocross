@@ -26,3 +26,13 @@ public record GameResultDto(
     bool SharedWithTeacher,
     DateTime? SharedAt,
     DateTime CreatedAt);
+
+/// <summary>
+/// Öğrenci profil istatistikleri (F3.1). Yalnızca tamamlanmış oyun sonuçlarından türetilen iki
+/// gerçek metrik içerir; günlük seri / haftalık hedef / rozet bu fazda yoktur (mobil placeholder).
+/// </summary>
+public record StudentStatsDto(
+    /// <summary>Öğrencinin tamamlanmış oyun sonucu sayısı.</summary>
+    int GamesPlayed,
+    /// <summary>Bu sonuçların ortalama başarı puanı (0–100, AwayFromZero yuvarlanır); sonuç yoksa 0.</summary>
+    int AverageAccuracy);
