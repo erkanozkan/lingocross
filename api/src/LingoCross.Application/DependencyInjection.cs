@@ -6,6 +6,7 @@ using LingoCross.Application.Enrollments;
 using LingoCross.Application.Games;
 using LingoCross.Application.Lessons;
 using LingoCross.Application.Results;
+using LingoCross.Application.Teachers;
 using LingoCross.Application.Words;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IGameService>(sp =>
             new GameService(sp.GetRequiredService<IAppDbContext>(), sp.GetRequiredService<ICurrentUser>()));
         services.AddScoped<IResultService, ResultService>();
+        services.AddScoped<ITeacherTrackingService, TeacherTrackingService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;
