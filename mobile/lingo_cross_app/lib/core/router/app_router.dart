@@ -24,6 +24,7 @@ import '../../features/lessons/presentation/screens/word_list_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
 import '../../features/results/presentation/screens/game_result_report_screen.dart';
 import '../../features/results/presentation/screens/student_results_history_screen.dart';
+import '../../features/tracking/presentation/screens/student_report_screen.dart';
 
 /// Uygulama route adları.
 abstract final class AppRoutes {
@@ -61,6 +62,11 @@ abstract final class AppRoutes {
 
   static String gameNewForLesson(String lessonId) =>
       '/teacher/games/new?lessonId=$lessonId';
+
+  /// Öğretmen takip: bir öğrencinin paylaştığı sonuçlar (F2.3). Görünen ad
+  /// `extra` (String) ile taşınır; doğrudan derin-bağlantıda boş başlık olur.
+  static String teacherStudentResults(String studentId) =>
+      '/teacher/students/$studentId/results';
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
   static String lessonWords(String id) => '/teacher/lessons/$id/words';
@@ -190,6 +196,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.teacherStudents,
         builder: (context, state) => const TeacherStudentsScreen(),
+      ),
+      // Öğretmen takip: bir öğrencinin paylaştığı sonuçlar (F2.3). Görünen ad
+      // liste ekranından `extra` (String) ile taşınır.
+      GoRoute(
+        path: '/teacher/students/:id/results',
+        builder: (context, state) => StudentReportScreen(
+          studentId: state.pathParameters['id']!,
+          studentName: state.extra is String ? state.extra as String : '',
+        ),
       ),
       GoRoute(
         path: AppRoutes.lessonNew,

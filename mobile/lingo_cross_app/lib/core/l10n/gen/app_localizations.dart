@@ -2636,6 +2636,162 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu işlem için yetkiniz yok.'**
   String get resultsErrorForbidden;
+
+  /// No description provided for @trackingStudentsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci Raporları'**
+  String get trackingStudentsTitle;
+
+  /// No description provided for @trackingStudentsSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencilerinin paylaştığı oyun sonuçlarını takip et.'**
+  String get trackingStudentsSubtitle;
+
+  /// No description provided for @trackingStudentsListTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenciler'**
+  String get trackingStudentsListTitle;
+
+  /// No description provided for @trackingSharedCountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} paylaşılan sonuç'**
+  String trackingSharedCountLabel(int count);
+
+  /// No description provided for @trackingAverageLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama'**
+  String get trackingAverageLabel;
+
+  /// No description provided for @trackingAverageNone.
+  ///
+  /// In tr, this message translates to:
+  /// **'—'**
+  String get trackingAverageNone;
+
+  /// No description provided for @trackingLastActivityLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son aktivite: {date}'**
+  String trackingLastActivityLabel(String date);
+
+  /// No description provided for @trackingLastActivityNone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son aktivite: henüz yok'**
+  String get trackingLastActivityNone;
+
+  /// No description provided for @trackingStudentRowA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{name}, {count} paylaşılan sonuç'**
+  String trackingStudentRowA11y(String name, int count);
+
+  /// No description provided for @trackingStudentsEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz paylaşılan sonuç yok'**
+  String get trackingStudentsEmptyTitle;
+
+  /// No description provided for @trackingStudentsEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencilerin oyun sonuçlarını paylaşınca burada görünür. Henüz öğrencin yoksa Sınıflar sekmesinden davet kodunu paylaş.'**
+  String get trackingStudentsEmptyDesc;
+
+  /// No description provided for @trackingStudentsErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenciler yüklenemedi'**
+  String get trackingStudentsErrorTitle;
+
+  /// No description provided for @trackingDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci Raporu'**
+  String get trackingDetailTitle;
+
+  /// No description provided for @trackingDetailAverageLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama Doğruluk'**
+  String get trackingDetailAverageLabel;
+
+  /// No description provided for @trackingDetailResultsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşılan Sonuç'**
+  String get trackingDetailResultsLabel;
+
+  /// No description provided for @trackingDetailResultsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşılan Sonuçlar'**
+  String get trackingDetailResultsTitle;
+
+  /// No description provided for @trackingDetailEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz paylaşılan sonuç yok'**
+  String get trackingDetailEmptyTitle;
+
+  /// No description provided for @trackingDetailEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu öğrenci henüz seninle bir oyun sonucu paylaşmadı.'**
+  String get trackingDetailEmptyDesc;
+
+  /// No description provided for @trackingDetailErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonuçlar yüklenemedi'**
+  String get trackingDetailErrorTitle;
+
+  /// No description provided for @trackingResultA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{lesson}, doğruluk yüzde {percent}, süre {time}, {found} / {total}, {date}'**
+  String trackingResultA11y(String lesson, int percent, String time, int found, int total, String date);
+
+  /// No description provided for @gameTypeWordMatching.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Eşleştirme'**
+  String get gameTypeWordMatching;
+
+  /// No description provided for @gameTypeCrossword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca'**
+  String get gameTypeCrossword;
+
+  /// No description provided for @gameTypeQuestionSet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru Seti'**
+  String get gameTypeQuestionSet;
+
+  /// No description provided for @trackingErrorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlantı hatası. Lütfen tekrar deneyin.'**
+  String get trackingErrorNetwork;
+
+  /// No description provided for @trackingErrorNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci bulunamadı.'**
+  String get trackingErrorNotFound;
+
+  /// No description provided for @trackingErrorForbidden.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu işlem için yetkiniz yok.'**
+  String get trackingErrorForbidden;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

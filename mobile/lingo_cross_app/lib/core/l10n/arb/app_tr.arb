@@ -501,5 +501,39 @@
 
   "resultsErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
   "resultsErrorNotFound": "Sonuç bulunamadı.",
-  "resultsErrorForbidden": "Bu işlem için yetkiniz yok."
+  "resultsErrorForbidden": "Bu işlem için yetkiniz yok.",
+
+  "trackingStudentsTitle": "Öğrenci Raporları",
+  "trackingStudentsSubtitle": "Öğrencilerinin paylaştığı oyun sonuçlarını takip et.",
+  "trackingStudentsListTitle": "Öğrenciler",
+  "trackingSharedCountLabel": "{count} paylaşılan sonuç",
+  "@trackingSharedCountLabel": { "placeholders": { "count": { "type": "int" } } },
+  "trackingAverageLabel": "Ortalama",
+  "trackingAverageNone": "—",
+  "trackingLastActivityLabel": "Son aktivite: {date}",
+  "@trackingLastActivityLabel": { "placeholders": { "date": { "type": "String" } } },
+  "trackingLastActivityNone": "Son aktivite: henüz yok",
+  "trackingStudentRowA11y": "{name}, {count} paylaşılan sonuç",
+  "@trackingStudentRowA11y": { "placeholders": { "name": { "type": "String" }, "count": { "type": "int" } } },
+  "trackingStudentsEmptyTitle": "Henüz paylaşılan sonuç yok",
+  "trackingStudentsEmptyDesc": "Öğrencilerin oyun sonuçlarını paylaşınca burada görünür. Henüz öğrencin yoksa Sınıflar sekmesinden davet kodunu paylaş.",
+  "trackingStudentsErrorTitle": "Öğrenciler yüklenemedi",
+
+  "trackingDetailTitle": "Öğrenci Raporu",
+  "trackingDetailAverageLabel": "Ortalama Doğruluk",
+  "trackingDetailResultsLabel": "Paylaşılan Sonuç",
+  "trackingDetailResultsTitle": "Paylaşılan Sonuçlar",
+  "trackingDetailEmptyTitle": "Henüz paylaşılan sonuç yok",
+  "trackingDetailEmptyDesc": "Bu öğrenci henüz seninle bir oyun sonucu paylaşmadı.",
+  "trackingDetailErrorTitle": "Sonuçlar yüklenemedi",
+  "trackingResultA11y": "{lesson}, doğruluk yüzde {percent}, süre {time}, {found} / {total}, {date}",
+  "@trackingResultA11y": { "placeholders": { "lesson": { "type": "String" }, "percent": { "type": "int" }, "time": { "type": "String" }, "found": { "type": "int" }, "total": { "type": "int" }, "date": { "type": "String" } } },
+
+  "gameTypeWordMatching": "Kelime Eşleştirme",
+  "gameTypeCrossword": "Bulmaca",
+  "gameTypeQuestionSet": "Soru Seti",
+
+  "trackingErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
+  "trackingErrorNotFound": "Öğrenci bulunamadı.",
+  "trackingErrorForbidden": "Bu işlem için yetkiniz yok."
 }
