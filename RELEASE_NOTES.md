@@ -1,5 +1,14 @@
 # LingoCross — Sürüm Notları
 
+## v0.3 (2026-06-24) — Faz 3 (ilk parti): Öğrenci Profil + Bulmacalarım
+
+- **Öğrenci Profil (F3.1):** avatar+ad, **gerçek** oyun sayısı + %doğruluk (`GET /students/me/stats`),
+  Günlük Seri/Haftalık Hedef/Başarımlar placeholder, menü + gerçek çıkış.
+- **Bulmacalarım (F3.2, öğretmen):** öğretmenin tüm bulmacaları (tür, ders, atanan öğrenci, çözüm sayısı),
+  **Paylaş** (idempotent yeniden-yayın), alt istatistik. `GET /teachers/me/games`, `POST /games/{id}/share`.
+- Karar: bulmaca oluşturunca anında yayınlanır (kalıcı Taslak yok); Word Search ertelendi.
+- API 152 test, mobil 105 test yeşil; iOS simülatör build doğrulandı.
+
 ## v0.2 (2026-06-24) — Faz 2: Öğretmen otoring + bulmaca atama + takip
 
 MVP (v0.1) üzerine öğretmen iş akışını ve ikinci oyun türünü ekler.

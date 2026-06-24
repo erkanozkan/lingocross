@@ -56,15 +56,37 @@ flutter pub get
 flutter run
 ```
 
-## Deploy (Railway)
+## Deploy — API + PostgreSQL (Railway)
 
 1. Railway'de **PostgreSQL** servisi oluştur.
-2. API servisini repo'dan ekle, **Root Directory = `api/`** (Dockerfile otomatik kullanılır).
-3. Ortam değişkenleri:
-   - `ConnectionStrings__Default` (Npgsql formatı, Postgres servis değişkenlerine referansla)
-   - `Jwt__Secret`, `Jwt__Issuer`, `Jwt__Audience`, `Jwt__AccessTokenMinutes`, `Jwt__RefreshTokenDays`
-   - `Email__*` (SMTP)
-   - `ASPNETCORE_ENVIRONMENT=Production`
-4. Migration'lar uygulama başlangıcında otomatik uygulanır (`Database.Migrate()`).
+2. API servisini bu repo'dan ekle, **Root Directory = `api/`** (multi-stage `Dockerfile` otomatik kullanılır: `sdk:10.0` → `aspnet:10.0`).
+3. API servisi **ortam değişkenleri**:
+   ```
+   ConnectionStrings__Default = Host=${{Postgres.PGHOST}};Port=${{Postgres.PGPORT}};Database=${{Postgres.PGDATABASE}};Username=${{Postgres.PGUSER}};Password=${{Postgres.PGPASSWORD}};SSL Mode=Require;Trust Server Certificate=true
+   Jwt__Secret           = <güçlü rastgele ≥32 char>   # üret: openssl rand -base64 48
+   Jwt__Issuer           = lingocross
+   Jwt__Audience         = lingocross
+   Jwt__AccessTokenMinutes = 15
+   Jwt__RefreshTokenDays   = 30
+   ASPNETCORE_ENVIRONMENT  = Production
+   # Email__Host/Port/Username/Password/FromAddress/FromName  (opsiyonel)
+   ```
+   > `PORT` Railway tarafından otomatik verilir; `Program.cs` okur. `Email__*` ayarlanmazsa
+   > şifre-sıfırlama e-postası gönderilmez (stub log'a yazar) — beta için kabul edilebilir.
+4. Migration'lar uygulama başlangıcında otomatik uygulanır (`Database.MigrateAsync()`).
+5. **Doğrula:** `https://<railway-domain>/health` → `{ "status": "ok" }`. (Swagger yalnız Development'ta açık.)
 
-Ayrıntılı plan: `../.claude/plans/` altındaki MVP planı.
+## Deploy — Mobil (iOS TestFlight)
+
+> Önce Railway canlı olmalı; mobil build prod API domainine işaret eder.
+
+```bash
+cd mobile/lingo_cross_app
+flutter build ipa --release --dart-define=API_BASE_URL=https://<railway-domain>
+```
+- Bundle id: `com.lingocross.lingoCrossApp` · min iOS **15.5** (ML Kit gereği).
+- Xcode'da: Apple Developer Team + otomatik signing. App Store Connect'te aynı bundle id ile uygulama kaydı.
+- `.ipa`'yı Xcode Organizer / Transporter ile yükle → TestFlight'ta dağıt.
+- **Not:** OCR (ML Kit) yalnız gerçek cihazda; ilk build'de `pod install` gerekir.
+
+Ayrıntılı plan/runbook: `.claude/plans/` altındaki plan dosyası, bölüm 7.
