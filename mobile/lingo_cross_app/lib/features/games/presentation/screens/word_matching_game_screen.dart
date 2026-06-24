@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../lessons/domain/language_option.dart';
 import '../../../results/presentation/submit_result_controller.dart';
 import '../../data/dtos/game_dtos.dart';
 import '../../../results/presentation/results_failure_messages.dart';
@@ -31,11 +32,18 @@ class WordMatchingGameScreen extends ConsumerStatefulWidget {
     super.key,
     required this.sessionId,
     required this.content,
+    this.sourceLanguage = LanguageOption.defaultSource,
+    this.targetLanguage = LanguageOption.defaultTarget,
   });
 
   /// Sonuç gönderiminde kullanılan oyun oturumu kimliği.
   final String sessionId;
   final WordMatchingContent content;
+
+  /// Oyunun ait olduğu dersin KAYNAK/HEDEF dil kodları (ISO). Sol/sağ sütun
+  /// başlıkları bunlardan türetilir (F9.2). Bilinmiyorsa en→tr varsayılır.
+  final String sourceLanguage;
+  final String targetLanguage;
 
   @override
   ConsumerState<WordMatchingGameScreen> createState() =>
@@ -238,6 +246,15 @@ class _WordMatchingGameScreenState
                   _Board(
                     engine: _engine,
                     matchedLabel: l10n.gameMatchingA11yMatched,
+                    // F9.2: sütun başlıkları dersin dil çiftinden türetilir
+                    // (sol = kaynak, sağ = hedef). Lokalize ad olduğu gibi
+                    // kullanılır; toUpperCase() TR'de "i→İ" sorunu yaratacağı
+                    // için (örn. İngilizce→İNGILIZCE) BÜYÜK harfe çevrilmez,
+                    // görsel vurgu zaten label stili + letterSpacing ile verilir.
+                    sourceHeading:
+                        LanguageOption.fromCode(widget.sourceLanguage).label(l10n),
+                    targetHeading:
+                        LanguageOption.fromCode(widget.targetLanguage).label(l10n),
                     onTermTap: _onTermTap,
                     onTranslationTap: _onTranslationTap,
                   ),
@@ -391,24 +408,27 @@ class _Board extends StatelessWidget {
   const _Board({
     required this.engine,
     required this.matchedLabel,
+    required this.sourceHeading,
+    required this.targetHeading,
     required this.onTermTap,
     required this.onTranslationTap,
   });
 
   final WordMatchingEngine engine;
   final String matchedLabel;
+  final String sourceHeading;
+  final String targetHeading;
   final ValueChanged<int> onTermTap;
   final ValueChanged<int> onTranslationTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: _Column(
-            heading: l10n.gameMatchingColEnglishUpper,
+            heading: sourceHeading,
             children: [
               for (var i = 0; i < engine.terms.length; i++)
                 Padding(
@@ -425,7 +445,7 @@ class _Board extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: _Column(
-            heading: l10n.gameMatchingColTurkishUpper,
+            heading: targetHeading,
             children: [
               for (var i = 0; i < engine.translations.length; i++)
                 Padding(

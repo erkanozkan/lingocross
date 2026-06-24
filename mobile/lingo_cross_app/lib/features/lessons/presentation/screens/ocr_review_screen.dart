@@ -18,12 +18,18 @@ class OcrReviewArgs {
   const OcrReviewArgs({
     required this.candidates,
     required this.sourceLangLabel,
+    required this.targetLangLabel,
     this.failed = false,
     this.enriched = false,
   });
 
   final List<OcrCandidate> candidates;
+
+  /// Dersin KAYNAK dili (terim etiketi için), lokalize ad.
   final String sourceLangLabel;
+
+  /// Dersin HEDEF dili (karşılık etiketi için), lokalize ad.
+  final String targetLangLabel;
 
   /// ML Kit tarama hata fırlattıysa true → hata boş-durumu gösterilir.
   final bool failed;
@@ -293,6 +299,7 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
               row: _rows[i],
               index: i,
               sourceLangLabel: widget.args.sourceLangLabel,
+              targetLangLabel: widget.args.targetLangLabel,
               enabled: !_saving,
               highlightInvalid:
                   _showInvalidWarning && _rows[i].included && !_rows[i].isValid,
@@ -411,6 +418,7 @@ class _CandidateCard extends StatelessWidget {
     required this.row,
     required this.index,
     required this.sourceLangLabel,
+    required this.targetLangLabel,
     required this.enabled,
     required this.highlightInvalid,
     required this.onChanged,
@@ -424,6 +432,7 @@ class _CandidateCard extends StatelessWidget {
   final _ReviewRow row;
   final int index;
   final String sourceLangLabel;
+  final String targetLangLabel;
   final bool enabled;
   final bool highlightInvalid;
   final VoidCallback onChanged;
@@ -507,7 +516,7 @@ class _CandidateCard extends StatelessWidget {
             style: AppTypography.bodyMd,
             onChanged: (_) => onChanged(),
             decoration: InputDecoration(
-              labelText: l10n.wordsFormMeaningLabel,
+              labelText: l10n.wordsFormMeaningLabel(targetLangLabel),
               hintText: l10n.wordsFormMeaningPlaceholder,
             ),
           ),

@@ -1397,6 +1397,42 @@ abstract class AppLocalizations {
   /// **'Türkçe'**
   String get langTurkish;
 
+  /// No description provided for @langNameEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'İngilizce'**
+  String get langNameEnglish;
+
+  /// No description provided for @langNameTurkish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get langNameTurkish;
+
+  /// No description provided for @langNameGerman.
+  ///
+  /// In tr, this message translates to:
+  /// **'Almanca'**
+  String get langNameGerman;
+
+  /// No description provided for @langNameSpanish.
+  ///
+  /// In tr, this message translates to:
+  /// **'İspanyolca'**
+  String get langNameSpanish;
+
+  /// No description provided for @langNameFrench.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fransızca'**
+  String get langNameFrench;
+
+  /// No description provided for @langNameItalian.
+  ///
+  /// In tr, this message translates to:
+  /// **'İtalyanca'**
+  String get langNameItalian;
+
   /// No description provided for @wordsListCount.
   ///
   /// In tr, this message translates to:
@@ -1514,8 +1550,8 @@ abstract class AppLocalizations {
   /// No description provided for @wordsFormMeaningLabel.
   ///
   /// In tr, this message translates to:
-  /// **'Türkçe Karşılık(lar)'**
-  String get wordsFormMeaningLabel;
+  /// **'{lang} Karşılık(lar)'**
+  String wordsFormMeaningLabel(String lang);
 
   /// No description provided for @wordsFormMeaningPlaceholder.
   ///
@@ -1532,7 +1568,7 @@ abstract class AppLocalizations {
   /// No description provided for @wordsFormMeaningRequired.
   ///
   /// In tr, this message translates to:
-  /// **'En az bir Türkçe karşılık girin'**
+  /// **'En az bir karşılık girin'**
   String get wordsFormMeaningRequired;
 
   /// No description provided for @wordsFormMeaningPrimaryLabel.

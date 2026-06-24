@@ -365,6 +365,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               const OcrReviewArgs(
                 candidates: [],
                 sourceLangLabel: '',
+                targetLangLabel: '',
                 failed: true,
               ),
         ),

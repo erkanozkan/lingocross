@@ -20,15 +20,22 @@ const _content = WordMatchingContent(
   distractors: ['yolculuk'],
 );
 
-Widget _wrap({FakeResultsRepository? resultsRepo}) {
+Widget _wrap({
+  FakeResultsRepository? resultsRepo,
+  String sourceLanguage = 'en',
+  String targetLanguage = 'tr',
+  Locale locale = const Locale('tr'),
+}) {
   final router = GoRouter(
     initialLocation: '/game',
     routes: [
       GoRoute(
         path: '/game',
-        builder: (_, __) => const WordMatchingGameScreen(
+        builder: (_, __) => WordMatchingGameScreen(
           sessionId: 's1',
           content: _content,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage,
         ),
       ),
       GoRoute(path: '/student', builder: (_, __) => const Scaffold()),
@@ -54,7 +61,7 @@ Widget _wrap({FakeResultsRepository? resultsRepo}) {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('tr'),
+      locale: locale,
     ),
   );
 }
@@ -77,14 +84,42 @@ void main() {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
-    expect(find.text('İNGİLİZCE'), findsOneWidget);
-    expect(find.text('TÜRKÇE'), findsOneWidget);
+    // F9.2: sütun başlıkları dersin dil çiftinden gelir (varsayılan en→tr,
+    // lokalize ad, toUpperCase yok → "İngilizce"/"Türkçe").
+    expect(find.text('İngilizce'), findsOneWidget);
+    expect(find.text('Türkçe'), findsOneWidget);
     expect(find.text('0 / 2'), findsOneWidget);
     expect(find.text('00:00'), findsOneWidget);
     expect(find.text('Vazgeç'), findsOneWidget);
     // "Bitir" her zaman görünür; "İpucu" gösterilmez.
     expect(find.text('Bitir'), findsOneWidget);
     expect(find.text('İpucu'), findsNothing);
+  });
+
+  testWidgets(
+      'F9.2: de→tr ders → sütun başlıkları "Almanca"/"Türkçe" (tr locale)',
+      (tester) async {
+    await tester.pumpWidget(_wrap(sourceLanguage: 'de', targetLanguage: 'tr'));
+    await tester.pump();
+
+    expect(find.text('Almanca'), findsOneWidget);
+    expect(find.text('Türkçe'), findsOneWidget);
+    // Eski sabit "İNGİLİZCE"/"TÜRKÇE" başlığı görünmemeli.
+    expect(find.text('İngilizce'), findsNothing);
+  });
+
+  testWidgets(
+      'F9.2: de→es ders → başlıklar EN locale\'de "German"/"Spanish"',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      sourceLanguage: 'de',
+      targetLanguage: 'es',
+      locale: const Locale('en'),
+    ));
+    await tester.pump();
+
+    expect(find.text('German'), findsOneWidget);
+    expect(find.text('Spanish'), findsOneWidget);
   });
 
   testWidgets('serbest eşleştirme doğruluğu oyun sırasında göstermez', (

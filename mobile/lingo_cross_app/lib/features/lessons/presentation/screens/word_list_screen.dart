@@ -56,12 +56,15 @@ class WordListScreen extends ConsumerWidget {
     );
     final sourceLabel =
         LanguageOption.fromCode(sourceLang).label(l10n);
+    final targetLabel =
+        LanguageOption.fromCode(targetLang).label(l10n);
 
     Future<void> openAdd() async {
       await WordFormSheet.show(
         context,
         lessonId: lessonId,
         sourceLangLabel: sourceLabel,
+        targetLangLabel: targetLabel,
       );
     }
 
@@ -161,7 +164,7 @@ class WordListScreen extends ConsumerWidget {
                       WordCard(
                         word: word,
                         onTap: () => _openEdit(
-                            context, ref, word, sourceLabel),
+                            context, ref, word, sourceLabel, targetLabel),
                         onDelete: () =>
                             _deleteWord(context, ref, l10n, word),
                       ),
@@ -182,11 +185,13 @@ class WordListScreen extends ConsumerWidget {
     WidgetRef ref,
     WordDto word,
     String sourceLabel,
+    String targetLabel,
   ) async {
     await WordFormSheet.show(
       context,
       lessonId: lessonId,
       sourceLangLabel: sourceLabel,
+      targetLangLabel: targetLabel,
       word: word,
     );
   }

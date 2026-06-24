@@ -108,7 +108,12 @@ class OcrCaptureController extends _$OcrCaptureController {
     state = state.copyWith(phase: OcrCapturePhase.scanning);
     try {
       // 1) Cihaz-içi ML Kit tanıma (her zaman çalışır; yerel fallback adayları).
-      final recognition = await _service.recognize(path);
+      // Dil-yönü düzeltmesi dersin kaynak/hedef çiftine göre yapılır (F9.2).
+      final recognition = await _service.recognize(
+        path,
+        sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+      );
 
       // 2) Bulut AI zenginleştirme dene. Hata/503/boş → null → yerel fallback.
       state = state.copyWith(phase: OcrCapturePhase.enriching);

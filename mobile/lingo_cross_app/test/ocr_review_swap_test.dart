@@ -19,6 +19,7 @@ Widget _wrap() {
           args: OcrReviewArgs(
             candidates: [OcrCandidate(term: 'elma', meaning: 'apple')],
             sourceLangLabel: 'İngilizce',
+            targetLangLabel: 'Türkçe',
           ),
         ),
       ),

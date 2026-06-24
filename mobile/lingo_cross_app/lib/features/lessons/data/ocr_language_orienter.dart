@@ -2,21 +2,32 @@ import 'package:google_mlkit_language_id/google_mlkit_language_id.dart';
 
 import '../domain/ocr_line_parser.dart';
 
-/// Cihaz-içi dil tespitine göre OCR adaylarını "terim = kaynak dil (İngilizce),
-/// karşılık = hedef dil (Türkçe)" yönüne çeviren katman.
+/// Cihaz-içi dil tespitine göre OCR adaylarını dersin "terim = kaynak dil,
+/// karşılık = hedef dil" yönüne çeviren katman.
 ///
 /// OCR satır ayrıştırıcısı sıra-bazlıdır (ayraçtan önce = terim). Ama öğretmen
-/// kâğıda "elma - apple" yazarsa terim Türkçe, karşılık İngilizce çıkar. Bu
-/// sınıf iki tarafın dilini ML Kit ile tespit edip yalnız `tr → en` durumunda
-/// takas yapar; diğer tüm belirsiz/eşit/farklı kombinasyonlarda dokunmaz.
+/// kâğıda satırı ters yazarsa (örn. en→tr derste "elma - apple") terim hedef
+/// dilde, karşılık kaynak dilde çıkar. Bu sınıf iki tarafın dilini ML Kit ile
+/// tespit edip yalnız satır AÇIKÇA ters yönde (terim=hedef, karşılık=kaynak)
+/// olduğunda takas yapar; F9.2 ile ders dil çifti artık açık olduğundan yön
+/// dersten gelir, ML Kit yalnız bu ters-yön tespiti için bilgi sağlar.
 
 /// Saf (ML Kit'siz) karar fonksiyonu — birim testi yazılabilir.
 ///
-/// SADECE terim Türkçe (`tr`) ve karşılık İngilizce (`en`) tespit edildiğinde
-/// `true` döner; eşit diller, `und` (belirsiz), `null` veya başka kombinasyonlar
-/// için `false`. Yani yalnız "yanlış yönde" girilmiş satırlar takas edilir.
-bool shouldSwapForLanguages(String? termLang, String? meaningLang) {
-  return termLang == 'tr' && meaningLang == 'en';
+/// SADECE tespit edilen terim dili dersin HEDEF dili ([targetLang]) ve karşılık
+/// dili dersin KAYNAK dili ([sourceLang]) ise `true` döner; yani satır ters
+/// yöndedir ve takas gerekir. Eşit diller, `und` (belirsiz), `null` veya yön
+/// zaten doğru olan kombinasyonlarda `false`. [sourceLang]/[targetLang]
+/// verilmezse geriye dönük uyumluluk için en→tr varsayılır.
+bool shouldSwapForLanguages(
+  String? termLang,
+  String? meaningLang, {
+  String sourceLang = 'en',
+  String targetLang = 'tr',
+}) {
+  // Aynı çift (örn. dersi yok sayan eşit diller) için takas anlamsız.
+  if (sourceLang == targetLang) return false;
+  return termLang == targetLang && meaningLang == sourceLang;
 }
 
 /// ML Kit `LanguageIdentifier`'ı sarmalayan, test edilebilir yönlendirici.
@@ -54,7 +65,15 @@ class OcrLanguageOrienter {
   /// [shouldSwapForLanguages] `true` ise term ↔ meaning takas eder
   /// (`tooShort` yeni term'e göre yeniden hesaplanır). meaning'i boş/null olan
   /// adaylar olduğu gibi döner.
-  Future<List<OcrCandidate>> orient(List<OcrCandidate> candidates) async {
+  ///
+  /// [sourceLang]/[targetLang] dersin dil çiftidir (ISO kodu, F9.2). Satır
+  /// yalnız açıkça ters yöndeyse (terim=hedef, karşılık=kaynak) takas edilir.
+  /// Verilmezse geriye dönük uyumluluk için en→tr varsayılır.
+  Future<List<OcrCandidate>> orient(
+    List<OcrCandidate> candidates, {
+    String sourceLang = 'en',
+    String targetLang = 'tr',
+  }) async {
     final result = <OcrCandidate>[];
     for (final c in candidates) {
       final meaning = c.meaning;
@@ -66,7 +85,12 @@ class OcrLanguageOrienter {
       final termLang = await _identify(c.term);
       final meaningLang = await _identify(meaning);
 
-      if (shouldSwapForLanguages(termLang, meaningLang)) {
+      if (shouldSwapForLanguages(
+        termLang,
+        meaningLang,
+        sourceLang: sourceLang,
+        targetLang: targetLang,
+      )) {
         result.add(
           OcrCandidate(
             term: meaning,
