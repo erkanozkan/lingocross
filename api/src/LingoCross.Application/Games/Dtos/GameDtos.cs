@@ -42,14 +42,20 @@ public record GameSessionDto(
     DateTime? CompletedAt);
 
 /// <summary>
-/// Oturum başlatma yanıtı: oturum bilgisi + üretilmiş kelime eşleştirme içeriği.
-/// İstemci, içerikteki <see cref="WordMatchingContent.Pairs"/>'i sol sütun (terim), birincil
-/// çevirilerini + <see cref="WordMatchingContent.Distractors"/>'ı karıştırarak sağ sütun
-/// (Türkçe karşılıklar) olarak kurar.
+/// Oturum başlatma yanıtı: oturum bilgisi + üretilmiş oyun içeriği. İçerik <see cref="Type"/>'a göre
+/// tür-duyarlıdır; istemci türü okuyup yalnızca ilgili alanı kullanır:
+/// <list type="bullet">
+///   <item><see cref="GameType.WordMatching"/> → <see cref="WordMatching"/> doludur (diğeri null).</item>
+///   <item><see cref="GameType.Crossword"/> → <see cref="Crossword"/> doludur (diğeri null).</item>
+/// </list>
+/// Geriye dönük uyumluluk: WordMatching oturumlarında <see cref="WordMatching"/> önceki
+/// <c>Content</c> alanının aynısıdır (aynı şekil: pairs + distractors).
 /// </summary>
 public record StartGameSessionResponse(
     GameSessionDto Session,
-    WordMatchingContent Content);
+    GameType Type,
+    WordMatchingContent? WordMatching,
+    CrosswordContent? Crossword);
 
 /// <summary>
 /// Kelime eşleştirme oyun içeriği. <see cref="Pairs"/> doğru eşleşmeleri taşır; her çiftin
@@ -67,3 +73,45 @@ public record MatchingPair(
     Guid WordId,
     string Term,
     string CorrectTranslation);
+
+/// <summary>
+/// Crossword (bulmaca) oyun içeriği. Izgara <see cref="Rows"/>×<see cref="Cols"/> hücredir
+/// (0-tabanlı, satır-major). Her giriş bir kelimeyi temsil eder:
+/// <para>
+/// - <see cref="CrosswordEntry.Answer"/> doğru cevaptır: yalnız A–Z BÜYÜK harfler (İngilizce terimden
+///   normalize). MVP'de cevap istemciye gönderilir; doğrulama istemcide yapılır.<br/>
+/// - <see cref="CrosswordEntry.Clue"/> ipucudur: terimin birincil Türkçe karşılığı.<br/>
+/// - <see cref="CrosswordEntry.Row"/>/<see cref="CrosswordEntry.Col"/> kelimenin BAŞLANGIÇ hücresidir
+///   (0-tabanlı). across (yatay) ise harfler sütun artarak, down (dikey) ise satır artarak yerleşir.<br/>
+/// - <see cref="CrosswordEntry.Direction"/>: 0 = across (yatay), 1 = down (dikey).<br/>
+/// - <see cref="CrosswordEntry.Number"/> klasik bulmaca numarasıdır; başlangıç hücreleri satır-major
+///   sırada numaralanır, aynı hücreden hem across hem down başlıyorsa ikisi aynı numarayı paylaşır.
+/// </para>
+/// İstemci ızgarayı şöyle kurabilir: <see cref="Rows"/>×<see cref="Cols"/> boş ızgara aç; her giriş
+/// için başlangıç hücresinden yönüne göre <see cref="CrosswordEntry.Length"/> hücreyi işaretle.
+/// Kesişen hücrelerde harfler tutarlıdır (üretim bunu garanti eder).
+/// </summary>
+public record CrosswordContent(
+    int Rows,
+    int Cols,
+    IReadOnlyList<CrosswordEntry> Entries);
+
+/// <summary>Bulmacadaki tek bir kelime girişi. Bkz. <see cref="CrosswordContent"/>.</summary>
+public record CrosswordEntry(
+    int Number,
+    string Answer,
+    string Clue,
+    int Row,
+    int Col,
+    CrosswordDirection Direction,
+    int Length);
+
+/// <summary>Bulmaca kelime yönü. Sayısal değerler istemciyle paylaşılır.</summary>
+public enum CrosswordDirection
+{
+    /// <summary>Yatay (soldan sağa); harfler sütun artarak yerleşir.</summary>
+    Across = 0,
+
+    /// <summary>Dikey (yukarıdan aşağı); harfler satır artarak yerleşir.</summary>
+    Down = 1,
+}
