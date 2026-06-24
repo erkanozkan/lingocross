@@ -2225,4 +2225,67 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyContactEmailSubject => 'LingoCross Gizlilik Sorusu';
+
+  @override
+  String get paywallTitle => 'Premium';
+
+  @override
+  String get paywallHeadline => 'Premium\'a Yükselt';
+
+  @override
+  String get paywallBannerOcr => 'Kameradan tarama Premium özelliğidir.';
+
+  @override
+  String get paywallBannerClassLimit => 'Daha fazla sınıf oluşturmak Premium özelliğidir.';
+
+  @override
+  String get paywallBannerLessonLimit => 'Daha fazla ders oluşturmak Premium özelliğidir.';
+
+  @override
+  String get paywallBannerMultiTeacher => 'Birden fazla öğretmene katılmak Premium özelliğidir.';
+
+  @override
+  String get paywallBannerDefault => 'Bu özellik Premium ile kullanılabilir.';
+
+  @override
+  String get paywallBenefitUnlimitedClasses => 'Sınırsız sınıf ve ders';
+
+  @override
+  String get paywallBenefitOcr => 'Kameradan kelime tarama (OCR)';
+
+  @override
+  String get paywallBenefitMultiTeacher => 'Birden fazla öğretmene katılma';
+
+  @override
+  String get paywallPlanMonthlyTitle => 'Aylık';
+
+  @override
+  String get paywallPlanAnnualTitle => 'Yıllık';
+
+  @override
+  String get paywallPlanTrialTitle => 'Ücretsiz deneme';
+
+  @override
+  String get paywallPlanPriceComingSoon => 'Yakında';
+
+  @override
+  String get paywallPlanTrialSubtitle => 'Önce dene, sonra karar ver';
+
+  @override
+  String get paywallCta => 'Yükselt';
+
+  @override
+  String get paywallSkip => 'Şimdilik geç';
+
+  @override
+  String get paywallActivateSuccess => 'Premium etkinleştirildi.';
+
+  @override
+  String get paywallPurchaseDisabled => 'Şu an satın alma kapalı (test).';
+
+  @override
+  String get paywallActivateError => 'Bir hata oluştu, lütfen tekrar deneyin.';
+
+  @override
+  String get lockedFeatureLabel => 'Premium';
 }

@@ -7,6 +7,8 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../lessons_notifier.dart';
 import '../widgets/lesson_list_card.dart';
 import '../widgets/skeleton_card.dart';
@@ -22,6 +24,21 @@ class LessonsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final lessonsAsync = ref.watch(lessonsNotifierProvider);
+
+    // Ders oluşturma proaktif kilidi (F8.2): ücretsiz ders limiti aşılırsa
+    // oluşturma paywall'a yönlenir. Durum/sayı belirsizse kilitsiz (reaktif
+    // 402 güvenlik ağı).
+    final lessonCount =
+        lessonsAsync.maybeWhen(data: (l) => l.length, orElse: () => 0);
+    final createLocked = ref.watch(subscriptionNotifierProvider).maybeWhen(
+          data: (sub) => !sub.canCreateLesson(lessonCount),
+          orElse: () => false,
+        );
+    void openCreate() {
+      context.push(
+        createLocked ? AppRoutes.paywallFor('lesson_limit') : AppRoutes.lessonNew,
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -45,7 +62,7 @@ class LessonsListScreen extends ConsumerWidget {
             AppSpacing.xl,
           ),
           children: [
-            _CreateButton(onTap: () => context.push(AppRoutes.lessonNew)),
+            _CreateButton(onTap: openCreate, locked: createLocked),
             const SizedBox(height: AppSpacing.lg),
             lessonsAsync.when(
               loading: () => Column(
@@ -65,9 +82,7 @@ class LessonsListScreen extends ConsumerWidget {
               ),
               data: (lessons) {
                 if (lessons.isEmpty) {
-                  return _EmptyState(
-                    onCreate: () => context.push(AppRoutes.lessonNew),
-                  );
+                  return _EmptyState(onCreate: openCreate);
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,9 +114,10 @@ class LessonsListScreen extends ConsumerWidget {
 }
 
 class _CreateButton extends StatelessWidget {
-  const _CreateButton({required this.onTap});
+  const _CreateButton({required this.onTap, this.locked = false});
 
   final VoidCallback onTap;
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +144,8 @@ class _CreateButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add_circle, color: AppColors.onPrimary),
+              Icon(locked ? Icons.lock : Icons.add_circle,
+                  color: AppColors.onPrimary),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 l10n.lessonsListCreate,

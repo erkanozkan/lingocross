@@ -4244,6 +4244,132 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'LingoCross Gizlilik Sorusu'**
   String get privacyContactEmailSubject;
+
+  /// Paywall ekranı başlığı (AppBar).
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium'**
+  String get paywallTitle;
+
+  /// Paywall hero başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium\'a Yükselt'**
+  String get paywallHeadline;
+
+  /// No description provided for @paywallBannerOcr.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kameradan tarama Premium özelliğidir.'**
+  String get paywallBannerOcr;
+
+  /// No description provided for @paywallBannerClassLimit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha fazla sınıf oluşturmak Premium özelliğidir.'**
+  String get paywallBannerClassLimit;
+
+  /// No description provided for @paywallBannerLessonLimit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha fazla ders oluşturmak Premium özelliğidir.'**
+  String get paywallBannerLessonLimit;
+
+  /// No description provided for @paywallBannerMultiTeacher.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birden fazla öğretmene katılmak Premium özelliğidir.'**
+  String get paywallBannerMultiTeacher;
+
+  /// No description provided for @paywallBannerDefault.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özellik Premium ile kullanılabilir.'**
+  String get paywallBannerDefault;
+
+  /// No description provided for @paywallBenefitUnlimitedClasses.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınırsız sınıf ve ders'**
+  String get paywallBenefitUnlimitedClasses;
+
+  /// No description provided for @paywallBenefitOcr.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kameradan kelime tarama (OCR)'**
+  String get paywallBenefitOcr;
+
+  /// No description provided for @paywallBenefitMultiTeacher.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birden fazla öğretmene katılma'**
+  String get paywallBenefitMultiTeacher;
+
+  /// No description provided for @paywallPlanMonthlyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aylık'**
+  String get paywallPlanMonthlyTitle;
+
+  /// No description provided for @paywallPlanAnnualTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yıllık'**
+  String get paywallPlanAnnualTitle;
+
+  /// No description provided for @paywallPlanTrialTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ücretsiz deneme'**
+  String get paywallPlanTrialTitle;
+
+  /// Fiyat yer tutucusu (henüz belirlenmedi).
+  ///
+  /// In tr, this message translates to:
+  /// **'Yakında'**
+  String get paywallPlanPriceComingSoon;
+
+  /// No description provided for @paywallPlanTrialSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce dene, sonra karar ver'**
+  String get paywallPlanTrialSubtitle;
+
+  /// Paywall ana aksiyon butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yükselt'**
+  String get paywallCta;
+
+  /// No description provided for @paywallSkip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdilik geç'**
+  String get paywallSkip;
+
+  /// Stub satın alma başarı mesajı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium etkinleştirildi.'**
+  String get paywallActivateSuccess;
+
+  /// 503 stub kapalı mesajı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şu an satın alma kapalı (test).'**
+  String get paywallPurchaseDisabled;
+
+  /// No description provided for @paywallActivateError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir hata oluştu, lütfen tekrar deneyin.'**
+  String get paywallActivateError;
+
+  /// Kilitli özellik rozeti etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium'**
+  String get lockedFeatureLabel;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

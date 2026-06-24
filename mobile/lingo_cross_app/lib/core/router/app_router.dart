@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../network/paywall_events.dart';
 import '../../features/auth/domain/user_role.dart';
 import '../../features/auth/presentation/auth_notifier.dart';
 import '../../features/auth/presentation/auth_state.dart';
@@ -31,6 +34,7 @@ import '../../features/account/presentation/screens/notification_settings_screen
 import '../../features/account/presentation/screens/privacy_policy_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 import '../../features/profile/presentation/screens/student_profile_screen.dart';
+import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
 import '../../features/results/presentation/screens/game_result_report_screen.dart';
 import '../../features/results/presentation/screens/student_results_history_screen.dart';
@@ -55,6 +59,12 @@ abstract final class AppRoutes {
   static const String accountLanguage = '/account/language';
   static const String accountHelp = '/account/help';
   static const String accountPrivacy = '/account/privacy';
+
+  /// Paywall (F8.2) — abonelik yükseltme. Her iki rol erişir (authed yeter),
+  /// `?feature=` ile hangi özelliğin kilidi açılmak istendiği taşınır.
+  static const String paywall = '/paywall';
+
+  static String paywallFor(String feature) => '/paywall?feature=$feature';
 
   // Öğrenci (M3) — korumalı + yalnız Student.
   static const String student = '/student';
@@ -143,7 +153,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   final refreshListenable = _AuthListenable(ref);
   ref.onDispose(refreshListenable.dispose);
 
-  return GoRouter(
+  final router = GoRouter(
     initialLocation: AppRoutes.login,
     refreshListenable: refreshListenable,
     redirect: (context, state) {
@@ -213,6 +223,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.accountPrivacy,
         builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      // Paywall (F8.2) — abonelik yükseltme. Her iki rol; `?feature=` ile
+      // hangi kilidin açılmak istendiği taşınır (placeholder ekran).
+      GoRoute(
+        path: AppRoutes.paywall,
+        builder: (context, state) =>
+            PaywallScreen(feature: state.uri.queryParameters['feature']),
       ),
       // --- Öğrenci (M3) ---
       GoRoute(
@@ -354,4 +371,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
+
+  // 402 köprüsü: interceptor bir özelliği yayınladığında paywall'a push et.
+  // Çift-paywall debounce: halihazırda /paywall açıksa tekrar push etme.
+  final paywallEvents = ref.watch(paywallEventsProvider);
+  final StreamSubscription<String> paywallSub =
+      paywallEvents.stream.listen((feature) {
+    final current =
+        router.routerDelegate.currentConfiguration.uri.path;
+    if (current == AppRoutes.paywall) return;
+    final f = feature.isEmpty ? 'unknown' : feature;
+    router.push(AppRoutes.paywallFor(f));
+  });
+  ref.onDispose(paywallSub.cancel);
+
+  return router;
 });

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_config.dart';
 import '../storage/token_storage.dart';
 import 'auth_interceptor.dart';
+import 'entitlement_interceptor.dart';
+import 'paywall_events.dart';
 
 /// Oturum sonlandığında (refresh kalıcı başarısız) tetiklenen olay deposu.
 ///
@@ -29,6 +31,7 @@ final sessionEventsProvider = Provider<SessionEvents>((ref) => SessionEvents());
 final dioProvider = Provider<Dio>((ref) {
   final tokenStorage = ref.watch(tokenStorageProvider);
   final sessionEvents = ref.watch(sessionEventsProvider);
+  final paywallEvents = ref.watch(paywallEventsProvider);
 
   final dio = Dio(
     BaseOptions(
@@ -45,6 +48,10 @@ final dioProvider = Provider<Dio>((ref) {
       onSessionExpired: sessionEvents.notifyExpired,
     ),
   );
+
+  // 402 → paywall köprüsü. AuthInterceptor'dan SONRA eklenir ki 401 refresh
+  // akışı önce çalışsın; 402 yalnız entitlement eksikliğinde gelir.
+  dio.interceptors.add(EntitlementInterceptor(paywallEvents));
 
   return dio;
 });
