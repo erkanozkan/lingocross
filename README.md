@@ -82,9 +82,13 @@ flutter run
 
 ```bash
 cd mobile/lingo_cross_app
-flutter build ipa --release --dart-define=API_BASE_URL=https://<railway-domain>
+flutter pub get
+flutter build ipa --release \
+  --dart-define=API_BASE_URL=https://lingocross-production.up.railway.app
 ```
-- Bundle id: `com.lingocross.lingoCrossApp` · min iOS **15.5** (ML Kit gereği).
+> `API_BASE_URL` yalnızca host'tur; `/api` ön eki kodda eklenir (`AppConfig.apiPrefix`).
+
+- Bundle id: `com.lingocross.lingoCrossApp` · min iOS **15.5** (ML Kit gereği). Görünen ad: **LingoCross**.
 - Xcode'da: Apple Developer Team + otomatik signing. App Store Connect'te aynı bundle id ile uygulama kaydı.
 - `.ipa`'yı Xcode Organizer / Transporter ile yükle → TestFlight'ta dağıt.
 - **Not:** OCR (ML Kit) yalnız gerçek cihazda; ilk build'de `pod install` gerekir.
