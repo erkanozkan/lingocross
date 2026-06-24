@@ -9,8 +9,8 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/auth_notifier.dart';
-import '../../../lessons/data/dtos/lesson_dtos.dart';
-import '../../../lessons/presentation/lessons_notifier.dart';
+import '../../../games/data/dtos/game_dtos.dart';
+import '../../../games/presentation/assigned_games_notifier.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
 import '../../data/dtos/enrollment_dtos.dart';
 import '../enrollments_notifier.dart';
@@ -18,11 +18,13 @@ import '../widgets/student_bottom_nav.dart';
 
 /// Öğrenci Paneli (student-dashboard.md — Stitch `55a66eca…` birebir).
 ///
-/// Enrolled (Active) öğretmenlerin yayınlanmış derslerini listeler. İlk ders
-/// "Günün Oyunu" bento-large kartı, kalanlar "Derslerim" listesidir. Boş/
-/// yükleniyor/hata durumları + "Öğretmene Katıl" giriş noktası. Faz 2 öğeleri
-/// (crossword, çıkmış sorular, Sorular nav) gizli; Gelişim Özeti/Başarımlar
-/// M6 iskeleti olarak "Yakında" gösterilir (Sapma 3).
+/// F2.2: oyunlar artık öğretmen tarafından açıkça oluşturulup yayınlanır;
+/// öğrenci kendisine **atanmış** bulmacaları görür ve oynar (`GET
+/// /games/assigned`). İlk atama "Günün Oyunu" bento-large kartı, kalanlar
+/// "Atanan Bulmacalar" listesidir; bir bulmacaya dokununca doğrudan
+/// `POST /games/{id}/sessions` ile oturum başlatılır. Boş/yükleniyor/hata
+/// durumları + "Öğretmene Katıl" giriş noktası. Faz 2 öğeleri (çıkmış sorular,
+/// Sorular nav) gizli; Gelişim Özeti M6 iskeleti olarak "Yakında" gösterilir.
 class StudentDashboardScreen extends ConsumerWidget {
   const StudentDashboardScreen({super.key});
 
@@ -31,12 +33,12 @@ class StudentDashboardScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final name = ref.watch(authNotifierProvider).user?.displayName ?? '';
     final enrollmentsAsync = ref.watch(enrollmentsNotifierProvider);
-    final lessonsAsync = ref.watch(lessonsNotifierProvider);
+    final gamesAsync = ref.watch(assignedGamesNotifierProvider);
 
     Future<void> refreshAll() async {
       await Future.wait([
         ref.read(enrollmentsNotifierProvider.notifier).refresh(),
-        ref.read(lessonsNotifierProvider.notifier).refresh(),
+        ref.read(assignedGamesNotifierProvider.notifier).refresh(),
       ]);
     }
 
@@ -88,7 +90,7 @@ class StudentDashboardScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
             _Content(
               enrollmentsAsync: enrollmentsAsync,
-              lessonsAsync: lessonsAsync,
+              gamesAsync: gamesAsync,
               onRetry: refreshAll,
             ),
           ],
@@ -98,16 +100,16 @@ class StudentDashboardScreen extends ConsumerWidget {
   }
 }
 
-/// Enrollment + ders durumlarını birleştirip uygun bölümleri render eder.
+/// Enrollment + atanan bulmaca durumlarını birleştirip bölümleri render eder.
 class _Content extends StatelessWidget {
   const _Content({
     required this.enrollmentsAsync,
-    required this.lessonsAsync,
+    required this.gamesAsync,
     required this.onRetry,
   });
 
   final AsyncValue<List<EnrollmentDto>> enrollmentsAsync;
-  final AsyncValue<List<LessonDto>> lessonsAsync;
+  final AsyncValue<List<AssignedGameDto>> gamesAsync;
   final VoidCallback onRetry;
 
   @override
@@ -115,7 +117,7 @@ class _Content extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     // Yükleniyor: bento-large + 2 kart skeleton.
-    if (enrollmentsAsync.isLoading || lessonsAsync.isLoading) {
+    if (enrollmentsAsync.isLoading || gamesAsync.isLoading) {
       return Column(
         children: const [
           SkeletonCard(height: 200),
@@ -126,7 +128,7 @@ class _Content extends StatelessWidget {
     }
 
     // Hata (herhangi biri): hata kartı + Tekrar Dene.
-    if (enrollmentsAsync.hasError || lessonsAsync.hasError) {
+    if (enrollmentsAsync.hasError || gamesAsync.hasError) {
       return _StateCard(
         icon: Icons.cloud_off,
         iconColor: AppColors.error,
@@ -139,16 +141,11 @@ class _Content extends StatelessWidget {
     }
 
     final enrollments = enrollmentsAsync.value ?? const [];
-    final activeTeacherIds = enrollments
-        .where((e) => e.status.isActive)
-        .map((e) => e.teacherId)
-        .toSet();
-    final teacherNameById = <String, String>{
-      for (final e in enrollments) e.teacherId: e.counterpartDisplayName,
-    };
+    final hasActiveTeacher =
+        enrollments.any((e) => e.status.isActive);
 
     // Boş — hiç öğretmene katılmamış: birincil "Öğretmene Katıl" + boş durum.
-    if (activeTeacherIds.isEmpty) {
+    if (!hasActiveTeacher) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -166,23 +163,27 @@ class _Content extends StatelessWidget {
       );
     }
 
-    // Yalnız enrolled öğretmenlerin yayınlanmış dersleri (API zaten filtreler;
-    // savunmacı olarak tekrar süzülür).
-    final lessons = (lessonsAsync.value ?? const <LessonDto>[])
-        .where((l) => l.isPublished && activeTeacherIds.contains(l.teacherId))
-        .toList()
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    // Atanan (yayımlanmış) bulmacalar — yeniden eskiye sırala.
+    final games = (gamesAsync.value ?? const <AssignedGameDto>[]).toList()
+      ..sort((a, b) {
+        final ad = a.publishedAt;
+        final bd = b.publishedAt;
+        if (ad == null && bd == null) return 0;
+        if (ad == null) return 1;
+        if (bd == null) return -1;
+        return bd.compareTo(ad);
+      });
 
-    // Boş — öğretmen var, yayınlanmış ders yok.
-    if (lessons.isEmpty) {
+    // Boş — öğretmen var, atanmış bulmaca yok.
+    if (games.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _StateCard(
-            icon: Icons.hourglass_empty,
+            icon: Icons.extension,
             iconColor: AppColors.primary,
-            title: l10n.studentDashboardEmptyNoLessonsTitle,
-            desc: l10n.studentDashboardEmptyNoLessonsDesc,
+            title: l10n.studentDashboardEmptyNoPuzzlesTitle,
+            desc: l10n.studentDashboardEmptyNoPuzzlesDesc,
           ),
           const SizedBox(height: AppSpacing.lg),
           _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
@@ -192,8 +193,8 @@ class _Content extends StatelessWidget {
       );
     }
 
-    final featured = lessons.first;
-    final rest = lessons.skip(1).toList();
+    final featured = games.first;
+    final rest = games.skip(1).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,20 +202,18 @@ class _Content extends StatelessWidget {
         _SectionLabel(l10n.studentDashboardGameOfDay),
         const SizedBox(height: AppSpacing.sm),
         _GameOfDayCard(
-          lesson: featured,
-          teacherName: teacherNameById[featured.teacherId] ?? '',
+          game: featured,
           onPlay: () => context.push(AppRoutes.studentGame(featured.id)),
         ),
         if (rest.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          Text(l10n.studentDashboardLessonsTitle,
+          Text(l10n.studentDashboardPuzzlesTitle,
               style: AppTypography.headlineMd),
           const SizedBox(height: AppSpacing.sm),
-          for (final lesson in rest) ...[
-            _StudentLessonRow(
-              lesson: lesson,
-              teacherName: teacherNameById[lesson.teacherId] ?? '',
-              onTap: () => context.push(AppRoutes.studentLesson(lesson.id)),
+          for (final game in rest) ...[
+            _AssignedGameRow(
+              game: game,
+              onTap: () => context.push(AppRoutes.studentGame(game.id)),
             ),
             const SizedBox(height: AppSpacing.sm),
           ],
@@ -308,17 +307,16 @@ class _Avatar extends StatelessWidget {
 
 /// "Günün Oyunu" bento-large (student-dashboard.md §3.3, Sapma 1).
 ///
-/// Crossword grid yerine kelime-çifti mini görseli; "Oyuna Başla" → öğrenci
-/// ders görünümü (M4 oyun placeholder oradan açılır).
+/// F2.2: atanan bulmacayı temsil eder; "Oyuna Başla" → doğrudan oturum başlatma
+/// (`POST /games/{id}/sessions`). Crossword grid yerine kelime-çifti mini
+/// görseli.
 class _GameOfDayCard extends StatefulWidget {
   const _GameOfDayCard({
-    required this.lesson,
-    required this.teacherName,
+    required this.game,
     required this.onPlay,
   });
 
-  final LessonDto lesson;
-  final String teacherName;
+  final AssignedGameDto game;
   final VoidCallback onPlay;
 
   @override
@@ -372,10 +370,10 @@ class _GameOfDayCardState extends State<_GameOfDayCard> {
                       runSpacing: AppSpacing.xs,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        if (widget.teacherName.isNotEmpty)
+                        if (widget.game.teacherName.isNotEmpty)
                           Text(
                             l10n.studentDashboardGameSharedBy(
-                                widget.teacherName),
+                                widget.game.teacherName),
                             style: AppTypography.labelSm
                                 .copyWith(color: AppColors.onSurfaceVariant),
                           ),
@@ -383,10 +381,10 @@ class _GameOfDayCardState extends State<_GameOfDayCard> {
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    Text(widget.lesson.title, style: AppTypography.headlineLg),
+                    Text(widget.game.title, style: AppTypography.headlineLg),
                     const SizedBox(height: AppSpacing.base),
                     Text(
-                      l10n.studentDashboardGameDesc(widget.lesson.wordCount),
+                      l10n.studentDashboardGameDesc(widget.game.wordCount),
                       style: AppTypography.bodyMd
                           .copyWith(color: AppColors.onSurfaceVariant),
                     ),
@@ -531,16 +529,15 @@ class _PlayButton extends StatelessWidget {
   }
 }
 
-/// "Derslerim" listesindeki ders satırı (bento-large dışındaki dersler).
-class _StudentLessonRow extends StatelessWidget {
-  const _StudentLessonRow({
-    required this.lesson,
-    required this.teacherName,
+/// "Atanan Bulmacalar" listesindeki bulmaca satırı (bento-large dışındakiler).
+/// Dokununca doğrudan oturum başlatılır (`POST /games/{id}/sessions`).
+class _AssignedGameRow extends StatelessWidget {
+  const _AssignedGameRow({
+    required this.game,
     required this.onTap,
   });
 
-  final LessonDto lesson;
-  final String teacherName;
+  final AssignedGameDto game;
   final VoidCallback onTap;
 
   @override
@@ -569,7 +566,7 @@ class _StudentLessonRow extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.menu_book, color: AppColors.primary),
+                child: const Icon(Icons.extension, color: AppColors.primary),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -577,16 +574,15 @@ class _StudentLessonRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      lesson.title,
+                      game.title,
                       style: AppTypography.headlineMd,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: AppSpacing.base),
                     Text(
-                      teacherName.isNotEmpty
-                          ? '${l10n.studentDashboardGameSharedBy(teacherName)} • ${l10n.teacherDashboardWordCount(lesson.wordCount)}'
-                          : l10n.teacherDashboardWordCount(lesson.wordCount),
+                      l10n.studentDashboardPuzzleLesson(
+                          game.lessonTitle, game.wordCount),
                       style: AppTypography.labelSm
                           .copyWith(color: AppColors.onSurfaceVariant),
                       maxLines: 1,

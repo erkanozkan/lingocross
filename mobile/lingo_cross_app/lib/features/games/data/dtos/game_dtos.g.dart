@@ -12,6 +12,11 @@ _$GameDtoImpl _$$GameDtoImplFromJson(Map<String, dynamic> json) =>
       lessonId: json['lessonId'] as String,
       type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
       title: json['title'] as String,
+      isPublished: json['isPublished'] as bool,
+      publishedAt:
+          json['publishedAt'] == null
+              ? null
+              : DateTime.parse(json['publishedAt'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
@@ -22,9 +27,54 @@ Map<String, dynamic> _$$GameDtoImplToJson(_$GameDtoImpl instance) =>
       'lessonId': instance.lessonId,
       'type': const GameTypeConverter().toJson(instance.type),
       'title': instance.title,
+      'isPublished': instance.isPublished,
+      'publishedAt': instance.publishedAt?.toIso8601String(),
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };
+
+_$AssignedGameDtoImpl _$$AssignedGameDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$AssignedGameDtoImpl(
+  id: json['id'] as String,
+  lessonId: json['lessonId'] as String,
+  lessonTitle: json['lessonTitle'] as String,
+  type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
+  title: json['title'] as String,
+  wordCount: (json['wordCount'] as num).toInt(),
+  teacherName: json['teacherName'] as String,
+  publishedAt:
+      json['publishedAt'] == null
+          ? null
+          : DateTime.parse(json['publishedAt'] as String),
+);
+
+Map<String, dynamic> _$$AssignedGameDtoImplToJson(
+  _$AssignedGameDtoImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'lessonId': instance.lessonId,
+  'lessonTitle': instance.lessonTitle,
+  'type': const GameTypeConverter().toJson(instance.type),
+  'title': instance.title,
+  'wordCount': instance.wordCount,
+  'teacherName': instance.teacherName,
+  'publishedAt': instance.publishedAt?.toIso8601String(),
+};
+
+_$CreateGameRequestImpl _$$CreateGameRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$CreateGameRequestImpl(
+  type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
+  title: json['title'] as String?,
+);
+
+Map<String, dynamic> _$$CreateGameRequestImplToJson(
+  _$CreateGameRequestImpl instance,
+) => <String, dynamic>{
+  'type': const GameTypeConverter().toJson(instance.type),
+  'title': instance.title,
+};
 
 _$GameSessionDtoImpl _$$GameSessionDtoImplFromJson(Map<String, dynamic> json) =>
     _$GameSessionDtoImpl(

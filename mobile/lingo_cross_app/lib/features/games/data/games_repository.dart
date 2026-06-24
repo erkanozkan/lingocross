@@ -8,11 +8,13 @@ import 'dtos/game_dtos.dart';
 
 /// Oyun (games / game-sessions) uçlarıyla konuşan repository.
 ///
-/// - `GET  /api/lessons/{lessonId}/games` (Teacher/Student) → oyun listesi
+/// - `POST /api/lessons/{lessonId}/games` (Teacher) → oyun oluştur + yayınla
+/// - `GET  /api/lessons/{lessonId}/games` (Teacher) → dersin oyunları
+/// - `GET  /api/games/assigned`           (Student) → atanan (yayımlı) oyunlar
 /// - `POST /api/games/{gameId}/sessions`  (Student) → oturum + içerik
 /// - `GET  /api/game-sessions/{sessionId}` (Student) → oturum durumu
 ///
-/// Bearer token interceptor tarafından eklenir; M4'te sonuç gönderimi YOK (M5).
+/// Bearer token interceptor tarafından eklenir.
 class GamesRepository {
   GamesRepository(this._dio);
 
@@ -20,7 +22,22 @@ class GamesRepository {
 
   String get _base => AppConfig.apiPrefix;
 
-  /// Dersin oyunlarını döndürür (öğretmen için WordMatching yoksa API üretir).
+  /// Öğretmen: bir derste oyun oluşturur ve yayınlar (`POST .../games`).
+  ///
+  /// Yetersiz kelime (400) → [GamesFailure.insufficientWords].
+  Future<GameDto> createGame(String lessonId, CreateGameRequest request) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/lessons/$lessonId/games',
+        data: request.toJson(),
+      );
+      return GameDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: dersin oyunlarını döndürür (`GET .../games`).
   Future<List<GameDto>> listForLesson(String lessonId) async {
     try {
       final res = await _dio.get<List<dynamic>>(
@@ -28,6 +45,19 @@ class GamesRepository {
       );
       return (res.data ?? const [])
           .map((e) => GameDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğrenci: kendisine atanmış (yayımlanmış) oyunları döndürür
+  /// (`GET /api/games/assigned`).
+  Future<List<AssignedGameDto>> listAssigned() async {
+    try {
+      final res = await _dio.get<List<dynamic>>('$_base/games/assigned');
+      return (res.data ?? const [])
+          .map((e) => AssignedGameDto.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
       throw _mapError(e);

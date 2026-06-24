@@ -26,6 +26,8 @@ mixin _$GameDto {
   @GameTypeConverter()
   GameType get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
+  bool get isPublished => throw _privateConstructorUsedError;
+  DateTime? get publishedAt => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -48,6 +50,8 @@ abstract class $GameDtoCopyWith<$Res> {
     String lessonId,
     @GameTypeConverter() GameType type,
     String title,
+    bool isPublished,
+    DateTime? publishedAt,
     DateTime createdAt,
     DateTime updatedAt,
   });
@@ -72,6 +76,8 @@ class _$GameDtoCopyWithImpl<$Res, $Val extends GameDto>
     Object? lessonId = null,
     Object? type = null,
     Object? title = null,
+    Object? isPublished = null,
+    Object? publishedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -97,6 +103,16 @@ class _$GameDtoCopyWithImpl<$Res, $Val extends GameDto>
                     ? _value.title
                     : title // ignore: cast_nullable_to_non_nullable
                         as String,
+            isPublished:
+                null == isPublished
+                    ? _value.isPublished
+                    : isPublished // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            publishedAt:
+                freezed == publishedAt
+                    ? _value.publishedAt
+                    : publishedAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
             createdAt:
                 null == createdAt
                     ? _value.createdAt
@@ -126,6 +142,8 @@ abstract class _$$GameDtoImplCopyWith<$Res> implements $GameDtoCopyWith<$Res> {
     String lessonId,
     @GameTypeConverter() GameType type,
     String title,
+    bool isPublished,
+    DateTime? publishedAt,
     DateTime createdAt,
     DateTime updatedAt,
   });
@@ -149,6 +167,8 @@ class __$$GameDtoImplCopyWithImpl<$Res>
     Object? lessonId = null,
     Object? type = null,
     Object? title = null,
+    Object? isPublished = null,
+    Object? publishedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
   }) {
@@ -174,6 +194,16 @@ class __$$GameDtoImplCopyWithImpl<$Res>
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
                     as String,
+        isPublished:
+            null == isPublished
+                ? _value.isPublished
+                : isPublished // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        publishedAt:
+            freezed == publishedAt
+                ? _value.publishedAt
+                : publishedAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
         createdAt:
             null == createdAt
                 ? _value.createdAt
@@ -197,6 +227,8 @@ class _$GameDtoImpl implements _GameDto {
     required this.lessonId,
     @GameTypeConverter() required this.type,
     required this.title,
+    required this.isPublished,
+    this.publishedAt,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -214,13 +246,17 @@ class _$GameDtoImpl implements _GameDto {
   @override
   final String title;
   @override
+  final bool isPublished;
+  @override
+  final DateTime? publishedAt;
+  @override
   final DateTime createdAt;
   @override
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'GameDto(id: $id, lessonId: $lessonId, type: $type, title: $title, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'GameDto(id: $id, lessonId: $lessonId, type: $type, title: $title, isPublished: $isPublished, publishedAt: $publishedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -233,6 +269,10 @@ class _$GameDtoImpl implements _GameDto {
                 other.lessonId == lessonId) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.title, title) || other.title == title) &&
+            (identical(other.isPublished, isPublished) ||
+                other.isPublished == isPublished) &&
+            (identical(other.publishedAt, publishedAt) ||
+                other.publishedAt == publishedAt) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -241,8 +281,17 @@ class _$GameDtoImpl implements _GameDto {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, lessonId, type, title, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    lessonId,
+    type,
+    title,
+    isPublished,
+    publishedAt,
+    createdAt,
+    updatedAt,
+  );
 
   /// Create a copy of GameDto
   /// with the given fields replaced by the non-null parameter values.
@@ -264,6 +313,8 @@ abstract class _GameDto implements GameDto {
     required final String lessonId,
     @GameTypeConverter() required final GameType type,
     required final String title,
+    required final bool isPublished,
+    final DateTime? publishedAt,
     required final DateTime createdAt,
     required final DateTime updatedAt,
   }) = _$GameDtoImpl;
@@ -280,6 +331,10 @@ abstract class _GameDto implements GameDto {
   @override
   String get title;
   @override
+  bool get isPublished;
+  @override
+  DateTime? get publishedAt;
+  @override
   DateTime get createdAt;
   @override
   DateTime get updatedAt;
@@ -289,6 +344,527 @@ abstract class _GameDto implements GameDto {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$GameDtoImplCopyWith<_$GameDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+AssignedGameDto _$AssignedGameDtoFromJson(Map<String, dynamic> json) {
+  return _AssignedGameDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AssignedGameDto {
+  String get id => throw _privateConstructorUsedError;
+  String get lessonId => throw _privateConstructorUsedError;
+  String get lessonTitle => throw _privateConstructorUsedError;
+  @GameTypeConverter()
+  GameType get type => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  int get wordCount => throw _privateConstructorUsedError;
+  String get teacherName => throw _privateConstructorUsedError;
+  DateTime? get publishedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this AssignedGameDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AssignedGameDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AssignedGameDtoCopyWith<AssignedGameDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AssignedGameDtoCopyWith<$Res> {
+  factory $AssignedGameDtoCopyWith(
+    AssignedGameDto value,
+    $Res Function(AssignedGameDto) then,
+  ) = _$AssignedGameDtoCopyWithImpl<$Res, AssignedGameDto>;
+  @useResult
+  $Res call({
+    String id,
+    String lessonId,
+    String lessonTitle,
+    @GameTypeConverter() GameType type,
+    String title,
+    int wordCount,
+    String teacherName,
+    DateTime? publishedAt,
+  });
+}
+
+/// @nodoc
+class _$AssignedGameDtoCopyWithImpl<$Res, $Val extends AssignedGameDto>
+    implements $AssignedGameDtoCopyWith<$Res> {
+  _$AssignedGameDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AssignedGameDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? lessonId = null,
+    Object? lessonTitle = null,
+    Object? type = null,
+    Object? title = null,
+    Object? wordCount = null,
+    Object? teacherName = null,
+    Object? publishedAt = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            lessonId:
+                null == lessonId
+                    ? _value.lessonId
+                    : lessonId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            lessonTitle:
+                null == lessonTitle
+                    ? _value.lessonTitle
+                    : lessonTitle // ignore: cast_nullable_to_non_nullable
+                        as String,
+            type:
+                null == type
+                    ? _value.type
+                    : type // ignore: cast_nullable_to_non_nullable
+                        as GameType,
+            title:
+                null == title
+                    ? _value.title
+                    : title // ignore: cast_nullable_to_non_nullable
+                        as String,
+            wordCount:
+                null == wordCount
+                    ? _value.wordCount
+                    : wordCount // ignore: cast_nullable_to_non_nullable
+                        as int,
+            teacherName:
+                null == teacherName
+                    ? _value.teacherName
+                    : teacherName // ignore: cast_nullable_to_non_nullable
+                        as String,
+            publishedAt:
+                freezed == publishedAt
+                    ? _value.publishedAt
+                    : publishedAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$AssignedGameDtoImplCopyWith<$Res>
+    implements $AssignedGameDtoCopyWith<$Res> {
+  factory _$$AssignedGameDtoImplCopyWith(
+    _$AssignedGameDtoImpl value,
+    $Res Function(_$AssignedGameDtoImpl) then,
+  ) = __$$AssignedGameDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String lessonId,
+    String lessonTitle,
+    @GameTypeConverter() GameType type,
+    String title,
+    int wordCount,
+    String teacherName,
+    DateTime? publishedAt,
+  });
+}
+
+/// @nodoc
+class __$$AssignedGameDtoImplCopyWithImpl<$Res>
+    extends _$AssignedGameDtoCopyWithImpl<$Res, _$AssignedGameDtoImpl>
+    implements _$$AssignedGameDtoImplCopyWith<$Res> {
+  __$$AssignedGameDtoImplCopyWithImpl(
+    _$AssignedGameDtoImpl _value,
+    $Res Function(_$AssignedGameDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AssignedGameDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? lessonId = null,
+    Object? lessonTitle = null,
+    Object? type = null,
+    Object? title = null,
+    Object? wordCount = null,
+    Object? teacherName = null,
+    Object? publishedAt = freezed,
+  }) {
+    return _then(
+      _$AssignedGameDtoImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lessonId:
+            null == lessonId
+                ? _value.lessonId
+                : lessonId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lessonTitle:
+            null == lessonTitle
+                ? _value.lessonTitle
+                : lessonTitle // ignore: cast_nullable_to_non_nullable
+                    as String,
+        type:
+            null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                    as GameType,
+        title:
+            null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                    as String,
+        wordCount:
+            null == wordCount
+                ? _value.wordCount
+                : wordCount // ignore: cast_nullable_to_non_nullable
+                    as int,
+        teacherName:
+            null == teacherName
+                ? _value.teacherName
+                : teacherName // ignore: cast_nullable_to_non_nullable
+                    as String,
+        publishedAt:
+            freezed == publishedAt
+                ? _value.publishedAt
+                : publishedAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AssignedGameDtoImpl implements _AssignedGameDto {
+  const _$AssignedGameDtoImpl({
+    required this.id,
+    required this.lessonId,
+    required this.lessonTitle,
+    @GameTypeConverter() required this.type,
+    required this.title,
+    required this.wordCount,
+    required this.teacherName,
+    this.publishedAt,
+  });
+
+  factory _$AssignedGameDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AssignedGameDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String lessonId;
+  @override
+  final String lessonTitle;
+  @override
+  @GameTypeConverter()
+  final GameType type;
+  @override
+  final String title;
+  @override
+  final int wordCount;
+  @override
+  final String teacherName;
+  @override
+  final DateTime? publishedAt;
+
+  @override
+  String toString() {
+    return 'AssignedGameDto(id: $id, lessonId: $lessonId, lessonTitle: $lessonTitle, type: $type, title: $title, wordCount: $wordCount, teacherName: $teacherName, publishedAt: $publishedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AssignedGameDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.lessonId, lessonId) ||
+                other.lessonId == lessonId) &&
+            (identical(other.lessonTitle, lessonTitle) ||
+                other.lessonTitle == lessonTitle) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.wordCount, wordCount) ||
+                other.wordCount == wordCount) &&
+            (identical(other.teacherName, teacherName) ||
+                other.teacherName == teacherName) &&
+            (identical(other.publishedAt, publishedAt) ||
+                other.publishedAt == publishedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    lessonId,
+    lessonTitle,
+    type,
+    title,
+    wordCount,
+    teacherName,
+    publishedAt,
+  );
+
+  /// Create a copy of AssignedGameDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AssignedGameDtoImplCopyWith<_$AssignedGameDtoImpl> get copyWith =>
+      __$$AssignedGameDtoImplCopyWithImpl<_$AssignedGameDtoImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AssignedGameDtoImplToJson(this);
+  }
+}
+
+abstract class _AssignedGameDto implements AssignedGameDto {
+  const factory _AssignedGameDto({
+    required final String id,
+    required final String lessonId,
+    required final String lessonTitle,
+    @GameTypeConverter() required final GameType type,
+    required final String title,
+    required final int wordCount,
+    required final String teacherName,
+    final DateTime? publishedAt,
+  }) = _$AssignedGameDtoImpl;
+
+  factory _AssignedGameDto.fromJson(Map<String, dynamic> json) =
+      _$AssignedGameDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get lessonId;
+  @override
+  String get lessonTitle;
+  @override
+  @GameTypeConverter()
+  GameType get type;
+  @override
+  String get title;
+  @override
+  int get wordCount;
+  @override
+  String get teacherName;
+  @override
+  DateTime? get publishedAt;
+
+  /// Create a copy of AssignedGameDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AssignedGameDtoImplCopyWith<_$AssignedGameDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+CreateGameRequest _$CreateGameRequestFromJson(Map<String, dynamic> json) {
+  return _CreateGameRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$CreateGameRequest {
+  @GameTypeConverter()
+  GameType get type => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
+
+  /// Serializes this CreateGameRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of CreateGameRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $CreateGameRequestCopyWith<CreateGameRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $CreateGameRequestCopyWith<$Res> {
+  factory $CreateGameRequestCopyWith(
+    CreateGameRequest value,
+    $Res Function(CreateGameRequest) then,
+  ) = _$CreateGameRequestCopyWithImpl<$Res, CreateGameRequest>;
+  @useResult
+  $Res call({@GameTypeConverter() GameType type, String? title});
+}
+
+/// @nodoc
+class _$CreateGameRequestCopyWithImpl<$Res, $Val extends CreateGameRequest>
+    implements $CreateGameRequestCopyWith<$Res> {
+  _$CreateGameRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of CreateGameRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? type = null, Object? title = freezed}) {
+    return _then(
+      _value.copyWith(
+            type:
+                null == type
+                    ? _value.type
+                    : type // ignore: cast_nullable_to_non_nullable
+                        as GameType,
+            title:
+                freezed == title
+                    ? _value.title
+                    : title // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$CreateGameRequestImplCopyWith<$Res>
+    implements $CreateGameRequestCopyWith<$Res> {
+  factory _$$CreateGameRequestImplCopyWith(
+    _$CreateGameRequestImpl value,
+    $Res Function(_$CreateGameRequestImpl) then,
+  ) = __$$CreateGameRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({@GameTypeConverter() GameType type, String? title});
+}
+
+/// @nodoc
+class __$$CreateGameRequestImplCopyWithImpl<$Res>
+    extends _$CreateGameRequestCopyWithImpl<$Res, _$CreateGameRequestImpl>
+    implements _$$CreateGameRequestImplCopyWith<$Res> {
+  __$$CreateGameRequestImplCopyWithImpl(
+    _$CreateGameRequestImpl _value,
+    $Res Function(_$CreateGameRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of CreateGameRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? type = null, Object? title = freezed}) {
+    return _then(
+      _$CreateGameRequestImpl(
+        type:
+            null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                    as GameType,
+        title:
+            freezed == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CreateGameRequestImpl implements _CreateGameRequest {
+  const _$CreateGameRequestImpl({
+    @GameTypeConverter() required this.type,
+    this.title,
+  });
+
+  factory _$CreateGameRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CreateGameRequestImplFromJson(json);
+
+  @override
+  @GameTypeConverter()
+  final GameType type;
+  @override
+  final String? title;
+
+  @override
+  String toString() {
+    return 'CreateGameRequest(type: $type, title: $title)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CreateGameRequestImpl &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.title, title) || other.title == title));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, type, title);
+
+  /// Create a copy of CreateGameRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CreateGameRequestImplCopyWith<_$CreateGameRequestImpl> get copyWith =>
+      __$$CreateGameRequestImplCopyWithImpl<_$CreateGameRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CreateGameRequestImplToJson(this);
+  }
+}
+
+abstract class _CreateGameRequest implements CreateGameRequest {
+  const factory _CreateGameRequest({
+    @GameTypeConverter() required final GameType type,
+    final String? title,
+  }) = _$CreateGameRequestImpl;
+
+  factory _CreateGameRequest.fromJson(Map<String, dynamic> json) =
+      _$CreateGameRequestImpl.fromJson;
+
+  @override
+  @GameTypeConverter()
+  GameType get type;
+  @override
+  String? get title;
+
+  /// Create a copy of CreateGameRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CreateGameRequestImplCopyWith<_$CreateGameRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

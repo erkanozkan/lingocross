@@ -459,9 +459,10 @@ class _ActionsBar extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: () => ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                              SnackBar(content: Text(l10n.commonComingSoon))),
+                      onPressed: busy
+                          ? null
+                          : () => context.push(
+                              AppRoutes.gameNewForLesson(lesson.id)),
                       icon: const Icon(Icons.assignment_add),
                       label: Text(
                         l10n.lessonDetailAssignHomework,

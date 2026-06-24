@@ -36,12 +36,45 @@ class GameDto with _$GameDto {
     required String lessonId,
     @GameTypeConverter() required GameType type,
     required String title,
+    required bool isPublished,
+    DateTime? publishedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _GameDto;
 
   factory GameDto.fromJson(Map<String, dynamic> json) =>
       _$GameDtoFromJson(json);
+}
+
+/// Öğrenciye atanmış (yayımlanmış) bir oyunun özeti (AssignedGameDto) — API ile
+/// birebir. Öğrenci panelindeki "atanan bulmacalar" listesini besler.
+@freezed
+class AssignedGameDto with _$AssignedGameDto {
+  const factory AssignedGameDto({
+    required String id,
+    required String lessonId,
+    required String lessonTitle,
+    @GameTypeConverter() required GameType type,
+    required String title,
+    required int wordCount,
+    required String teacherName,
+    DateTime? publishedAt,
+  }) = _AssignedGameDto;
+
+  factory AssignedGameDto.fromJson(Map<String, dynamic> json) =>
+      _$AssignedGameDtoFromJson(json);
+}
+
+/// Öğretmenin bir derste oyun oluşturma/yayımlama isteği (CreateGameRequest).
+@freezed
+class CreateGameRequest with _$CreateGameRequest {
+  const factory CreateGameRequest({
+    @GameTypeConverter() required GameType type,
+    String? title,
+  }) = _CreateGameRequest;
+
+  factory CreateGameRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateGameRequestFromJson(json);
 }
 
 /// Bir oyun oturumunun durumu (GameSessionDto) — API ile birebir.
