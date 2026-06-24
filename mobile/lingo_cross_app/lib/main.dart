@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/l10n/gen/app_localizations.dart';
+import 'core/l10n/locale_controller.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/app_messenger.dart';
@@ -60,7 +61,7 @@ class LingoCrossApp extends ConsumerWidget {
       scaffoldMessengerKey: appMessengerKey,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('tr'),
+      locale: ref.watch(localeControllerProvider),
     );
   }
 }

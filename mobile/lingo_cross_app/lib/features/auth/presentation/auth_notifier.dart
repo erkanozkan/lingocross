@@ -92,6 +92,19 @@ class AuthNotifier extends _$AuthNotifier {
     state = state.copyWith(user: user);
   }
 
+  /// Dil tercihini backend'e yazar (PUT /auth/me, mevcut görünen adı korur) ve
+  /// state'teki kullanıcıyı tazeler. **Best-effort:** oturum açık değilse veya
+  /// çağrı başarısız olursa sessizce yutar (locale değişimi cihazda kalır).
+  Future<void> setPreferredLocale(String localeCode) async {
+    final current = state.user;
+    if (current == null) return;
+    final user = await _repository.updateProfile(
+      displayName: current.displayName,
+      preferredLocale: localeCode,
+    );
+    state = state.copyWith(user: user);
+  }
+
   /// Şifreyi değiştirir (POST /auth/change-password). Dönen yeni token'lar
   /// saklanır, oturum korunur. Hata yukarı fırlatılır.
   Future<void> changePassword({

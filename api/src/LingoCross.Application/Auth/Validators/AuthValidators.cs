@@ -66,6 +66,14 @@ public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequ
             .Must(d => !string.IsNullOrWhiteSpace(d))
             .WithMessage("Ad boş olamaz.")
             .MaximumLength(80);
+
+        // Opsiyonel: gönderilirse yalnız "tr"/"en"; boş/null kabul (servis tarafı yok sayar).
+        RuleFor(x => x.PreferredLocale)
+            .Must(l => l is not null
+                && (string.Equals(l.Trim(), "tr", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(l.Trim(), "en", StringComparison.OrdinalIgnoreCase)))
+            .WithMessage("Dil yalnızca tr veya en olabilir.")
+            .When(x => !string.IsNullOrWhiteSpace(x.PreferredLocale));
     }
 }
 

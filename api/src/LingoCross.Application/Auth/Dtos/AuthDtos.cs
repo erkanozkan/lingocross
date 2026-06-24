@@ -14,7 +14,7 @@ public record ForgotPasswordRequest(string Email);
 
 public record ResetPasswordRequest(string Token, string NewPassword);
 
-public record UpdateProfileRequest(string DisplayName);
+public record UpdateProfileRequest(string DisplayName, string? PreferredLocale = null);
 
 public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 

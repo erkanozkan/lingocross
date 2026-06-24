@@ -6,7 +6,7 @@ part of 'auth_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$authNotifierHash() => r'214179da272a8caf2a0586ea18a83f5f6be8e6d3';
+String _$authNotifierHash() => r'bf6125c0e1b438ae16b4163112407e463224fa0f';
 
 /// Oturum state'ini yöneten Riverpod 2.x notifier (codegen).
 ///

@@ -128,7 +128,10 @@ class _StudentCard extends StatelessWidget {
     final lastActivity = student.lastActivityAt == null
         ? l10n.trackingLastActivityNone
         : l10n.trackingLastActivityLabel(
-            formatShortDate(student.lastActivityAt!),
+            formatShortDate(
+              student.lastActivityAt!,
+              localeCode: Localizations.localeOf(context).languageCode,
+            ),
           );
 
     return Semantics(

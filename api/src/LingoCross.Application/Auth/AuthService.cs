@@ -13,6 +13,9 @@ public class AuthService : IAuthService
 {
     private static readonly TimeSpan PasswordResetTokenLifetime = TimeSpan.FromMinutes(30);
 
+    /// <summary>UI'ın desteklediği diller; bunun dışındaki değerler yok sayılır.</summary>
+    private static readonly HashSet<string> SupportedLocales = new(StringComparer.OrdinalIgnoreCase) { "tr", "en" };
+
     private readonly IAppDbContext _db;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
@@ -196,6 +199,15 @@ public class AuthService : IAuthService
         }
 
         user.DisplayName = request.DisplayName.Trim();
+
+        // PreferredLocale opsiyonel: yalnızca desteklenen bir dil gelirse güncelle, aksi halde
+        // (null/boş/geçersiz) mevcut değeri koru — hata atma.
+        if (!string.IsNullOrWhiteSpace(request.PreferredLocale)
+            && SupportedLocales.TryGetValue(request.PreferredLocale.Trim(), out var locale))
+        {
+            user.PreferredLocale = locale;
+        }
+
         await _db.SaveChangesAsync(cancellationToken);
 
         return ToDto(user);

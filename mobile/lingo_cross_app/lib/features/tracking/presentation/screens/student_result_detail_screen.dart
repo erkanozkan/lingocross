@@ -161,7 +161,10 @@ class _StudentContextCard extends StatelessWidget {
     final name = detail.studentDisplayName.trim();
     final initial = name.isEmpty ? '?' : name.characters.first.toUpperCase();
     final local = detail.createdAt.toLocal();
-    final dateLabel = formatShortDate(detail.createdAt);
+    final dateLabel = formatShortDate(
+      detail.createdAt,
+      localeCode: Localizations.localeOf(context).languageCode,
+    );
     final timeLabel =
         '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
 

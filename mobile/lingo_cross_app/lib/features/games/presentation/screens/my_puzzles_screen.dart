@@ -281,7 +281,12 @@ class _PuzzleCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.xs),
           _MetaRow(
             icon: Icons.calendar_today,
-            text: l10n.myPuzzlesCreatedAt(formatShortDate(puzzle.createdAt)),
+            text: l10n.myPuzzlesCreatedAt(
+              formatShortDate(
+                puzzle.createdAt,
+                localeCode: Localizations.localeOf(context).languageCode,
+              ),
+            ),
           ),
           const SizedBox(height: AppSpacing.base),
           _MetaRow(

@@ -2093,7 +2093,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get languageComingSoonBadge => 'Yakında';
 
   @override
-  String get languageInfo => 'Daha fazla dil yakında eklenecek.';
+  String get languageInfo => 'Seçtiğiniz dil tüm cihazlarınızda hesabınıza kaydedilir.';
 
   @override
   String get languageDecorationCaption => 'Global Öğrenim Topluluğu';

@@ -206,4 +206,52 @@ public class AuthServiceTests
         var persisted = await db.Users.FirstAsync(u => u.Id == userId);
         Assert.Equal("Yeni Ad", persisted.DisplayName);
     }
+
+    [Fact]
+    public async Task UpdateProfile_UpdatesPreferredLocale_WhenSupported()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var dto = await service.UpdateProfileAsync(userId, new UpdateProfileRequest("Öğretmen", "en"));
+
+        Assert.Equal("en", dto.PreferredLocale);
+
+        var persisted = await db.Users.FirstAsync(u => u.Id == userId);
+        Assert.Equal("en", persisted.PreferredLocale);
+    }
+
+    [Fact]
+    public async Task UpdateProfile_IgnoresPreferredLocale_WhenInvalid()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var dto = await service.UpdateProfileAsync(userId, new UpdateProfileRequest("Öğretmen", "xx"));
+
+        // Geçersiz dil yok sayılır; kayıt sırasındaki varsayılan ("tr") korunur.
+        Assert.Equal("tr", dto.PreferredLocale);
+
+        var persisted = await db.Users.FirstAsync(u => u.Id == userId);
+        Assert.Equal("tr", persisted.PreferredLocale);
+    }
+
+    [Fact]
+    public async Task UpdateProfile_KeepsPreferredLocale_WhenNull_AndUpdatesDisplayName()
+    {
+        var (service, db, _) = CreateSut();
+        var reg = await service.RegisterAsync(TeacherReg());
+        var userId = reg.User.Id;
+
+        var dto = await service.UpdateProfileAsync(userId, new UpdateProfileRequest("Yeni Ad"));
+
+        Assert.Equal("Yeni Ad", dto.DisplayName);
+        Assert.Equal("tr", dto.PreferredLocale);
+
+        var persisted = await db.Users.FirstAsync(u => u.Id == userId);
+        Assert.Equal("Yeni Ad", persisted.DisplayName);
+        Assert.Equal("tr", persisted.PreferredLocale);
+    }
 }
