@@ -3473,6 +3473,48 @@ abstract class AppLocalizations {
   /// **'Şifreniz değiştirildi'**
   String get accountChangePasswordSavedSnack;
 
+  /// No description provided for @accountGroupDangerZone.
+  ///
+  /// In tr, this message translates to:
+  /// **'TEHLİKELİ BÖLGE'**
+  String get accountGroupDangerZone;
+
+  /// No description provided for @accountRowDeleteAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabı Sil'**
+  String get accountRowDeleteAccount;
+
+  /// No description provided for @accountDeleteDialogTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabını sil'**
+  String get accountDeleteDialogTitle;
+
+  /// No description provided for @accountDeleteDialogBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabın ve tüm verilerin (sınıflar, dersler, sonuçlar) kalıcı olarak silinecek. Bu işlem geri alınamaz.'**
+  String get accountDeleteDialogBody;
+
+  /// No description provided for @accountDeleteConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabı Sil'**
+  String get accountDeleteConfirm;
+
+  /// No description provided for @accountDeleteCancel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vazgeç'**
+  String get accountDeleteCancel;
+
+  /// No description provided for @accountDeleteError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesabın silinemedi. Lütfen tekrar dene.'**
+  String get accountDeleteError;
+
   /// No description provided for @classesTitle.
   ///
   /// In tr, this message translates to:

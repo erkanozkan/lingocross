@@ -236,6 +236,146 @@ public class AuthService : IAuthService
         return await IssueTokensAsync(user, cancellationToken);
     }
 
+    public async Task DeleteAccountAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+        if (user is null)
+        {
+            throw AppException.NotFound("Kullanıcı bulunamadı.");
+        }
+
+        // Tüm silmeler tek transaction içinde; herhangi biri patlarsa hiçbiri uygulanmaz.
+        // Restrict olan FK'lar (ClassMember.StudentId, GameSession.StudentId, Enrollment'ın bir ucu,
+        // GameAssignment.ClassId) cascade ile temizlenemediğinden ELLE ve doğru sırada siliniyor.
+        await using var transaction = await _db.BeginTransactionAsync(cancellationToken);
+
+        if (user.Role == UserRole.Teacher)
+        {
+            await DeleteTeacherDataAsync(userId, cancellationToken);
+        }
+        else
+        {
+            await DeleteStudentDataAsync(userId, cancellationToken);
+        }
+
+        // Her iki rol için ortak, user'a doğrudan bağlı (cascade) tablolar — güvence için açıkça siliyoruz.
+        await DeleteUserOwnedAuxiliaryDataAsync(userId, cancellationToken);
+
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    private async Task DeleteStudentDataAsync(Guid studentId, CancellationToken cancellationToken)
+    {
+        // 1) Öğrencinin oyun oturumları (results → items session'dan cascade). GameSession.StudentId Restrict.
+        var sessions = await _db.GameSessions
+            .Where(s => s.StudentId == studentId)
+            .ToListAsync(cancellationToken);
+        _db.GameSessions.RemoveRange(sessions);
+
+        // 2) Sınıf üyelikleri. ClassMember.StudentId Restrict.
+        var memberships = await _db.ClassMembers
+            .Where(m => m.StudentId == studentId)
+            .ToListAsync(cancellationToken);
+        _db.ClassMembers.RemoveRange(memberships);
+
+        // 3) Öğrenci tarafındaki eşleşmeler. Enrollment.StudentId Restrict (TeacherId Cascade).
+        var enrollments = await _db.Enrollments
+            .Where(e => e.StudentId == studentId)
+            .ToListAsync(cancellationToken);
+        _db.Enrollments.RemoveRange(enrollments);
+    }
+
+    private async Task DeleteTeacherDataAsync(Guid teacherId, CancellationToken cancellationToken)
+    {
+        // 1) Atamalar: hem öğretmenin oyunlarına ait olanlar hem öğretmenin sınıflarına ait olanlar.
+        //    GameAssignment.ClassId Restrict olduğundan, sınıf silinmeden önce mutlaka temizlenmeli.
+        var lessonIds = await _db.Lessons
+            .Where(l => l.TeacherId == teacherId)
+            .Select(l => l.Id)
+            .ToListAsync(cancellationToken);
+
+        var gameIds = await _db.Games
+            .Where(g => lessonIds.Contains(g.LessonId))
+            .Select(g => g.Id)
+            .ToListAsync(cancellationToken);
+
+        var classIds = await _db.Classes
+            .Where(c => c.TeacherId == teacherId)
+            .Select(c => c.Id)
+            .ToListAsync(cancellationToken);
+
+        var assignments = await _db.GameAssignments
+            .Where(a => gameIds.Contains(a.GameId) || classIds.Contains(a.ClassId))
+            .ToListAsync(cancellationToken);
+        _db.GameAssignments.RemoveRange(assignments);
+
+        // 2) Öğretmenin oyunları (sessions → results → items cascade). Bu oyunlardaki öğrenci
+        //    oturumları GameSession.StudentId Restrict olsa da, FK Game tarafından (Cascade) gider;
+        //    yine de güvence için oturumları açıkça siliyoruz.
+        var sessions = await _db.GameSessions
+            .Where(s => gameIds.Contains(s.GameId))
+            .ToListAsync(cancellationToken);
+        _db.GameSessions.RemoveRange(sessions);
+
+        var games = await _db.Games
+            .Where(g => gameIds.Contains(g.Id))
+            .ToListAsync(cancellationToken);
+        _db.Games.RemoveRange(games);
+
+        // 3) Dersler (words → translations/synonyms cascade). Lesson.TeacherId Cascade.
+        var lessons = await _db.Lessons
+            .Where(l => l.TeacherId == teacherId)
+            .ToListAsync(cancellationToken);
+        _db.Lessons.RemoveRange(lessons);
+
+        // 4) Sınıflar (class_members ClassId'den cascade). Class.TeacherId Cascade.
+        var classes = await _db.Classes
+            .Where(c => c.TeacherId == teacherId)
+            .ToListAsync(cancellationToken);
+        _db.Classes.RemoveRange(classes);
+
+        // 5) Öğretmen tarafındaki eşleşmeler. Enrollment.TeacherId Cascade ama açıkça siliyoruz.
+        var enrollments = await _db.Enrollments
+            .Where(e => e.TeacherId == teacherId)
+            .ToListAsync(cancellationToken);
+        _db.Enrollments.RemoveRange(enrollments);
+    }
+
+    /// <summary>
+    /// User'a doğrudan bağlı, FK'sı Cascade olan yardımcı tablolar. Cascade'e güvenmek yerine
+    /// açık silme (en güvenli; ilişkisel olmayan test sağlayıcısında da çalışır).
+    /// </summary>
+    private async Task DeleteUserOwnedAuxiliaryDataAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var refreshTokens = await _db.RefreshTokens
+            .Where(t => t.UserId == userId)
+            .ToListAsync(cancellationToken);
+        _db.RefreshTokens.RemoveRange(refreshTokens);
+
+        var resetTokens = await _db.PasswordResetTokens
+            .Where(t => t.UserId == userId)
+            .ToListAsync(cancellationToken);
+        _db.PasswordResetTokens.RemoveRange(resetTokens);
+
+        var deviceTokens = await _db.DeviceTokens
+            .Where(t => t.UserId == userId)
+            .ToListAsync(cancellationToken);
+        _db.DeviceTokens.RemoveRange(deviceTokens);
+
+        var notifPrefs = await _db.NotificationPreferences
+            .Where(p => p.UserId == userId)
+            .ToListAsync(cancellationToken);
+        _db.NotificationPreferences.RemoveRange(notifPrefs);
+
+        var subscriptions = await _db.Subscriptions
+            .Where(s => s.UserId == userId)
+            .ToListAsync(cancellationToken);
+        _db.Subscriptions.RemoveRange(subscriptions);
+    }
+
     private async Task<AuthResponse> IssueTokensAsync(User user, CancellationToken cancellationToken)
     {
         var access = _tokenService.CreateAccessToken(user);

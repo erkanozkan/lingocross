@@ -111,6 +111,21 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [Authorize]
+    [HttpDelete("me")]
+    public async Task<IActionResult> DeleteAccount(CancellationToken ct)
+    {
+        if (GetUserId() is not { } userId)
+        {
+            return Unauthorized();
+        }
+
+        // Kullanıcıyı ve TÜM ilişkili verilerini kalıcı siler (Apple hesap silme zorunluluğu).
+        // Refresh token'lar da silindiği için silme sonrası oturum yenilenemez.
+        await _authService.DeleteAccountAsync(userId, ct);
+        return NoContent();
+    }
+
     /// <summary>JWT sub (veya NameIdentifier) claim'inden kullanıcı kimliğini okur; geçersizse null.</summary>
     private Guid? GetUserId()
     {

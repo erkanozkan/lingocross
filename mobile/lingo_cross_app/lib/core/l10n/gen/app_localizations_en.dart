@@ -1822,6 +1822,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountChangePasswordSavedSnack => 'Your password was changed';
 
   @override
+  String get accountGroupDangerZone => 'DANGER ZONE';
+
+  @override
+  String get accountRowDeleteAccount => 'Delete Account';
+
+  @override
+  String get accountDeleteDialogTitle => 'Delete your account';
+
+  @override
+  String get accountDeleteDialogBody => 'Your account and all your data (classes, lessons, results) will be permanently deleted. This action cannot be undone.';
+
+  @override
+  String get accountDeleteConfirm => 'Delete Account';
+
+  @override
+  String get accountDeleteCancel => 'Cancel';
+
+  @override
+  String get accountDeleteError => 'Your account could not be deleted. Please try again.';
+
+  @override
   String get classesTitle => 'My Classes';
 
   @override

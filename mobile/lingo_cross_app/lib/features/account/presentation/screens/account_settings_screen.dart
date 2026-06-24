@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../auth/presentation/auth_failure_messages.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../widgets/change_password_sheet.dart';
 import '../widgets/edit_profile_sheet.dart';
@@ -105,6 +106,9 @@ class AccountSettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.lg),
+          // TEHLİKELİ BÖLGE — yıkıcı hesap silme.
+          const _DangerZone(),
           const SizedBox(height: AppSpacing.lg),
           _LogoutButton(
             onTap: () => ref.read(authNotifierProvider.notifier).logout(),
@@ -296,6 +300,152 @@ class _SettingsRow extends StatelessWidget {
             const Icon(Icons.chevron_right, color: AppColors.outline),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// TEHLİKELİ BÖLGE — yıkıcı "Hesabı Sil" satırı (kırmızı). Tıklayınca onay
+/// diyaloğu açar; onaylanırsa hesabı siler (DELETE /auth/me) ve oturumu kapatır.
+/// Silme sırasında satır disable + spinner; hata olursa SnackBar gösterir,
+/// oturum korunur (router auth state korunduğu için ekranda kalır).
+class _DangerZone extends ConsumerStatefulWidget {
+  const _DangerZone();
+
+  @override
+  ConsumerState<_DangerZone> createState() => _DangerZoneState();
+}
+
+class _DangerZoneState extends ConsumerState<_DangerZone> {
+  bool _deleting = false;
+
+  Future<void> _onTap() async {
+    if (_deleting) return;
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final dl10n = AppLocalizations.of(dialogContext);
+        return AlertDialog(
+          backgroundColor: AppColors.surfaceContainerLowest,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+          ),
+          title: Text(
+            dl10n.accountDeleteDialogTitle,
+            style: AppTypography.headlineMd.copyWith(color: AppColors.error),
+          ),
+          content: Text(
+            dl10n.accountDeleteDialogBody,
+            style: AppTypography.bodyMd.copyWith(color: AppColors.onSurface),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(
+                dl10n.accountDeleteCancel,
+                style: AppTypography.labelLg
+                    .copyWith(color: AppColors.onSurfaceVariant),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(
+                dl10n.accountDeleteConfirm,
+                style: AppTypography.labelLg.copyWith(color: AppColors.error),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _deleting = true);
+    try {
+      await ref.read(authNotifierProvider.notifier).deleteAccount();
+      // Başarı: state `unauthenticated` → router girişe yönlendirir.
+    } catch (failure) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      messenger.showSnackBar(
+        SnackBar(content: Text(authFailureMessage(failure, l10n))),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: AppShadows.level2,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            color: AppColors.surfaceContainerLow,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
+            child: Text(
+              l10n.accountGroupDangerZone,
+              style: AppTypography.labelSm.copyWith(
+                color: AppColors.error,
+                letterSpacing: 0.6,
+              ),
+            ),
+          ),
+          InkWell(
+            onTap: _deleting ? null : _onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                    child: const Icon(Icons.person_off,
+                        color: AppColors.error, size: 22),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Text(
+                      l10n.accountRowDeleteAccount,
+                      style: AppTypography.bodyMd
+                          .copyWith(color: AppColors.error),
+                    ),
+                  ),
+                  if (_deleting)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.error,
+                      ),
+                    )
+                  else
+                    const Icon(Icons.chevron_right, color: AppColors.error),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

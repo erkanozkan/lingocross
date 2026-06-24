@@ -682,6 +682,14 @@
   "accountChangePasswordSubmit": "Update Password",
   "accountChangePasswordSavedSnack": "Your password was changed",
 
+  "accountGroupDangerZone": "DANGER ZONE",
+  "accountRowDeleteAccount": "Delete Account",
+  "accountDeleteDialogTitle": "Delete your account",
+  "accountDeleteDialogBody": "Your account and all your data (classes, lessons, results) will be permanently deleted. This action cannot be undone.",
+  "accountDeleteConfirm": "Delete Account",
+  "accountDeleteCancel": "Cancel",
+  "accountDeleteError": "Your account could not be deleted. Please try again.",
+
   "classesTitle": "My Classes",
   "classesHeroTitle": "Hello, Teacher!",
   "classesHeroSubtitle": "You have lessons with {count} different classes today. Good luck.",

@@ -2,6 +2,7 @@ using LingoCross.Application.Common.Persistence;
 using LingoCross.Domain.Common;
 using LingoCross.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace LingoCross.Infrastructure.Persistence;
 
@@ -54,6 +55,19 @@ public class AppDbContext : DbContext, IAppDbContext
 
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
+
+    async Task<IAppDbTransaction> IAppDbContext.BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        // İlişkisel olmayan sağlayıcılar (ör. testlerdeki InMemory) transaction desteklemez;
+        // bu durumda no-op bir transaction döneriz. İlişkisel sağlayıcıda gerçek transaction açılır.
+        if (!Database.IsRelational())
+        {
+            return NoopDbTransaction.Instance;
+        }
+
+        var transaction = await Database.BeginTransactionAsync(cancellationToken);
+        return new AppDbTransaction(transaction);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -682,6 +682,14 @@
   "accountChangePasswordSubmit": "Şifreyi Güncelle",
   "accountChangePasswordSavedSnack": "Şifreniz değiştirildi",
 
+  "accountGroupDangerZone": "TEHLİKELİ BÖLGE",
+  "accountRowDeleteAccount": "Hesabı Sil",
+  "accountDeleteDialogTitle": "Hesabını sil",
+  "accountDeleteDialogBody": "Hesabın ve tüm verilerin (sınıflar, dersler, sonuçlar) kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+  "accountDeleteConfirm": "Hesabı Sil",
+  "accountDeleteCancel": "Vazgeç",
+  "accountDeleteError": "Hesabın silinemedi. Lütfen tekrar dene.",
+
   "classesTitle": "Sınıflarım",
   "classesHeroTitle": "Merhaba, Öğretmenim!",
   "classesHeroSubtitle": "Bugün {count} farklı sınıfınla dersin bulunuyor. Başarılar dileriz.",
