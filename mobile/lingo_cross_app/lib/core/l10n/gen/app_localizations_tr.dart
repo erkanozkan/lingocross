@@ -400,6 +400,57 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherProfileStatsSoon => 'İstatistikler yakında — öğrenciler oyun oynadıkça dolacak.';
 
   @override
+  String get studentProfileRoleLabel => 'Öğrenci';
+
+  @override
+  String get studentProfileSettingsTooltip => 'Ayarlar';
+
+  @override
+  String get studentProfileStatStreak => 'Günlük Seri';
+
+  @override
+  String get studentProfileStatGames => 'Oyun';
+
+  @override
+  String get studentProfileStatAccuracy => 'Doğruluk';
+
+  @override
+  String get studentProfileStatsError => 'İstatistikler yüklenemedi.';
+
+  @override
+  String get studentProfileWeeklyGoalTitle => 'Haftalık Hedef';
+
+  @override
+  String get studentProfileWeeklyGoalSoon => 'Haftalık hedef takibi yakında — oyun oynadıkça ilerlemeni burada göreceksin.';
+
+  @override
+  String get studentProfileAchievementsTitle => 'Başarılarım';
+
+  @override
+  String get studentProfileBadgeFastStart => 'Hızlı Başlangıç';
+
+  @override
+  String get studentProfileBadgeWordHunter => 'Kelime Avcısı';
+
+  @override
+  String get studentProfileBadgeQuizMaster => 'Sınav Ustası';
+
+  @override
+  String get studentProfileBadgeLocked => 'Poliglot';
+
+  @override
+  String get studentProfileMenuAccount => 'Hesap Ayarları';
+
+  @override
+  String get studentProfileMenuNotifications => 'Bildirim Tercihleri';
+
+  @override
+  String get studentProfileMenuHelp => 'Yardım ve Destek';
+
+  @override
+  String get studentProfileMenuLogout => 'Çıkış Yap';
+
+  @override
   String get lessonFormHeroTitle => 'Harika bir ders planla!';
 
   @override

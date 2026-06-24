@@ -843,6 +843,108 @@ abstract class AppLocalizations {
   /// **'İstatistikler yakında — öğrenciler oyun oynadıkça dolacak.'**
   String get teacherProfileStatsSoon;
 
+  /// Öğrenci profil ekranında ad altındaki rol etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci'**
+  String get studentProfileRoleLabel;
+
+  /// No description provided for @studentProfileSettingsTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlar'**
+  String get studentProfileSettingsTooltip;
+
+  /// No description provided for @studentProfileStatStreak.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük Seri'**
+  String get studentProfileStatStreak;
+
+  /// No description provided for @studentProfileStatGames.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyun'**
+  String get studentProfileStatGames;
+
+  /// No description provided for @studentProfileStatAccuracy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğruluk'**
+  String get studentProfileStatAccuracy;
+
+  /// No description provided for @studentProfileStatsError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistikler yüklenemedi.'**
+  String get studentProfileStatsError;
+
+  /// No description provided for @studentProfileWeeklyGoalTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık Hedef'**
+  String get studentProfileWeeklyGoalTitle;
+
+  /// No description provided for @studentProfileWeeklyGoalSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık hedef takibi yakında — oyun oynadıkça ilerlemeni burada göreceksin.'**
+  String get studentProfileWeeklyGoalSoon;
+
+  /// No description provided for @studentProfileAchievementsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başarılarım'**
+  String get studentProfileAchievementsTitle;
+
+  /// No description provided for @studentProfileBadgeFastStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı Başlangıç'**
+  String get studentProfileBadgeFastStart;
+
+  /// No description provided for @studentProfileBadgeWordHunter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Avcısı'**
+  String get studentProfileBadgeWordHunter;
+
+  /// No description provided for @studentProfileBadgeQuizMaster.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınav Ustası'**
+  String get studentProfileBadgeQuizMaster;
+
+  /// No description provided for @studentProfileBadgeLocked.
+  ///
+  /// In tr, this message translates to:
+  /// **'Poliglot'**
+  String get studentProfileBadgeLocked;
+
+  /// No description provided for @studentProfileMenuAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap Ayarları'**
+  String get studentProfileMenuAccount;
+
+  /// No description provided for @studentProfileMenuNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim Tercihleri'**
+  String get studentProfileMenuNotifications;
+
+  /// No description provided for @studentProfileMenuHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardım ve Destek'**
+  String get studentProfileMenuHelp;
+
+  /// No description provided for @studentProfileMenuLogout.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış Yap'**
+  String get studentProfileMenuLogout;
+
   /// No description provided for @lessonFormHeroTitle.
   ///
   /// In tr, this message translates to:
