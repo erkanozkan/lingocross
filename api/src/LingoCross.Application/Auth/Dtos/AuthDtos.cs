@@ -14,6 +14,10 @@ public record ForgotPasswordRequest(string Email);
 
 public record ResetPasswordRequest(string Token, string NewPassword);
 
+public record UpdateProfileRequest(string DisplayName);
+
+public record ChangePasswordRequest(string CurrentPassword, string NewPassword);
+
 /// <summary>Giriş/kayıt/yenileme sonrası istemciye dönen token çifti ve kullanıcı.</summary>
 public record AuthResponse(
     string AccessToken,

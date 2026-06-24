@@ -19,4 +19,9 @@ public interface IAuthService
     Task ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default);
 
     Task<UserDto> GetMeAsync(Guid userId, CancellationToken cancellationToken = default);
+
+    Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Mevcut şifreyi doğrular; başarılıysa şifreyi değiştirir, tüm refresh token'ları iptal eder ve yeni token çifti üretir.</summary>
+    Task<AuthResponse> ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default);
 }

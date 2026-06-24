@@ -57,3 +57,23 @@ public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequ
         RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(8).MaximumLength(128);
     }
 }
+
+public class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequest>
+{
+    public UpdateProfileRequestValidator()
+    {
+        RuleFor(x => x.DisplayName)
+            .Must(d => !string.IsNullOrWhiteSpace(d))
+            .WithMessage("Ad boş olamaz.")
+            .MaximumLength(80);
+    }
+}
+
+public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRequest>
+{
+    public ChangePasswordRequestValidator()
+    {
+        RuleFor(x => x.CurrentPassword).NotEmpty();
+        RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(8).MaximumLength(128);
+    }
+}
