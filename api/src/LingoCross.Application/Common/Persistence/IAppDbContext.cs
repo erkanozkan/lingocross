@@ -29,5 +29,7 @@ public interface IAppDbContext
 
     DbSet<GameSession> GameSessions { get; }
 
+    DbSet<GameResult> GameResults { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

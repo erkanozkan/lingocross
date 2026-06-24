@@ -36,6 +36,8 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<GameSession> GameSessions => Set<GameSession>();
 
+    public DbSet<GameResult> GameResults => Set<GameResult>();
+
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
 

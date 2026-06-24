@@ -23,4 +23,7 @@ public class GameSession : Entity
     public DateTime StartedAt { get; set; }
 
     public DateTime? CompletedAt { get; set; }
+
+    /// <summary>Oturum tamamlandığında oluşturulan sonuç (M5). Oturum başına en fazla bir tane.</summary>
+    public GameResult? Result { get; set; }
 }
