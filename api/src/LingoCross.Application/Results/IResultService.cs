@@ -25,4 +25,10 @@ public interface IResultService
 
     /// <summary>Geçerli öğrencinin geçmiş sonuçları (ders/oyun özetiyle), yeniden eskiye.</summary>
     Task<IReadOnlyList<GameResultDto>> ListMineAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Geçerli öğrencinin profil istatistikleri (F3.1): tamamlanmış sonuç sayısı ve ortalama
+    /// başarı puanı. Sonuç yoksa 0/0. Yalnızca kendi sonuçları sayılır.
+    /// </summary>
+    Task<StudentStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default);
 }

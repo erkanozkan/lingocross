@@ -13,7 +13,6 @@ import '../../features/enrollment/presentation/screens/student_dashboard_screen.
 import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
 import '../../features/games/presentation/screens/create_game_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
-import '../../features/home/presentation/profile_placeholder_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
@@ -21,6 +20,7 @@ import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_shell_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
+import '../../features/profile/presentation/screens/student_profile_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
 import '../../features/results/presentation/screens/game_result_report_screen.dart';
 import '../../features/results/presentation/screens/student_results_history_screen.dart';
@@ -34,11 +34,14 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  static const String profile = '/profile';
 
   // Öğrenci (M3) — korumalı + yalnız Student.
   static const String student = '/student';
   static const String studentJoin = '/student/join';
+
+  /// Öğrenci Profil ekranı (F3.1 — "Profil" alt-nav sekmesi). `/student` altında
+  /// olduğu için yalnız öğrenci erişebilir (router guard).
+  static const String profile = '/student/profile';
 
   /// Öğrenci geçmiş sonuçları (M5 — "Raporlar" sekmesi).
   static const String studentResults = '/student/results';
@@ -150,14 +153,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.profile,
-        builder: (context, state) => const ProfilePlaceholderScreen(),
-      ),
       // --- Öğrenci (M3) ---
       GoRoute(
         path: AppRoutes.student,
         builder: (context, state) => const StudentDashboardScreen(),
+      ),
+      // Öğrenci Profil (F3.1 — "Profil" alt-nav sekmesi).
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const StudentProfileScreen(),
       ),
       GoRoute(
         path: AppRoutes.studentJoin,
