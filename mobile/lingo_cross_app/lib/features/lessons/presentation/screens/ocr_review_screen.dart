@@ -19,6 +19,7 @@ class OcrReviewArgs {
     required this.candidates,
     required this.sourceLangLabel,
     this.failed = false,
+    this.enriched = false,
   });
 
   final List<OcrCandidate> candidates;
@@ -26,6 +27,10 @@ class OcrReviewArgs {
 
   /// ML Kit tarama hata fırlattıysa true → hata boş-durumu gösterilir.
   final bool failed;
+
+  /// Bulut AI zenginleştirmesi uygulandıysa true; false → yerel sonuç (fallback).
+  /// false + aday varsa kullanıcıya bilgilendirici bir not gösterilir.
+  final bool enriched;
 }
 
 /// Bir gözden geçirme satırının düzenlenebilir durumu.
@@ -33,13 +38,15 @@ class _ReviewRow {
   _ReviewRow({
     required String term,
     String meaning = '',
+    List<String> synonyms = const [],
   })  : termController = TextEditingController(text: term),
-        meaningController = TextEditingController(text: meaning);
+        meaningController = TextEditingController(text: meaning),
+        synonyms = List<String>.from(synonyms);
 
   final TextEditingController termController;
   final TextEditingController meaningController;
   final TextEditingController synonymController = TextEditingController();
-  final List<String> synonyms = [];
+  final List<String> synonyms;
   bool included = true;
 
   bool get isValid =>
@@ -81,7 +88,11 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
   void initState() {
     super.initState();
     for (final c in widget.args.candidates) {
-      _rows.add(_ReviewRow(term: c.term, meaning: c.meaning ?? ''));
+      _rows.add(_ReviewRow(
+        term: c.term,
+        meaning: c.meaning ?? '',
+        synonyms: c.synonyms,
+      ));
     }
   }
 
@@ -265,6 +276,10 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             recognized: widget.args.candidates.length,
             selected: _selectedCount,
           ),
+          if (!widget.args.enriched) ...[
+            const SizedBox(height: AppSpacing.sm),
+            _AiUnavailableNote(),
+          ],
           if (_showInvalidWarning) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -356,6 +371,37 @@ class _SummaryStrip extends StatelessWidget {
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
       ],
+    );
+  }
+}
+
+/// AI zenginleştirme kullanılamadığında (503/çevrimdışı) gösterilen bilgi notu:
+/// "yerel sonuç gösteriliyor". Hata değil, bilgilendirme tonu (yumuşak konteyner).
+class _AiUnavailableNote extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryContainer,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline,
+              size: 18, color: AppColors.onSecondaryFixedVariant),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              l10n.ocrReviewAiUnavailable,
+              style: AppTypography.labelSm
+                  .copyWith(color: AppColors.onSecondaryFixedVariant),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

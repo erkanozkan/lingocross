@@ -48,21 +48,40 @@ class OcrService {
   /// Verilen görüntü dosyasını cihaz-içi ML Kit ile tanır, ham satırlara böler,
   /// [parseOcrLines] ile kelime adaylarına dönüştürür ve son olarak cihaz-içi
   /// dil tespiti ([OcrLanguageOrienter]) ile terim/karşılık yönünü düzeltir.
-  Future<List<OcrCandidate>> recognize(String imagePath) async {
+  ///
+  /// Sonuç hem yerel adayları ([OcrRecognition.candidates]) hem de ham metni
+  /// ([OcrRecognition.rawText]) içerir. Ham metin bulut AI zenginleştirmesi
+  /// (`/api/ocr/enrich`) için kullanılır; başarısızlıkta yerel adaylara düşülür.
+  Future<OcrRecognition> recognize(String imagePath) async {
     final input = InputImage.fromFile(File(imagePath));
     final result = await _recognizer.processImage(input);
     final rawLines = <String>[
       for (final block in result.blocks)
         for (final line in block.lines) line.text,
     ];
-    final candidates = parseOcrLines(rawLines);
-    return _orienter.orient(candidates);
+    final candidates = await _orienter.orient(parseOcrLines(rawLines));
+    return OcrRecognition(
+      candidates: candidates,
+      rawText: rawLines.join('\n'),
+    );
   }
 
   void dispose() {
     _recognizer.close();
     _orienter.dispose();
   }
+}
+
+/// ML Kit tanıma sonucu: yerel kelime adayları + birleştirilmiş ham metin.
+///
+/// [rawText] ML Kit satırlarının `\n` ile birleştirilmiş halidir ve bulut AI
+/// zenginleştirmesinin (`/api/ocr/enrich`) girdisidir. [candidates] her zaman
+/// üretilen yerel ayrıştırma sonucudur (zenginleştirme başarısız olursa fallback).
+class OcrRecognition {
+  const OcrRecognition({required this.candidates, required this.rawText});
+
+  final List<OcrCandidate> candidates;
+  final String rawText;
 }
 
 /// Görüntü seçimi sırasında oluşan hata (izin reddi, kamera yok vb.).

@@ -16,6 +16,7 @@ class OcrCandidate {
     required this.term,
     this.meaning,
     this.tooShort = false,
+    this.synonyms = const [],
   });
 
   /// Terim (kaynak dil). Boş olmaz (boş satırlar zaten elenir).
@@ -27,11 +28,20 @@ class OcrCandidate {
   /// Terim < 2 karakter ise true (gözden geçirmede vurgulanır).
   final bool tooShort;
 
-  OcrCandidate copyWith({String? term, String? meaning, bool? tooShort}) {
+  /// Bulut AI zenginleştirmesinden gelen eşanlamlar (yerel ayrıştırmada boş).
+  final List<String> synonyms;
+
+  OcrCandidate copyWith({
+    String? term,
+    String? meaning,
+    bool? tooShort,
+    List<String>? synonyms,
+  }) {
     return OcrCandidate(
       term: term ?? this.term,
       meaning: meaning ?? this.meaning,
       tooShort: tooShort ?? this.tooShort,
+      synonyms: synonyms ?? this.synonyms,
     );
   }
 
@@ -40,14 +50,25 @@ class OcrCandidate {
       other is OcrCandidate &&
       other.term == term &&
       other.meaning == meaning &&
-      other.tooShort == tooShort;
+      other.tooShort == tooShort &&
+      _listEquals(other.synonyms, synonyms);
 
   @override
-  int get hashCode => Object.hash(term, meaning, tooShort);
+  int get hashCode =>
+      Object.hash(term, meaning, tooShort, Object.hashAll(synonyms));
 
   @override
   String toString() =>
-      'OcrCandidate(term: $term, meaning: $meaning, tooShort: $tooShort)';
+      'OcrCandidate(term: $term, meaning: $meaning, tooShort: $tooShort, '
+      'synonyms: $synonyms)';
+}
+
+bool _listEquals(List<String> a, List<String> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
 
 /// Terim ile karşılığı ayıran olası ayraçlar (öncelik sırasız; ilk eşleşen).

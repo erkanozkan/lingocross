@@ -166,4 +166,16 @@ Content-Type: application/json
 GET {{LingoCross.Api_HostAddress}}/api/games/<game-id>/assignments
 Authorization: Bearer <teacher-access-token>
 
+### OCR ham metnini Claude ile zenginleştir — Teacher
+### (Anthropic__ApiKey yoksa 503 döner; mobil yerel ayrıştırmaya düşer)
+POST {{LingoCross.Api_HostAddress}}/api/ocr/enrich
+Authorization: Bearer <teacher-access-token>
+Content-Type: application/json
+
+{
+  "rawText": "happy mutlu\nsad uzgun\nbook kitap",
+  "sourceLanguage": "en",
+  "targetLanguage": "tr"
+}
+
 ###

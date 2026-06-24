@@ -11,7 +11,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../data/ocr_service.dart';
 import '../../domain/language_option.dart';
-import '../../domain/ocr_line_parser.dart';
 import '../lessons_notifier.dart';
 import '../ocr_capture_controller.dart';
 import '../widgets/word_form_sheet.dart';
@@ -38,6 +37,10 @@ class OcrCaptureScreen extends ConsumerWidget {
       data: (l) => l.sourceLanguage,
       orElse: () => LanguageOption.defaultSource,
     );
+    final targetLang = lessonAsync.maybeWhen(
+      data: (l) => l.targetLanguage,
+      orElse: () => LanguageOption.defaultTarget,
+    );
     final sourceLabel = LanguageOption.fromCode(sourceLang).label(l10n);
 
     Future<void> pick(OcrImageSource source) async {
@@ -58,12 +61,13 @@ class OcrCaptureScreen extends ConsumerWidget {
     }
 
     Future<void> extract() async {
-      List<OcrCandidate>? candidates;
+      OcrScanResult? result;
       var failed = false;
       try {
-        candidates = await ref
-            .read(ocrCaptureControllerProvider.notifier)
-            .scan();
+        result = await ref.read(ocrCaptureControllerProvider.notifier).scan(
+              sourceLanguage: sourceLang,
+              targetLanguage: targetLang,
+            );
       } catch (_) {
         failed = true;
       }
@@ -71,9 +75,10 @@ class OcrCaptureScreen extends ConsumerWidget {
       await context.push(
         AppRoutes.lessonOcrReview(lessonId),
         extra: OcrReviewArgs(
-          candidates: candidates ?? const [],
+          candidates: result?.candidates ?? const [],
           sourceLangLabel: sourceLabel,
           failed: failed,
+          enriched: result?.enriched ?? false,
         ),
       );
     }
@@ -112,23 +117,24 @@ class OcrCaptureScreen extends ConsumerWidget {
           if (state.hasImage)
             _PhotoPreview(
               path: state.imagePath!,
-              onRemove: state.isScanning ? null : controller.clearImage,
+              onRemove: state.isBusy ? null : controller.clearImage,
             )
           else
             _CaptureTrigger(
-              onTap: state.isScanning ? null : openSourceSheet,
+              onTap: state.isBusy ? null : openSourceSheet,
             ),
           const SizedBox(height: AppSpacing.lg),
           _ExtractButton(
-            enabled: state.hasImage && !state.isScanning,
+            enabled: state.hasImage && !state.isBusy,
             scanning: state.isScanning,
+            enriching: state.isEnriching,
             onPressed: extract,
           ),
           const SizedBox(height: AppSpacing.md),
           const _OrDivider(),
           const SizedBox(height: AppSpacing.md),
           _ManualButton(
-            onPressed: state.isScanning ? null : openManual,
+            onPressed: state.isBusy ? null : openManual,
           ),
         ],
       ),
@@ -399,19 +405,22 @@ class _ExtractButton extends StatelessWidget {
   const _ExtractButton({
     required this.enabled,
     required this.scanning,
+    required this.enriching,
     required this.onPressed,
   });
 
   final bool enabled;
   final bool scanning;
+  final bool enriching;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final active = enabled && !scanning;
+    final busy = scanning || enriching;
+    final active = enabled && !busy;
     return Semantics(
-      liveRegion: scanning,
+      liveRegion: busy,
       button: true,
       enabled: active,
       child: GestureDetector(
@@ -431,7 +440,7 @@ class _ExtractButton extends StatelessWidget {
                   ]
                 : null,
           ),
-          child: scanning
+          child: busy
               ? Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -445,10 +454,15 @@ class _ExtractButton extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      l10n.ocrCaptureScanning,
-                      style: AppTypography.headlineMd
-                          .copyWith(color: AppColors.onPrimary),
+                    Flexible(
+                      child: Text(
+                        enriching
+                            ? l10n.ocrCaptureEnriching
+                            : l10n.ocrCaptureScanning,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.headlineMd
+                            .copyWith(color: AppColors.onPrimary),
+                      ),
                     ),
                   ],
                 )

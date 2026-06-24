@@ -1,8 +1,10 @@
 using LingoCross.Application.Common.Email;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
+using LingoCross.Application.Ocr;
 using LingoCross.Infrastructure.Auth;
 using LingoCross.Infrastructure.Email;
+using LingoCross.Infrastructure.Ocr;
 using LingoCross.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +35,9 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
         services.AddScoped<IEmailSender, LoggingEmailSender>();
+
+        // OCR zenginleştirme (Claude). Anahtar yoksa servis 503 fırlatır; mobil yerel ayrıştırmaya düşer.
+        services.AddScoped<IOcrEnrichmentService, ClaudeOcrEnrichmentService>();
 
         return services;
     }
