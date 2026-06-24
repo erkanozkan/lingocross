@@ -154,6 +154,112 @@ void main() {
     await tester.pumpAndSettle();
   });
 
+  testWidgets('Hesabı Sil satırı görünür + onay diyaloğu açılır', (tester) async {
+    tester.view.physicalSize = const Size(1080, 3200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final authRepo = FakeAuthRepository();
+    await tester.pumpWidget(_wrap(authRepo, prefs));
+    await tester.pumpAndSettle();
+
+    expect(find.text('TEHLİKELİ BÖLGE'), findsOneWidget);
+    // Satır başlığı (diyalog onay butonuyla aynı metni paylaşır → 1 adet).
+    expect(find.text('Hesabı Sil'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Hesabı Sil'));
+    await tester.tap(find.text('Hesabı Sil'));
+    await tester.pumpAndSettle();
+
+    // Diyalog: başlık + gövde + iki buton.
+    expect(find.text('Hesabını sil'), findsOneWidget);
+    expect(
+      find.textContaining('kalıcı olarak silinecek'),
+      findsOneWidget,
+    );
+    expect(find.text('Vazgeç'), findsOneWidget);
+    // Onay butonu açılınca satır + buton = 2 "Hesabı Sil".
+    expect(find.text('Hesabı Sil'), findsNWidgets(2));
+    expect(authRepo.deleteAccountCount, 0);
+  });
+
+  testWidgets('Onay → deleteAccount çağrılır + oturum temizlenir',
+      (tester) async {
+    tester.view.physicalSize = const Size(1080, 3200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final storage = FakeSecureStorage({
+      'lc_access_token': 'access-x',
+      'lc_refresh_token': 'refresh-x',
+    });
+    final authRepo = FakeAuthRepository();
+    final router = GoRouter(
+      initialLocation: '/account/settings',
+      routes: [
+        GoRoute(
+          path: '/account/settings',
+          builder: (context, state) => const AccountSettingsScreen(),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(authRepo),
+          secureStorageProvider.overrideWithValue(storage),
+          sharedPreferencesProvider.overrideWithValue(prefs),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          localizationsDelegates: _localizationDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('tr'),
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Hesabı Sil'));
+    await tester.tap(find.text('Hesabı Sil'));
+    await tester.pumpAndSettle();
+
+    // Diyalogdaki kırmızı onay butonu (son "Hesabı Sil").
+    await tester.tap(find.text('Hesabı Sil').last);
+    // pumpAndSettle yok: başarıda spinner döner ve testte yönlendirme rotası
+    // olmadığı için animasyon hiç durmaz. Birkaç pump async işi tamamlar.
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(authRepo.deleteAccountCount, 1);
+    expect(await storage.read(key: 'lc_access_token'), isNull);
+    expect(await storage.read(key: 'lc_refresh_token'), isNull);
+  });
+
+  testWidgets('Vazgeç → deleteAccount çağrılmaz', (tester) async {
+    tester.view.physicalSize = const Size(1080, 3200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final authRepo = FakeAuthRepository();
+    await tester.pumpWidget(_wrap(authRepo, prefs));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Hesabı Sil'));
+    await tester.tap(find.text('Hesabı Sil'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Vazgeç'));
+    await tester.pumpAndSettle();
+
+    expect(authRepo.deleteAccountCount, 0);
+    expect(find.text('Hesabını sil'), findsNothing);
+  });
+
   testWidgets('Çıkış Yap → gerçek logout', (tester) async {
     final authRepo = FakeAuthRepository();
     await tester.pumpWidget(_wrap(authRepo, prefs));

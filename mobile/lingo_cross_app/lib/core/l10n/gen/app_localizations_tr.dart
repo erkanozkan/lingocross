@@ -1822,6 +1822,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get accountChangePasswordSavedSnack => 'Şifreniz değiştirildi';
 
   @override
+  String get accountGroupDangerZone => 'TEHLİKELİ BÖLGE';
+
+  @override
+  String get accountRowDeleteAccount => 'Hesabı Sil';
+
+  @override
+  String get accountDeleteDialogTitle => 'Hesabını sil';
+
+  @override
+  String get accountDeleteDialogBody => 'Hesabın ve tüm verilerin (sınıflar, dersler, sonuçlar) kalıcı olarak silinecek. Bu işlem geri alınamaz.';
+
+  @override
+  String get accountDeleteConfirm => 'Hesabı Sil';
+
+  @override
+  String get accountDeleteCancel => 'Vazgeç';
+
+  @override
+  String get accountDeleteError => 'Hesabın silinemedi. Lütfen tekrar dene.';
+
+  @override
   String get classesTitle => 'Sınıflarım';
 
   @override

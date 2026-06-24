@@ -24,4 +24,11 @@ public interface IAuthService
 
     /// <summary>Mevcut şifreyi doğrular; başarılıysa şifreyi değiştirir, tüm refresh token'ları iptal eder ve yeni token çifti üretir.</summary>
     Task<AuthResponse> ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Kullanıcıyı ve ona ait TÜM verileri kalıcı olarak siler (Apple hesap silme zorunluluğu).
+    /// Rolüne göre, restrict FK'ları ihlal etmeyecek doğru sırada açık silme yapar; bir transaction
+    /// içinde çalışır. Kullanıcı yoksa <see cref="Common.Exceptions.AppException"/> (404) atar.
+    /// </summary>
+    Task DeleteAccountAsync(Guid userId, CancellationToken cancellationToken = default);
 }

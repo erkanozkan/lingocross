@@ -46,4 +46,11 @@ public interface IAppDbContext
     DbSet<Subscription> Subscriptions { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Bir veritabanı transaction'ı başlatır. Çağıran <c>CommitAsync</c> ile onaylar; aksi halde
+    /// (dispose anında) geri alınır. İlişkisel olmayan sağlayıcılarda (ör. testlerdeki InMemory)
+    /// no-op bir transaction döner.
+    /// </summary>
+    Task<IAppDbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

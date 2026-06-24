@@ -12,6 +12,10 @@ class FakeAuthRepository implements AuthRepository {
   final UserDto user;
 
   int logoutCount = 0;
+  int deleteAccountCount = 0;
+
+  /// Atanırsa `deleteAccount()` bu hatayı fırlatır (hata akışı testi için).
+  Object? deleteAccountError;
 
   @override
   Future<UserDto> me() async => user;
@@ -19,6 +23,13 @@ class FakeAuthRepository implements AuthRepository {
   @override
   Future<void> logout({required String refreshToken}) async {
     logoutCount++;
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    deleteAccountCount++;
+    final error = deleteAccountError;
+    if (error != null) throw error;
   }
 
   @override

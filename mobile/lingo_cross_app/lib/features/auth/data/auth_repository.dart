@@ -115,6 +115,17 @@ class AuthRepository {
     }
   }
 
+  /// Mevcut kullanıcıyı ve tüm verisini kalıcı olarak siler
+  /// (DELETE /auth/me → 204). Authenticated Dio; 401'de interceptor refresh
+  /// dener. Hata mevcut auth hata eşlemesiyle fırlatılır (UI mesaj gösterir).
+  Future<void> deleteAccount() async {
+    try {
+      await _dio.delete<dynamic>('$_base/auth/me');
+    } on DioException catch (e) {
+      throw _mapNetworkOrGeneric(e);
+    }
+  }
+
   Future<void> logout({required String refreshToken}) async {
     try {
       await _dio.post<dynamic>(

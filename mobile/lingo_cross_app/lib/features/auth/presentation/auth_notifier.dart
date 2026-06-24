@@ -130,4 +130,14 @@ class AuthNotifier extends _$AuthNotifier {
     await _storage.clear();
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
+
+  /// Hesabı kalıcı olarak siler (DELETE /auth/me). Başarıda logout ile aynı
+  /// temizliği yapar (token storage temizlenir, state `unauthenticated` olur)
+  /// ve router girişe yönlendirir. Hata yukarı fırlatılır; state bozulmaz
+  /// (sunum katmanı mesaj gösterir, oturum korunur).
+  Future<void> deleteAccount() async {
+    await _repository.deleteAccount();
+    await _storage.clear();
+    state = const AuthState(status: AuthStatus.unauthenticated);
+  }
 }
