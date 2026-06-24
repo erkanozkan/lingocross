@@ -1,6 +1,7 @@
 using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
+using LingoCross.Application.Notifications;
 using LingoCross.Application.Results.Dtos;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
@@ -16,6 +17,7 @@ public class ResultService : IResultService
 {
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly PushDispatcher? _push;
 
     /// <summary>
     /// Oyun süresi için makul üst sınır (6 saat, ms). İstemciden gelen <c>durationMs</c> bu sınırı
@@ -23,10 +25,12 @@ public class ResultService : IResultService
     /// </summary>
     public const int MaxDurationMs = 6 * 60 * 60 * 1000;
 
-    public ResultService(IAppDbContext db, ICurrentUser currentUser)
+    public ResultService(IAppDbContext db, ICurrentUser currentUser, PushDispatcher? push = null)
     {
         _db = db;
         _currentUser = currentUser;
+        // Push opsiyonel: enjekte edilmezse tetikler atlanır (testler için no-op).
+        _push = push;
     }
 
     /// <summary>
@@ -114,9 +118,63 @@ public class ResultService : IResultService
             result.SharedWithTeacher = true;
             result.SharedAt = DateTime.UtcNow;
             await _db.SaveChangesAsync(cancellationToken);
+
+            // Best-effort push: dersin öğretmenine "sonuç paylaşıldı" bildirimi (yalnız yeni paylaşımda).
+            if (_push is not null)
+            {
+                await NotifyTeacherSharedAsync(result, studentId, cancellationToken);
+            }
         }
 
         return await ToDtoAsync(result, cancellationToken);
+    }
+
+    /// <summary>
+    /// Sonucun ait olduğu dersin öğretmenine "sonuç paylaşıldı" push'u gönderir. Öğretmen id'si ve
+    /// öğrenci adı oturum→oyun→ders zincirinden çekilir. Best-effort: hata yutulur.
+    /// </summary>
+    private async Task NotifyTeacherSharedAsync(GameResult result, Guid studentId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var info = await _db.GameSessions
+                .Where(s => s.Id == result.SessionId)
+                .Select(s => new
+                {
+                    TeacherId = s.Game.Lesson.TeacherId,
+                    LessonId = s.Game.LessonId,
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (info is null)
+            {
+                return;
+            }
+
+            var studentName = await _db.Users
+                .Where(u => u.Id == studentId)
+                .Select(u => u.DisplayName)
+                .FirstOrDefaultAsync(cancellationToken) ?? "Bir öğrenci";
+
+            var data = new Dictionary<string, string>
+            {
+                ["type"] = "results",
+                ["lessonId"] = info.LessonId.ToString(),
+                ["resultId"] = result.Id.ToString(),
+            };
+
+            await _push!.NotifyUsersAsync(
+                new[] { info.TeacherId },
+                PushType.Results,
+                "Sonuç paylaşıldı",
+                $"{studentName} bir sonucu seninle paylaştı",
+                data,
+                cancellationToken);
+        }
+        catch
+        {
+            // Bildirim hatası paylaşma işlemini bozmaz.
+        }
     }
 
     public async Task<IReadOnlyList<GameResultDto>> ListMineAsync(CancellationToken cancellationToken = default)

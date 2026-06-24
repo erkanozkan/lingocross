@@ -37,5 +37,9 @@ public interface IAppDbContext
 
     DbSet<GameAssignment> GameAssignments { get; }
 
+    DbSet<DeviceToken> DeviceTokens { get; }
+
+    DbSet<NotificationPreference> NotificationPreferences { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

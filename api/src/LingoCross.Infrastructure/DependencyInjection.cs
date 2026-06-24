@@ -1,9 +1,11 @@
 using LingoCross.Application.Common.Email;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
+using LingoCross.Application.Notifications;
 using LingoCross.Application.Ocr;
 using LingoCross.Infrastructure.Auth;
 using LingoCross.Infrastructure.Email;
+using LingoCross.Infrastructure.Notifications;
 using LingoCross.Infrastructure.Ocr;
 using LingoCross.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +40,9 @@ public static class DependencyInjection
 
         // OCR zenginleştirme (Claude). Anahtar yoksa servis 503 fırlatır; mobil yerel ayrıştırmaya düşer.
         services.AddScoped<IOcrEnrichmentService, ClaudeOcrEnrichmentService>();
+
+        // Push gönderimi (FCM). Firebase:ServiceAccountJson boşsa no-op; FirebaseApp singleton.
+        services.AddSingleton<IPushSender, FcmPushSender>();
 
         return services;
     }

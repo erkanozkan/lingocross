@@ -44,6 +44,10 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<GameAssignment> GameAssignments => Set<GameAssignment>();
 
+    public DbSet<DeviceToken> DeviceTokens => Set<DeviceToken>();
+
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
+
     Task<int> IAppDbContext.SaveChangesAsync(CancellationToken cancellationToken)
         => SaveChangesAsync(cancellationToken);
 
