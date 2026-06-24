@@ -20,6 +20,13 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(l => l.SourceLanguage).IsRequired().HasMaxLength(8).HasDefaultValue("en");
         builder.Property(l => l.TargetLanguage).IsRequired().HasMaxLength(8).HasDefaultValue("tr");
 
+        builder.Property(l => l.ScheduledLabel).HasMaxLength(200);
+
+        builder.Property(l => l.Status)
+            .IsRequired()
+            .HasConversion<int>()
+            .HasDefaultValue(LingoCross.Domain.Enums.LessonStatus.Draft);
+
         builder.Property(l => l.IsPublished).IsRequired().HasDefaultValue(false);
 
         builder.Property(l => l.CreatedAt).IsRequired();

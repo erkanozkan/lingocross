@@ -114,11 +114,23 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 | Kelime Listesi Yükle | `85e0bc3add444813b62a730b9b311292` | OCR yakalama + gözden geçirme/manuel düzenleme (aşağıya bakın) |
 | Kelime Eşleştirme Oyunu | `27338ce47339494f9785df101d50892c` | MVP oyunu |
 | Oyun Sonu Raporu | `4786e952cc504b9c8247865e80ab7daf` | Süre + başarı + paylaş |
+| Ünite Kelime Listesi | `2ec4360ad6cc4a6395255fa6298905e1` | Kelime listeleme (OCR/MANUEL rozet, primary chip) |
 
-### Faz 2 ekranları (MVP'de YOK)
+### Faz 2 ekranları (öğretmen otoring + bulmaca — F2.1/F2.2/F2.4)
+| Ekran | screenId | Not |
+|---|---|---|
+| Derslerim (Öğretmen Listesi) | `930ab2e69b19449498c285a5927a8070` | F2.1 — "Sınıflar" sekmesi; ders listesi (tarih, kelime sayısı, durum AKTİF/TAMAMLANDI) + "Yeni Ders Oluştur". 4 sekmeli alt nav (Ana Sayfa/Sınıflar/Raporlar/Profil) |
+| Ders Oluşturma Sayfası | `81d6e173025e4d748f474078720d6f8c` | F2.1 — tarih/hafta + ünite adı + konular + kelime listesi bağlantısı |
+| Ders Detay Sayfası | `ca812b92a43a446ca3478cdd9b7ad39b` | F2.1 — başlık/durum/tarih, kelime önizleme, "Ödev Ataması Yap". "Paylaşılan Sınıflar" → **atanan öğrenci sayısı** (sınıf/grup yok) |
+| Öğretmen Profil | `b557deed825c4ccb9f48efeb5a0a7d36` | F2.1 — Profil sekmesi (istatistik/rozet/menü; çıkış) |
+| Yeni Bulmaca Oluştur | `73fefb5692274f28a37aa74085267f1d` | F2.2 — oyun türü (Eşleştirme/Crossword) + ders → oluştur & yayınla → aktif öğrencilere atanır |
+| Crossword Oyunu | `b00703d2221c4bde9c7fb943db1be314` | F2.4 — ızgara üretimi + oynanış |
+
+> Öğretmen Paneli (`5d57f8…`): F2.2'de "Yeni Bulmaca Oluştur" girişi "Öğrenci Gelişimi"nin üstüne eklenir.
+
+### Faz 3+ ekranları (ertelendi)
 | Ekran | screenId |
 |---|---|
-| Crossword Oyunu | `b00703d2221c4bde9c7fb943db1be314` |
 | Çıkmış Sorular Listesi | `67ea9b5809574ceaa637510683b8a1e3` |
 | Soru Çözüm Ekranı | `4eebe27dcdc943f2b1fb797832cb7a80` |
 

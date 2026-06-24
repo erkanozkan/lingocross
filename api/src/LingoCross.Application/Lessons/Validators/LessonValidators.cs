@@ -11,6 +11,7 @@ public class CreateLessonRequestValidator : AbstractValidator<CreateLessonReques
         RuleFor(x => x.Description).MaximumLength(2000);
         RuleFor(x => x.SourceLanguage).MaximumLength(8).When(x => x.SourceLanguage is not null);
         RuleFor(x => x.TargetLanguage).MaximumLength(8).When(x => x.TargetLanguage is not null);
+        RuleFor(x => x.ScheduledLabel).MaximumLength(200).When(x => x.ScheduledLabel is not null);
     }
 }
 
@@ -22,5 +23,6 @@ public class UpdateLessonRequestValidator : AbstractValidator<UpdateLessonReques
         RuleFor(x => x.Description).MaximumLength(2000);
         RuleFor(x => x.SourceLanguage).MaximumLength(8).When(x => x.SourceLanguage is not null);
         RuleFor(x => x.TargetLanguage).MaximumLength(8).When(x => x.TargetLanguage is not null);
+        RuleFor(x => x.ScheduledLabel).MaximumLength(200).When(x => x.ScheduledLabel is not null);
     }
 }

@@ -28,5 +28,15 @@ public interface ILessonService
 
     Task DeleteAsync(Guid lessonId, CancellationToken cancellationToken = default);
 
+    /// <summary>Dersi yayımlar → Active (is_published=true). Boş ders yayımlanamaz.</summary>
     Task<LessonDto> PublishAsync(Guid lessonId, CancellationToken cancellationToken = default);
+
+    /// <summary>Dersi yayından kaldırır → Draft (is_published=false). Öğrenci görünürlüğü kapanır.</summary>
+    Task<LessonDto> UnpublishAsync(Guid lessonId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Dersi tamamlandı olarak işaretler → Completed (is_published=true kalır; öğrenciye görünür).
+    /// Yalnızca Active durumdayken yapılabilir.
+    /// </summary>
+    Task<LessonDto> CompleteAsync(Guid lessonId, CancellationToken cancellationToken = default);
 }

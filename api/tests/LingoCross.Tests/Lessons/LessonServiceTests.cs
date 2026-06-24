@@ -148,4 +148,130 @@ public class LessonServiceTests
         Assert.True(published.IsPublished);
         Assert.Equal(1, published.WordCount);
     }
+
+    [Fact]
+    public async Task Create_DefaultsToDraftStatus()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var service = new LessonService(db, TestCurrentUser.Teacher(teacherId));
+
+        var dto = await service.CreateAsync(Req());
+
+        Assert.Equal((int)LessonStatus.Draft, dto.Status);
+        Assert.False(dto.IsPublished);
+    }
+
+    [Fact]
+    public async Task Create_PersistsScheduledLabel()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var service = new LessonService(db, TestCurrentUser.Teacher(teacherId));
+
+        var dto = await service.CreateAsync(new CreateLessonRequest(
+            "Hayvanlar", null, null, null, "  15-21 Temmuz 2024  "));
+
+        Assert.Equal("15-21 Temmuz 2024", dto.ScheduledLabel);
+        var stored = await db.Lessons.SingleAsync();
+        Assert.Equal("15-21 Temmuz 2024", stored.ScheduledLabel);
+    }
+
+    [Fact]
+    public async Task Update_ChangesScheduledLabel()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var svc = new LessonService(db, TestCurrentUser.Teacher(teacherId));
+        var lesson = await svc.CreateAsync(Req());
+
+        var updated = await svc.UpdateAsync(lesson.Id, new UpdateLessonRequest(
+            "Hayvanlar", null, null, null, "1. Hafta"));
+
+        Assert.Equal("1. Hafta", updated.ScheduledLabel);
+    }
+
+    [Fact]
+    public async Task Publish_SetsStatusActive()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var current = TestCurrentUser.Teacher(teacherId);
+        var lessonSvc = new LessonService(db, current);
+        var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+
+        var published = await lessonSvc.PublishAsync(lesson.Id);
+
+        Assert.Equal((int)LessonStatus.Active, published.Status);
+        Assert.True(published.IsPublished);
+    }
+
+    [Fact]
+    public async Task Unpublish_RevertsToDraftAndHides()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var current = TestCurrentUser.Teacher(teacherId);
+        var lessonSvc = new LessonService(db, current);
+        var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+        await lessonSvc.PublishAsync(lesson.Id);
+
+        var unpublished = await lessonSvc.UnpublishAsync(lesson.Id);
+
+        Assert.Equal((int)LessonStatus.Draft, unpublished.Status);
+        Assert.False(unpublished.IsPublished);
+    }
+
+    [Fact]
+    public async Task Complete_FromActive_SetsCompletedAndStaysVisible()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var current = TestCurrentUser.Teacher(teacherId);
+        var lessonSvc = new LessonService(db, current);
+        var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+        await lessonSvc.PublishAsync(lesson.Id);
+
+        var completed = await lessonSvc.CompleteAsync(lesson.Id);
+
+        Assert.Equal((int)LessonStatus.Completed, completed.Status);
+        Assert.True(completed.IsPublished);
+    }
+
+    [Fact]
+    public async Task Complete_FromDraft_Throws400()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var current = TestCurrentUser.Teacher(teacherId);
+        var lessonSvc = new LessonService(db, current);
+        var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+
+        var ex = await Assert.ThrowsAsync<AppException>(() => lessonSvc.CompleteAsync(lesson.Id));
+        Assert.Equal(400, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task Complete_FromCompleted_Throws400()
+    {
+        var db = NewDb();
+        var teacherId = await SeedTeacherAsync(db);
+        var current = TestCurrentUser.Teacher(teacherId);
+        var lessonSvc = new LessonService(db, current);
+        var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+        await lessonSvc.PublishAsync(lesson.Id);
+        await lessonSvc.CompleteAsync(lesson.Id);
+
+        var ex = await Assert.ThrowsAsync<AppException>(() => lessonSvc.CompleteAsync(lesson.Id));
+        Assert.Equal(400, ex.StatusCode);
+    }
+
+    private static async Task<LessonDto> CreateLessonWithWordAsync(AppDbContext db, LessonService lessonSvc, Application.Common.Security.ICurrentUser current)
+    {
+        var lesson = await lessonSvc.CreateAsync(Req());
+        await new WordService(db, current).AddAsync(lesson.Id, new AddWordRequest(
+            "cat", null, WordSource.Manual,
+            new[] { new TranslationPayload("kedi", true) }, null));
+        return lesson;
+    }
 }
