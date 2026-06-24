@@ -24,6 +24,7 @@ class AppTextField extends StatefulWidget {
     this.onFieldSubmitted,
     this.trailing,
     this.trailingLink,
+    this.maxLines = 1,
   });
 
   final String label;
@@ -43,6 +44,9 @@ class AppTextField extends StatefulWidget {
 
   /// Label satırının sağında gösterilen widget (örn. "Şifremi Unuttum?" link).
   final Widget? trailingLink;
+
+  /// Çok satırlı giriş için satır sayısı (varsayılan 1).
+  final int maxLines;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -98,6 +102,7 @@ class _AppTextFieldState extends State<AppTextField> {
           focusNode: _focusNode,
           enabled: widget.enabled,
           obscureText: widget.obscureText,
+          maxLines: widget.obscureText ? 1 : widget.maxLines,
           keyboardType: widget.keyboardType,
           autofillHints: widget.autofillHints,
           textInputAction: widget.textInputAction,

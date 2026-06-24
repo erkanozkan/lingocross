@@ -284,6 +284,226 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherDashboardLessonDraft => 'Taslak';
 
   @override
+  String get navClasses => 'Sınıflar';
+
+  @override
+  String get lessonStatusDraft => 'Taslak';
+
+  @override
+  String get lessonStatusActive => 'Aktif';
+
+  @override
+  String get lessonStatusCompleted => 'Tamamlandı';
+
+  @override
+  String get lessonStatusDraftUpper => 'TASLAK';
+
+  @override
+  String get lessonStatusActiveUpper => 'AKTİF';
+
+  @override
+  String get lessonStatusCompletedUpper => 'TAMAMLANDI';
+
+  @override
+  String get lessonsListTitle => 'Derslerim';
+
+  @override
+  String get lessonsListCreate => '+ Yeni Ders Oluştur';
+
+  @override
+  String get lessonsListSectionTitle => 'Yaklaşan Dersler';
+
+  @override
+  String lessonsListTotal(int count) {
+    return 'Toplam: $count';
+  }
+
+  @override
+  String lessonsListWordCount(int count) {
+    return '$count Kelime';
+  }
+
+  @override
+  String get lessonsListEmptyTitle => 'Henüz dersiniz yok';
+
+  @override
+  String get lessonsListEmptyDesc => 'İlk dersinizi oluşturarak başlayın.';
+
+  @override
+  String get lessonsListError => 'Dersler yüklenemedi';
+
+  @override
+  String get lessonsListNoDate => 'Tarih belirtilmedi';
+
+  @override
+  String get lessonsListFooterHint => 'Geçmiş derslerinizi görmek için kaydırın';
+
+  @override
+  String get reportsTitle => 'Raporlar';
+
+  @override
+  String get reportsComingSoonTitle => 'Raporlar yakında';
+
+  @override
+  String get reportsComingSoonDesc => 'Sınıf ve öğrenci performans raporları burada görünecek.';
+
+  @override
+  String get teacherProfileRoleLabel => 'Öğretmen';
+
+  @override
+  String get teacherProfileStatClasses => 'Sınıf';
+
+  @override
+  String get teacherProfileStatStudents => 'Öğrenci';
+
+  @override
+  String get teacherProfileStatParticipation => 'Katılım';
+
+  @override
+  String get teacherProfileWeeklyTitle => 'Haftalık Ödev Tamamlama';
+
+  @override
+  String teacherProfileWeeklyDesc(int done, int total) {
+    return '$done/$total ödev tamamlandı';
+  }
+
+  @override
+  String teacherProfileWeeklyHint(int percent) {
+    return 'Sınıflarınızın ödev tamamlama oranı geçen haftaya göre %$percent arttı!';
+  }
+
+  @override
+  String get teacherProfileBadgesTitle => 'Öğretmen Rozetleri';
+
+  @override
+  String get teacherProfileBadgePopular => 'Popüler Eğitmen';
+
+  @override
+  String get teacherProfileBadgeFast => 'Hızlı Değerlendirici';
+
+  @override
+  String get teacherProfileBadgeInspiring => 'İlham Veren';
+
+  @override
+  String get teacherProfileMenuClasses => 'Sınıf Yönetimi';
+
+  @override
+  String get teacherProfileMenuReports => 'İstatistikler ve Raporlar';
+
+  @override
+  String get teacherProfileMenuSettings => 'Hesap Ayarları';
+
+  @override
+  String get teacherProfileMenuLogout => 'Çıkış Yap';
+
+  @override
+  String get teacherProfileStatsSoon => 'İstatistikler yakında — öğrenciler oyun oynadıkça dolacak.';
+
+  @override
+  String get lessonFormHeroTitle => 'Harika bir ders planla!';
+
+  @override
+  String get lessonFormHeroDesc => 'Öğrencilerin yeni şeyler öğrenmeye hazır.';
+
+  @override
+  String get lessonFormFieldScheduleLabel => 'Ders Tarihi / Haftası';
+
+  @override
+  String get lessonFormFieldSchedulePlaceholder => 'Örn: 15-21 Temmuz 2024';
+
+  @override
+  String get lessonFormFieldUnitLabel => 'Ünite Adı veya Numarası';
+
+  @override
+  String get lessonFormFieldUnitPlaceholder => 'Örn: Unit 4: Food & Drinks';
+
+  @override
+  String get lessonFormFieldTopicsLabel => 'Ders Detayları ve Konular';
+
+  @override
+  String get lessonFormFieldTopicsPlaceholder => 'Bu derste hangi konuları işleyeceksiniz? Önemli notları buraya ekleyin...';
+
+  @override
+  String get lessonFormVocabTitle => 'Ünite Kelime Listesi';
+
+  @override
+  String get lessonFormVocabDesc => 'Bu üniteye ait kelimeleri görüntüle veya yeni kelimeler ekle.';
+
+  @override
+  String get lessonFormVocabSaveFirst => 'Önce dersi kaydedin, sonra kelime ekleyin.';
+
+  @override
+  String get lessonFormInfoNote => 'Dersi kaydettiğinizde tüm öğrencileriniz bildirim alacaktır. Planlamalarınızı istediğiniz zaman düzenleyebilirsiniz.';
+
+  @override
+  String get lessonFormSaveAndShare => 'Dersi Kaydet ve Paylaş';
+
+  @override
+  String get lessonDetailTitle => 'Ders Detayı';
+
+  @override
+  String get lessonDetailScheduleNone => 'Tarih belirtilmedi';
+
+  @override
+  String get lessonDetailSharedTitle => 'Paylaşılan Sınıflar';
+
+  @override
+  String lessonDetailSharedCount(int count) {
+    return '$count öğrenciye açık';
+  }
+
+  @override
+  String get lessonDetailSharedNone => 'Henüz öğrenciye açık değil';
+
+  @override
+  String get lessonDetailSharedDraft => 'Ders taslakta — yayınlanınca öğrencilere açılır';
+
+  @override
+  String get lessonDetailContentTitle => 'Ders İçeriği';
+
+  @override
+  String get lessonDetailContentEmpty => 'Bu ders için içerik girilmemiş.';
+
+  @override
+  String get lessonDetailWordsTitle => 'Kelime Listesi';
+
+  @override
+  String get lessonDetailWordsSeeAll => 'Tümünü Gör';
+
+  @override
+  String get lessonDetailWordsEmpty => 'Henüz kelime eklenmemiş.';
+
+  @override
+  String get lessonDetailEdit => 'Dersi Düzenle';
+
+  @override
+  String get lessonDetailAssignHomework => 'Ödev Ataması Yap';
+
+  @override
+  String get lessonDetailPublish => 'Yayınla';
+
+  @override
+  String get lessonDetailUnpublish => 'Yayından Kaldır';
+
+  @override
+  String get lessonDetailComplete => 'Tamamlandı İşaretle';
+
+  @override
+  String get lessonDetailPublishedSnack => 'Ders yayınlandı';
+
+  @override
+  String get lessonDetailUnpublishedSnack => 'Ders yayından kaldırıldı';
+
+  @override
+  String get lessonDetailCompletedSnack => 'Ders tamamlandı olarak işaretlendi';
+
+  @override
+  String get lessonDetailActionError => 'İşlem başarısız, tekrar deneyin.';
+
+  @override
+  String get lessonDetailError => 'Ders yüklenemedi';
+
+  @override
   String get lessonFormTitleCreate => 'Yeni Ders';
 
   @override

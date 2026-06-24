@@ -67,6 +67,50 @@ public class StudentLessonVisibilityTests
     }
 
     [Fact]
+    public async Task ListVisible_AsStudent_IncludesActiveAndCompleted_NotDraft()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
+
+        var active = await SeedLessonAsync(db, teacher.Id, published: true);
+        active.Status = LessonStatus.Active;
+
+        var completed = await SeedLessonAsync(db, teacher.Id, published: true);
+        completed.Status = LessonStatus.Completed;
+
+        var draft = await SeedLessonAsync(db, teacher.Id, published: false);
+        draft.Status = LessonStatus.Draft;
+        await db.SaveChangesAsync();
+
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+
+        var list = await new LessonService(db, TestCurrentUser.Student(student.Id)).ListVisibleAsync();
+
+        var ids = list.Select(l => l.Id).ToHashSet();
+        Assert.Equal(2, list.Count);
+        Assert.Contains(active.Id, ids);
+        Assert.Contains(completed.Id, ids);
+        Assert.DoesNotContain(draft.Id, ids);
+    }
+
+    [Fact]
+    public async Task Get_AsStudent_CompletedLesson_Succeeds()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@example.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
+        var lesson = await SeedLessonAsync(db, teacher.Id, published: true);
+        lesson.Status = LessonStatus.Completed;
+        await db.SaveChangesAsync();
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+
+        var dto = await new LessonService(db, TestCurrentUser.Student(student.Id)).GetAsync(lesson.Id);
+
+        Assert.Equal((int)LessonStatus.Completed, dto.Status);
+    }
+
+    [Fact]
     public async Task ListVisible_StudentWithPendingEnrollment_SeesNothing()
     {
         var db = NewDb();

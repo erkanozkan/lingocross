@@ -13,11 +13,12 @@ import '../../features/enrollment/presentation/screens/student_dashboard_screen.
 import '../../features/enrollment/presentation/screens/teacher_students_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/home/presentation/profile_placeholder_screen.dart';
+import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_capture_screen.dart';
 import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
-import '../../features/lessons/presentation/screens/teacher_dashboard_screen.dart';
+import '../../features/lessons/presentation/screens/teacher_shell_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
 import '../../features/results/data/dtos/result_dtos.dart';
 import '../../features/results/presentation/screens/game_result_report_screen.dart';
@@ -55,6 +56,7 @@ abstract final class AppRoutes {
   static const String lessonNew = '/teacher/lessons/new';
 
   static String lessonDetail(String id) => '/teacher/lessons/$id';
+  static String lessonWords(String id) => '/teacher/lessons/$id/words';
   static String lessonEdit(String id) => '/teacher/lessons/$id/edit';
 
   // OCR akışı (M2 #18): yakalama (Ekran A) + gözden geçirme (Ekran B).
@@ -173,10 +175,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           seedResult: state.extra as GameResultDto?,
         ),
       ),
-      // --- Öğretmen (M2/M3) ---
+      // --- Öğretmen (F2.1: 4 sekmeli kabuk) ---
       GoRoute(
         path: AppRoutes.teacher,
-        builder: (context, state) => const TeacherDashboardScreen(),
+        builder: (context, state) => const TeacherShellScreen(),
       ),
       GoRoute(
         path: AppRoutes.teacherStudents,
@@ -186,8 +188,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.lessonNew,
         builder: (context, state) => const LessonFormScreen(),
       ),
+      // Ders Detayı (F2.1) — Derslerim listesinden açılır.
       GoRoute(
         path: '/teacher/lessons/:id',
+        builder: (context, state) =>
+            LessonDetailScreen(lessonId: state.pathParameters['id']!),
+      ),
+      // Ünite Kelime Listesi (detay/form "Tümünü Gör" → kelime ekranı).
+      GoRoute(
+        path: '/teacher/lessons/:id/words',
         builder: (context, state) =>
             WordListScreen(lessonId: state.pathParameters['id']!),
       ),

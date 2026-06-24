@@ -39,9 +39,22 @@ class LessonFormController extends _$LessonFormController {
   }
 
   /// Dersi yayınlar (`POST /lessons/{id}/publish`).
-  Future<LessonDto?> publish(String id) async {
+  Future<LessonDto?> publish(String id) => _statusMutation(id, _repo.publishLesson);
+
+  /// Dersi yayından kaldırır (`POST /lessons/{id}/unpublish`).
+  Future<LessonDto?> unpublish(String id) =>
+      _statusMutation(id, _repo.unpublishLesson);
+
+  /// Dersi tamamlandı işaretler (`POST /lessons/{id}/complete`).
+  Future<LessonDto?> complete(String id) =>
+      _statusMutation(id, _repo.completeLesson);
+
+  Future<LessonDto?> _statusMutation(
+    String id,
+    Future<LessonDto> Function(String) op,
+  ) async {
     state = const AsyncValue.loading();
-    final result = await AsyncValue.guard(() => _repo.publishLesson(id));
+    final result = await AsyncValue.guard(() => op(id));
     state = result.whenData((_) {});
     if (result.hasError) return null;
     ref.invalidate(lessonsNotifierProvider);

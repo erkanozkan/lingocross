@@ -5,10 +5,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 
-/// Öğretmen paneli alt navigasyonu (teacher-dashboard.md §3.6).
+/// Öğretmen alt navigasyonu — Stitch (Derslerim/Profil) birebir 4 sekme:
+/// **Ana Sayfa / Sınıflar / Raporlar / Profil**.
 ///
-/// 3 sekme: Ana Sayfa (aktif) / Raporlar / Profil. Faz/M5-M6 sekmeleri (Raporlar)
-/// M2'de pasif yer tutucu — dokunma "Yakında" geri bildirimi verir.
+/// Aktif sekme primary-container pill + dolu ikon; pasif sekme onSurfaceVariant.
 class TeacherBottomNav extends StatelessWidget {
   const TeacherBottomNav({
     super.key,
@@ -16,7 +16,7 @@ class TeacherBottomNav extends StatelessWidget {
     required this.onTap,
   });
 
-  /// 0 = Ana Sayfa, 1 = Raporlar, 2 = Profil.
+  /// 0 = Ana Sayfa, 1 = Sınıflar, 2 = Raporlar, 3 = Profil.
   final int currentIndex;
   final ValueChanged<int> onTap;
 
@@ -24,8 +24,9 @@ class TeacherBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final items = <_NavItem>[
-      _NavItem(Icons.home_outlined, Icons.home, l10n.navHome),
-      _NavItem(Icons.analytics_outlined, Icons.analytics, l10n.navReports),
+      _NavItem(Icons.dashboard_outlined, Icons.dashboard, l10n.navHome),
+      _NavItem(Icons.school_outlined, Icons.school, l10n.navClasses),
+      _NavItem(Icons.assessment_outlined, Icons.assessment, l10n.navReports),
       _NavItem(Icons.person_outline, Icons.person, l10n.navProfile),
     ];
 
@@ -45,7 +46,7 @@ class TeacherBottomNav extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
+            horizontal: AppSpacing.xs,
             vertical: AppSpacing.xs,
           ),
           child: Row(
@@ -87,23 +88,23 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color =
-        active ? AppColors.primaryContainer : AppColors.onSurfaceVariant;
+        active ? AppColors.onPrimaryContainer : AppColors.onSurfaceVariant;
     return Semantics(
       selected: active,
       button: true,
       label: item.label,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.full),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         child: Container(
           constraints: const BoxConstraints(minHeight: 48, minWidth: 56),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.sm,
-            vertical: AppSpacing.xs,
+            vertical: AppSpacing.base,
           ),
           decoration: BoxDecoration(
-            color: active ? AppColors.primaryFixed : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.full),
+            color: active ? AppColors.primaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -112,7 +113,10 @@ class _NavButton extends StatelessWidget {
               const SizedBox(height: AppSpacing.base),
               Text(
                 item.label,
-                style: AppTypography.labelSm.copyWith(color: color),
+                style: AppTypography.labelSm.copyWith(
+                  color: color,
+                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                ),
               ),
             ],
           ),

@@ -30,6 +30,8 @@ public class LessonService : ILessonService
             Description = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim(),
             SourceLanguage = NormalizeLang(request.SourceLanguage, "en"),
             TargetLanguage = NormalizeLang(request.TargetLanguage, "tr"),
+            ScheduledLabel = NormalizeLabel(request.ScheduledLabel),
+            Status = LessonStatus.Draft,
             IsPublished = false,
         };
 
@@ -53,6 +55,8 @@ public class LessonService : ILessonService
                 l.Description,
                 l.SourceLanguage,
                 l.TargetLanguage,
+                l.ScheduledLabel,
+                (int)l.Status,
                 l.IsPublished,
                 l.Words.Count,
                 l.CreatedAt,
@@ -90,6 +94,8 @@ public class LessonService : ILessonService
                 l.Description,
                 l.SourceLanguage,
                 l.TargetLanguage,
+                l.ScheduledLabel,
+                (int)l.Status,
                 l.IsPublished,
                 l.Words.Count,
                 l.CreatedAt,
@@ -114,6 +120,7 @@ public class LessonService : ILessonService
         lesson.Description = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim();
         lesson.SourceLanguage = NormalizeLang(request.SourceLanguage, lesson.SourceLanguage);
         lesson.TargetLanguage = NormalizeLang(request.TargetLanguage, lesson.TargetLanguage);
+        lesson.ScheduledLabel = NormalizeLabel(request.ScheduledLabel);
 
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -139,8 +146,39 @@ public class LessonService : ILessonService
         }
 
         lesson.IsPublished = true;
+        lesson.Status = LessonStatus.Active;
         await _db.SaveChangesAsync(cancellationToken);
 
+        return ToDto(lesson, wordCount);
+    }
+
+    public async Task<LessonDto> UnpublishAsync(Guid lessonId, CancellationToken cancellationToken = default)
+    {
+        var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
+
+        lesson.IsPublished = false;
+        lesson.Status = LessonStatus.Draft;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        var wordCount = await _db.Words.CountAsync(w => w.LessonId == lesson.Id, cancellationToken);
+        return ToDto(lesson, wordCount);
+    }
+
+    public async Task<LessonDto> CompleteAsync(Guid lessonId, CancellationToken cancellationToken = default)
+    {
+        var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
+
+        if (lesson.Status != LessonStatus.Active)
+        {
+            throw AppException.BadRequest("Yalnızca aktif (yayımlanmış) bir ders tamamlanmış olarak işaretlenebilir.");
+        }
+
+        // Öğrenciye görünür kalır; yalnızca yaşam döngüsü Completed'e geçer.
+        lesson.Status = LessonStatus.Completed;
+        lesson.IsPublished = true;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        var wordCount = await _db.Words.CountAsync(w => w.LessonId == lesson.Id, cancellationToken);
         return ToDto(lesson, wordCount);
     }
 
@@ -221,7 +259,10 @@ public class LessonService : ILessonService
     private static string NormalizeLang(string? value, string fallback)
         => string.IsNullOrWhiteSpace(value) ? fallback : value.Trim().ToLowerInvariant();
 
+    private static string? NormalizeLabel(string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
     private static LessonDto ToDto(Lesson l, int wordCount)
         => new(l.Id, l.TeacherId, l.Title, l.Description, l.SourceLanguage, l.TargetLanguage,
-            l.IsPublished, wordCount, l.CreatedAt, l.UpdatedAt);
+            l.ScheduledLabel, (int)l.Status, l.IsPublished, wordCount, l.CreatedAt, l.UpdatedAt);
 }

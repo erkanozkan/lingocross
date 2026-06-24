@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -32,31 +33,32 @@ class LessonFormScreen extends ConsumerStatefulWidget {
 class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _scheduleController = TextEditingController();
 
-  LanguageOption _source = LanguageOption.en;
-  LanguageOption _target = LanguageOption.tr;
-  bool _published = false;
+  // Stitch'te ayrı dil seçici yok → EN→TR varsayılanı korunur, picker gizli.
+  static const LanguageOption _source = LanguageOption.en;
+  static const LanguageOption _target = LanguageOption.tr;
 
   bool _loaded = false;
   bool _dirty = false;
   // Edit modunda ilk yüklenen değerlere göre dirty-check.
   String _initialTitle = '';
   String _initialDescription = '';
-  bool _initialPublished = false;
-  LanguageOption _initialSource = LanguageOption.en;
-  LanguageOption _initialTarget = LanguageOption.tr;
+  String _initialSchedule = '';
 
   @override
   void initState() {
     super.initState();
     _titleController.addListener(_recomputeDirty);
     _descriptionController.addListener(_recomputeDirty);
+    _scheduleController.addListener(_recomputeDirty);
   }
 
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _scheduleController.dispose();
     super.dispose();
   }
 
@@ -65,14 +67,10 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
     _loaded = true;
     _titleController.text = lesson.title;
     _descriptionController.text = lesson.description ?? '';
-    _source = LanguageOption.fromCode(lesson.sourceLanguage);
-    _target = LanguageOption.fromCode(lesson.targetLanguage);
-    _published = lesson.isPublished;
+    _scheduleController.text = lesson.scheduledLabel ?? '';
     _initialTitle = lesson.title;
     _initialDescription = lesson.description ?? '';
-    _initialPublished = lesson.isPublished;
-    _initialSource = _source;
-    _initialTarget = _target;
+    _initialSchedule = lesson.scheduledLabel ?? '';
     _recomputeDirty();
   }
 
@@ -81,17 +79,14 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
         ? _titleController.text.trim().isNotEmpty
         : _titleController.text != _initialTitle ||
             _descriptionController.text != _initialDescription ||
-            _published != _initialPublished ||
-            _source != _initialSource ||
-            _target != _initialTarget;
+            _scheduleController.text != _initialSchedule;
     if (dirty != _dirty) {
       setState(() => _dirty = dirty);
     }
   }
 
   bool get _titleValid => _titleController.text.trim().isNotEmpty;
-  bool get _langValid => _source != _target;
-  bool get _canSubmit => _titleValid && _langValid;
+  bool get _canSubmit => _titleValid;
 
   @override
   Widget build(BuildContext context) {
@@ -143,9 +138,7 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
       child: _Scaffold(
         title: widget.isEdit ? l10n.lessonFormTitleEdit : l10n.lessonFormTitleCreate,
         bottomBar: _SubmitBar(
-          label: widget.isEdit
-              ? l10n.lessonFormSubmitEdit
-              : l10n.lessonFormSubmitCreate,
+          label: l10n.lessonFormSaveAndShare,
           submittingLabel: l10n.lessonFormSubmitting,
           enabled: _canSubmit,
           submitting: submitting,
@@ -163,11 +156,23 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
               ErrorBanner(message: l10n.lessonFormError),
               const SizedBox(height: AppSpacing.lg),
             ],
+            const _Hero(),
+            const SizedBox(height: AppSpacing.lg),
             AppTextField(
-              label: l10n.lessonFormFieldTitleLabel,
-              controller: _titleController,
-              hintText: l10n.lessonFormFieldTitlePlaceholder,
+              label: l10n.lessonFormFieldScheduleLabel,
+              controller: _scheduleController,
+              hintText: l10n.lessonFormFieldSchedulePlaceholder,
               enabled: !submitting,
+              leadingIcon: Icons.calendar_today,
+              textInputAction: TextInputAction.next,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            AppTextField(
+              label: l10n.lessonFormFieldUnitLabel,
+              controller: _titleController,
+              hintText: l10n.lessonFormFieldUnitPlaceholder,
+              enabled: !submitting,
+              leadingIcon: Icons.topic_outlined,
               textInputAction: TextInputAction.next,
               validator: (v) => (v == null || v.trim().isEmpty)
                   ? l10n.lessonFormFieldTitleRequired
@@ -175,35 +180,27 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
             AppTextField(
-              label: l10n.lessonFormFieldDescriptionLabel,
+              label: l10n.lessonFormFieldTopicsLabel,
               controller: _descriptionController,
-              hintText: l10n.lessonFormFieldDescriptionPlaceholder,
+              hintText: l10n.lessonFormFieldTopicsPlaceholder,
               enabled: !submitting,
+              maxLines: 4,
             ),
             const SizedBox(height: AppSpacing.lg),
-            _LanguageRow(
-              source: _source,
-              target: _target,
+            _VocabCard(
               enabled: !submitting,
-              onSource: (v) {
-                setState(() => _source = v);
-                _recomputeDirty();
+              onTap: () {
+                if (widget.isEdit) {
+                  context.push(AppRoutes.lessonWords(widget.lessonId!));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.lessonFormVocabSaveFirst)),
+                  );
+                }
               },
-              onTarget: (v) {
-                setState(() => _target = v);
-                _recomputeDirty();
-              },
-              sameError: !_langValid ? l10n.lessonFormFieldLangSameError : null,
             ),
             const SizedBox(height: AppSpacing.lg),
-            _StatusSegment(
-              published: _published,
-              enabled: !submitting,
-              onChanged: (v) {
-                setState(() => _published = v);
-                _recomputeDirty();
-              },
-            ),
+            const _InfoNote(),
             if (widget.isEdit) ...[
               const SizedBox(height: AppSpacing.xl),
               _DeleteButton(
@@ -224,6 +221,8 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
     final title = _titleController.text.trim();
     final desc = _descriptionController.text.trim();
     final description = desc.isEmpty ? null : desc;
+    final schedule = _scheduleController.text.trim();
+    final scheduledLabel = schedule.isEmpty ? null : schedule;
 
     if (widget.isEdit) {
       final updated = await controller.submitUpdate(
@@ -233,13 +232,10 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
           description: description,
           sourceLanguage: _source.code,
           targetLanguage: _target.code,
+          scheduledLabel: scheduledLabel,
         ),
       );
       if (updated == null || !context.mounted) return;
-      if (_published != _initialPublished && _published) {
-        await controller.publish(updated.id);
-      }
-      if (!context.mounted) return;
       messenger.showSnackBar(_successSnack(l10n.lessonFormUpdatedSnack));
       context.pop();
     } else {
@@ -249,15 +245,12 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
           description: description,
           sourceLanguage: _source.code,
           targetLanguage: _target.code,
+          scheduledLabel: scheduledLabel,
         ),
       );
       if (created == null || !context.mounted) return;
-      if (_published) {
-        await controller.publish(created.id);
-      }
-      if (!context.mounted) return;
       messenger.showSnackBar(_successSnack(l10n.lessonFormCreatedSnack));
-      // Yeni ders kelimesiz anlamsız → kelime girişine geç (replace, geri = dashboard).
+      // Yeni ders → Ders Detayı (kelime ekleme + yayınlama oradan; geri = liste).
       context.pushReplacement(AppRoutes.lessonDetail(created.id));
     }
   }
@@ -357,186 +350,131 @@ class _Scaffold extends StatelessWidget {
   }
 }
 
-class _LanguageRow extends StatelessWidget {
-  const _LanguageRow({
-    required this.source,
-    required this.target,
-    required this.enabled,
-    required this.onSource,
-    required this.onTarget,
-    this.sameError,
-  });
-
-  final LanguageOption source;
-  final LanguageOption target;
-  final bool enabled;
-  final ValueChanged<LanguageOption> onSource;
-  final ValueChanged<LanguageOption> onTarget;
-  final String? sameError;
+/// Stitch hero banner: primary-container zemin + başlık/alt metin.
+class _Hero extends StatelessWidget {
+  const _Hero();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: _LangPicker(
-                label: l10n.lessonFormFieldSourceLangLabel,
-                value: source,
-                enabled: enabled,
-                onChanged: onSource,
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-              child: Icon(Icons.swap_horiz, color: AppColors.onSurfaceVariant),
-            ),
-            Expanded(
-              child: _LangPicker(
-                label: l10n.lessonFormFieldTargetLangLabel,
-                value: target,
-                enabled: enabled,
-                onChanged: onTarget,
-              ),
-            ),
-          ],
-        ),
-        if (sameError != null) ...[
+    return Container(
+      width: double.infinity,
+      height: 128,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.lessonFormHeroTitle,
+            style:
+                AppTypography.headlineMd.copyWith(color: AppColors.onPrimaryContainer),
+          ),
           const SizedBox(height: AppSpacing.base),
-          Text(sameError!,
-              style: AppTypography.labelSm.copyWith(color: AppColors.error)),
+          Text(
+            l10n.lessonFormHeroDesc,
+            style: AppTypography.labelLg.copyWith(
+              color: AppColors.onPrimaryContainer.withValues(alpha: 0.9),
+            ),
+          ),
         ],
-      ],
+      ),
     );
   }
 }
 
-class _LangPicker extends StatelessWidget {
-  const _LangPicker({
-    required this.label,
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
-  });
+/// "Ünite Kelime Listesi" erişim kartı — kelime ekranına bağlanır.
+class _VocabCard extends StatelessWidget {
+  const _VocabCard({required this.enabled, required this.onTap});
 
-  final String label;
-  final LanguageOption value;
   final bool enabled;
-  final ValueChanged<LanguageOption> onChanged;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.base),
-          child: Text(label,
-              style: AppTypography.labelLg
-                  .copyWith(color: AppColors.onSurfaceVariant)),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        DropdownButtonFormField<LanguageOption>(
-          value: value,
-          onChanged: enabled ? (v) => v != null ? onChanged(v) : null : null,
-          icon: const Icon(Icons.expand_more),
-          style: AppTypography.bodyMd,
-          items: [
-            for (final opt in LanguageOption.values)
-              DropdownMenuItem(value: opt, child: Text(opt.label(l10n))),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _StatusSegment extends StatelessWidget {
-  const _StatusSegment({
-    required this.published,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final bool published;
-  final bool enabled;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.base),
-          child: Text(l10n.lessonFormStatusLabel,
-              style: AppTypography.labelLg
-                  .copyWith(color: AppColors.onSurfaceVariant)),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.base),
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: InkWell(
+        onTap: enabled ? onTap : null,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(AppRadius.full),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.outlineVariant),
+            boxShadow: AppShadows.level2,
           ),
           child: Row(
             children: [
-              _segment(l10n.lessonFormStatusDraft, !published,
-                  enabled ? () => onChanged(false) : null),
-              _segment(l10n.lessonFormStatusPublished, published,
-                  enabled ? () => onChanged(true) : null),
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+                child: const Icon(Icons.menu_book, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.lessonFormVocabTitle,
+                        style: AppTypography.headlineMd),
+                    const SizedBox(height: AppSpacing.base),
+                    Text(
+                      l10n.lessonFormVocabDesc,
+                      style: AppTypography.labelSm
+                          .copyWith(color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.outline),
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.base),
-        Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.base),
-          child: Text(
-            published
-                ? l10n.lessonFormStatusPublishedHint
-                : l10n.lessonFormStatusDraftHint,
-            style: AppTypography.labelSm
-                .copyWith(color: AppColors.onSurfaceVariant),
-          ),
-        ),
-      ],
+      ),
     );
   }
+}
 
-  Widget _segment(String label, bool active, VoidCallback? onTap) {
-    return Expanded(
-      child: Semantics(
-        selected: active,
-        button: true,
-        child: GestureDetector(
-          onTap: onTap,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 120),
-            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color:
-                  active ? AppColors.primaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppRadius.full),
-            ),
+/// Bilgilendirme notu (tertiary tint).
+class _InfoNote extends StatelessWidget {
+  const _InfoNote();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(
+            color: AppColors.tertiaryContainer.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline, color: AppColors.tertiary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
             child: Text(
-              label,
-              style: AppTypography.labelLg.copyWith(
-                color: active
-                    ? AppColors.onPrimary
-                    : AppColors.onSurfaceVariant,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w600,
-              ),
+              l10n.lessonFormInfoNote,
+              style: AppTypography.labelSm
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

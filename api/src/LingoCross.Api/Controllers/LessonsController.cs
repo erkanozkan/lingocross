@@ -73,6 +73,24 @@ public class LessonsController : ControllerBase
         return Ok(lesson);
     }
 
+    // Yayından kaldır: Active → Draft (is_published=false). Öğrenci görünürlüğü kapanır.
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("{id:guid}/unpublish")]
+    public async Task<ActionResult<LessonDto>> Unpublish(Guid id, CancellationToken ct)
+    {
+        var lesson = await _lessonService.UnpublishAsync(id, ct);
+        return Ok(lesson);
+    }
+
+    // Tamamlandı işaretle: Active → Completed (is_published=true kalır). Yalnız Active iken.
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("{id:guid}/complete")]
+    public async Task<ActionResult<LessonDto>> Complete(Guid id, CancellationToken ct)
+    {
+        var lesson = await _lessonService.CompleteAsync(id, ct);
+        return Ok(lesson);
+    }
+
     // --- Bir derse ait kelimeler (nested route) ---
 
     [HttpGet("{id:guid}/words")]

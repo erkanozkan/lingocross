@@ -5,14 +5,16 @@ public record CreateLessonRequest(
     string Title,
     string? Description,
     string? SourceLanguage,
-    string? TargetLanguage);
+    string? TargetLanguage,
+    string? ScheduledLabel = null);
 
 /// <summary>Ders güncelleme isteği (yayımlama durumu ayrı uçtan yönetilir).</summary>
 public record UpdateLessonRequest(
     string Title,
     string? Description,
     string? SourceLanguage,
-    string? TargetLanguage);
+    string? TargetLanguage,
+    string? ScheduledLabel = null);
 
 public record LessonDto(
     Guid Id,
@@ -21,6 +23,8 @@ public record LessonDto(
     string? Description,
     string SourceLanguage,
     string TargetLanguage,
+    string? ScheduledLabel,
+    int Status,
     bool IsPublished,
     int WordCount,
     DateTime CreatedAt,
