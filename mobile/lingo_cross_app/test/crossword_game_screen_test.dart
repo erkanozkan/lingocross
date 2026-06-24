@@ -96,7 +96,6 @@ Future<void> _tapClue(WidgetTester tester, String clue) async {
 }
 
 void main() {
-  // Geniş + uzun test yüzeyi (telefon yüksekliği) — grid + ipucu + klavye sığsın.
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
@@ -118,7 +117,7 @@ void main() {
     expect(find.textContaining('inek'), findsOneWidget);
   });
 
-  testWidgets('ipucuna dokun → kelimeye odak; harf girince sayaç artar',
+  testWidgets('harf girince sayaç dolu-kelime üzerinden artar (doğruluk gizli)',
       (tester) async {
     tester.view.physicalSize = const Size(440, 1400);
     tester.view.devicePixelRatio = 1.0;
@@ -127,14 +126,17 @@ void main() {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
-    await _tapClue(tester, 'kedi'); // across KAR'a odaklan
-    await _typeWord(tester, 'KAR');
+    // across KAR'a odaklan, yanlış bir kelime gir (KOL) → yine "dolu" sayılır.
+    await _tapClue(tester, 'kedi');
+    await _typeWord(tester, 'KOL');
     await tester.pump();
 
+    // Bir giriş tamamen dolu → sayaç 1/2 (doğru olup olmadığına bakılmaz).
     expect(find.text('1 / 2'), findsOneWidget);
   });
 
-  testWidgets('tüm hücreler dolup Bitir → sonuç gönderilir ve rapora geçer',
+  testWidgets(
+      'Bitir → bir doğru + bir yanlış kelime: correct=1/total=2, rapora geçer',
       (tester) async {
     tester.view.physicalSize = const Size(440, 1400);
     tester.view.devicePixelRatio = 1.0;
@@ -145,25 +147,57 @@ void main() {
         id: 'r1',
         sessionId: 's1',
         totalItems: 2,
-        correctItems: 2,
-        score: 100,
+        correctItems: 1,
+        score: 50,
       ),
     );
     await tester.pumpWidget(_wrap(resultsRepo: repo));
     await tester.pump();
 
+    // across KAR doğru gir (K ortak hücre dolar).
     await _tapClue(tester, 'kedi');
     await _typeWord(tester, 'KAR');
+    // down KOL'u YANLIŞ gir: K(ortak, zaten doğru) sonra A,A → "KAA" (yanlış).
     await _tapClue(tester, 'inek');
-    await _typeWord(tester, 'KOL');
+    await _typeWord(tester, 'KAA');
     await tester.pump();
 
-    // Tüm hücreler dolu → "Bitir" (enter) tuşu aktif; dokun.
+    // "Bitir" her zaman aktif.
     await tester.tap(find.byIcon(Icons.check));
     await tester.pump();
     await tester.pumpAndSettle();
 
     expect(repo.submitCount, 1);
+    expect(repo.lastTotalItems, 2);
+    expect(repo.lastCorrectItems, 1); // yalnız KAR doğru
+    expect(find.text('RAPOR EKRANI'), findsOneWidget);
+  });
+
+  testWidgets('Bitir hücreler boşken bile çalışır (correct=0)', (tester) async {
+    tester.view.physicalSize = const Size(440, 1400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final repo = FakeResultsRepository(
+      submitResultValue: sampleResult(
+        id: 'r2',
+        sessionId: 's1',
+        totalItems: 2,
+        correctItems: 0,
+        score: 0,
+      ),
+    );
+    await tester.pumpWidget(_wrap(resultsRepo: repo));
+    await tester.pump();
+
+    // Hiç harf girmeden Bitir.
+    await tester.tap(find.byIcon(Icons.check));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(repo.submitCount, 1);
+    expect(repo.lastTotalItems, 2);
+    expect(repo.lastCorrectItems, 0);
     expect(find.text('RAPOR EKRANI'), findsOneWidget);
   });
 }

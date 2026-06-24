@@ -412,7 +412,7 @@ class _EmptyWords extends StatelessWidget {
             onPressed: () =>
                 context.push(AppRoutes.lessonWords(lessonId)),
             icon: const Icon(Icons.add),
-            label: Text(l10n.wordsListAddManual),
+            label: Text(l10n.lessonDetailAddWords),
           ),
         ],
       ),

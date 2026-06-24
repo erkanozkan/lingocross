@@ -23,6 +23,12 @@ int _termIndex(WordMatchingEngine e, String wordId) =>
 int _translationIndex(WordMatchingEngine e, String text) =>
     e.translations.indexWhere((t) => t.text == text);
 
+/// Bir terimi (wordId) bir karşılığa (text) serbestçe eşleştirir.
+WordMatchingEngine _match(WordMatchingEngine e, String wordId, String text) {
+  e = e.selectTerm(_termIndex(e, wordId));
+  return e.matchTranslation(_translationIndex(e, text));
+}
+
 void main() {
   group('WordMatchingEngine kurulum', () {
     test('sol sütun terimleri, sağ sütun çeviri + çeldirici içerir', () {
@@ -32,6 +38,7 @@ void main() {
       expect(e.translations.length, 5);
       expect(e.total, 3);
       expect(e.matched, 0);
+      expect(e.score, 0);
       expect(e.isComplete, isFalse);
       expect(e.progress, 0);
     });
@@ -44,81 +51,109 @@ void main() {
     });
   });
 
-  group('doğru eşleşme', () {
-    test('terim seç → doğru karşılık → matched + ilerleme +1', () {
+  group('serbest eşleştirme — doğruluk oyun sırasında gizli', () {
+    test('terim seç → karşılık → matched (nötr), ilerleme +1, skor gizli değil',
+        () {
       var e = _engine();
       e = e.selectTerm(_termIndex(e, 'w1'));
-      expect(e.selectedWordId, 'w1');
+      expect(e.selectedTermWordId, 'w1');
+      expect(e.terms[_termIndex(e, 'w1')].status, TermCardStatus.selected);
 
       final idx = _translationIndex(e, 'elma');
-      expect(e.evaluateTranslation(idx), MatchOutcome.correct);
+      e = e.matchTranslation(idx);
 
-      e = e.applyCorrect(idx);
-      expect(e.matched, 1);
-      expect(e.selectedWordId, isNull);
+      expect(e.matched, 1); // ilerleme = yapılan eşleştirme
+      expect(e.selectedTermWordId, isNull); // seçim çözüldü
       expect(e.terms[_termIndex(e, 'w1')].status, TermCardStatus.matched);
       expect(e.translations[idx].status, TranslationCardStatus.matched);
+      expect(e.isTranslationMatched(idx), isTrue);
       expect(e.progress, closeTo(1 / 3, 1e-9));
+      // Karşılık statüsünde doğru/yanlış AYRIMI YOK (nötr "matched").
     });
 
-    test('tüm çiftler eşleşince isComplete=true', () {
+    test('yanlış eşleştirme de "matched" (nötr) gösterilir, ilerleme artar', () {
+      // apple ↔ kitap (yanlış) eşleştir; oyun sırasında bu görünmemeli.
+      var e = _match(_engine(), 'w1', 'kitap');
+      expect(e.matched, 1);
+      // Statü yine nötr "matched" — kırmızı/yanlış statüsü yok.
+      final idx = _translationIndex(e, 'kitap');
+      expect(e.translations[idx].status, TranslationCardStatus.matched);
+    });
+
+    test('çeldirici de serbestçe eşleştirilebilir (oyun sırasında engel yok)',
+        () {
+      var e = _match(_engine(), 'w1', 'yolculuk');
+      expect(e.matched, 1);
+      expect(e.isTranslationMatched(_translationIndex(e, 'yolculuk')), isTrue);
+    });
+
+    test('terim seçilmeden karşılığa dokunuş → no-op', () {
+      final e = _engine();
+      final e2 = e.matchTranslation(0);
+      expect(e2.matched, 0);
+    });
+
+    test('tüm terimler eşleşince isComplete=true', () {
       var e = _engine();
-      for (final id in ['w1', 'w2', 'w3']) {
-        e = e.selectTerm(_termIndex(e, id));
-        final correct = e.translations
-            .indexWhere((t) => t.matchWordId == id);
-        expect(e.evaluateTranslation(correct), MatchOutcome.correct);
-        e = e.applyCorrect(correct);
-      }
+      e = _match(e, 'w1', 'elma');
+      e = _match(e, 'w2', 'kitap');
+      e = _match(e, 'w3', 'su');
       expect(e.matched, 3);
       expect(e.isComplete, isTrue);
       expect(e.progress, 1.0);
     });
   });
 
-  group('yanlış eşleşme', () {
-    test('farklı terimin çevirisi → wrong, ilerleme artmaz', () {
-      var e = _engine();
-      e = e.selectTerm(_termIndex(e, 'w1')); // apple
-      final wrongIdx = _translationIndex(e, 'kitap'); // w2'nin çevirisi
-      expect(e.evaluateTranslation(wrongIdx), MatchOutcome.wrong);
-
-      e = e.markWrong(wrongIdx);
-      expect(e.translations[wrongIdx].status, TranslationCardStatus.wrong);
-
-      e = e.resetSelection();
-      expect(e.selectedWordId, isNull);
-      expect(e.matched, 0);
-      expect(e.translations[wrongIdx].status, TranslationCardStatus.neutral);
-    });
-
-    test('çeldirici seçimi → wrong (hiçbir terimle eşleşmez)', () {
-      var e = _engine();
-      e = e.selectTerm(_termIndex(e, 'w1'));
-      final distractorIdx = _translationIndex(e, 'yolculuk');
-      expect(e.evaluateTranslation(distractorIdx), MatchOutcome.wrong);
-    });
-
-    test('terim seçilmeden karşılık dokunuşu → none (no-op)', () {
-      final e = _engine();
-      expect(e.evaluateTranslation(0), MatchOutcome.none);
-    });
-
-    test('yanlış deneme doğru eşleşmiş kartları bozmaz', () {
-      var e = _engine();
-      // Önce w1'i doğru eşleştir.
-      e = e.selectTerm(_termIndex(e, 'w1'));
-      e = e.applyCorrect(_translationIndex(e, 'elma'));
-      final matchedIdx = _translationIndex(e, 'elma');
-
-      // Sonra w2 için yanlış dene.
-      e = e.selectTerm(_termIndex(e, 'w2'));
-      e = e.markWrong(_translationIndex(e, 'su'));
-      e = e.resetSelection();
-
+  group('yeniden eşleştirme / bozma', () {
+    test('eşleştirilmiş terime tekrar dokunma bağı bozar ve yeniden seçer', () {
+      var e = _match(_engine(), 'w1', 'elma');
       expect(e.matched, 1);
-      expect(e.translations[matchedIdx].status, TranslationCardStatus.matched);
-      expect(e.terms[_termIndex(e, 'w1')].status, TermCardStatus.matched);
+      e = e.selectTerm(_termIndex(e, 'w1'));
+      expect(e.matched, 0); // bağ çözüldü
+      expect(e.selectedTermWordId, 'w1'); // yeniden seçili
+    });
+
+    test('bir karşılık başka terime bağlanınca eski terimin bağı çözülür', () {
+      var e = _engine();
+      e = _match(e, 'w1', 'elma'); // w1 → elma
+      e = _match(e, 'w2', 'elma'); // w2 → elma (w1 serbest kalır)
+      expect(e.matched, 1);
+      expect(e.terms[_termIndex(e, 'w1')].status, TermCardStatus.neutral);
+      expect(e.terms[_termIndex(e, 'w2')].status, TermCardStatus.matched);
+    });
+
+    test('bağlı karşılığa tekrar dokunma (seçim yokken) eşleştirmeyi geri alır',
+        () {
+      var e = _match(_engine(), 'w1', 'elma');
+      final idx = _translationIndex(e, 'elma');
+      e = e.unmatchTranslation(idx);
+      expect(e.matched, 0);
+      expect(e.isTranslationMatched(idx), isFalse);
+    });
+  });
+
+  group('skorlama (yalnız "Bitir" anında)', () {
+    test('bir doğru + bir yanlış eşleştirme → score=1, total=3', () {
+      var e = _engine();
+      e = _match(e, 'w1', 'elma'); // doğru
+      e = _match(e, 'w2', 'su'); // yanlış (su = w3)
+      expect(e.matched, 2);
+      expect(e.total, 3);
+      expect(e.score, 1); // yalnız w1 doğru
+    });
+
+    test('tümü doğru → score=total', () {
+      var e = _engine();
+      e = _match(e, 'w1', 'elma');
+      e = _match(e, 'w2', 'kitap');
+      e = _match(e, 'w3', 'su');
+      expect(e.score, 3);
+    });
+
+    test('çeldiriciye eşleştirme skorda yanlış sayılır', () {
+      var e = _match(_engine(), 'w1', 'yolculuk');
+      expect(e.matched, 1);
+      expect(e.score, 0);
     });
   });
 
@@ -127,7 +162,7 @@ void main() {
       var e = _engine();
       e = e.selectTerm(_termIndex(e, 'w1'));
       e = e.selectTerm(_termIndex(e, 'w2'));
-      expect(e.selectedWordId, 'w2');
+      expect(e.selectedTermWordId, 'w2');
       expect(e.terms[_termIndex(e, 'w1')].status, TermCardStatus.neutral);
       expect(e.terms[_termIndex(e, 'w2')].status, TermCardStatus.selected);
     });

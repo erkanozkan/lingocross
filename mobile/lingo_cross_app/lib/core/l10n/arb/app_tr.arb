@@ -205,6 +205,7 @@
   "lessonDetailWordsTitle": "Kelime Listesi",
   "lessonDetailWordsSeeAll": "Tümünü Gör",
   "lessonDetailWordsEmpty": "Henüz kelime eklenmemiş.",
+  "lessonDetailAddWords": "Kelime Ekle",
   "lessonDetailEdit": "Dersi Düzenle",
   "lessonDetailAssignHomework": "Ödev Ataması Yap",
   "lessonDetailPublish": "Yayınla",

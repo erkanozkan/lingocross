@@ -49,8 +49,8 @@ class _WordMatchingGameScreenState
   int _elapsedSeconds = 0;
   int _durationMs = 0; // bitince ölçülen kesin süre (ms).
   bool _completed = false;
-  bool _locked = false; // yanlış flaş sırasında girişleri kilitle
   bool _submitFailed = false; // sonuç gönderimi hatası (tekrar dene).
+  int _correctItems = 0; // "Bitir" anında ölçülen doğru eşleşme sayısı.
   DateTime? _startedAt;
 
   @override
@@ -78,47 +78,39 @@ class _WordMatchingGameScreenState
   }
 
   void _onTermTap(int index) {
-    if (_locked || _completed) return;
+    if (_completed) return;
     setState(() => _engine = _engine.selectTerm(index));
   }
 
-  Future<void> _onTranslationTap(int index) async {
-    if (_locked || _completed) return;
-    final outcome = _engine.evaluateTranslation(index);
-    switch (outcome) {
-      case MatchOutcome.none:
-        return;
-      case MatchOutcome.correct:
-        setState(() => _engine = _engine.applyCorrect(index));
-        if (_engine.isComplete) _finish();
-      case MatchOutcome.wrong:
-        // Kırmızı flaş + shake; ~400ms sonra seçim sıfırlanır.
-        setState(() {
-          _engine = _engine.markWrong(index);
-          _locked = true;
-        });
-        await Future<void>.delayed(const Duration(milliseconds: 450));
-        if (!mounted) return;
-        setState(() {
-          _engine = _engine.resetSelection();
-          _locked = false;
-        });
-    }
+  /// Karşılığa dokunuş: seçili terim varsa eşleştir; yoksa (zaten bağlıysa)
+  /// eşleştirmeyi geri al. Doğruluk OYUN SIRASINDA gösterilmez.
+  void _onTranslationTap(int index) {
+    if (_completed) return;
+    setState(() {
+      if (_engine.selectedTermWordId != null) {
+        _engine = _engine.matchTranslation(index);
+      } else {
+        _engine = _engine.unmatchTranslation(index);
+      }
+    });
   }
 
-  void _finish() {
+  /// "Bitir" — serbest eşleştirmeleri doğru cevapla karşılaştırır, skoru ölçer
+  /// ve sonuç akışına gönderir. Her zaman çağrılabilir (boş bırakılan çift yanlış).
+  void _onFinish() {
+    if (_completed) return;
     _timer?.cancel();
-    _durationMs =
-        _startedAt != null
-            ? DateTime.now().difference(_startedAt!).inMilliseconds
-            : _elapsedSeconds * 1000;
+    _durationMs = _startedAt != null
+        ? DateTime.now().difference(_startedAt!).inMilliseconds
+        : _elapsedSeconds * 1000;
+    _correctItems = _engine.score;
     setState(() => _completed = true);
     _submitResult();
   }
 
   /// Tamamlanınca sonucu gönderir; başarıda Oyun Sonu Raporu ekranına geçer.
-  /// Tüm çiftler eşleştiği için doğru sayısı = toplam (oyun yanlışta bitmez).
-  /// Hata durumunda yerel [_submitFailed] ile overlay "tekrar dene" gösterir.
+  /// correctItems = "Bitir" anında ölçülen doğru eşleşme sayısı, totalItems =
+  /// toplam çift. Hata durumunda yerel [_submitFailed] ile "tekrar dene" gösterir.
   Future<void> _submitResult() async {
     if (mounted) setState(() => _submitFailed = false);
     final result = await ref
@@ -127,7 +119,7 @@ class _WordMatchingGameScreenState
           sessionId: widget.sessionId,
           durationMs: _durationMs,
           totalItems: _engine.total,
-          correctItems: _engine.matched,
+          correctItems: _correctItems,
         );
     if (!mounted) return;
     if (result == null) {
@@ -212,7 +204,10 @@ class _WordMatchingGameScreenState
             if (await _confirmQuit() && mounted) _exit();
           },
         ),
-        bottomNavigationBar: _QuitBar(
+        bottomNavigationBar: _ActionBar(
+          finishLabel: l10n.gameMatchingCompleteFinish,
+          quitLabel: l10n.gameMatchingQuit,
+          onFinish: _completed ? null : _onFinish,
           onQuit: () async {
             if (await _confirmQuit() && mounted) _exit();
           },
@@ -242,7 +237,6 @@ class _WordMatchingGameScreenState
                   _Board(
                     engine: _engine,
                     matchedLabel: l10n.gameMatchingA11yMatched,
-                    wrongLabel: l10n.gameMatchingA11yWrong,
                     onTermTap: _onTermTap,
                     onTranslationTap: _onTranslationTap,
                   ),
@@ -396,14 +390,12 @@ class _Board extends StatelessWidget {
   const _Board({
     required this.engine,
     required this.matchedLabel,
-    required this.wrongLabel,
     required this.onTermTap,
     required this.onTranslationTap,
   });
 
   final WordMatchingEngine engine;
   final String matchedLabel;
-  final String wrongLabel;
   final ValueChanged<int> onTermTap;
   final ValueChanged<int> onTranslationTap;
 
@@ -439,8 +431,8 @@ class _Board extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                   child: TranslationGameCard(
                     card: engine.translations[i],
+                    matched: engine.isTranslationMatched(i),
                     matchedLabel: matchedLabel,
-                    wrongLabel: wrongLabel,
                     onTap: () => onTranslationTap(i),
                   ),
                 ),
@@ -529,15 +521,25 @@ class _EncouragementPanel extends StatelessWidget {
   }
 }
 
-/// Alt aksiyon çubuğu — yalnız "Vazgeç" (M4: "İpucu" gösterilmez).
-class _QuitBar extends StatelessWidget {
-  const _QuitBar({required this.onQuit});
+/// Alt aksiyon çubuğu — "Bitir" (primary) + "Vazgeç" (outlined).
+///
+/// "Bitir" her zaman aktif: serbestçe eşleştirip istediği an bitirebilir
+/// (eksik/yanlış çiftler skorda yanlış sayılır). M4: "İpucu" gösterilmez.
+class _ActionBar extends StatelessWidget {
+  const _ActionBar({
+    required this.finishLabel,
+    required this.quitLabel,
+    required this.onFinish,
+    required this.onQuit,
+  });
 
+  final String finishLabel;
+  final String quitLabel;
+  final VoidCallback? onFinish;
   final VoidCallback onQuit;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
@@ -558,20 +560,44 @@ class _QuitBar extends StatelessWidget {
             AppSpacing.marginMobile,
             AppSpacing.sm,
           ),
-          child: OutlinedButton.icon(
-            onPressed: onQuit,
-            icon: const Icon(Icons.close, color: AppColors.outline),
-            label: Text(
-              l10n.gameMatchingQuit,
-              style: AppTypography.labelLg.copyWith(color: AppColors.outline),
-            ),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-              side: const BorderSide(color: AppColors.outlineVariant, width: 2),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onQuit,
+                  icon: const Icon(Icons.close, color: AppColors.outline),
+                  label: Text(
+                    quitLabel,
+                    style:
+                        AppTypography.labelLg.copyWith(color: AppColors.outline),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    side: const BorderSide(
+                        color: AppColors.outlineVariant, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: onFinish,
+                  icon: const Icon(Icons.check),
+                  label: Text(finishLabel, style: AppTypography.labelLg),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

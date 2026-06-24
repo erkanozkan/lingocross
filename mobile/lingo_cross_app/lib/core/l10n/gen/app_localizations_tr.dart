@@ -548,6 +548,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lessonDetailWordsEmpty => 'Henüz kelime eklenmemiş.';
 
   @override
+  String get lessonDetailAddWords => 'Kelime Ekle';
+
+  @override
   String get lessonDetailEdit => 'Dersi Düzenle';
 
   @override
@@ -1044,9 +1047,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get studentDashboardSeeReports => 'Raporlarım';
-
-  @override
-  String get studentDashboardPlayCta => 'Oyna';
 
   @override
   String get studentDashboardError => 'Dersler yüklenemedi';

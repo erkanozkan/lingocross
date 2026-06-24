@@ -1131,6 +1131,12 @@ abstract class AppLocalizations {
   /// **'Henüz kelime eklenmemiş.'**
   String get lessonDetailWordsEmpty;
 
+  /// No description provided for @lessonDetailAddWords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Ekle'**
+  String get lessonDetailAddWords;
+
   /// No description provided for @lessonDetailEdit.
   ///
   /// In tr, this message translates to:
@@ -2054,12 +2060,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Raporlarım'**
   String get studentDashboardSeeReports;
-
-  /// No description provided for @studentDashboardPlayCta.
-  ///
-  /// In tr, this message translates to:
-  /// **'Oyna'**
-  String get studentDashboardPlayCta;
 
   /// No description provided for @studentDashboardError.
   ///
