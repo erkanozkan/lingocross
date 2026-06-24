@@ -17,6 +17,9 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
         builder.Property(g => g.Type).IsRequired();
         builder.Property(g => g.Title).IsRequired().HasMaxLength(200);
 
+        builder.Property(g => g.IsPublished).IsRequired().HasDefaultValue(false);
+        builder.Property(g => g.PublishedAt);
+
         builder.Property(g => g.CreatedAt).IsRequired();
         builder.Property(g => g.UpdatedAt).IsRequired();
 

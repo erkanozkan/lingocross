@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace LingoCross.Api.Controllers;
 
 /// <summary>
-/// Kelime eşleştirme oyunları ve oturumları. Erişim/sahiplik kuralları servis katmanında
-/// uygulanır (aksi 403/404). Sonuç/paylaşım (game_results) M5 kapsamındadır.
+/// Kelime eşleştirme oyunları (bulmacalar) ve oturumları. F2.2: öğretmen oyunu oluşturup yayımlar,
+/// yayımlanan oyun Active eşleşmeli öğrencilerine atanmış sayılır. Erişim/sahiplik kuralları servis
+/// katmanında uygulanır (aksi 403/404). Sonuç/paylaşım (game_results) M5 kapsamındadır.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -21,18 +22,42 @@ public class GamesController : ControllerBase
     }
 
     /// <summary>
-    /// Dersin oyunlarını döndürür; öğretmen için WordMatching oyunu yoksa üretilip eklenir.
-    /// Öğretmen kendi dersi, öğrenci enrolled+published ders için erişebilir.
+    /// Öğretmen, kendi dersinde bir oyun (bulmaca) oluşturur ve yayımlar. Ders en az 4 çevirili
+    /// kelime içermeli; MVP'de yalnız WordMatching desteklenir. İdempotent: aynı ders+tür için
+    /// mevcut oyun yeniden yayımlanır.
     /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("api/lessons/{lessonId:guid}/games")]
+    public async Task<ActionResult<GameDto>> CreateForLesson(Guid lessonId, [FromBody] CreateGameRequest request, CancellationToken ct)
+    {
+        var game = await _gameService.CreateForLessonAsync(lessonId, request, ct);
+        return CreatedAtAction(nameof(ListForLesson), new { lessonId }, game);
+    }
+
+    /// <summary>Ders sahibinin o derse ait oyunlarını listeler (salt-okunur, otomatik üretim yok).</summary>
+    [Authorize(Roles = "Teacher")]
     [HttpGet("api/lessons/{lessonId:guid}/games")]
     public async Task<ActionResult<IReadOnlyList<GameDto>>> ListForLesson(Guid lessonId, CancellationToken ct)
     {
-        var games = await _gameService.ListOrCreateForLessonAsync(lessonId, ct);
+        var games = await _gameService.ListForLessonAsync(lessonId, ct);
         return Ok(games);
     }
 
     /// <summary>
-    /// Öğrenci, bir oyun için yeni bir oturum başlatır. Üretilmiş kelime eşleştirme içeriğiyle döner.
+    /// Öğrenciye atanmış (Active eşleşmeli öğretmenlerin yayımlanmış derslerindeki yayımlanmış)
+    /// bulmacaları döndürür.
+    /// </summary>
+    [Authorize(Roles = "Student")]
+    [HttpGet("api/games/assigned")]
+    public async Task<ActionResult<IReadOnlyList<AssignedGameDto>>> ListAssigned(CancellationToken ct)
+    {
+        var games = await _gameService.ListAssignedForStudentAsync(ct);
+        return Ok(games);
+    }
+
+    /// <summary>
+    /// Öğrenci, bir oyun için yeni bir oturum başlatır. Oyun yayımlanmış ve ders erişilebilir olmalı.
+    /// Üretilmiş kelime eşleştirme içeriğiyle döner.
     /// </summary>
     [Authorize(Roles = "Student")]
     [HttpPost("api/games/{gameId:guid}/sessions")]
