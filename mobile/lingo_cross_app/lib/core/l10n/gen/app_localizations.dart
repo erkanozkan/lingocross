@@ -1755,6 +1755,12 @@ abstract class AppLocalizations {
   /// **'Aday {index}, sil'**
   String ocrReviewRowRemoveLabel(int index);
 
+  /// OCR gözden geçirme satırında terim ↔ karşılık takas butonu (semantics + tooltip).
+  ///
+  /// In tr, this message translates to:
+  /// **'Terim ve karşılığı yer değiştir'**
+  String get ocrReviewSwap;
+
   /// No description provided for @ocrReviewAddRow.
   ///
   /// In tr, this message translates to:

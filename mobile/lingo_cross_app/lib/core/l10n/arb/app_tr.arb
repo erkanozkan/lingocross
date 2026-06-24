@@ -323,6 +323,8 @@
   "ocrReviewExcludeLabel": "Hariç tutuldu",
   "ocrReviewRowRemoveLabel": "Aday {index}, sil",
   "@ocrReviewRowRemoveLabel": { "placeholders": { "index": { "type": "int" } } },
+  "ocrReviewSwap": "Terim ve karşılığı yer değiştir",
+  "@ocrReviewSwap": { "description": "OCR gözden geçirme satırında terim ↔ karşılık takas butonu (semantics + tooltip)." },
   "ocrReviewAddRow": "Satır Ekle",
   "ocrReviewClearAll": "Tümünü Temizle",
   "ocrReviewSave": "Seçilenleri Kaydet ({count})",

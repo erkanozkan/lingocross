@@ -5,6 +5,7 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_picker/image_picker.dart';
 
 import '../domain/ocr_line_parser.dart';
+import 'ocr_language_orienter.dart';
 
 /// Görüntü kaynağı (yakalama ekranındaki kaynak seçici ile eşleşir).
 enum OcrImageSource { camera, gallery }
@@ -14,13 +15,18 @@ enum OcrImageSource { camera, gallery }
 /// OCR tamamen istemci tarafında çalışır (ağ yok). Kamera emülatörde
 /// bulunmayabilir → galeri birinci sınıf alternatiftir (ux-spec §5).
 class OcrService {
-  OcrService({ImagePicker? picker, TextRecognizer? recognizer})
-      : _picker = picker ?? ImagePicker(),
+  OcrService({
+    ImagePicker? picker,
+    TextRecognizer? recognizer,
+    OcrLanguageOrienter? orienter,
+  })  : _picker = picker ?? ImagePicker(),
         _recognizer =
-            recognizer ?? TextRecognizer(script: TextRecognitionScript.latin);
+            recognizer ?? TextRecognizer(script: TextRecognitionScript.latin),
+        _orienter = orienter ?? OcrLanguageOrienter();
 
   final ImagePicker _picker;
   final TextRecognizer _recognizer;
+  final OcrLanguageOrienter _orienter;
 
   /// Seçilen görüntünün dosya yolunu döndürür; kullanıcı iptal ederse null.
   ///
@@ -39,8 +45,9 @@ class OcrService {
     }
   }
 
-  /// Verilen görüntü dosyasını cihaz-içi ML Kit ile tanır, ham satırlara böler
-  /// ve [parseOcrLines] ile kelime adaylarına dönüştürür.
+  /// Verilen görüntü dosyasını cihaz-içi ML Kit ile tanır, ham satırlara böler,
+  /// [parseOcrLines] ile kelime adaylarına dönüştürür ve son olarak cihaz-içi
+  /// dil tespiti ([OcrLanguageOrienter]) ile terim/karşılık yönünü düzeltir.
   Future<List<OcrCandidate>> recognize(String imagePath) async {
     final input = InputImage.fromFile(File(imagePath));
     final result = await _recognizer.processImage(input);
@@ -48,11 +55,13 @@ class OcrService {
       for (final block in result.blocks)
         for (final line in block.lines) line.text,
     ];
-    return parseOcrLines(rawLines);
+    final candidates = parseOcrLines(rawLines);
+    return _orienter.orient(candidates);
   }
 
   void dispose() {
     _recognizer.close();
+    _orienter.dispose();
   }
 }
 
