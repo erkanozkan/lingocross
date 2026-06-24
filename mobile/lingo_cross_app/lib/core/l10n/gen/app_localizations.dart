@@ -2450,14 +2450,38 @@ abstract class AppLocalizations {
   /// No description provided for @createGamePreviewTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Önizleme Henüz Hazır Değil'**
+  /// **'Örnek Önizleme'**
   String get createGamePreviewTitle;
 
-  /// No description provided for @createGamePreviewDesc.
+  /// No description provided for @createGamePreviewSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Oyun türü ve kelime listesi seçtiğinizde burada bir özet görünecektir.'**
-  String get createGamePreviewDesc;
+  /// **'Bu bulmaca kaydedildiğinde yaklaşık olarak böyle görünecek. Beğenmezsen geri dönüp türü ya da dersi değiştirebilirsin.'**
+  String get createGamePreviewSubtitle;
+
+  /// No description provided for @createGamePreviewSampleNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu yalnızca bir örnek önizlemedir; kaydedilmedi.'**
+  String get createGamePreviewSampleNote;
+
+  /// No description provided for @createGamePreviewLoading.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önizleme hazırlanıyor…'**
+  String get createGamePreviewLoading;
+
+  /// No description provided for @createGamePreviewError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önizleme oluşturulamadı, tekrar dene.'**
+  String get createGamePreviewError;
+
+  /// No description provided for @createGamePreviewEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önizlenecek içerik bulunamadı.'**
+  String get createGamePreviewEmpty;
 
   /// No description provided for @createGameSubmit.
   ///

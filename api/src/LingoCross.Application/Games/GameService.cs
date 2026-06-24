@@ -314,6 +314,34 @@ public class GameService : IGameService
         return new GameAssignmentsDto(classIds);
     }
 
+    public async Task<GamePreviewResponse> PreviewForLessonAsync(Guid lessonId, GameType type, CancellationToken cancellationToken = default)
+    {
+        // Sahiplik: CreateForLesson ile birebir aynı (yalnız ders sahibi öğretmen; aksi 404/403).
+        var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
+
+        // İçerik tür-duyarlı üretilir; içerik üreticileri StartSession/CreateForLesson ile AYNI
+        // yeterlilik kurallarını uygular (yetersiz/uygunsuz kelime → AppException(400), aynı mesajlar).
+        // HİÇBİR ŞEY KAYDEDİLMEZ: yalnız okuma + bellek içi üretim, SaveChanges yok.
+        WordMatchingContent? wordMatching = null;
+        CrosswordContent? crossword = null;
+
+        switch (type)
+        {
+            case GameType.WordMatching:
+                wordMatching = await BuildWordMatchingContentAsync(lesson.Id, cancellationToken);
+                break;
+
+            case GameType.Crossword:
+                crossword = await BuildCrosswordContentAsync(lesson.Id, cancellationToken);
+                break;
+
+            default:
+                throw AppException.BadRequest("Geçersiz oyun türü.");
+        }
+
+        return new GamePreviewResponse(type, wordMatching, crossword);
+    }
+
     /// <summary>
     /// SET semantiğiyle oyunun atamalarını uygular: yalnız öğretmenin kendi (arşivlenmemiş) sınıfları
     /// kabul edilir; verilen listede olmayan mevcut atamalar silinir, yeni olanlar eklenir. Verilen bir

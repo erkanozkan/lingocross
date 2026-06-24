@@ -843,4 +843,112 @@ public class GameServiceTests
         var ex = await Assert.ThrowsAsync<AppException>(() => svc.ShareAsync(game.Id));
         Assert.Equal(403, ex.StatusCode);
     }
+
+    // ---- Preview (kaydetmeden önce örnek içerik; kalıcı DEĞİL) ----
+
+    [Fact]
+    public async Task Preview_WordMatching_ReturnsPairs_NoPersistence()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: false, translatedWordCount: 6);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var preview = await svc.PreviewForLessonAsync(lesson.Id, GameType.WordMatching);
+
+        Assert.Equal(GameType.WordMatching, preview.Type);
+        Assert.NotNull(preview.WordMatching);
+        Assert.Null(preview.Crossword);
+        Assert.Equal(6, preview.WordMatching!.Pairs.Count);
+        Assert.All(preview.WordMatching!.Pairs, p =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(p.Term));
+            Assert.False(string.IsNullOrWhiteSpace(p.CorrectTranslation));
+        });
+
+        // Kalıcılık yok: ne Game ne de GameSession oluşturuldu.
+        Assert.Equal(0, await db.Games.CountAsync());
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
+
+    [Fact]
+    public async Task Preview_Crossword_ReturnsEntries_NoPersistence()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: false,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var preview = await svc.PreviewForLessonAsync(lesson.Id, GameType.Crossword);
+
+        Assert.Equal(GameType.Crossword, preview.Type);
+        Assert.Null(preview.WordMatching);
+        Assert.NotNull(preview.Crossword);
+        Assert.True(preview.Crossword!.Entries.Count >= CrosswordGenerator.MinEligibleWords);
+        Assert.True(preview.Crossword!.Rows > 0 && preview.Crossword!.Cols > 0);
+
+        // Kalıcılık yok.
+        Assert.Equal(0, await db.Games.CountAsync());
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
+
+    [Fact]
+    public async Task Preview_AsOtherTeacher_Throws404()
+    {
+        var db = NewDb();
+        var owner = await SeedUserAsync(db, UserRole.Teacher, "o@x.com");
+        var other = await SeedUserAsync(db, UserRole.Teacher, "x@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, owner.Id, published: false, translatedWordCount: 6);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(other.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.PreviewForLessonAsync(lesson.Id, GameType.WordMatching));
+        Assert.Equal(404, ex.StatusCode);
+        Assert.Equal(0, await db.Games.CountAsync());
+    }
+
+    [Fact]
+    public async Task Preview_NonexistentLesson_Throws404()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.PreviewForLessonAsync(Guid.NewGuid(), GameType.WordMatching));
+        Assert.Equal(404, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task Preview_InsufficientWords_Throws400_NoPersistence()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // 3 < MinWordsToPlay(4) → önizleme üretilemez (CreateForLesson ile aynı davranış).
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: false, translatedWordCount: 3);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.PreviewForLessonAsync(lesson.Id, GameType.WordMatching));
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.Games.CountAsync());
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
+
+    [Fact]
+    public async Task Preview_AsStudent_Throws403()
+    {
+        var db = NewDb();
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.PreviewForLessonAsync(Guid.NewGuid(), GameType.WordMatching));
+        Assert.Equal(403, ex.StatusCode);
+    }
 }

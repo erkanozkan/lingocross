@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/network/dio_client.dart';
+import '../domain/game_type.dart';
 import '../domain/games_failure.dart';
 import 'dtos/game_dtos.dart';
 
@@ -34,6 +35,22 @@ class GamesRepository {
         data: request.toJson(),
       );
       return GameDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: bir derste [type] türünde oluşturulacak bulmacanın ÖRNEK
+  /// önizlemesini döndürür (`POST .../games/preview`). Kalıcı değildir.
+  ///
+  /// Yetersiz kelime (400) → [GamesFailure.insufficientWords].
+  Future<GamePreviewResponse> previewGame(String lessonId, GameType type) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/lessons/$lessonId/games/preview',
+        data: {'type': type.value},
+      );
+      return GamePreviewResponse.fromJson(res.data!);
     } on DioException catch (e) {
       throw _mapError(e);
     }

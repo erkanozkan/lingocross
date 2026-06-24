@@ -59,6 +59,27 @@ public record GameAssignmentsDto(
 public record SetGameAssignmentsRequest(
     IReadOnlyList<Guid> ClassIds);
 
+/// <summary>
+/// Öğretmenin bir oyun (bulmaca) için, kaydetmeden ÖNCE örnek içerik önizleme isteği. Yalnız tür
+/// taşınır; başlık/atama yok (önizleme kalıcı değildir).
+/// </summary>
+public record PreviewGameRequest(
+    GameType Type);
+
+/// <summary>
+/// Öğretmen önizleme yanıtı: oturum OLMADAN üretilmiş örnek oyun içeriği (<see cref="StartGameSessionResponse"/>
+/// deseni, ama session yok). İçerik <see cref="Type"/>'a göre tür-duyarlıdır:
+/// <list type="bullet">
+///   <item><see cref="GameType.WordMatching"/> → <see cref="WordMatching"/> doludur (diğeri null).</item>
+///   <item><see cref="GameType.Crossword"/> → <see cref="Crossword"/> doludur (diğeri null).</item>
+/// </list>
+/// Hiçbir Game/GameSession kaydı oluşturulmaz; içerik StartSession ile aynı yeterlilik kurallarına tabidir.
+/// </summary>
+public record GamePreviewResponse(
+    GameType Type,
+    WordMatchingContent? WordMatching,
+    CrosswordContent? Crossword);
+
 /// <summary>Bir oyun oturumunun durumu.</summary>
 public record GameSessionDto(
     Guid Id,

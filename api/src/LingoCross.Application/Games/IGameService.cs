@@ -71,4 +71,12 @@ public interface IGameService
     /// F4.3: Bir oyunun atandığı sınıf kimliklerini döndürür. Yalnız ders sahibi öğretmen; aksi 404.
     /// </summary>
     Task<GameAssignmentsDto> GetAssignmentsAsync(Guid gameId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Öğretmenin, kaydetmeden ÖNCE bir oyun (bulmaca) için örnek içerik önizlemesi üretir.
+    /// <see cref="CreateForLessonAsync"/> ile aynı sahiplik (yalnız ders sahibi öğretmen; aksi 404/403)
+    /// ve aynı yeterlilik kurallarına tabidir (yetersiz/uygunsuz kelime → 400, aynı mesajlar). HİÇBİR
+    /// kalıcı kayıt oluşturmaz (Game/GameSession eklenmez, SaveChanges çağrılmaz). Desteklenmeyen tür → 400.
+    /// </summary>
+    Task<GamePreviewResponse> PreviewForLessonAsync(Guid lessonId, GameType type, CancellationToken cancellationToken = default);
 }

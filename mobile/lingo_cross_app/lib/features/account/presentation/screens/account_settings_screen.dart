@@ -31,10 +31,6 @@ class AccountSettingsScreen extends ConsumerWidget {
     final name = user?.displayName ?? '';
     final email = user?.email ?? '';
 
-    void comingSoon() => ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.commonComingSoon)));
-
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -78,12 +74,6 @@ class AccountSettingsScreen extends ConsumerWidget {
                 subtitle: l10n.langTurkish,
                 onTap: () => context.push(AppRoutes.accountLanguage),
               ),
-              _SettingsRowData(
-                icon: Icons.dark_mode_outlined,
-                label: l10n.accountRowTheme,
-                subtitle: l10n.accountRowThemeValueLight,
-                onTap: comingSoon,
-              ),
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -95,11 +85,6 @@ class AccountSettingsScreen extends ConsumerWidget {
                 icon: Icons.lock_outline,
                 label: l10n.accountRowChangePassword,
                 onTap: () => ChangePasswordSheet.show(context),
-              ),
-              _SettingsRowData(
-                icon: Icons.verified_user_outlined,
-                label: l10n.accountRowTwoFactor,
-                onTap: comingSoon,
               ),
             ],
           ),

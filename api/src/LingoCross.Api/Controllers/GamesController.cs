@@ -34,6 +34,19 @@ public class GamesController : ControllerBase
         return CreatedAtAction(nameof(ListForLesson), new { lessonId }, game);
     }
 
+    /// <summary>
+    /// Öğretmen, kaydetmeden ÖNCE bir oyun (bulmaca) için örnek içerik önizlemesi alır. CreateForLesson
+    /// ile aynı sahiplik/yeterlilik kuralları uygulanır (aksi 400/404/403) ama hiçbir kalıcı kayıt
+    /// oluşturulmaz (Game/GameSession eklenmez). Tür-duyarlı içerik döner (oturum YOK).
+    /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("api/lessons/{lessonId:guid}/games/preview")]
+    public async Task<ActionResult<GamePreviewResponse>> PreviewForLesson(Guid lessonId, [FromBody] PreviewGameRequest request, CancellationToken ct)
+    {
+        var preview = await _gameService.PreviewForLessonAsync(lessonId, request.Type, ct);
+        return Ok(preview);
+    }
+
     /// <summary>Ders sahibinin o derse ait oyunlarını listeler (salt-okunur, otomatik üretim yok).</summary>
     [Authorize(Roles = "Teacher")]
     [HttpGet("api/lessons/{lessonId:guid}/games")]

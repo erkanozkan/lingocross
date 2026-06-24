@@ -2474,6 +2474,259 @@ abstract class _CrosswordContent implements CrosswordContent {
       throw _privateConstructorUsedError;
 }
 
+GamePreviewResponse _$GamePreviewResponseFromJson(Map<String, dynamic> json) {
+  return _GamePreviewResponse.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GamePreviewResponse {
+  @GameTypeConverter()
+  GameType get type => throw _privateConstructorUsedError;
+  WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
+  CrosswordContent? get crossword => throw _privateConstructorUsedError;
+
+  /// Serializes this GamePreviewResponse to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GamePreviewResponseCopyWith<GamePreviewResponse> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GamePreviewResponseCopyWith<$Res> {
+  factory $GamePreviewResponseCopyWith(
+    GamePreviewResponse value,
+    $Res Function(GamePreviewResponse) then,
+  ) = _$GamePreviewResponseCopyWithImpl<$Res, GamePreviewResponse>;
+  @useResult
+  $Res call({
+    @GameTypeConverter() GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
+  });
+
+  $WordMatchingContentCopyWith<$Res>? get wordMatching;
+  $CrosswordContentCopyWith<$Res>? get crossword;
+}
+
+/// @nodoc
+class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
+    implements $GamePreviewResponseCopyWith<$Res> {
+  _$GamePreviewResponseCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? type = null,
+    Object? wordMatching = freezed,
+    Object? crossword = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            type:
+                null == type
+                    ? _value.type
+                    : type // ignore: cast_nullable_to_non_nullable
+                        as GameType,
+            wordMatching:
+                freezed == wordMatching
+                    ? _value.wordMatching
+                    : wordMatching // ignore: cast_nullable_to_non_nullable
+                        as WordMatchingContent?,
+            crossword:
+                freezed == crossword
+                    ? _value.crossword
+                    : crossword // ignore: cast_nullable_to_non_nullable
+                        as CrosswordContent?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $WordMatchingContentCopyWith<$Res>? get wordMatching {
+    if (_value.wordMatching == null) {
+      return null;
+    }
+
+    return $WordMatchingContentCopyWith<$Res>(_value.wordMatching!, (value) {
+      return _then(_value.copyWith(wordMatching: value) as $Val);
+    });
+  }
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $CrosswordContentCopyWith<$Res>? get crossword {
+    if (_value.crossword == null) {
+      return null;
+    }
+
+    return $CrosswordContentCopyWith<$Res>(_value.crossword!, (value) {
+      return _then(_value.copyWith(crossword: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$GamePreviewResponseImplCopyWith<$Res>
+    implements $GamePreviewResponseCopyWith<$Res> {
+  factory _$$GamePreviewResponseImplCopyWith(
+    _$GamePreviewResponseImpl value,
+    $Res Function(_$GamePreviewResponseImpl) then,
+  ) = __$$GamePreviewResponseImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    @GameTypeConverter() GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
+  });
+
+  @override
+  $WordMatchingContentCopyWith<$Res>? get wordMatching;
+  @override
+  $CrosswordContentCopyWith<$Res>? get crossword;
+}
+
+/// @nodoc
+class __$$GamePreviewResponseImplCopyWithImpl<$Res>
+    extends _$GamePreviewResponseCopyWithImpl<$Res, _$GamePreviewResponseImpl>
+    implements _$$GamePreviewResponseImplCopyWith<$Res> {
+  __$$GamePreviewResponseImplCopyWithImpl(
+    _$GamePreviewResponseImpl _value,
+    $Res Function(_$GamePreviewResponseImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? type = null,
+    Object? wordMatching = freezed,
+    Object? crossword = freezed,
+  }) {
+    return _then(
+      _$GamePreviewResponseImpl(
+        type:
+            null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                    as GameType,
+        wordMatching:
+            freezed == wordMatching
+                ? _value.wordMatching
+                : wordMatching // ignore: cast_nullable_to_non_nullable
+                    as WordMatchingContent?,
+        crossword:
+            freezed == crossword
+                ? _value.crossword
+                : crossword // ignore: cast_nullable_to_non_nullable
+                    as CrosswordContent?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GamePreviewResponseImpl implements _GamePreviewResponse {
+  const _$GamePreviewResponseImpl({
+    @GameTypeConverter() required this.type,
+    this.wordMatching,
+    this.crossword,
+  });
+
+  factory _$GamePreviewResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GamePreviewResponseImplFromJson(json);
+
+  @override
+  @GameTypeConverter()
+  final GameType type;
+  @override
+  final WordMatchingContent? wordMatching;
+  @override
+  final CrosswordContent? crossword;
+
+  @override
+  String toString() {
+    return 'GamePreviewResponse(type: $type, wordMatching: $wordMatching, crossword: $crossword)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GamePreviewResponseImpl &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.wordMatching, wordMatching) ||
+                other.wordMatching == wordMatching) &&
+            (identical(other.crossword, crossword) ||
+                other.crossword == crossword));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, type, wordMatching, crossword);
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GamePreviewResponseImplCopyWith<_$GamePreviewResponseImpl> get copyWith =>
+      __$$GamePreviewResponseImplCopyWithImpl<_$GamePreviewResponseImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GamePreviewResponseImplToJson(this);
+  }
+}
+
+abstract class _GamePreviewResponse implements GamePreviewResponse {
+  const factory _GamePreviewResponse({
+    @GameTypeConverter() required final GameType type,
+    final WordMatchingContent? wordMatching,
+    final CrosswordContent? crossword,
+  }) = _$GamePreviewResponseImpl;
+
+  factory _GamePreviewResponse.fromJson(Map<String, dynamic> json) =
+      _$GamePreviewResponseImpl.fromJson;
+
+  @override
+  @GameTypeConverter()
+  GameType get type;
+  @override
+  WordMatchingContent? get wordMatching;
+  @override
+  CrosswordContent? get crossword;
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GamePreviewResponseImplCopyWith<_$GamePreviewResponseImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 StartGameSessionResponse _$StartGameSessionResponseFromJson(
   Map<String, dynamic> json,
 ) {

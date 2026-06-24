@@ -108,13 +108,14 @@ void main() {
     expect(find.text('Bildirim Ayarları'), findsOneWidget);
     expect(find.text('Dil Tercihi'), findsOneWidget);
     expect(find.text('Türkçe'), findsOneWidget);
-    expect(find.text('Tema'), findsOneWidget);
     expect(find.text('Şifre Değiştir'), findsOneWidget);
-    expect(find.text('İki Faktörlü Doğrulama'), findsOneWidget);
+    // Tema ve İki Faktörlü Doğrulama kaldırıldı (kullanıcı isteği).
+    expect(find.text('Tema'), findsNothing);
+    expect(find.text('İki Faktörlü Doğrulama'), findsNothing);
     expect(find.text('Çıkış Yap'), findsOneWidget);
   });
 
-  testWidgets('4 satır gerçek route push eder; Tema → "Yakında"', (tester) async {
+  testWidgets('4 satır gerçek route push eder', (tester) async {
     tester.view.physicalSize = const Size(1080, 3200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -151,11 +152,6 @@ void main() {
     expect(find.text('PROBE_PRIVACY'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-
-    // Tema hâlâ placeholder ("Yakında" snackbar).
-    await tester.tap(find.text('Tema'));
-    await tester.pump();
-    expect(find.text('Yakında'), findsWidgets);
   });
 
   testWidgets('Çıkış Yap → gerçek logout', (tester) async {
