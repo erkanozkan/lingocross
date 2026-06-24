@@ -1357,4 +1357,90 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get resultsErrorForbidden => 'Bu işlem için yetkiniz yok.';
+
+  @override
+  String get trackingStudentsTitle => 'Öğrenci Raporları';
+
+  @override
+  String get trackingStudentsSubtitle => 'Öğrencilerinin paylaştığı oyun sonuçlarını takip et.';
+
+  @override
+  String get trackingStudentsListTitle => 'Öğrenciler';
+
+  @override
+  String trackingSharedCountLabel(int count) {
+    return '$count paylaşılan sonuç';
+  }
+
+  @override
+  String get trackingAverageLabel => 'Ortalama';
+
+  @override
+  String get trackingAverageNone => '—';
+
+  @override
+  String trackingLastActivityLabel(String date) {
+    return 'Son aktivite: $date';
+  }
+
+  @override
+  String get trackingLastActivityNone => 'Son aktivite: henüz yok';
+
+  @override
+  String trackingStudentRowA11y(String name, int count) {
+    return '$name, $count paylaşılan sonuç';
+  }
+
+  @override
+  String get trackingStudentsEmptyTitle => 'Henüz paylaşılan sonuç yok';
+
+  @override
+  String get trackingStudentsEmptyDesc => 'Öğrencilerin oyun sonuçlarını paylaşınca burada görünür. Henüz öğrencin yoksa Sınıflar sekmesinden davet kodunu paylaş.';
+
+  @override
+  String get trackingStudentsErrorTitle => 'Öğrenciler yüklenemedi';
+
+  @override
+  String get trackingDetailTitle => 'Öğrenci Raporu';
+
+  @override
+  String get trackingDetailAverageLabel => 'Ortalama Doğruluk';
+
+  @override
+  String get trackingDetailResultsLabel => 'Paylaşılan Sonuç';
+
+  @override
+  String get trackingDetailResultsTitle => 'Paylaşılan Sonuçlar';
+
+  @override
+  String get trackingDetailEmptyTitle => 'Henüz paylaşılan sonuç yok';
+
+  @override
+  String get trackingDetailEmptyDesc => 'Bu öğrenci henüz seninle bir oyun sonucu paylaşmadı.';
+
+  @override
+  String get trackingDetailErrorTitle => 'Sonuçlar yüklenemedi';
+
+  @override
+  String trackingResultA11y(String lesson, int percent, String time, int found, int total, String date) {
+    return '$lesson, doğruluk yüzde $percent, süre $time, $found / $total, $date';
+  }
+
+  @override
+  String get gameTypeWordMatching => 'Kelime Eşleştirme';
+
+  @override
+  String get gameTypeCrossword => 'Bulmaca';
+
+  @override
+  String get gameTypeQuestionSet => 'Soru Seti';
+
+  @override
+  String get trackingErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';
+
+  @override
+  String get trackingErrorNotFound => 'Öğrenci bulunamadı.';
+
+  @override
+  String get trackingErrorForbidden => 'Bu işlem için yetkiniz yok.';
 }

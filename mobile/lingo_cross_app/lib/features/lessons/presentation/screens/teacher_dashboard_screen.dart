@@ -18,7 +18,11 @@ import '../widgets/skeleton_card.dart';
 /// karşılama, birincil aksiyon kartları (bento), "Derslerim" listesi (boş/
 /// yükleniyor/hata durumları) ve M2 iskelet "Yeni Öğrenci Raporları" bölümü.
 class TeacherDashboardScreen extends ConsumerWidget {
-  const TeacherDashboardScreen({super.key});
+  const TeacherDashboardScreen({super.key, this.onOpenReports});
+
+  /// "Öğrenci Gelişimi" kartına dokununca Raporlar sekmesine geçer (kabuk verir).
+  /// Verilmezse (örn. doğrudan bağlantı) öğrenci listesine `push` ile gider.
+  final VoidCallback? onOpenReports;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,7 +63,8 @@ class TeacherDashboardScreen extends ConsumerWidget {
             _PrimaryActions(
               onNewLesson: () => context.push(AppRoutes.lessonNew),
               onNewPuzzle: () => context.push(AppRoutes.gameNew),
-              onProgress: () => context.push(AppRoutes.teacherStudents),
+              onProgress: onOpenReports ??
+                  () => context.push(AppRoutes.teacherStudents),
             ),
             const SizedBox(height: AppSpacing.xl),
             _LessonsSection(lessonsAsync: lessonsAsync),
