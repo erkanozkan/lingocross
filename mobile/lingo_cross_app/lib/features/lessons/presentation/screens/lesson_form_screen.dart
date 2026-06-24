@@ -75,11 +75,12 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   }
 
   void _recomputeDirty() {
-    final dirty = !widget.isEdit
-        ? _titleController.text.trim().isNotEmpty
-        : _titleController.text != _initialTitle ||
-            _descriptionController.text != _initialDescription ||
-            _scheduleController.text != _initialSchedule;
+    final dirty =
+        !widget.isEdit
+            ? _titleController.text.trim().isNotEmpty
+            : _titleController.text != _initialTitle ||
+                _descriptionController.text != _initialDescription ||
+                _scheduleController.text != _initialSchedule;
     if (dirty != _dirty) {
       setState(() => _dirty = dirty);
     }
@@ -96,24 +97,26 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
     if (widget.isEdit) {
       final async = ref.watch(lessonProvider(widget.lessonId!));
       return async.when(
-        loading: () => _Scaffold(
-          title: l10n.lessonFormTitleEdit,
-          body: const Padding(
-            padding: EdgeInsets.all(AppSpacing.marginMobile),
-            child: SkeletonList(count: 4, height: 56),
-          ),
-          bottomBar: const SizedBox.shrink(),
-        ),
-        error: (_, __) => _Scaffold(
-          title: l10n.lessonFormTitleEdit,
-          body: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.marginMobile),
-              child: ErrorBanner(message: l10n.teacherDashboardError),
+        loading:
+            () => _Scaffold(
+              title: l10n.lessonFormTitleEdit,
+              body: const Padding(
+                padding: EdgeInsets.all(AppSpacing.marginMobile),
+                child: SkeletonList(count: 4, height: 56),
+              ),
+              bottomBar: const SizedBox.shrink(),
             ),
-          ),
-          bottomBar: const SizedBox.shrink(),
-        ),
+        error:
+            (_, __) => _Scaffold(
+              title: l10n.lessonFormTitleEdit,
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.marginMobile),
+                  child: ErrorBanner(message: l10n.teacherDashboardError),
+                ),
+              ),
+              bottomBar: const SizedBox.shrink(),
+            ),
         data: (lesson) {
           _hydrate(lesson);
           return _buildForm(context, l10n);
@@ -136,7 +139,10 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
         if (leave == true && context.mounted) context.pop();
       },
       child: _Scaffold(
-        title: widget.isEdit ? l10n.lessonFormTitleEdit : l10n.lessonFormTitleCreate,
+        title:
+            widget.isEdit
+                ? l10n.lessonFormTitleEdit
+                : l10n.lessonFormTitleCreate,
         bottomBar: _SubmitBar(
           label: l10n.lessonFormSaveAndShare,
           submittingLabel: l10n.lessonFormSubmitting,
@@ -145,13 +151,11 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
           onSubmit: () => _submit(context, l10n),
         ),
         body: ListView(
-          // Klavye açıkken son alanların görünür kalması için alt boşluğa
-          // klavye yüksekliği eklenir (referans: word_form_sheet.dart).
-          padding: EdgeInsets.fromLTRB(
+          padding: const EdgeInsets.fromLTRB(
             AppSpacing.marginMobile,
             AppSpacing.md,
             AppSpacing.marginMobile,
-            AppSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
+            AppSpacing.lg,
           ),
           children: [
             if (hasError) ...[
@@ -176,9 +180,11 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
               enabled: !submitting,
               leadingIcon: Icons.topic_outlined,
               textInputAction: TextInputAction.next,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? l10n.lessonFormFieldTitleRequired
-                  : null,
+              validator:
+                  (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? l10n.lessonFormFieldTitleRequired
+                          : null,
             ),
             const SizedBox(height: AppSpacing.lg),
             AppTextField(
@@ -260,23 +266,27 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   Future<void> _delete(BuildContext context, AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.lessonFormDelete, style: AppTypography.headlineMd),
-        content: Text(l10n.lessonFormDeleteConfirm, style: AppTypography.bodyMd),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              l10n.lessonFormDelete,
-              style: AppTypography.labelLg.copyWith(color: AppColors.error),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.lessonFormDelete, style: AppTypography.headlineMd),
+            content: Text(
+              l10n.lessonFormDeleteConfirm,
+              style: AppTypography.bodyMd,
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.commonCancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(
+                  l10n.lessonFormDelete,
+                  style: AppTypography.labelLg.copyWith(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (confirmed != true || !context.mounted) return;
     final messenger = ScaffoldMessenger.of(context);
@@ -295,30 +305,36 @@ class _LessonFormScreenState extends ConsumerState<LessonFormScreen> {
   Future<bool?> _confirmDiscard(BuildContext context, AppLocalizations l10n) {
     return showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.lessonFormDiscardTitle, style: AppTypography.headlineMd),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.lessonFormDiscardCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(
-              l10n.lessonFormDiscardConfirm,
-              style: AppTypography.labelLg.copyWith(color: AppColors.error),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(
+              l10n.lessonFormDiscardTitle,
+              style: AppTypography.headlineMd,
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(l10n.lessonFormDiscardCancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(
+                  l10n.lessonFormDiscardConfirm,
+                  style: AppTypography.labelLg.copyWith(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   SnackBar _successSnack(String text) => SnackBar(
-        backgroundColor: AppColors.tertiary,
-        content: Text(text,
-            style: AppTypography.labelLg.copyWith(color: AppColors.onTertiary)),
-      );
+    backgroundColor: AppColors.tertiary,
+    content: Text(
+      text,
+      style: AppTypography.labelLg.copyWith(color: AppColors.onTertiary),
+    ),
+  );
 }
 
 class _Scaffold extends StatelessWidget {
@@ -336,8 +352,9 @@ class _Scaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.surface,
-      // Klavye açıldığında gövde küçülür; _SubmitBar (bottomNavigationBar)
-      // klavyenin üstünde kalır.
+      // Klavye açıldığında gövde küçülür. ÖNEMLİ: bottomNavigationBar klavyenin
+      // ÜSTÜNE çıkmaz, klavye onu örter. Bu yüzden submit bar'ı body'nin içine
+      // (Expanded liste + altında bar) koyuyoruz; böylece klavyenin hemen üstünde kalır.
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -346,11 +363,12 @@ class _Scaffold extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => context.pop(),
         ),
-        title: Text(title,
-            style: AppTypography.headlineMd.copyWith(color: AppColors.primary)),
+        title: Text(
+          title,
+          style: AppTypography.headlineMd.copyWith(color: AppColors.primary),
+        ),
       ),
-      bottomNavigationBar: bottomBar,
-      body: body,
+      body: Column(children: [Expanded(child: body), bottomBar]),
     );
   }
 }
@@ -376,8 +394,9 @@ class _Hero extends StatelessWidget {
         children: [
           Text(
             l10n.lessonFormHeroTitle,
-            style:
-                AppTypography.headlineMd.copyWith(color: AppColors.onPrimaryContainer),
+            style: AppTypography.headlineMd.copyWith(
+              color: AppColors.onPrimaryContainer,
+            ),
           ),
           const SizedBox(height: AppSpacing.base),
           Text(
@@ -432,13 +451,16 @@ class _VocabCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.lessonFormVocabTitle,
-                        style: AppTypography.headlineMd),
+                    Text(
+                      l10n.lessonFormVocabTitle,
+                      style: AppTypography.headlineMd,
+                    ),
                     const SizedBox(height: AppSpacing.base),
                     Text(
                       l10n.lessonFormVocabDesc,
-                      style: AppTypography.labelSm
-                          .copyWith(color: AppColors.onSurfaceVariant),
+                      style: AppTypography.labelSm.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -465,7 +487,8 @@ class _InfoNote extends StatelessWidget {
         color: AppColors.tertiaryContainer.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(
-            color: AppColors.tertiaryContainer.withValues(alpha: 0.2)),
+          color: AppColors.tertiaryContainer.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,8 +498,9 @@ class _InfoNote extends StatelessWidget {
           Expanded(
             child: Text(
               l10n.lessonFormInfoNote,
-              style: AppTypography.labelSm
-                  .copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],

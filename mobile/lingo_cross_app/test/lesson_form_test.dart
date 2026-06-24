@@ -61,19 +61,19 @@ void main() {
   });
 
   testWidgets(
-      'Klavye açıkken (viewInsets) form kaydırılabilir kalır ve submit bar görünür',
+      'Submit bar bottomNavigationBar yerine body içinde (klavye örtmesin)',
       (tester) async {
-    // F4.1: klavye yüksekliği viewInsets.bottom olarak simüle edilir.
-    tester.view.viewInsets = const FakeViewPadding(bottom: 320);
-    addTearDown(tester.view.resetViewInsets);
-
     await tester.pumpWidget(_wrap());
     await tester.pumpAndSettle();
 
-    // Klavye altında dahi alanlar oluşur (ListView alt padding'ine viewInsets
-    // eklendiği için 0-yükseklik gövde regresyonu olmaz).
-    expect(find.byType(AppTextField), findsNWidgets(3));
-    // Submit bar (klavye üstünde, bottomNavigationBar yuvasında) görünür kalır.
     expect(find.byType(PrimaryButton3D), findsOneWidget);
+
+    // Asıl düzeltme: bottomNavigationBar klavyenin üstüne çıkmaz, klavye onu
+    // örterdi. Bu yüzden submit bar body Column'una taşındı + gövde klavye
+    // açılınca küçülsün diye resizeToAvoidBottomInset açık.
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    expect(scaffold.bottomNavigationBar, isNull,
+        reason: 'Submit bar body içinde olmalı, bottomNavigationBar slotunda değil');
+    expect(scaffold.resizeToAvoidBottomInset, isTrue);
   });
 }

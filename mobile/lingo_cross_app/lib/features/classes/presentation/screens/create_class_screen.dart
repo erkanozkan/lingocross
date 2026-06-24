@@ -45,8 +45,9 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
     if (!_canSubmit) return;
     FocusScope.of(context).unfocus();
     final messenger = ScaffoldMessenger.of(context);
-    final created =
-        await ref.read(createClassControllerProvider.notifier).create(_name);
+    final created = await ref
+        .read(createClassControllerProvider.notifier)
+        .create(_name);
     if (!mounted) return;
 
     final l10n = AppLocalizations.of(context);
@@ -96,71 +97,78 @@ class _CreateClassScreenState extends ConsumerState<CreateClassScreen> {
           style: AppTypography.headlineMd.copyWith(color: AppColors.primary),
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.marginMobile,
-          AppSpacing.lg,
-          AppSpacing.marginMobile,
-          AppSpacing.xl,
-        ),
+      // bottomNavigationBar klavyenin üstüne çıkmaz; submit'i body Column'una al.
+      body: Column(
         children: [
-          const _HeroIllustration(),
-          const SizedBox(height: AppSpacing.xl),
-          Padding(
-            padding: const EdgeInsets.only(left: AppSpacing.base),
-            child: Text(
-              l10n.classCreateNameLabel,
-              style: AppTypography.labelLg,
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.marginMobile,
+                AppSpacing.lg,
+                AppSpacing.marginMobile,
+                AppSpacing.xl,
+              ),
+              children: [
+                const _HeroIllustration(),
+                const SizedBox(height: AppSpacing.xl),
+                Padding(
+                  padding: const EdgeInsets.only(left: AppSpacing.base),
+                  child: Text(
+                    l10n.classCreateNameLabel,
+                    style: AppTypography.labelLg,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                _NameField(
+                  controller: _controller,
+                  enabled: !busy,
+                  onSubmitted: (_) => _submit(),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                _InfoLine(text: l10n.classCreateInfo),
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _PerkCard(
+                        icon: Icons.analytics,
+                        iconColor: AppColors.primary,
+                        label: l10n.classCreatePerkProgress,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: _PerkCard(
+                        icon: Icons.military_tech,
+                        iconColor: AppColors.secondary,
+                        label: l10n.classCreatePerkRewards,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          _NameField(
-            controller: _controller,
-            enabled: !busy,
-            onSubmitted: (_) => _submit(),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          _InfoLine(text: l10n.classCreateInfo),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: _PerkCard(
-                  icon: Icons.analytics,
-                  iconColor: AppColors.primary,
-                  label: l10n.classCreatePerkProgress,
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceContainerLowest,
+              border: Border(top: BorderSide(color: AppColors.outlineVariant)),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: PrimaryButton3D(
+                  label: l10n.classCreateSubmit,
+                  trailingIcon: Icons.auto_awesome,
+                  isLoading: busy,
+                  enabled: _canSubmit,
+                  onPressed: _canSubmit ? _submit : null,
                 ),
               ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: _PerkCard(
-                  icon: Icons.military_tech,
-                  iconColor: AppColors.secondary,
-                  label: l10n.classCreatePerkRewards,
-                ),
-              ),
-            ],
+            ),
           ),
         ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surfaceContainerLowest,
-          border: Border(top: BorderSide(color: AppColors.outlineVariant)),
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: PrimaryButton3D(
-              label: l10n.classCreateSubmit,
-              trailingIcon: Icons.auto_awesome,
-              isLoading: busy,
-              enabled: _canSubmit,
-              onPressed: _canSubmit ? _submit : null,
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -191,16 +199,20 @@ class _HeroIllustration extends StatelessWidget {
             Positioned(
               right: -8,
               top: -8,
-              child: Icon(Icons.auto_stories,
-                  size: 96,
-                  color: AppColors.onPrimary.withValues(alpha: 0.12)),
+              child: Icon(
+                Icons.auto_stories,
+                size: 96,
+                color: AppColors.onPrimary.withValues(alpha: 0.12),
+              ),
             ),
             Positioned(
               left: -8,
               bottom: -8,
-              child: Icon(Icons.lightbulb,
-                  size: 80,
-                  color: AppColors.secondaryContainer.withValues(alpha: 0.5)),
+              child: Icon(
+                Icons.lightbulb,
+                size: 80,
+                color: AppColors.secondaryContainer.withValues(alpha: 0.5),
+              ),
             ),
             const Icon(Icons.groups, size: 56, color: AppColors.onPrimary),
           ],
@@ -239,8 +251,10 @@ class _NameField extends StatelessWidget {
         contentPadding: const EdgeInsets.all(AppSpacing.md),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide:
-              const BorderSide(color: AppColors.outlineVariant, width: 2),
+          borderSide: const BorderSide(
+            color: AppColors.outlineVariant,
+            width: 2,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -248,8 +262,10 @@ class _NameField extends StatelessWidget {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide:
-              const BorderSide(color: AppColors.outlineVariant, width: 2),
+          borderSide: const BorderSide(
+            color: AppColors.outlineVariant,
+            width: 2,
+          ),
         ),
       ),
     );
@@ -268,14 +284,18 @@ class _InfoLine extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline,
-              size: 16, color: AppColors.onSurfaceVariant),
+          const Icon(
+            Icons.info_outline,
+            size: 16,
+            color: AppColors.onSurfaceVariant,
+          ),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(
               text,
-              style: AppTypography.labelSm
-                  .copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.labelSm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
