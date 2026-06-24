@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -69,13 +70,13 @@ class AccountSettingsScreen extends ConsumerWidget {
               _SettingsRowData(
                 icon: Icons.notifications_outlined,
                 label: l10n.accountRowNotifications,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.accountNotifications),
               ),
               _SettingsRowData(
                 icon: Icons.language,
                 label: l10n.accountRowLanguage,
                 subtitle: l10n.langTurkish,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.accountLanguage),
               ),
               _SettingsRowData(
                 icon: Icons.dark_mode_outlined,
@@ -110,12 +111,12 @@ class AccountSettingsScreen extends ConsumerWidget {
               _SettingsRowData(
                 icon: Icons.help_outline,
                 label: l10n.accountRowHelpCenter,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.accountHelp),
               ),
               _SettingsRowData(
                 icon: Icons.description_outlined,
                 label: l10n.accountRowPrivacy,
-                onTap: comingSoon,
+                onTap: () => context.push(AppRoutes.accountPrivacy),
               ),
             ],
           ),

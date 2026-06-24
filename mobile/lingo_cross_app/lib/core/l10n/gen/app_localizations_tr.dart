@@ -1929,4 +1929,198 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get createGameClassesError => 'Sınıflar yüklenemedi.';
+
+  @override
+  String get notificationSettingsTitle => 'Bildirim Ayarları';
+
+  @override
+  String get notificationMasterTitle => 'Bildirimler';
+
+  @override
+  String get notificationMasterDesc => 'Uygulama bildirimlerini yönetin';
+
+  @override
+  String get notificationGroupAssignments => 'ÖDEV & BULMACA';
+
+  @override
+  String get notificationAssignedTitle => 'Yeni ödev/bulmaca atandığında';
+
+  @override
+  String get notificationAssignedDesc => 'Yeni içerikler yayınlandığında haberdar olun';
+
+  @override
+  String get notificationReminderTitle => 'Ödev hatırlatması';
+
+  @override
+  String get notificationReminderDesc => 'Süresi dolmak üzere olan ödevler için';
+
+  @override
+  String get notificationGroupResults => 'SONUÇLAR';
+
+  @override
+  String get notificationResultTeacherTitle => 'Öğrenci sonuç paylaştığında';
+
+  @override
+  String get notificationResultStudentTitle => 'Sonucum öğretmene ulaştığında';
+
+  @override
+  String get notificationGroupGeneral => 'GENEL';
+
+  @override
+  String get notificationAnnouncementsTitle => 'Duyurular ve güncellemeler';
+
+  @override
+  String get notificationQuietHoursTitle => 'Sessiz Saatler';
+
+  @override
+  String get notificationQuietHoursDesc => 'Gece saatlerinde bildirimleri susturarak odağınızı koruyun.';
+
+  @override
+  String get notificationQuietHoursCta => 'Şimdi Ayarla';
+
+  @override
+  String get languagePreferenceTitle => 'Dil Tercihi';
+
+  @override
+  String get languageOptionTurkish => 'Türkçe';
+
+  @override
+  String get languageOptionEnglish => 'English';
+
+  @override
+  String get languageComingSoonBadge => 'Yakında';
+
+  @override
+  String get languageInfo => 'Daha fazla dil yakında eklenecek.';
+
+  @override
+  String get languageDecorationCaption => 'Global Öğrenim Topluluğu';
+
+  @override
+  String get helpCenterTitle => 'Yardım Merkezi';
+
+  @override
+  String get helpSearchPlaceholder => 'Yardım konusu ara';
+
+  @override
+  String get helpFaqSectionTitle => 'Sıkça Sorulan Sorular';
+
+  @override
+  String get helpFaqEmpty => 'Aramanızla eşleşen bir konu bulunamadı.';
+
+  @override
+  String get helpFaqQ1 => 'Nasıl sınıf oluştururum?';
+
+  @override
+  String get helpFaqA1 => 'Sınıf oluşturmak için ana menüdeki \"Sınıflarım\" sekmesine gidin. Sağ üstteki \"+\" butonuna dokunup sınıfa bir ad verin ve \"Kaydet\" deyin. Sınıf oluştuğunda otomatik bir davet kodu üretilir.';
+
+  @override
+  String get helpFaqQ2 => 'Öğrencileri nasıl davet ederim?';
+
+  @override
+  String get helpFaqA2 => 'Oluşturduğunuz sınıfın detayına girin. Sınıfın davet kodunu öğrencilerinizle paylaşın; öğrenci uygulamada \"Sınıfa Katıl\" ekranından bu kodu girerek sınıfınıza eklenir.';
+
+  @override
+  String get helpFaqQ3 => 'Bir derse nasıl kelime eklerim (OCR + manuel)?';
+
+  @override
+  String get helpFaqA3 => 'Ders detayında \"Kelime Ekle\" akışını başlatın. Manuel girişte İngilizce terimi ve Türkçe karşılığını yazarsınız. OCR için kelimeleri kâğıda yazıp kameradan veya galeriden okutursunuz; tanınan kelimeleri gözden geçirip düzenledikten sonra kaydedersiniz.';
+
+  @override
+  String get helpFaqQ4 => 'Bulmacayı nasıl oluşturup atarım?';
+
+  @override
+  String get helpFaqA4 => 'Kelime listenizi hazırladıktan sonra \"Yeni Bulmaca Oluştur\" akışını açın, oyun türünü ve kelime listesini seçin, ardından bulmacayı çözecek sınıfları belirleyip yayınlayın. Bulmaca aktif öğrencilere ödev olarak atanır.';
+
+  @override
+  String get helpFaqQ5 => 'Öğrenci sonuçlarını nerede görürüm?';
+
+  @override
+  String get helpFaqA5 => '\"Raporlar\" sekmesinden veya ilgili öğrencinin detayından paylaşılan sonuçları görebilirsiniz. Her sonuçta tamamlanma süresi ve başarı oranı yer alır.';
+
+  @override
+  String get helpFaqQ6 => 'Şifremi unuttum, ne yapmalıyım?';
+
+  @override
+  String get helpFaqA6 => 'Giriş ekranındaki \"Şifremi Unuttum\" bağlantısına dokunun ve kayıtlı e-posta adresinizi girin. Size gönderilecek talimatları izleyerek yeni bir şifre belirleyebilirsiniz.';
+
+  @override
+  String get helpContactTitle => 'Hâlâ yardıma mı ihtiyacın var?';
+
+  @override
+  String get helpContactDesc => 'Ekibimiz sorularını yanıtlamak için burada. Bize dilediğin zaman ulaşabilirsin.';
+
+  @override
+  String get helpContactCta => 'Bize Ulaşın';
+
+  @override
+  String get helpContactEmailSubject => 'LingoCross Destek Talebi';
+
+  @override
+  String helpContactCopied(String email) {
+    return 'E-posta adresi kopyalandı: $email';
+  }
+
+  @override
+  String get privacyPolicyTitle => 'Gizlilik Politikası';
+
+  @override
+  String get privacyLastUpdated => 'Son güncelleme: 24 Haziran 2026';
+
+  @override
+  String get privacyIntro => 'LingoCross olarak gizliliğinize büyük önem veriyoruz. Bu politika, uygulamamızı kullanırken verilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.';
+
+  @override
+  String get privacySection1Title => '1. Topladığımız Bilgiler';
+
+  @override
+  String get privacySection1Body => 'Size daha iyi bir deneyim sunabilmek için belirli bilgileri topluyoruz. Bunlar arasında hesap bilgileri (ad soyad, e-posta adresi, rol), öğrenme verileri (oluşturulan dersler, çözülen bulmacalar, başarı ve süre sonuçları) ve teknik veriler (cihaz türü, işletim sistemi sürümü) yer alabilir.';
+
+  @override
+  String get privacySection2Title => '2. Bilgileri Nasıl Kullanırız';
+
+  @override
+  String get privacySection2Body => 'Topladığımız verileri yalnızca hizmeti sunmak ve geliştirmek için kullanırız: öğretmen-öğrenci eşleştirmesi, ders ve kelime yönetimi, oyun sonuçlarının paylaşılması ve ilerlemenin takibi. Kişisel verilerinizi reklam amacıyla üçüncü taraflara satmayız.';
+
+  @override
+  String get privacySection3Title => '3. Veri Saklama ve Güvenlik';
+
+  @override
+  String get privacySection3Body => 'Verileriniz endüstri standardı şifreleme (SSL/TLS) ile aktarılır ve güvenli sunucularda saklanır. Hesabınızı sildiğinizde, yasal saklama yükümlülükleri dışındaki kişisel verileriniz makul bir süre içinde kalıcı olarak silinir.';
+
+  @override
+  String get privacySection4Title => '4. Üçüncü Taraf Hizmetler';
+
+  @override
+  String get privacySection4Body => 'Uygulamanın çalışması için sınırlı sayıda güvenilir hizmet sağlayıcıyla (ör. barındırma ve altyapı sağlayıcıları) çalışabiliriz. Bu sağlayıcılar verilerinize yalnızca kendilerine verilen görevi yerine getirmek için sınırlı erişime sahiptir.';
+
+  @override
+  String get privacySection5Title => '5. Haklarınız';
+
+  @override
+  String get privacySection5Body => 'KVKK ve GDPR kapsamında verilerinize erişme, hatalı verilerin düzeltilmesini isteme ve verilerinizin silinmesini (unutulma hakkı) talep etme haklarına sahipsiniz.';
+
+  @override
+  String get privacyRight1 => 'Verilerinize erişim talep etme ve kopyasını alma.';
+
+  @override
+  String get privacyRight2 => 'Hatalı verilerin düzeltilmesini isteme.';
+
+  @override
+  String get privacyRight3 => 'Verilerinizin tamamen silinmesini talep etme.';
+
+  @override
+  String get privacySection6Title => '6. İletişim';
+
+  @override
+  String get privacySection6Body => 'Gizlilik politikamızla ilgili sorularınız için bizimle iletişime geçebilirsiniz:';
+
+  @override
+  String get privacyContactEmail => 'privacy@lingocross.app';
+
+  @override
+  String get privacyContactLocation => 'Maslak, İstanbul / Türkiye';
+
+  @override
+  String get privacyContactEmailSubject => 'LingoCross Gizlilik Sorusu';
 }

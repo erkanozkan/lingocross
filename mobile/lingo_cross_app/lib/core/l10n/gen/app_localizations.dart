@@ -3692,6 +3692,390 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sınıflar yüklenemedi.'**
   String get createGameClassesError;
+
+  /// No description provided for @notificationSettingsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim Ayarları'**
+  String get notificationSettingsTitle;
+
+  /// No description provided for @notificationMasterTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimler'**
+  String get notificationMasterTitle;
+
+  /// No description provided for @notificationMasterDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulama bildirimlerini yönetin'**
+  String get notificationMasterDesc;
+
+  /// No description provided for @notificationGroupAssignments.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÖDEV & BULMACA'**
+  String get notificationGroupAssignments;
+
+  /// No description provided for @notificationAssignedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni ödev/bulmaca atandığında'**
+  String get notificationAssignedTitle;
+
+  /// No description provided for @notificationAssignedDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni içerikler yayınlandığında haberdar olun'**
+  String get notificationAssignedDesc;
+
+  /// No description provided for @notificationReminderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödev hatırlatması'**
+  String get notificationReminderTitle;
+
+  /// No description provided for @notificationReminderDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süresi dolmak üzere olan ödevler için'**
+  String get notificationReminderDesc;
+
+  /// No description provided for @notificationGroupResults.
+  ///
+  /// In tr, this message translates to:
+  /// **'SONUÇLAR'**
+  String get notificationGroupResults;
+
+  /// No description provided for @notificationResultTeacherTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci sonuç paylaştığında'**
+  String get notificationResultTeacherTitle;
+
+  /// No description provided for @notificationResultStudentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonucum öğretmene ulaştığında'**
+  String get notificationResultStudentTitle;
+
+  /// No description provided for @notificationGroupGeneral.
+  ///
+  /// In tr, this message translates to:
+  /// **'GENEL'**
+  String get notificationGroupGeneral;
+
+  /// No description provided for @notificationAnnouncementsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyurular ve güncellemeler'**
+  String get notificationAnnouncementsTitle;
+
+  /// No description provided for @notificationQuietHoursTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sessiz Saatler'**
+  String get notificationQuietHoursTitle;
+
+  /// No description provided for @notificationQuietHoursDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gece saatlerinde bildirimleri susturarak odağınızı koruyun.'**
+  String get notificationQuietHoursDesc;
+
+  /// No description provided for @notificationQuietHoursCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi Ayarla'**
+  String get notificationQuietHoursCta;
+
+  /// No description provided for @languagePreferenceTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dil Tercihi'**
+  String get languagePreferenceTitle;
+
+  /// No description provided for @languageOptionTurkish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get languageOptionTurkish;
+
+  /// No description provided for @languageOptionEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'English'**
+  String get languageOptionEnglish;
+
+  /// No description provided for @languageComingSoonBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yakında'**
+  String get languageComingSoonBadge;
+
+  /// No description provided for @languageInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha fazla dil yakında eklenecek.'**
+  String get languageInfo;
+
+  /// No description provided for @languageDecorationCaption.
+  ///
+  /// In tr, this message translates to:
+  /// **'Global Öğrenim Topluluğu'**
+  String get languageDecorationCaption;
+
+  /// No description provided for @helpCenterTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardım Merkezi'**
+  String get helpCenterTitle;
+
+  /// No description provided for @helpSearchPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardım konusu ara'**
+  String get helpSearchPlaceholder;
+
+  /// No description provided for @helpFaqSectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıkça Sorulan Sorular'**
+  String get helpFaqSectionTitle;
+
+  /// No description provided for @helpFaqEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aramanızla eşleşen bir konu bulunamadı.'**
+  String get helpFaqEmpty;
+
+  /// No description provided for @helpFaqQ1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nasıl sınıf oluştururum?'**
+  String get helpFaqQ1;
+
+  /// No description provided for @helpFaqA1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf oluşturmak için ana menüdeki \"Sınıflarım\" sekmesine gidin. Sağ üstteki \"+\" butonuna dokunup sınıfa bir ad verin ve \"Kaydet\" deyin. Sınıf oluştuğunda otomatik bir davet kodu üretilir.'**
+  String get helpFaqA1;
+
+  /// No description provided for @helpFaqQ2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencileri nasıl davet ederim?'**
+  String get helpFaqQ2;
+
+  /// No description provided for @helpFaqA2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturduğunuz sınıfın detayına girin. Sınıfın davet kodunu öğrencilerinizle paylaşın; öğrenci uygulamada \"Sınıfa Katıl\" ekranından bu kodu girerek sınıfınıza eklenir.'**
+  String get helpFaqA2;
+
+  /// No description provided for @helpFaqQ3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir derse nasıl kelime eklerim (OCR + manuel)?'**
+  String get helpFaqQ3;
+
+  /// No description provided for @helpFaqA3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders detayında \"Kelime Ekle\" akışını başlatın. Manuel girişte İngilizce terimi ve Türkçe karşılığını yazarsınız. OCR için kelimeleri kâğıda yazıp kameradan veya galeriden okutursunuz; tanınan kelimeleri gözden geçirip düzenledikten sonra kaydedersiniz.'**
+  String get helpFaqA3;
+
+  /// No description provided for @helpFaqQ4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmacayı nasıl oluşturup atarım?'**
+  String get helpFaqQ4;
+
+  /// No description provided for @helpFaqA4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime listenizi hazırladıktan sonra \"Yeni Bulmaca Oluştur\" akışını açın, oyun türünü ve kelime listesini seçin, ardından bulmacayı çözecek sınıfları belirleyip yayınlayın. Bulmaca aktif öğrencilere ödev olarak atanır.'**
+  String get helpFaqA4;
+
+  /// No description provided for @helpFaqQ5.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci sonuçlarını nerede görürüm?'**
+  String get helpFaqQ5;
+
+  /// No description provided for @helpFaqA5.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"Raporlar\" sekmesinden veya ilgili öğrencinin detayından paylaşılan sonuçları görebilirsiniz. Her sonuçta tamamlanma süresi ve başarı oranı yer alır.'**
+  String get helpFaqA5;
+
+  /// No description provided for @helpFaqQ6.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifremi unuttum, ne yapmalıyım?'**
+  String get helpFaqQ6;
+
+  /// No description provided for @helpFaqA6.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş ekranındaki \"Şifremi Unuttum\" bağlantısına dokunun ve kayıtlı e-posta adresinizi girin. Size gönderilecek talimatları izleyerek yeni bir şifre belirleyebilirsiniz.'**
+  String get helpFaqA6;
+
+  /// No description provided for @helpContactTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hâlâ yardıma mı ihtiyacın var?'**
+  String get helpContactTitle;
+
+  /// No description provided for @helpContactDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ekibimiz sorularını yanıtlamak için burada. Bize dilediğin zaman ulaşabilirsin.'**
+  String get helpContactDesc;
+
+  /// No description provided for @helpContactCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bize Ulaşın'**
+  String get helpContactCta;
+
+  /// No description provided for @helpContactEmailSubject.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross Destek Talebi'**
+  String get helpContactEmailSubject;
+
+  /// No description provided for @helpContactCopied.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-posta adresi kopyalandı: {email}'**
+  String helpContactCopied(String email);
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyLastUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son güncelleme: 24 Haziran 2026'**
+  String get privacyLastUpdated;
+
+  /// No description provided for @privacyIntro.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross olarak gizliliğinize büyük önem veriyoruz. Bu politika, uygulamamızı kullanırken verilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.'**
+  String get privacyIntro;
+
+  /// No description provided for @privacySection1Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'1. Topladığımız Bilgiler'**
+  String get privacySection1Title;
+
+  /// No description provided for @privacySection1Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Size daha iyi bir deneyim sunabilmek için belirli bilgileri topluyoruz. Bunlar arasında hesap bilgileri (ad soyad, e-posta adresi, rol), öğrenme verileri (oluşturulan dersler, çözülen bulmacalar, başarı ve süre sonuçları) ve teknik veriler (cihaz türü, işletim sistemi sürümü) yer alabilir.'**
+  String get privacySection1Body;
+
+  /// No description provided for @privacySection2Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'2. Bilgileri Nasıl Kullanırız'**
+  String get privacySection2Title;
+
+  /// No description provided for @privacySection2Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Topladığımız verileri yalnızca hizmeti sunmak ve geliştirmek için kullanırız: öğretmen-öğrenci eşleştirmesi, ders ve kelime yönetimi, oyun sonuçlarının paylaşılması ve ilerlemenin takibi. Kişisel verilerinizi reklam amacıyla üçüncü taraflara satmayız.'**
+  String get privacySection2Body;
+
+  /// No description provided for @privacySection3Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'3. Veri Saklama ve Güvenlik'**
+  String get privacySection3Title;
+
+  /// No description provided for @privacySection3Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verileriniz endüstri standardı şifreleme (SSL/TLS) ile aktarılır ve güvenli sunucularda saklanır. Hesabınızı sildiğinizde, yasal saklama yükümlülükleri dışındaki kişisel verileriniz makul bir süre içinde kalıcı olarak silinir.'**
+  String get privacySection3Body;
+
+  /// No description provided for @privacySection4Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'4. Üçüncü Taraf Hizmetler'**
+  String get privacySection4Title;
+
+  /// No description provided for @privacySection4Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamanın çalışması için sınırlı sayıda güvenilir hizmet sağlayıcıyla (ör. barındırma ve altyapı sağlayıcıları) çalışabiliriz. Bu sağlayıcılar verilerinize yalnızca kendilerine verilen görevi yerine getirmek için sınırlı erişime sahiptir.'**
+  String get privacySection4Body;
+
+  /// No description provided for @privacySection5Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'5. Haklarınız'**
+  String get privacySection5Title;
+
+  /// No description provided for @privacySection5Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'KVKK ve GDPR kapsamında verilerinize erişme, hatalı verilerin düzeltilmesini isteme ve verilerinizin silinmesini (unutulma hakkı) talep etme haklarına sahipsiniz.'**
+  String get privacySection5Body;
+
+  /// No description provided for @privacyRight1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerinize erişim talep etme ve kopyasını alma.'**
+  String get privacyRight1;
+
+  /// No description provided for @privacyRight2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatalı verilerin düzeltilmesini isteme.'**
+  String get privacyRight2;
+
+  /// No description provided for @privacyRight3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerinizin tamamen silinmesini talep etme.'**
+  String get privacyRight3;
+
+  /// No description provided for @privacySection6Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'6. İletişim'**
+  String get privacySection6Title;
+
+  /// No description provided for @privacySection6Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik politikamızla ilgili sorularınız için bizimle iletişime geçebilirsiniz:'**
+  String get privacySection6Body;
+
+  /// No description provided for @privacyContactEmail.
+  ///
+  /// In tr, this message translates to:
+  /// **'privacy@lingocross.app'**
+  String get privacyContactEmail;
+
+  /// No description provided for @privacyContactLocation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maslak, İstanbul / Türkiye'**
+  String get privacyContactLocation;
+
+  /// No description provided for @privacyContactEmailSubject.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross Gizlilik Sorusu'**
+  String get privacyContactEmailSubject;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
