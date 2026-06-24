@@ -65,6 +65,13 @@ class AuthRepository {
     }
   }
 
+  /// Mevcut kullanıcı profili (GET /auth/me). Authenticated Dio kullanılır;
+  /// 401 olursa interceptor refresh dener. Token geçersizse hata fırlatır.
+  Future<UserDto> me() async {
+    final res = await _dio.get<Map<String, dynamic>>('$_base/auth/me');
+    return UserDto.fromJson(res.data!);
+  }
+
   Future<void> logout({required String refreshToken}) async {
     try {
       await _dio.post<dynamic>(

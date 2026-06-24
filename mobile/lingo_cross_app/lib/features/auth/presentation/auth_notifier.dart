@@ -34,10 +34,19 @@ class AuthNotifier extends _$AuthNotifier {
 
   Future<void> _restore() async {
     final access = await _storage.readAccessToken();
-    if (access != null && access.isNotEmpty) {
-      state = state.copyWith(status: AuthStatus.authenticated);
-    } else {
+    if (access == null || access.isEmpty) {
       state = state.copyWith(status: AuthStatus.unauthenticated);
+      return;
+    }
+    // Token var → /me ile kullanıcıyı (rol + isim) yükle. Böylece açılışta
+    // role'e göre doğru panele yönlenir ve isim dolu gelir. /me 401 verirse
+    // interceptor refresh dener; tümden başarısızsa oturumu kapat.
+    try {
+      final user = await _repository.me();
+      state = AuthState(status: AuthStatus.authenticated, user: user);
+    } catch (_) {
+      await _storage.clear();
+      state = const AuthState(status: AuthStatus.unauthenticated);
     }
   }
 
