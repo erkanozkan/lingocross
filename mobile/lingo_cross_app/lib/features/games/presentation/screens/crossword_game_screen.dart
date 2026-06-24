@@ -48,6 +48,7 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
   int _durationMs = 0;
   bool _completed = false;
   bool _submitFailed = false;
+  int _correctItems = 0; // "Bitir" anında ölçülen doğru kelime sayısı.
   DateTime? _startedAt;
 
   @override
@@ -94,18 +95,22 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
     setState(() => _engine = _engine.deleteLetter());
   }
 
+  /// "Bitir" — her zaman aktif. Tüm girişleri doğru cevapla karşılaştırır,
+  /// doğru kelime sayısını ölçer (boş/yanlış → o kelime yanlış) ve gönderir.
   void _onFinish() {
     if (_completed) return;
     _timer?.cancel();
     _durationMs = _startedAt != null
         ? DateTime.now().difference(_startedAt!).inMilliseconds
         : _elapsedSeconds * 1000;
+    _correctItems = _engine.correctCount;
     setState(() => _completed = true);
     _submitResult();
   }
 
   /// Tamamlanınca sonucu gönderir; başarıda Oyun Sonu Raporu ekranına geçer.
-  /// totalItems = giriş sayısı, correctItems = doğru çözülen kelime sayısı.
+  /// totalItems = giriş sayısı, correctItems = "Bitir" anında doğru çözülen
+  /// kelime sayısı. Doğruluk oyun sırasında gösterilmez.
   Future<void> _submitResult() async {
     if (mounted) setState(() => _submitFailed = false);
     final result =
@@ -113,7 +118,7 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
               sessionId: widget.sessionId,
               durationMs: _durationMs,
               totalItems: _engine.totalCount,
-              correctItems: _engine.correctCount,
+              correctItems: _correctItems,
             );
     if (!mounted) return;
     if (result == null) {
@@ -179,7 +184,8 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final canFinish = _engine.allCellsFilled && !_completed;
+    // "Bitir" her zaman aktif (öğrenci boş bıraksa bile bitirebilir).
+    final canFinish = !_completed;
 
     return PopScope(
       canPop: false,
@@ -217,7 +223,7 @@ class _CrosswordGameScreenState extends ConsumerState<CrosswordGameScreen> {
                     title: l10n.gameCrosswordTitle,
                     time: _formattedTime,
                     counter: l10n.gameCrosswordCounter(
-                      _engine.correctCount,
+                      _engine.filledCount,
                       _engine.totalCount,
                     ),
                     progress: _engine.progress,
@@ -637,7 +643,6 @@ class _ClueGroup extends StatelessWidget {
             child: _ClueItem(
               number: engine.entries[idx].number,
               clue: engine.entries[idx].clue,
-              status: engine.statusOf(idx),
               active: idx == activeIndex,
               onTap: () => onClueTap(idx),
             ),
@@ -647,18 +652,18 @@ class _ClueGroup extends StatelessWidget {
   }
 }
 
+/// İpucu satırı. Doğruluk OYUN SIRASINDA gösterilmez; yalnız aktif kelime
+/// vurgulanır (serbest oyun — yeşil/check geri bildirimi yok).
 class _ClueItem extends StatelessWidget {
   const _ClueItem({
     required this.number,
     required this.clue,
-    required this.status,
     required this.active,
     required this.onTap,
   });
 
   final int number;
   final String clue;
-  final EntryStatus status;
   final bool active;
   final VoidCallback onTap;
 
@@ -683,9 +688,7 @@ class _ClueItem extends StatelessWidget {
             color: bg,
             borderRadius: BorderRadius.circular(AppRadius.xl),
             border: Border.all(
-              color: status == EntryStatus.correct && !active
-                  ? AppColors.tertiary
-                  : borderColor.withValues(alpha: active ? 1 : 0.3),
+              color: borderColor.withValues(alpha: active ? 1 : 0.3),
             ),
           ),
           child: Row(
@@ -705,12 +708,6 @@ class _ClueItem extends StatelessWidget {
                   style: AppTypography.bodyMd.copyWith(color: fg),
                 ),
               ),
-              if (status == EntryStatus.correct)
-                Icon(
-                  Icons.check_circle,
-                  size: 18,
-                  color: active ? AppColors.onPrimaryContainer : AppColors.tertiary,
-                ),
             ],
           ),
         ),

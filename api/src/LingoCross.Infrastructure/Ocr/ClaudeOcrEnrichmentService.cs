@@ -54,7 +54,7 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
             json = await _completer.CompleteJsonAsync(
                 systemPrompt,
                 request.RawText,
-                BuildSchema(),
+                BuildSchema(request.SourceLanguage, request.TargetLanguage),
                 MaxTokens,
                 cancellationToken);
         }
@@ -106,11 +106,15 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
                ('{targetLanguage}') ayır. Satırda sıra fark etmez; hangisinin '{sourceLanguage}'
                hangisinin '{targetLanguage}' olduğunu dile göre belirle. 'term' alanına
                '{sourceLanguage}' terimini, 'meaning' alanına '{targetLanguage}' karşılığını yaz.
-            3) Her kelime için uygun dilde 1-2 eşanlam üret; eşanlam yoksa boş liste döndür.
+            3) Her kelime için 1-2 eşanlam üret. 'synonyms' alanı HER ZAMAN terimin
+               ('term', kaynak dil = '{sourceLanguage}') eşanlamlarını içerir; yani eşanlamlar
+               '{sourceLanguage}' dilinde yazılır — '{targetLanguage}' (meaning) dilinde DEĞİL.
+               Örneğin '{sourceLanguage}' = İngilizce ise eşanlamlar İngilizce olmalıdır.
+               Uygun eşanlam yoksa boş liste döndür.
             Yalnızca verilen JSON şemasına uygun çıktı üret. Anlamsız/eksik satırları atla.
             """;
 
-    private static Dictionary<string, JsonElement> BuildSchema() => new()
+    private static Dictionary<string, JsonElement> BuildSchema(string sourceLanguage, string targetLanguage) => new()
     {
         ["type"] = JsonSerializer.SerializeToElement("object"),
         ["additionalProperties"] = JsonSerializer.SerializeToElement(false),
@@ -127,9 +131,22 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
                     required = new[] { "term", "meaning", "synonyms" },
                     properties = new
                     {
-                        term = new { type = "string" },
-                        meaning = new { type = "string" },
-                        synonyms = new { type = "array", items = new { type = "string" } },
+                        term = new
+                        {
+                            type = "string",
+                            description = $"The source-language ('{sourceLanguage}') term.",
+                        },
+                        meaning = new
+                        {
+                            type = "string",
+                            description = $"The target-language ('{targetLanguage}') translation of the term.",
+                        },
+                        synonyms = new
+                        {
+                            type = "array",
+                            items = new { type = "string" },
+                            description = $"1-2 synonyms of the source-language term ('term'), written in the source language ('{sourceLanguage}'). These are NOT translations and must NOT be in the target language ('{targetLanguage}'). For example, if the source language is English, these synonyms must be English words. Empty list if none.",
+                        },
                     },
                 },
             },

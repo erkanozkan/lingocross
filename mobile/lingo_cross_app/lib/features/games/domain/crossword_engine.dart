@@ -306,7 +306,8 @@ class CrosswordEngine {
         : EntryStatus.wrong;
   }
 
-  /// Doğru çözülmüş kelime sayısı (skor → correctItems).
+  /// Doğru çözülmüş kelime sayısı — yalnız "Bitir" anında skorlama için
+  /// (correctItems). Oyun sırasında doğruluk gösterilmez.
   int get correctCount {
     var n = 0;
     for (var i = 0; i < entries.length; i++) {
@@ -315,11 +316,21 @@ class CrosswordEngine {
     return n;
   }
 
+  /// Tüm hücreleri DOLU girişlerin sayısı (doğru/yanlış ayırt etmeden).
+  /// İlerleme bunun üzerinden gösterilir (doğruluk gizli kalır).
+  int get filledCount {
+    var n = 0;
+    for (var i = 0; i < entries.length; i++) {
+      if (statusOf(i) != EntryStatus.incomplete) n++;
+    }
+    return n;
+  }
+
   /// Toplam kelime sayısı (totalItems).
   int get totalCount => entries.length;
 
-  /// İlerleme oranı (0–1) — doğru kelime / toplam.
-  double get progress => totalCount == 0 ? 0 : correctCount / totalCount;
+  /// İlerleme oranı (0–1) — dolu kelime / toplam (doğruluk içermez).
+  double get progress => totalCount == 0 ? 0 : filledCount / totalCount;
 
   /// Tüm doldurulabilir hücreler dolu mu (kullanıcı "bitirebilir" mi).
   bool get allCellsFilled {

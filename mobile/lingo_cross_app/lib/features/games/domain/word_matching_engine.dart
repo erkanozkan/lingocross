@@ -2,11 +2,13 @@ import 'dart:math';
 
 import '../data/dtos/game_dtos.dart';
 
-/// Bir terim kartının (sol sütun) durumu.
+/// Bir terim kartının (sol sütun) durumu. Serbest oyunda doğruluk gösterilmez,
+/// yalnız "nötr / seçili / eşleştirildi" (nötr renk) durumları vardır.
 enum TermCardStatus { neutral, selected, matched }
 
-/// Bir karşılık kartının (sağ sütun) durumu.
-enum TranslationCardStatus { neutral, selected, matched, wrong }
+/// Bir karşılık kartının (sağ sütun) durumu. Doğruluk oyun sırasında gizli;
+/// sadece "nötr / seçili / eşleştirildi" (nötr renk).
+enum TranslationCardStatus { neutral, selected, matched }
 
 /// Sol sütun (İngilizce terim) kartı.
 class TermCard {
@@ -50,33 +52,24 @@ class TranslationCard {
       );
 }
 
-/// Bir karşılık seçimi sonucu.
-enum MatchOutcome {
-  /// Seçim henüz yapılmadı / önce terim seçilmeli (no-op).
-  none,
-
-  /// Doğru eşleşme; iki kart kalıcı "matched" oldu, ilerleme +1.
-  correct,
-
-  /// Yanlış eşleşme (çeldirici veya farklı terim); kart kırmızı flaş.
-  wrong,
-}
-
-/// Kelime eşleştirme oyununun saf (UI'siz) durum makinesi.
+/// Kelime eşleştirme oyununun saf (UI'siz) durum makinesi — **serbest eşleştirme**.
 ///
 /// Sol sütun = terimler (pairs[].term). Sağ sütun = tüm correctTranslation +
-/// distractors, karıştırılmış. Önce bir terim, sonra bir karşılık seçilir;
-/// `matchWordId` seçili terimin wordId'si ile eşleşirse doğru, aksi halde
-/// (çeldirici dahil) yanlış sayılır. [Random] enjekte edilebilir (deterministik
-/// test için).
+/// distractors, karıştırılmış. Öğrenci önce bir terim, sonra bir karşılık seçer
+/// ve ikisi NÖTR renkte eşleştirilir; doğruluk OYUN SIRASINDA gösterilmez.
+/// Var olan bir eşleştirme bozulup yeniden yapılabilir (terim/karşılık başka
+/// eşleşmeye geçerse eski bağ çözülür). Skor yalnızca [score] çağrısıyla, "Bitir"
+/// anında hesaplanır: terim ↔ doğru karşılık örtüşen çift sayısı.
+///
+/// [Random] enjekte edilebilir (deterministik test için).
 class WordMatchingEngine {
   WordMatchingEngine._({
     required this.terms,
     required this.translations,
     required this.total,
-    required this.matched,
-    required this.selectedWordId,
-  });
+    required this.selectedTermWordId,
+    required Map<String, int> pairings,
+  }) : _pairings = pairings;
 
   /// İçeriğten oyun durumunu kurar; sağ sütun [random] ile karıştırılır.
   factory WordMatchingEngine.fromContent(
@@ -112,155 +105,139 @@ class WordMatchingEngine {
       terms: terms,
       translations: translations,
       total: content.pairs.length,
-      matched: 0,
-      selectedWordId: null,
+      selectedTermWordId: null,
+      pairings: const {},
     );
   }
 
   final List<TermCard> terms;
   final List<TranslationCard> translations;
 
-  /// Toplam doğru çift sayısı (sol sütundaki terim sayısı).
+  /// Toplam doğru çift sayısı (sol sütundaki terim sayısı) — totalItems.
   final int total;
 
-  /// Şu ana kadar doğru eşleştirilen çift sayısı.
-  final int matched;
-
   /// O an seçili terimin wordId'si; seçim yoksa null.
-  final String? selectedWordId;
+  final String? selectedTermWordId;
 
+  /// Öğrencinin yaptığı eşleştirmeler: terim wordId → karşılık (translation) index.
+  /// Doğruluk içermez; yalnız hangi terimin hangi karşılığa bağlandığı.
+  final Map<String, int> _pairings;
+
+  /// Yapılan eşleştirme sayısı (doğru/yanlış ayırt etmeden). İlerleme bunun
+  /// üzerinden gösterilir (doğruluk gizli kalır).
+  int get matched => _pairings.length;
+
+  /// Tüm terimler bir karşılığa eşleştirildi mi (öğrenci "Bitir"ebilir).
   bool get isComplete => total > 0 && matched >= total;
 
-  /// İlerleme oranı (0–1).
+  /// İlerleme oranı (0–1) — yapılan eşleştirme / toplam.
   double get progress => total == 0 ? 0 : matched / total;
+
+  /// "Bitir" anındaki doğru eşleşme sayısı (correctItems): terim ↔ doğru
+  /// karşılık örtüşen çiftler. Oyun sırasında çağrılmaz; skorlama içindir.
+  int get score {
+    var n = 0;
+    for (final entry in _pairings.entries) {
+      final wordId = entry.key;
+      final translation = translations[entry.value];
+      if (translation.matchWordId == wordId) n++;
+    }
+    return n;
+  }
 
   WordMatchingEngine _copy({
     List<TermCard>? terms,
     List<TranslationCard>? translations,
-    int? matched,
-    String? selectedWordId,
+    Map<String, int>? pairings,
+    String? selectedTermWordId,
     bool clearSelection = false,
   }) {
     return WordMatchingEngine._(
       terms: terms ?? this.terms,
       translations: translations ?? this.translations,
       total: total,
-      matched: matched ?? this.matched,
-      selectedWordId:
-          clearSelection ? null : (selectedWordId ?? this.selectedWordId),
+      pairings: pairings ?? _pairings,
+      selectedTermWordId: clearSelection
+          ? null
+          : (selectedTermWordId ?? this.selectedTermWordId),
     );
   }
 
-  /// Bir terim kartına dokunuş (index ile). Eşleşmiş kart no-op.
-  /// Sol sütunda tek seçim: yeni seçim öncekini sıfırlar.
+  /// Görsel durumları [_pairings] + [selectedTermWordId] üzerinden yeniden kurar
+  /// (eşleştirilmiş = matched, seçili = selected, diğeri = neutral).
+  WordMatchingEngine _rebuild({
+    required Map<String, int> pairings,
+    required String? selectedTermWordId,
+  }) {
+    final matchedTranslationIndexes = pairings.values.toSet();
+    final newTerms = [
+      for (final t in terms)
+        t.copyWith(
+          status: pairings.containsKey(t.wordId)
+              ? TermCardStatus.matched
+              : (t.wordId == selectedTermWordId
+                  ? TermCardStatus.selected
+                  : TermCardStatus.neutral),
+        ),
+    ];
+    final newTranslations = [
+      for (var i = 0; i < translations.length; i++)
+        translations[i].copyWith(
+          status: matchedTranslationIndexes.contains(i)
+              ? TranslationCardStatus.matched
+              : TranslationCardStatus.neutral,
+        ),
+    ];
+    return _copy(
+      terms: newTerms,
+      translations: newTranslations,
+      pairings: pairings,
+      selectedTermWordId: selectedTermWordId,
+      clearSelection: selectedTermWordId == null,
+    );
+  }
+
+  /// Bir terim kartına dokunuş (index ile).
+  ///
+  /// - Terim zaten eşleştirilmişse: eşleştirme BOZULUR (karşılık serbest kalır)
+  ///   ve terim yeniden seçili olur (yeniden eşleştirilebilir).
+  /// - Aksi halde terim seçili olur (önceki seçim sıfırlanır).
   WordMatchingEngine selectTerm(int index) {
     final target = terms[index];
-    if (target.status == TermCardStatus.matched) return this;
-
-    final newTerms = [
-      for (final t in terms)
-        t.status == TermCardStatus.matched
-            ? t
-            : t.copyWith(
-                status: t.wordId == target.wordId
-                    ? TermCardStatus.selected
-                    : TermCardStatus.neutral,
-              ),
-    ];
-    // Önceki yanlış/seçili karşılıkları nötrle (matched korunur).
-    final newTranslations = [
-      for (final tr in translations)
-        tr.status == TranslationCardStatus.matched
-            ? tr
-            : tr.copyWith(status: TranslationCardStatus.neutral),
-    ];
-
-    return _copy(
-      terms: newTerms,
-      translations: newTranslations,
-      selectedWordId: target.wordId,
-    );
+    final pairings = Map<String, int>.from(_pairings);
+    if (pairings.containsKey(target.wordId)) {
+      pairings.remove(target.wordId);
+    }
+    return _rebuild(pairings: pairings, selectedTermWordId: target.wordId);
   }
 
-  /// Bir karşılık kartına dokunuşun sonucunu hesaplar (state'i değiştirmez).
+  /// Bir karşılık kartına dokunuş (index ile).
   ///
-  /// - Terim seçili değilse → [MatchOutcome.none].
-  /// - Kart zaten eşleşmişse → [MatchOutcome.none].
-  /// - matchWordId == selectedWordId → [MatchOutcome.correct].
-  /// - aksi halde (çeldirici dahil) → [MatchOutcome.wrong].
-  MatchOutcome evaluateTranslation(int index) {
-    if (selectedWordId == null) return MatchOutcome.none;
-    final card = translations[index];
-    if (card.status == TranslationCardStatus.matched) return MatchOutcome.none;
-    return card.matchWordId == selectedWordId
-        ? MatchOutcome.correct
-        : MatchOutcome.wrong;
-  }
-
-  /// Doğru eşleşmeyi uygular: seçili terim + bu karşılık "matched", +1 ilerleme,
-  /// seçim çözülür. Sonuç [MatchOutcome.correct] olduğunda çağrılmalıdır.
-  WordMatchingEngine applyCorrect(int translationIndex) {
-    final wordId = selectedWordId;
+  /// - Terim seçili değilse no-op.
+  /// - Bu karşılık başka bir terime bağlıysa o bağ çözülür (tek karşılık → tek terim).
+  /// - Seçili terim ↔ bu karşılık eşleştirilir (NÖTR renk, doğruluk gizli) ve
+  ///   seçim çözülür.
+  WordMatchingEngine matchTranslation(int index) {
+    final wordId = selectedTermWordId;
     if (wordId == null) return this;
 
-    final newTerms = [
-      for (final t in terms)
-        t.wordId == wordId
-            ? t.copyWith(status: TermCardStatus.matched)
-            : t.copyWith(
-                status: t.status == TermCardStatus.matched
-                    ? TermCardStatus.matched
-                    : TermCardStatus.neutral,
-              ),
-    ];
-    final newTranslations = [
-      for (var i = 0; i < translations.length; i++)
-        i == translationIndex
-            ? translations[i].copyWith(status: TranslationCardStatus.matched)
-            : (translations[i].status == TranslationCardStatus.matched
-                ? translations[i]
-                : translations[i]
-                    .copyWith(status: TranslationCardStatus.neutral)),
-    ];
+    final pairings = Map<String, int>.from(_pairings);
+    // Aynı karşılık başka terime bağlıysa eski bağı çöz.
+    pairings.removeWhere((_, translationIndex) => translationIndex == index);
+    pairings[wordId] = index;
 
-    return _copy(
-      terms: newTerms,
-      translations: newTranslations,
-      matched: matched + 1,
-      clearSelection: true,
-    );
+    return _rebuild(pairings: pairings, selectedTermWordId: null);
   }
 
-  /// Yanlış karşılığı geçici "wrong" işaretler (kırmızı flaş + shake için).
-  WordMatchingEngine markWrong(int translationIndex) {
-    final newTranslations = [
-      for (var i = 0; i < translations.length; i++)
-        i == translationIndex
-            ? translations[i].copyWith(status: TranslationCardStatus.wrong)
-            : translations[i],
-    ];
-    return _copy(translations: newTranslations);
+  /// Bir karşılığın bağlı olduğu terimi çözer (karşılığa tekrar dokununca
+  /// eşleştirmeyi geri almak için). Bağlı değilse no-op.
+  WordMatchingEngine unmatchTranslation(int index) {
+    if (!_pairings.values.contains(index)) return this;
+    final pairings = Map<String, int>.from(_pairings)
+      ..removeWhere((_, translationIndex) => translationIndex == index);
+    return _rebuild(pairings: pairings, selectedTermWordId: selectedTermWordId);
   }
 
-  /// Yanlış denemeyi sıfırlar: seçilen terim çözülür, "wrong"/"selected"
-  /// karşılıklar nötr'e döner (matched korunur).
-  WordMatchingEngine resetSelection() {
-    final newTerms = [
-      for (final t in terms)
-        t.status == TermCardStatus.matched
-            ? t
-            : t.copyWith(status: TermCardStatus.neutral),
-    ];
-    final newTranslations = [
-      for (final tr in translations)
-        tr.status == TranslationCardStatus.matched
-            ? tr
-            : tr.copyWith(status: TranslationCardStatus.neutral),
-    ];
-    return _copy(
-      terms: newTerms,
-      translations: newTranslations,
-      clearSelection: true,
-    );
-  }
+  /// Bir karşılık kartı şu an bir terime bağlı mı (matched görünür).
+  bool isTranslationMatched(int index) => _pairings.values.contains(index);
 }

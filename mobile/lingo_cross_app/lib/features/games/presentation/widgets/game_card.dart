@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -10,7 +8,10 @@ import '../../domain/word_matching_engine.dart';
 /// Kart taban kalıbı: min-h 80, köşe lg (16), ortalı body-lg semibold.
 const double _kCardMinHeight = 80;
 
-/// Sol sütun terim kartı (nötr / seçili / eşleşti).
+/// Sol sütun terim kartı (nötr / seçili / eşleştirildi).
+///
+/// Serbest eşleştirmede doğruluk renkleri YOK: "eşleştirildi" durumu da nötr
+/// (tonal) gösterilir; yeşil/kırmızı geri bildirim oyun sırasında verilmez.
 class TermGameCard extends StatelessWidget {
   const TermGameCard({
     super.key,
@@ -31,14 +32,15 @@ class TermGameCard extends StatelessWidget {
     final Color bg;
     final Color border;
     final Color fg;
-    if (matched) {
-      bg = AppColors.tertiaryContainer.withValues(alpha: 0.1);
-      border = AppColors.tertiary;
-      fg = AppColors.tertiary;
-    } else if (selected) {
+    if (selected) {
       bg = AppColors.primaryContainer;
       border = AppColors.primary;
       fg = AppColors.onPrimaryContainer;
+    } else if (matched) {
+      // Eşleştirildi — nötr tonal (doğruluk gizli).
+      bg = AppColors.surfaceContainerHigh;
+      border = AppColors.outline;
+      fg = AppColors.onSurface;
     } else {
       bg = AppColors.surfaceContainerLowest;
       border = AppColors.outlineVariant;
@@ -46,15 +48,14 @@ class TermGameCard extends StatelessWidget {
     }
 
     return Semantics(
-      button: !matched,
-      enabled: !matched,
+      button: true,
       label: matched ? '${card.term}, $matchedLabel' : card.term,
       child: _CardSurface(
         bg: bg,
         border: border,
         borderWidth: (selected || matched) ? 2 : 1,
         selected: selected,
-        onTap: matched ? null : onTap,
+        onTap: onTap,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -67,8 +68,7 @@ class TermGameCard extends StatelessWidget {
             ),
             if (matched) ...[
               const SizedBox(height: AppSpacing.base),
-              const Icon(Icons.check_circle,
-                  size: 18, color: AppColors.tertiary),
+              const Icon(Icons.link, size: 18, color: AppColors.onSurfaceVariant),
             ],
           ],
         ),
@@ -77,113 +77,66 @@ class TermGameCard extends StatelessWidget {
   }
 }
 
-/// Sağ sütun karşılık kartı (nötr / eşleşti / yanlış). Yanlışta shake.
-class TranslationGameCard extends StatefulWidget {
+/// Sağ sütun karşılık kartı (nötr / eşleştirildi). Doğruluk renkleri YOK.
+class TranslationGameCard extends StatelessWidget {
   const TranslationGameCard({
     super.key,
     required this.card,
+    required this.matched,
     required this.matchedLabel,
-    required this.wrongLabel,
     required this.onTap,
   });
 
   final TranslationCard card;
+
+  /// Bu karşılık şu an bir terime bağlı mı (görünür eşleştirme durumu).
+  final bool matched;
   final String matchedLabel;
-  final String wrongLabel;
   final VoidCallback onTap;
 
   @override
-  State<TranslationGameCard> createState() => _TranslationGameCardState();
-}
-
-class _TranslationGameCardState extends State<TranslationGameCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _shake = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 400),
-  );
-
-  @override
-  void didUpdateWidget(covariant TranslationGameCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.card.status == TranslationCardStatus.wrong &&
-        oldWidget.card.status != TranslationCardStatus.wrong) {
-      _shake.forward(from: 0);
-    }
-  }
-
-  @override
-  void dispose() {
-    _shake.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final status = widget.card.status;
-    final matched = status == TranslationCardStatus.matched;
-    final wrong = status == TranslationCardStatus.wrong;
-
     final Color bg;
     final Color border;
     final Color fg;
     if (matched) {
-      bg = AppColors.tertiaryContainer.withValues(alpha: 0.1);
-      border = AppColors.tertiary;
-      fg = AppColors.tertiary;
-    } else if (wrong) {
-      bg = AppColors.errorContainer;
-      border = AppColors.error;
-      fg = AppColors.onErrorContainer;
+      bg = AppColors.surfaceContainerHigh;
+      border = AppColors.outline;
+      fg = AppColors.onSurface;
     } else {
       bg = AppColors.surfaceContainerLowest;
       border = AppColors.outlineVariant;
       fg = AppColors.onSurface;
     }
 
-    final card = _CardSurface(
-      bg: bg,
-      border: border,
-      borderWidth: (matched || wrong) ? 2 : 1,
-      selected: false,
-      onTap: matched ? null : widget.onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            widget.card.text,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyLg
-                .copyWith(color: fg, fontWeight: FontWeight.w600),
-          ),
-          if (matched) ...[
-            const SizedBox(height: AppSpacing.base),
-            const Icon(Icons.check_circle,
-                size: 18, color: AppColors.tertiary),
-          ],
-        ],
-      ),
-    );
-
-    final label = matched
-        ? '${widget.card.text}, ${widget.matchedLabel}'
-        : wrong
-            ? '${widget.card.text}, ${widget.wrongLabel}'
-            : widget.card.text;
+    final label =
+        matched ? '${card.text}, $matchedLabel' : card.text;
 
     return Semantics(
-      button: !matched,
-      enabled: !matched,
+      button: true,
       label: label,
-      child: AnimatedBuilder(
-        animation: _shake,
-        builder: (context, child) {
-          // Yatay titreme (card-shake).
-          final dx = sin(_shake.value * pi * 8) * 8 * (1 - _shake.value);
-          return Transform.translate(offset: Offset(dx, 0), child: child);
-        },
-        child: card,
+      child: _CardSurface(
+        bg: bg,
+        border: border,
+        borderWidth: matched ? 2 : 1,
+        selected: false,
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              card.text,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyLg
+                  .copyWith(color: fg, fontWeight: FontWeight.w600),
+            ),
+            if (matched) ...[
+              const SizedBox(height: AppSpacing.base),
+              const Icon(Icons.link, size: 18, color: AppColors.onSurfaceVariant),
+            ],
+          ],
+        ),
       ),
     );
   }

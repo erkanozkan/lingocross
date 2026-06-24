@@ -20,12 +20,20 @@ class FakeResultsRepository implements ResultsRepository {
   int submitCount = 0;
   int shareCount = 0;
 
+  /// Son gönderilen sonuç isteğinin alanları (skorlama doğrulaması için).
+  int? lastTotalItems;
+  int? lastCorrectItems;
+  int? lastDurationMs;
+
   @override
   Future<GameResultDto> submitResult(
     String sessionId,
     SubmitResultRequest request,
   ) async {
     submitCount++;
+    lastTotalItems = request.totalItems;
+    lastCorrectItems = request.correctItems;
+    lastDurationMs = request.durationMs;
     if (submitError != null) throw submitError!;
     return submitResultValue ??
         sampleResult(

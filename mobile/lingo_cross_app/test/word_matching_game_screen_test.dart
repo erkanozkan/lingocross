@@ -59,7 +59,8 @@ Widget _wrap({FakeResultsRepository? resultsRepo}) {
   );
 }
 
-Future<void> _matchPair(
+/// Serbest eşleştirme: bir terim + bir karşılık seçer (doğruluk gösterilmez).
+Future<void> _match(
   WidgetTester tester,
   String term,
   String translation,
@@ -68,11 +69,10 @@ Future<void> _matchPair(
   await tester.pump();
   await tester.tap(find.text(translation));
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 200));
 }
 
 void main() {
-  testWidgets('başlangıçta sütun başlıkları + sayaç 0/2 + timer görünür',
+  testWidgets('başlangıçta sütun başlıkları + sayaç 0/2 + Bitir/Vazgeç görünür',
       (tester) async {
     await tester.pumpWidget(_wrap());
     await tester.pump();
@@ -81,49 +81,79 @@ void main() {
     expect(find.text('TÜRKÇE'), findsOneWidget);
     expect(find.text('0 / 2'), findsOneWidget);
     expect(find.text('00:00'), findsOneWidget);
-    // M4: "İpucu" gösterilmez, "Vazgeç" var.
     expect(find.text('Vazgeç'), findsOneWidget);
+    // "Bitir" her zaman görünür; "İpucu" gösterilmez.
+    expect(find.text('Bitir'), findsOneWidget);
     expect(find.text('İpucu'), findsNothing);
   });
 
-  testWidgets('yanlış eşleşme ilerlemeyi artırmaz', (tester) async {
+  testWidgets('serbest eşleştirme doğruluğu oyun sırasında göstermez', (
+    tester,
+  ) async {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
-    // apple seçili + yanlış (kitap = book'un çevirisi).
-    await _matchPair(tester, 'apple', 'kitap');
-    await tester.pump(const Duration(milliseconds: 500));
+    // Bilerek yanlış eşleştir (apple ↔ kitap) — yine de ilerleme artar,
+    // doğru/yanlış geri bildirimi yok.
+    await _match(tester, 'apple', 'kitap');
+    await tester.pump();
 
-    expect(find.text('0 / 2'), findsOneWidget);
+    expect(find.text('1 / 2'), findsOneWidget);
     expect(find.text('Tebrikler!'), findsNothing);
   });
 
   testWidgets(
-      'tüm çiftler eşleşince sonuç gönderilir (correct=total) ve rapora geçer',
+      'Bitir → bir doğru + bir yanlış eşleştirme: correct=1/total=2, rapora geçer',
       (tester) async {
     final repo = FakeResultsRepository(
       submitResultValue: sampleResult(
         id: 'r9',
         sessionId: 's1',
         totalItems: 2,
-        correctItems: 2,
-        score: 100,
+        correctItems: 1,
+        score: 50,
       ),
     );
     await tester.pumpWidget(_wrap(resultsRepo: repo));
     await tester.pump();
 
-    await _matchPair(tester, 'apple', 'elma');
-    expect(find.text('1 / 2'), findsOneWidget);
+    // apple ↔ elma (doğru), book ↔ yolculuk (yanlış — çeldirici).
+    await _match(tester, 'apple', 'elma');
+    await _match(tester, 'book', 'yolculuk');
+    expect(find.text('2 / 2'), findsOneWidget); // iki eşleştirme yapıldı
 
-    await _matchPair(tester, 'book', 'kitap');
-    await tester.pump(const Duration(milliseconds: 350));
-    // Post-frame submit + navigation çözülür.
+    await tester.tap(find.text('Bitir'));
+    await tester.pump();
     await tester.pumpAndSettle();
 
-    // Doğru sayısı = toplam (oyun tüm çiftler eşleşince biter).
     expect(repo.submitCount, 1);
-    // Başarıda Oyun Sonu Raporu ekranına geçilir (seed ile).
+    expect(repo.lastTotalItems, 2);
+    expect(repo.lastCorrectItems, 1); // yalnız apple↔elma doğru
+    expect(find.text('RAPOR EKRANI'), findsOneWidget);
+  });
+
+  testWidgets('Bitir boş bırakılan çiftlerle de çalışır (hepsi yanlış sayılır)',
+      (tester) async {
+    final repo = FakeResultsRepository(
+      submitResultValue: sampleResult(
+        id: 'r0',
+        sessionId: 's1',
+        totalItems: 2,
+        correctItems: 0,
+        score: 0,
+      ),
+    );
+    await tester.pumpWidget(_wrap(resultsRepo: repo));
+    await tester.pump();
+
+    // Hiç eşleştirmeden Bitir.
+    await tester.tap(find.text('Bitir'));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(repo.submitCount, 1);
+    expect(repo.lastTotalItems, 2);
+    expect(repo.lastCorrectItems, 0);
     expect(find.text('RAPOR EKRANI'), findsOneWidget);
   });
 
@@ -133,10 +163,9 @@ void main() {
     await tester.pumpWidget(_wrap(resultsRepo: repo));
     await tester.pump();
 
-    await _matchPair(tester, 'apple', 'elma');
-    await _matchPair(tester, 'book', 'kitap');
-    await tester.pump(const Duration(milliseconds: 350));
-    // Submit error (microtask) + setState + overlay pop animasyonu.
+    await _match(tester, 'apple', 'elma');
+    await _match(tester, 'book', 'kitap');
+    await tester.tap(find.text('Bitir'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
 
