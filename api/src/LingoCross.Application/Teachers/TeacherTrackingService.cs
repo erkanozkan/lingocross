@@ -114,6 +114,75 @@ public class TeacherTrackingService : ITeacherTrackingService
         return rows;
     }
 
+    public async Task<TeacherStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+        var weekAgo = DateTime.UtcNow.AddDays(-7);
+
+        // Arşivlenmemiş sınıflar.
+        var classCount = await _db.Classes
+            .CountAsync(c => c.TeacherId == teacherId && !c.IsArchived, cancellationToken);
+
+        // Sınıflarındaki distinct Active öğrenci.
+        var studentCount = await _db.ClassMembers
+            .Where(m => m.Status == ClassMemberStatus.Active
+                && m.Class.TeacherId == teacherId
+                && !m.Class.IsArchived)
+            .Select(m => m.StudentId)
+            .Distinct()
+            .CountAsync(cancellationToken);
+
+        // Bu hafta yapılan atamalar: her atama için hedef sınıfın distinct Active öğrenci sayısı
+        // beklenen tamamlama eder; (oyun × sınıf) üzerinden toplanır.
+        var assignmentClassIds = await _db.GameAssignments
+            .Where(a => a.Class.TeacherId == teacherId
+                && !a.Class.IsArchived
+                && a.CreatedAt >= weekAgo)
+            .Select(a => a.ClassId)
+            .ToListAsync(cancellationToken);
+
+        var weeklyAssignedCount = 0;
+        if (assignmentClassIds.Count > 0)
+        {
+            // Her hedef sınıf için distinct Active öğrenci sayısı (sınıf başına bir kez hesaplanır).
+            var activePerClass = await _db.ClassMembers
+                .Where(m => m.Status == ClassMemberStatus.Active
+                    && assignmentClassIds.Contains(m.ClassId))
+                .GroupBy(m => m.ClassId)
+                // (class_id, student_id) benzersiz olduğundan üye sayısı = distinct öğrenci sayısı.
+                .Select(g => new { ClassId = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var countByClass = activePerClass.ToDictionary(x => x.ClassId, x => x.Count);
+            // assignmentClassIds her (oyun × sınıf) atamasını ayrı temsil eder; sınıf birden çok
+            // atamada görünürse her atama için ayrı beklenti sayılır.
+            foreach (var classId in assignmentClassIds)
+            {
+                weeklyAssignedCount += countByClass.TryGetValue(classId, out var n) ? n : 0;
+            }
+        }
+
+        // Bu hafta tamamlanan: bu öğretmenin sınıflarına atanmış oyunlara ait, bu hafta tamamlanmış
+        // sonuçların distinct (öğrenci, oyun) sayısı.
+        var completedPairs = await _db.GameResults
+            .Where(r => (r.Session.CompletedAt ?? r.CreatedAt) >= weekAgo
+                && r.Session.Game.Assignments.Any(a => a.Class.TeacherId == teacherId && !a.Class.IsArchived))
+            .Select(r => new { r.Session.StudentId, r.Session.GameId })
+            .Distinct()
+            .CountAsync(cancellationToken);
+
+        var completionRate = weeklyAssignedCount > 0
+            ? (int)Math.Round(100.0 * completedPairs / weeklyAssignedCount, MidpointRounding.AwayFromZero)
+            : 0;
+
+        return new TeacherStatsDto(
+            classCount,
+            studentCount,
+            weeklyAssignedCount,
+            completedPairs,
+            completionRate);
+    }
+
     private Guid RequireTeacher()
     {
         if (_currentUser.UserId is not { } userId)
