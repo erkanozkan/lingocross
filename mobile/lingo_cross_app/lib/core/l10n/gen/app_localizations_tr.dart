@@ -1251,10 +1251,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGameLessonsError => 'Dersler yüklenemedi.';
 
   @override
-  String get createGamePreviewTitle => 'Önizleme Henüz Hazır Değil';
+  String get createGamePreviewTitle => 'Örnek Önizleme';
 
   @override
-  String get createGamePreviewDesc => 'Oyun türü ve kelime listesi seçtiğinizde burada bir özet görünecektir.';
+  String get createGamePreviewSubtitle => 'Bu bulmaca kaydedildiğinde yaklaşık olarak böyle görünecek. Beğenmezsen geri dönüp türü ya da dersi değiştirebilirsin.';
+
+  @override
+  String get createGamePreviewSampleNote => 'Bu yalnızca bir örnek önizlemedir; kaydedilmedi.';
+
+  @override
+  String get createGamePreviewLoading => 'Önizleme hazırlanıyor…';
+
+  @override
+  String get createGamePreviewError => 'Önizleme oluşturulamadı, tekrar dene.';
+
+  @override
+  String get createGamePreviewEmpty => 'Önizlenecek içerik bulunamadı.';
 
   @override
   String get createGameSubmit => 'Bulmacayı Oluştur ve Yayınla';

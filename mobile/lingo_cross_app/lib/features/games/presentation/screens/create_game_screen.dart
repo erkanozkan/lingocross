@@ -12,17 +12,23 @@ import '../../../classes/data/dtos/class_dtos.dart';
 import '../../../classes/presentation/classes_notifier.dart';
 import '../../../classes/presentation/widgets/class_badge.dart';
 import '../../../lessons/data/dtos/lesson_dtos.dart';
+import '../../../lessons/domain/language_option.dart';
 import '../../../lessons/presentation/lessons_notifier.dart';
 import '../../domain/game_type.dart';
 import '../../domain/games_failure.dart';
 import '../create_game_controller.dart';
+import '../game_preview_controller.dart';
+import '../widgets/puzzle_preview.dart';
 
-/// Yeni Bulmaca Oluştur — Adımlı (Stitch `3a196b09…` birebir).
+/// Yeni Bulmaca Oluştur — Adımlı (Stitch `3a196b09…` temelli).
 ///
-/// Üstte ilerleme çubuğu (3 pill). Adım 1: oyun türü (Kelime Eşleştirme /
-/// Çengel Bulmaca). Adım 2: ders seçimi (mevcut dropdown). Adım 3 (YENİ):
-/// öğretmenin sınıflarının çoklu-seçim listesi. Son adımda "Oluştur ve Yayınla"
-/// (≥1 sınıf seçili değilse pasif) → `POST /lessons/{id}/games` + classIds.
+/// Üstte ilerleme çubuğu (4 pill — Stitch 3-pill'den bilinçli sapma; kullanıcı
+/// isteğiyle "Örnek Önizleme" adımı eklendi). Adım 1: oyun türü (Kelime
+/// Eşleştirme / Çengel Bulmaca). Adım 2: ders seçimi. Adım 3 (YENİ): kaydetmeden
+/// önce üretilecek bulmacanın salt-okunur örnek önizlemesi
+/// (`POST /lessons/{id}/games/preview`). Adım 4: sınıf çoklu-seçimi. Son adımda
+/// "Oluştur ve Yayınla" (≥1 sınıf seçili değilse pasif) → `POST /lessons/{id}/games`
+/// + classIds. Create çağrısı önizlemeden etkilenmez (yine type+lesson+classIds).
 class CreateGameScreen extends ConsumerStatefulWidget {
   const CreateGameScreen({super.key, this.initialLessonId});
 
@@ -34,7 +40,8 @@ class CreateGameScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
-  /// 1 = oyun türü, 2 = ders seçimi, 3 = sınıf seçimi.
+  /// 1 = oyun türü, 2 = ders seçimi, 3 = örnek önizleme, 4 = sınıf seçimi.
+  static const int _lastStep = 4;
   int _step = 1;
   GameType _selectedType = GameType.wordMatching;
   String? _selectedLessonId;
@@ -46,9 +53,14 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     _selectedLessonId = widget.initialLessonId;
   }
 
-  bool get _canGoStep2 => true; // tür her zaman seçili (varsayılan eşleştirme)
-  bool get _canGoStep3 => _selectedLessonId != null;
   bool get _canSubmit => _selectedLessonId != null && _selectedClassIds.isNotEmpty;
+
+  /// Bir adımdan SONRAKİ adıma geçilebilir mi? (1→2 her zaman; 2→3 ders seçili;
+  /// 3→4 her zaman — önizleme yalnız görsel). Son adımda "Sonraki" yoktur.
+  bool _canAdvanceFrom(int step) => switch (step) {
+        2 => _selectedLessonId != null,
+        _ => true,
+      };
 
   void _goStep(int step) => setState(() => _step = step);
 
@@ -128,6 +140,13 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               selectedLessonId: _selectedLessonId,
               onChanged: (id) => setState(() => _selectedLessonId = id),
             )
+          else if (_step == 3)
+            _StepPreview(
+              lessonsAsync: lessonsAsync,
+              selectedLessonId: _selectedLessonId,
+              selectedType: _selectedType,
+              onBack: () => _goStep(2),
+            )
           else
             _StepClasses(
               classesAsync: classesAsync,
@@ -138,10 +157,9 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
             ),
           const SizedBox(height: AppSpacing.xl),
           _StepNav(
-            step: _step,
-            canNext: _step == 1 ? _canGoStep2 : _canGoStep3,
+            canNext: _canAdvanceFrom(_step),
             onBack: _step > 1 ? () => _goStep(_step - 1) : null,
-            onNext: _step < 3 ? () => _goStep(_step + 1) : null,
+            onNext: _step < _lastStep ? () => _goStep(_step + 1) : null,
           ),
         ],
       ),
@@ -178,7 +196,7 @@ class _ProgressPills extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        for (var i = 1; i <= 3; i++) ...[
+        for (var i = 1; i <= 4; i++) ...[
           Expanded(
             child: Container(
               height: 12,
@@ -190,7 +208,7 @@ class _ProgressPills extends StatelessWidget {
               ),
             ),
           ),
-          if (i != 3) const SizedBox(width: AppSpacing.xs),
+          if (i != 4) const SizedBox(width: AppSpacing.xs),
         ],
       ],
     );
@@ -465,7 +483,149 @@ class _StepLesson extends StatelessWidget {
   }
 }
 
-/// Adım 3 — Sınıf seçimi (çoklu seçim).
+/// Adım 3 (YENİ) — Örnek önizleme. Kaydetmeden önce seçilen ders + tür için
+/// `previewGame` çağrılır; yükleniyor / hata (yetersiz kelime → net mesaj + geri)
+/// / data durumları gösterilir. Salt-okunur (interaktif değil). Kullanılan dil
+/// başlıkları seçilen dersin kaynak/hedef kodundan türetilir (F9.2).
+class _StepPreview extends ConsumerWidget {
+  const _StepPreview({
+    required this.lessonsAsync,
+    required this.selectedLessonId,
+    required this.selectedType,
+    required this.onBack,
+  });
+
+  final AsyncValue<List<LessonDto>> lessonsAsync;
+  final String? selectedLessonId;
+  final GameType selectedType;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final lessonId = selectedLessonId;
+    // Seçilen dersin dil kodları (sütun başlıkları için); bulunamazsa varsayılan.
+    final LessonDto? lesson = lessonsAsync.maybeWhen(
+      data: (lessons) {
+        for (final l in lessons) {
+          if (l.id == lessonId) return l;
+        }
+        return null;
+      },
+      orElse: () => null,
+    );
+    final sourceLanguage = lesson?.sourceLanguage ?? LanguageOption.defaultSource;
+    final targetLanguage = lesson?.targetLanguage ?? LanguageOption.defaultTarget;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _StepHeading(
+          title: l10n.createGamePreviewTitle,
+          subtitle: l10n.createGamePreviewSubtitle,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        if (lessonId == null)
+          _Box(
+            child: Text(
+              l10n.createGamePreviewEmpty,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          )
+        else
+          ref.watch(gamePreviewProvider(lessonId, selectedType)).when(
+                loading: () => _Box(
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: AppColors.primary),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        l10n.createGamePreviewLoading,
+                        style: AppTypography.bodyMd
+                            .copyWith(color: AppColors.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                error: (error, _) => _PreviewError(
+                  message: _previewErrorMessage(error, l10n),
+                  onBack: onBack,
+                ),
+                data: (preview) => PuzzlePreview(
+                  preview: preview,
+                  sourceLanguage: sourceLanguage,
+                  targetLanguage: targetLanguage,
+                ),
+              ),
+      ],
+    );
+  }
+
+  String _previewErrorMessage(Object? error, AppLocalizations l10n) {
+    if (error is GamesFailure) {
+      return error.maybeWhen(
+        insufficientWords: () => l10n.createGameErrorInsufficientWords,
+        network: () => l10n.createGameErrorNetwork,
+        orElse: () => l10n.createGamePreviewError,
+      );
+    }
+    return l10n.createGamePreviewError;
+  }
+}
+
+/// Önizleme hatası kutusu: net mesaj (örn. yetersiz kelime) + "Geri Dön".
+class _PreviewError extends StatelessWidget {
+  const _PreviewError({required this.message, required this.onBack});
+
+  final String message;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return _Box(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Icons.error_outline,
+                  size: 20, color: AppColors.error),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  message,
+                  style: AppTypography.bodyMd.copyWith(color: AppColors.error),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.outlineVariant),
+              ),
+              onPressed: onBack,
+              child: Text(l10n.createGameStepBack),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Adım 4 — Sınıf seçimi (çoklu seçim).
 class _StepClasses extends StatelessWidget {
   const _StepClasses({
     required this.classesAsync,
@@ -641,13 +801,11 @@ class _Checkbox extends StatelessWidget {
 /// Adımlar arası "Geri Dön" / "Sonraki Adım" navigasyonu.
 class _StepNav extends StatelessWidget {
   const _StepNav({
-    required this.step,
     required this.canNext,
     required this.onBack,
     required this.onNext,
   });
 
-  final int step;
   final bool canNext;
   final VoidCallback? onBack;
   final VoidCallback? onNext;

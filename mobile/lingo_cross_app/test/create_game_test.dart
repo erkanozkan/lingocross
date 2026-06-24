@@ -7,6 +7,7 @@ import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
 import 'package:lingo_cross_app/features/classes/data/classes_repository.dart';
 import 'package:lingo_cross_app/features/classes/data/dtos/class_dtos.dart';
+import 'package:lingo_cross_app/features/games/data/dtos/game_dtos.dart';
 import 'package:lingo_cross_app/features/games/data/games_repository.dart';
 import 'package:lingo_cross_app/features/games/domain/game_type.dart';
 import 'package:lingo_cross_app/features/games/domain/games_failure.dart';
@@ -82,6 +83,49 @@ LessonDto _lesson({String id = 'l1', String title = 'Ünite 4'}) {
   );
 }
 
+GamePreviewResponse _matchingPreview() {
+  return const GamePreviewResponse(
+    type: GameType.wordMatching,
+    wordMatching: WordMatchingContent(
+      pairs: [
+        MatchingPair(wordId: 'w1', term: 'apple', correctTranslation: 'elma'),
+        MatchingPair(wordId: 'w2', term: 'book', correctTranslation: 'kitap'),
+      ],
+      distractors: ['masa'],
+    ),
+  );
+}
+
+GamePreviewResponse _crosswordPreview() {
+  return const GamePreviewResponse(
+    type: GameType.crossword,
+    crossword: CrosswordContent(
+      rows: 5,
+      cols: 5,
+      entries: [
+        CrosswordEntry(
+          number: 1,
+          answer: 'APPLE',
+          clue: 'Bir meyve',
+          row: 0,
+          col: 0,
+          direction: CrosswordDirection.across,
+          length: 5,
+        ),
+        CrosswordEntry(
+          number: 2,
+          answer: 'ANT',
+          clue: 'Küçük bir böcek',
+          row: 0,
+          col: 0,
+          direction: CrosswordDirection.down,
+          length: 3,
+        ),
+      ],
+    ),
+  );
+}
+
 ClassDto _class({String id = 'cls1', String name = '6-A Sınıfı'}) {
   return ClassDto(
     id: id,
@@ -98,13 +142,16 @@ Future<void> _openCreate(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-/// Adım 1 → 2 ve 2 → 3: "Sonraki Adım" (gerekirse görünür yap).
+/// Bir sonraki adıma geç: "Sonraki Adım" butonunu bul (gerekirse uzun içerik
+/// — örn. crossword önizleme ızgarası — için ListView'ı kaydırarak görünür yap).
 Future<void> _next(WidgetTester tester) async {
   final next = find.text('Sonraki Adım');
-  if (next.evaluate().isEmpty) {
-    // ListView'da alt fold'da kalmış olabilir; aşağı kaydır.
-    await tester.drag(find.byType(ListView), const Offset(0, -400));
+  // Uzun önizleme içeriğinde buton fold altında kalabilir; tekrar tekrar kaydır.
+  var guard = 0;
+  while (next.evaluate().isEmpty && guard < 10) {
+    await tester.drag(find.byType(ListView), const Offset(0, -300));
     await tester.pumpAndSettle();
+    guard++;
   }
   await tester.ensureVisible(next);
   await tester.pumpAndSettle();
@@ -128,9 +175,10 @@ void main() {
     expect(find.text('Yakında'), findsNothing);
   });
 
-  testWidgets('Tam akış: tür+ders+sınıf seçilip oluştur+yayınla WordMatching',
+  testWidgets(
+      'Tam akış: tür→ders→önizleme→sınıf seçilip oluştur+yayınla WordMatching',
       (tester) async {
-    final games = FakeGamesRepository();
+    final games = FakeGamesRepository(previewValue: _matchingPreview());
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
       gamesRepo: games,
@@ -139,9 +187,10 @@ void main() {
     ));
     await _openCreate(tester);
 
-    await _next(tester);
-    await _next(tester);
-    // Adım 3: sınıf seç.
+    await _next(tester); // tür → ders
+    await _next(tester); // ders → önizleme
+    await _next(tester); // önizleme → sınıf
+    // Adım 4: sınıf seç.
     await tester.tap(find.text('6-A Sınıfı'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
@@ -156,7 +205,7 @@ void main() {
 
   testWidgets('Crossword türü seçilince Crossword tipiyle oluşturulur',
       (tester) async {
-    final games = FakeGamesRepository();
+    final games = FakeGamesRepository(previewValue: _crosswordPreview());
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
       gamesRepo: games,
@@ -167,6 +216,7 @@ void main() {
 
     await tester.tap(find.text('Çengel Bulmaca'));
     await tester.pumpAndSettle();
+    await _next(tester);
     await _next(tester);
     await _next(tester);
     await tester.tap(find.text('6-A Sınıfı'));
@@ -180,7 +230,7 @@ void main() {
 
   testWidgets('Sınıf seçilmeden "Oluştur ve Yayınla" tetiklenmez',
       (tester) async {
-    final games = FakeGamesRepository();
+    final games = FakeGamesRepository(previewValue: _matchingPreview());
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
       gamesRepo: games,
@@ -191,6 +241,7 @@ void main() {
 
     await _next(tester);
     await _next(tester);
+    await _next(tester);
     // Sınıf seçilmedi → buton pasif; dokunsa bile create çağrılmaz.
     await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'),
         warnIfMissed: false);
@@ -199,16 +250,17 @@ void main() {
     expect(games.createCount, 0);
   });
 
-  testWidgets('Adım 3: hiç sınıf yoksa anlamlı boş durum',
+  testWidgets('Son adım: hiç sınıf yoksa anlamlı boş durum',
       (tester) async {
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
-      gamesRepo: FakeGamesRepository(),
+      gamesRepo: FakeGamesRepository(previewValue: _matchingPreview()),
       classesRepo: FakeClassesRepository(classes: const []),
       initialLessonId: 'l1',
     ));
     await _openCreate(tester);
 
+    await _next(tester);
     await _next(tester);
     await _next(tester);
 
@@ -219,6 +271,7 @@ void main() {
   testWidgets('Yetersiz kelime (400) → "en az 4 kelime" mesajı',
       (tester) async {
     final games = FakeGamesRepository(
+      previewValue: _matchingPreview(),
       createError: const GamesFailure.insufficientWords(),
     );
     await tester.pumpWidget(_wrap(
@@ -231,6 +284,7 @@ void main() {
 
     await _next(tester);
     await _next(tester);
+    await _next(tester);
     await tester.tap(find.text('6-A Sınıfı'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
@@ -240,6 +294,87 @@ void main() {
       find.text('Bulmaca oluşturmak için ders en az 4 kelime içermeli.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Önizleme adımı: WordMatching çiftleri eşleşmiş halde render',
+      (tester) async {
+    final games = FakeGamesRepository(previewValue: _matchingPreview());
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      classesRepo: FakeClassesRepository(classes: [_class(id: 'cls1')]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await _next(tester); // tür → ders
+    await _next(tester); // ders → önizleme
+
+    expect(games.previewCount, 1);
+    expect(games.lastPreviewLessonId, 'l1');
+    expect(games.lastPreviewType, GameType.wordMatching);
+    expect(find.text('Örnek Önizleme'), findsOneWidget);
+    expect(find.text('apple'), findsOneWidget);
+    expect(find.text('elma'), findsOneWidget);
+    expect(find.text('book'), findsOneWidget);
+    expect(find.text('kitap'), findsOneWidget);
+    // Salt-okunur not görünür.
+    expect(
+      find.text('Bu yalnızca bir örnek önizlemedir; kaydedilmedi.'),
+      findsOneWidget,
+    );
+    // create henüz çağrılmadı (önizleme yalnız görsel).
+    expect(games.createCount, 0);
+  });
+
+  testWidgets('Önizleme adımı: Crossword ipuçları + yön başlıkları render',
+      (tester) async {
+    final games = FakeGamesRepository(previewValue: _crosswordPreview());
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      classesRepo: FakeClassesRepository(classes: [_class(id: 'cls1')]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await tester.tap(find.text('Çengel Bulmaca'));
+    await tester.pumpAndSettle();
+    await _next(tester); // tür → ders
+    await _next(tester); // ders → önizleme
+
+    expect(games.lastPreviewType, GameType.crossword);
+    expect(find.text('SOLDAN SAĞA'), findsOneWidget);
+    expect(find.text('YUKARIDAN AŞAĞI'), findsOneWidget);
+    expect(find.text('Bir meyve'), findsOneWidget);
+    expect(find.text('Küçük bir böcek'), findsOneWidget);
+    // Cevap harfleri ızgarada gösterilmez (statik boş kutular).
+    expect(find.text('APPLE'), findsNothing);
+  });
+
+  testWidgets('Önizleme adımı: yetersiz kelime → net mesaj + Geri Dön',
+      (tester) async {
+    final games = FakeGamesRepository(
+      previewError: const GamesFailure.insufficientWords(),
+    );
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      classesRepo: FakeClassesRepository(classes: [_class(id: 'cls1')]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await _next(tester); // tür → ders
+    await _next(tester); // ders → önizleme
+
+    expect(
+      find.text('Bulmaca oluşturmak için ders en az 4 kelime içermeli.'),
+      findsOneWidget,
+    );
+    // Hata kutusu içinde "Geri Dön" var (ders adımına dönmek için).
+    expect(find.text('Geri Dön'), findsWidgets);
+    expect(games.createCount, 0);
   });
 
   testWidgets('Adım 2: hiç ders yoksa anlamlı boş durum',

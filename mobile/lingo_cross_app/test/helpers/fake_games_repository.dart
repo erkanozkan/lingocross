@@ -10,6 +10,8 @@ class FakeGamesRepository implements GamesRepository {
     this.assignedError,
     this.createValue,
     this.createError,
+    this.previewValue,
+    this.previewError,
     this.myPuzzles = const [],
     this.myPuzzlesError,
     this.shareError,
@@ -21,6 +23,8 @@ class FakeGamesRepository implements GamesRepository {
   final GamesFailure? assignedError;
   final GameDto? createValue;
   final GamesFailure? createError;
+  final GamePreviewResponse? previewValue;
+  final GamesFailure? previewError;
   final List<TeacherPuzzleDto> myPuzzles;
   final GamesFailure? myPuzzlesError;
   final GamesFailure? shareError;
@@ -30,6 +34,9 @@ class FakeGamesRepository implements GamesRepository {
   int createCount = 0;
   CreateGameRequest? lastCreateRequest;
   String? lastCreateLessonId;
+  int previewCount = 0;
+  String? lastPreviewLessonId;
+  GameType? lastPreviewType;
   int listMyPuzzlesCount = 0;
   int shareCount = 0;
   String? lastSharedGameId;
@@ -52,6 +59,25 @@ class FakeGamesRepository implements GamesRepository {
           publishedAt: DateTime(2026, 6, 23),
           createdAt: DateTime(2026, 6, 23),
           updatedAt: DateTime(2026, 6, 23),
+        );
+  }
+
+  @override
+  Future<GamePreviewResponse> previewGame(
+      String lessonId, GameType type) async {
+    previewCount++;
+    lastPreviewLessonId = lessonId;
+    lastPreviewType = type;
+    if (previewError != null) throw previewError!;
+    return previewValue ??
+        GamePreviewResponse(
+          type: type,
+          wordMatching: type == GameType.wordMatching
+              ? const WordMatchingContent(pairs: [], distractors: [])
+              : null,
+          crossword: type == GameType.crossword
+              ? const CrosswordContent(rows: 1, cols: 1, entries: [])
+              : null,
         );
   }
 

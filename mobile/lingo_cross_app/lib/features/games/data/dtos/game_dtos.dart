@@ -198,6 +198,22 @@ class CrosswordContent with _$CrosswordContent {
       _$CrosswordContentFromJson(json);
 }
 
+/// Oyun önizleme yanıtı (GamePreviewResponse): kaydetmeden önce üretilecek
+/// örnek içerik. `POST /lessons/{lessonId}/games/preview` döner. Kalıcı değildir;
+/// [type] WordMatching ise [wordMatching] doludur, Crossword ise [crossword].
+/// İçerik şekilleri [StartGameSessionResponse] ile aynı DTO'ları kullanır.
+@freezed
+class GamePreviewResponse with _$GamePreviewResponse {
+  const factory GamePreviewResponse({
+    @GameTypeConverter() required GameType type,
+    WordMatchingContent? wordMatching,
+    CrosswordContent? crossword,
+  }) = _GamePreviewResponse;
+
+  factory GamePreviewResponse.fromJson(Map<String, dynamic> json) =>
+      _$GamePreviewResponseFromJson(json);
+}
+
 /// Oturum başlatma yanıtı (StartGameSessionResponse): oturum + tür-duyarlı içerik.
 ///
 /// Yeni şekil: `{ session, type, wordMatching?, crossword? }`. [type] WordMatching

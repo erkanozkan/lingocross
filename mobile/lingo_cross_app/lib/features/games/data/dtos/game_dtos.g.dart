@@ -207,6 +207,32 @@ Map<String, dynamic> _$$CrosswordContentImplToJson(
   'entries': instance.entries.map((e) => e.toJson()).toList(),
 };
 
+_$GamePreviewResponseImpl _$$GamePreviewResponseImplFromJson(
+  Map<String, dynamic> json,
+) => _$GamePreviewResponseImpl(
+  type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
+  wordMatching:
+      json['wordMatching'] == null
+          ? null
+          : WordMatchingContent.fromJson(
+            json['wordMatching'] as Map<String, dynamic>,
+          ),
+  crossword:
+      json['crossword'] == null
+          ? null
+          : CrosswordContent.fromJson(
+            json['crossword'] as Map<String, dynamic>,
+          ),
+);
+
+Map<String, dynamic> _$$GamePreviewResponseImplToJson(
+  _$GamePreviewResponseImpl instance,
+) => <String, dynamic>{
+  'type': const GameTypeConverter().toJson(instance.type),
+  'wordMatching': instance.wordMatching?.toJson(),
+  'crossword': instance.crossword?.toJson(),
+};
+
 _$StartGameSessionResponseImpl _$$StartGameSessionResponseImplFromJson(
   Map<String, dynamic> json,
 ) => _$StartGameSessionResponseImpl(

@@ -1251,10 +1251,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGameLessonsError => 'Couldn\'t load lessons.';
 
   @override
-  String get createGamePreviewTitle => 'Preview Not Ready Yet';
+  String get createGamePreviewTitle => 'Sample Preview';
 
   @override
-  String get createGamePreviewDesc => 'A summary will appear here once you select a game type and word list.';
+  String get createGamePreviewSubtitle => 'This is roughly how the puzzle will look once saved. If you don\'t like it, go back and change the type or lesson.';
+
+  @override
+  String get createGamePreviewSampleNote => 'This is only a sample preview; it hasn\'t been saved.';
+
+  @override
+  String get createGamePreviewLoading => 'Preparing preview…';
+
+  @override
+  String get createGamePreviewError => 'Couldn\'t build the preview, please try again.';
+
+  @override
+  String get createGamePreviewEmpty => 'No content to preview.';
 
   @override
   String get createGameSubmit => 'Create and Publish Puzzle';
