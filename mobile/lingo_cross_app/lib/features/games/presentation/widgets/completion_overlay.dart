@@ -5,24 +5,38 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/primary_button_3d.dart';
 
-/// Tamamlanma overlay'i — minimal (M4): kutlama + süre + doğru/toplam + "Bitir".
+/// Oyun tamamlanma overlay'i — glass panel, card-pop giriş animasyonu.
 ///
-/// XP/rapor/paylaşım YOK (M5). Glass panel, card-pop giriş animasyonu.
+/// M5: oyun bitince sonuç gönderimi sırasında **yükleniyor** (kutlama + spinner),
+/// hata olursa **tekrar dene** gösterir; başarıda ekran rapor ekranına geçer
+/// (overlay görünmez kalır). XP/skor burada gösterilmez (rapor ekranına ait).
 class CompletionOverlay extends StatefulWidget {
-  const CompletionOverlay({
+  /// Yükleniyor: kutlama + mesaj + spinner (buton yok).
+  const CompletionOverlay.submitting({
     super.key,
     required this.title,
     required this.message,
-    required this.finishLabel,
-    required this.onFinish,
-  });
+  }) : isError = false,
+       actionLabel = null,
+       onAction = null;
+
+  /// Hata: kutlama yerine hata ikonu + mesaj + "Tekrar Dene".
+  const CompletionOverlay.error({
+    super.key,
+    required this.title,
+    required this.message,
+    required String retryLabel,
+    required VoidCallback onRetry,
+  }) : isError = true,
+       actionLabel = retryLabel,
+       onAction = onRetry;
 
   final String title;
   final String message;
-  final String finishLabel;
-  final VoidCallback onFinish;
+  final bool isError;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   State<CompletionOverlay> createState() => _CompletionOverlayState();
@@ -48,6 +62,7 @@ class _CompletionOverlayState extends State<CompletionOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final accent = widget.isError ? AppColors.error : AppColors.tertiary;
     return Positioned.fill(
       child: Semantics(
         container: true,
@@ -71,46 +86,78 @@ class _CompletionOverlayState extends State<CompletionOverlay>
                         color: Colors.white.withValues(alpha: 0.3),
                       ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            color: AppColors.tertiary,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x33006947),
-                                offset: Offset(0, 4),
-                                blurRadius: 12,
-                              ),
-                            ],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: accent,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: accent.withValues(alpha: 0.2),
+                                  offset: const Offset(0, 4),
+                                  blurRadius: 12,
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              widget.isError
+                                  ? Icons.cloud_off
+                                  : Icons.celebration,
+                              size: 48,
+                              color: AppColors.onPrimary,
+                            ),
                           ),
-                          child: const Icon(Icons.celebration,
-                              size: 48, color: AppColors.onPrimary),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        Text(
-                          widget.title,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.displayLgMobile,
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          widget.message,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.bodyMd
-                              .copyWith(color: AppColors.onSurfaceVariant),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        PrimaryButton3D(
-                          label: widget.finishLabel,
-                          onPressed: widget.onFinish,
-                        ),
-                      ],
+                          const SizedBox(height: AppSpacing.md),
+                          Text(
+                            widget.title,
+                            textAlign: TextAlign.center,
+                            style: AppTypography.displayLgMobile,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            widget.message,
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyMd.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          if (widget.isError)
+                            OutlinedButton(
+                              onPressed: widget.onAction,
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size.fromHeight(52),
+                                side: const BorderSide(
+                                  color: AppColors.outlineVariant,
+                                  width: 2,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.lg,
+                                  ),
+                                ),
+                              ),
+                              child: Text(widget.actionLabel!),
+                            )
+                          else
+                            const SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 3,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

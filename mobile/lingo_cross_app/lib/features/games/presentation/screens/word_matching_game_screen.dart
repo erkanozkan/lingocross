@@ -1,14 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../results/presentation/submit_result_controller.dart';
 import '../../data/dtos/game_dtos.dart';
+import '../../../results/presentation/results_failure_messages.dart';
 import '../../domain/word_matching_engine.dart';
 import '../widgets/completion_overlay.dart';
 import '../widgets/game_card.dart';
@@ -19,27 +23,41 @@ import '../widgets/match_progress_header.dart';
 /// İki sütun tap-eşleştirme: sol = İngilizce terimler, sağ = karışık Türkçe
 /// karşılıklar (doğru çeviriler + çeldiriciler). Count-up timer, ilerleme
 /// pill + sayaç. Footer "Vazgeç" (çıkış onayı). M4: streak rozeti ve "İpucu"
-/// gizli; tamamlanınca minimal overlay (süre + doğru/toplam) → "Bitir" panele.
-class WordMatchingGameScreen extends StatefulWidget {
-  const WordMatchingGameScreen({super.key, required this.content});
+/// gizli. M5: tüm çiftler eşleşince `POST /game-sessions/{id}/result` ile sonuç
+/// gönderilir (yükleniyor overlay'i; hata → tekrar dene) ve dönen sonuçla Oyun
+/// Sonu Raporu ekranına geçilir.
+class WordMatchingGameScreen extends ConsumerStatefulWidget {
+  const WordMatchingGameScreen({
+    super.key,
+    required this.sessionId,
+    required this.content,
+  });
 
+  /// Sonuç gönderiminde kullanılan oyun oturumu kimliği.
+  final String sessionId;
   final WordMatchingContent content;
 
   @override
-  State<WordMatchingGameScreen> createState() => _WordMatchingGameScreenState();
+  ConsumerState<WordMatchingGameScreen> createState() =>
+      _WordMatchingGameScreenState();
 }
 
-class _WordMatchingGameScreenState extends State<WordMatchingGameScreen> {
+class _WordMatchingGameScreenState
+    extends ConsumerState<WordMatchingGameScreen> {
   late WordMatchingEngine _engine;
   Timer? _timer;
   int _elapsedSeconds = 0;
+  int _durationMs = 0; // bitince ölçülen kesin süre (ms).
   bool _completed = false;
   bool _locked = false; // yanlış flaş sırasında girişleri kilitle
+  bool _submitFailed = false; // sonuç gönderimi hatası (tekrar dene).
+  DateTime? _startedAt;
 
   @override
   void initState() {
     super.initState();
     _engine = WordMatchingEngine.fromContent(widget.content);
+    _startedAt = DateTime.now();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && !_completed) {
         setState(() => _elapsedSeconds++);
@@ -90,7 +108,37 @@ class _WordMatchingGameScreenState extends State<WordMatchingGameScreen> {
 
   void _finish() {
     _timer?.cancel();
+    _durationMs =
+        _startedAt != null
+            ? DateTime.now().difference(_startedAt!).inMilliseconds
+            : _elapsedSeconds * 1000;
     setState(() => _completed = true);
+    _submitResult();
+  }
+
+  /// Tamamlanınca sonucu gönderir; başarıda Oyun Sonu Raporu ekranına geçer.
+  /// Tüm çiftler eşleştiği için doğru sayısı = toplam (oyun yanlışta bitmez).
+  /// Hata durumunda yerel [_submitFailed] ile overlay "tekrar dene" gösterir.
+  Future<void> _submitResult() async {
+    if (mounted) setState(() => _submitFailed = false);
+    final result = await ref
+        .read(submitResultControllerProvider.notifier)
+        .submit(
+          sessionId: widget.sessionId,
+          durationMs: _durationMs,
+          totalItems: _engine.total,
+          correctItems: _engine.matched,
+        );
+    if (!mounted) return;
+    if (result == null) {
+      setState(() => _submitFailed = true);
+      return;
+    }
+    // Raporu seed ederek aç (ağ çağrısı tekrarlanmaz).
+    context.pushReplacement(
+      AppRoutes.studentResultDetail(result.id),
+      extra: result,
+    );
   }
 
   /// Çıkış onayı (Vazgeç / geri) — veri kaybı uyarısı.
@@ -99,31 +147,41 @@ class _WordMatchingGameScreenState extends State<WordMatchingGameScreen> {
     final l10n = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceContainerLowest,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        title: Text(l10n.gameMatchingQuitConfirmTitle,
-            style: AppTypography.headlineMd),
-        content: Text(l10n.gameMatchingQuitConfirmDesc,
-            style: AppTypography.bodyMd
-                .copyWith(color: AppColors.onSurfaceVariant)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.gameMatchingQuitConfirmCancel,
-                style: AppTypography.labelLg
-                    .copyWith(color: AppColors.onSurfaceVariant)),
+      builder:
+          (ctx) => AlertDialog(
+            backgroundColor: AppColors.surfaceContainerLowest,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+            ),
+            title: Text(
+              l10n.gameMatchingQuitConfirmTitle,
+              style: AppTypography.headlineMd,
+            ),
+            content: Text(
+              l10n.gameMatchingQuitConfirmDesc,
+              style: AppTypography.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(
+                  l10n.gameMatchingQuitConfirmCancel,
+                  style: AppTypography.labelLg.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(
+                  l10n.gameMatchingQuitConfirmConfirm,
+                  style: AppTypography.labelLg.copyWith(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.gameMatchingQuitConfirmConfirm,
-                style:
-                    AppTypography.labelLg.copyWith(color: AppColors.error)),
-          ),
-        ],
-      ),
     );
     return result ?? false;
   }
@@ -175,7 +233,9 @@ class _WordMatchingGameScreenState extends State<WordMatchingGameScreen> {
                     label: l10n.gameMatchingCurrentGameLabelUpper,
                     title: l10n.gameMatchingTitle,
                     counter: l10n.gameMatchingCounter(
-                        _engine.matched, _engine.total),
+                      _engine.matched,
+                      _engine.total,
+                    ),
                     progress: _engine.progress,
                   ),
                   const SizedBox(height: AppSpacing.lg),
@@ -192,19 +252,51 @@ class _WordMatchingGameScreenState extends State<WordMatchingGameScreen> {
               ),
             ),
             if (_completed)
-              CompletionOverlay(
-                title: l10n.gameMatchingCompleteTitle,
-                message: l10n.gameMatchingCompleteMessage(
-                  _engine.matched,
-                  _engine.total,
-                  _formattedTime,
-                ),
-                finishLabel: l10n.gameMatchingCompleteFinish,
-                onFinish: _exit,
+              _CompletionGate(
+                failed: _submitFailed,
+                error: ref.read(submitResultControllerProvider).error,
+                onRetry: _submitResult,
               ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Tamamlanma kapısı: sonuç gönderimi sürerken yükleniyor overlay'i, hata
+/// olunca tekrar dene. Başarıda ekran rapora geçtiği için overlay görünmez olur.
+class _CompletionGate extends StatelessWidget {
+  const _CompletionGate({
+    required this.failed,
+    required this.error,
+    required this.onRetry,
+  });
+
+  /// Sonuç gönderimi başarısız oldu mu (yerel durum).
+  final bool failed;
+
+  /// Gönderim hatası (mesaj için); başarısızken dolu.
+  final Object? error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    if (failed) {
+      return CompletionOverlay.error(
+        title: l10n.gameResultSubmitError,
+        message:
+            error != null
+                ? resultsFailureMessage(error!, l10n)
+                : l10n.commonErrorGeneric,
+        retryLabel: l10n.commonRetry,
+        onRetry: onRetry,
+      );
+    }
+    return CompletionOverlay.submitting(
+      title: l10n.gameMatchingCompleteTitle,
+      message: l10n.gameResultSubmitting,
     );
   }
 }
@@ -233,7 +325,8 @@ class _GameAppBar extends StatelessWidget implements PreferredSizeWidget {
           height: 64,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.marginMobile),
+              horizontal: AppSpacing.marginMobile,
+            ),
             child: Row(
               children: [
                 IconButton(
@@ -244,8 +337,9 @@ class _GameAppBar extends StatelessWidget implements PreferredSizeWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   l10n.appName,
-                  style: AppTypography.headlineLg
-                      .copyWith(color: AppColors.primary),
+                  style: AppTypography.headlineLg.copyWith(
+                    color: AppColors.primary,
+                  ),
                 ),
                 const Spacer(),
                 _TimerPill(time: time),
@@ -272,7 +366,9 @@ class _TimerPill extends StatelessWidget {
       liveRegion: false,
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm, vertical: AppSpacing.base),
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.base,
+        ),
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(AppRadius.full),
@@ -284,8 +380,9 @@ class _TimerPill extends StatelessWidget {
             const SizedBox(width: AppSpacing.base),
             Text(
               time,
-              style: AppTypography.labelLg
-                  .copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.labelLg.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -466,13 +563,11 @@ class _QuitBar extends StatelessWidget {
             icon: const Icon(Icons.close, color: AppColors.outline),
             label: Text(
               l10n.gameMatchingQuit,
-              style:
-                  AppTypography.labelLg.copyWith(color: AppColors.outline),
+              style: AppTypography.labelLg.copyWith(color: AppColors.outline),
             ),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
-              side: const BorderSide(
-                  color: AppColors.outlineVariant, width: 2),
+              side: const BorderSide(color: AppColors.outlineVariant, width: 2),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
               ),

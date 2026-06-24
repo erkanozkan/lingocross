@@ -19,6 +19,9 @@ import '../../features/lessons/presentation/screens/ocr_review_screen.dart';
 import '../../features/lessons/presentation/screens/student_lesson_screen.dart';
 import '../../features/lessons/presentation/screens/teacher_dashboard_screen.dart';
 import '../../features/lessons/presentation/screens/word_list_screen.dart';
+import '../../features/results/data/dtos/result_dtos.dart';
+import '../../features/results/presentation/screens/game_result_report_screen.dart';
+import '../../features/results/presentation/screens/student_results_history_screen.dart';
 
 /// Uygulama route adları.
 abstract final class AppRoutes {
@@ -34,10 +37,17 @@ abstract final class AppRoutes {
   static const String student = '/student';
   static const String studentJoin = '/student/join';
 
+  /// Öğrenci geçmiş sonuçları (M5 — "Raporlar" sekmesi).
+  static const String studentResults = '/student/results';
+
   static String studentLesson(String id) => '/student/lessons/$id';
 
   /// Kelime eşleştirme oyununu başlatır (lessonId üzerinden — M4).
   static String studentGame(String lessonId) => '/student/games/$lessonId';
+
+  /// Oyun sonu raporu (resultId — M5; oyun-sonu seed veya geçmişten yükleme).
+  static String studentResultDetail(String resultId) =>
+      '/student/results/$resultId';
 
   // Öğretmen (M2) — korumalı + yalnız Teacher.
   static const String teacher = '/teacher';
@@ -147,6 +157,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/student/games/:lessonId',
         builder: (context, state) =>
             GameLauncherScreen(lessonId: state.pathParameters['lessonId']!),
+      ),
+      // Geçmiş sonuçlar listesi (M5 — "Raporlar" sekmesi).
+      GoRoute(
+        path: AppRoutes.studentResults,
+        builder: (context, state) => const StudentResultsHistoryScreen(),
+      ),
+      // Oyun sonu raporu (resultId). Oyun-sonu yolunda sonuç `extra` ile
+      // seed edilir; geçmişten gelince de `extra` ile taşınır, yoksa
+      // resultId ile GET /results/me'den yüklenir.
+      GoRoute(
+        path: '/student/results/:resultId',
+        builder: (context, state) => GameResultReportScreen(
+          resultId: state.pathParameters['resultId']!,
+          seedResult: state.extra as GameResultDto?,
+        ),
       ),
       // --- Öğretmen (M2/M3) ---
       GoRoute(
