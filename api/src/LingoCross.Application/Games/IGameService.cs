@@ -59,4 +59,16 @@ public interface IGameService
     /// Bir oturumun durumunu döndürür. Yalnızca oturumun sahibi öğrenci erişebilir; aksi 404.
     /// </summary>
     Task<GameSessionDto> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// F4.3: Bir oyunun atandığı sınıfları SET semantiğiyle günceller — gönderilen liste nihaidir
+    /// (eksik olanlar silinir, yeni olanlar eklenir). Yalnız ders sahibi öğretmen; oyun/sınıf sahibi
+    /// değilse 404. Atanmış sınıf kimliklerini döndürür.
+    /// </summary>
+    Task<GameAssignmentsDto> SetAssignmentsAsync(Guid gameId, SetGameAssignmentsRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// F4.3: Bir oyunun atandığı sınıf kimliklerini döndürür. Yalnız ders sahibi öğretmen; aksi 404.
+    /// </summary>
+    Task<GameAssignmentsDto> GetAssignmentsAsync(Guid gameId, CancellationToken cancellationToken = default);
 }

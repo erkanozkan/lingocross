@@ -99,4 +99,25 @@ public class GamesController : ControllerBase
         var session = await _gameService.GetSessionAsync(sessionId, ct);
         return Ok(session);
     }
+
+    /// <summary>
+    /// F4.3: Bir oyunun atandığı sınıfları SET semantiğiyle günceller (gönderilen liste nihaidir).
+    /// Yalnız ders sahibi öğretmen; oyun/sınıf sahibi değilse 404. Nihai atanmış sınıf kimlikleri döner.
+    /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("api/games/{gameId:guid}/assignments")]
+    public async Task<ActionResult<GameAssignmentsDto>> SetAssignments(Guid gameId, [FromBody] SetGameAssignmentsRequest request, CancellationToken ct)
+    {
+        var dto = await _gameService.SetAssignmentsAsync(gameId, request, ct);
+        return Ok(dto);
+    }
+
+    /// <summary>F4.3: Bir oyunun atandığı sınıf kimliklerini döndürür. Sahibi değilse 404.</summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpGet("api/games/{gameId:guid}/assignments")]
+    public async Task<ActionResult<GameAssignmentsDto>> GetAssignments(Guid gameId, CancellationToken ct)
+    {
+        var dto = await _gameService.GetAssignmentsAsync(gameId, ct);
+        return Ok(dto);
+    }
 }

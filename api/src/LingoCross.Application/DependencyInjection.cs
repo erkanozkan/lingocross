@@ -1,5 +1,6 @@
 using FluentValidation;
 using LingoCross.Application.Auth;
+using LingoCross.Application.Classes;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
 using LingoCross.Application.Enrollments;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<ILessonService, LessonService>();
         services.AddScoped<IWordService, WordService>();
         services.AddScoped<IEnrollmentService, EnrollmentService>();
+        services.AddScoped<IClassService, ClassService>();
         // GameService'in opsiyonel Random parametresi DI tarafından çözülmez; üretimde
         // Random.Shared kullanılması için açık factory ile kaydedilir (testler kendi Random'ını verir).
         services.AddScoped<IGameService>(sp =>

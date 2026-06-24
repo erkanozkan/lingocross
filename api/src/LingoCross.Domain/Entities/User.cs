@@ -37,4 +37,10 @@ public class User : Entity
 
     /// <summary>Bu öğrencinin oynadığı oyun oturumları; öğretmenler için boş.</summary>
     public ICollection<GameSession> GameSessions { get; set; } = new List<GameSession>();
+
+    /// <summary>Öğretmenin sahip olduğu sınıflar; öğrenciler için boş.</summary>
+    public ICollection<Class> Classes { get; set; } = new List<Class>();
+
+    /// <summary>Bu öğrencinin sınıf üyelikleri; öğretmenler için boş.</summary>
+    public ICollection<ClassMember> ClassMemberships { get; set; } = new List<ClassMember>();
 }

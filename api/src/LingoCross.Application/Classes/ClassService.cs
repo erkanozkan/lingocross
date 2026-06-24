@@ -1,0 +1,278 @@
+using System.Security.Cryptography;
+using LingoCross.Application.Classes.Dtos;
+using LingoCross.Application.Common.Exceptions;
+using LingoCross.Application.Common.Persistence;
+using LingoCross.Application.Common.Security;
+using LingoCross.Domain.Entities;
+using LingoCross.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+
+namespace LingoCross.Application.Classes;
+
+/// <summary>
+/// Adlandırılmış sınıf yönetimi (F4.3). Sahiplik servis katmanında uygulanır: tüm öğretmen
+/// işlemlerinde sınıfın <c>TeacherId</c>'si geçerli kullanıcı değilse 404 (varlığı sızdırmamak için).
+/// </summary>
+public class ClassService : IClassService
+{
+    private readonly IAppDbContext _db;
+    private readonly ICurrentUser _currentUser;
+
+    public ClassService(IAppDbContext db, ICurrentUser currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
+
+    public async Task<ClassDto> CreateAsync(SaveClassRequest request, CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        var entity = new Class
+        {
+            TeacherId = teacherId,
+            Name = request.Name.Trim(),
+            InviteCode = await GenerateUniqueInviteCodeAsync(cancellationToken),
+            IsArchived = false,
+        };
+
+        _db.Classes.Add(entity);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return new ClassDto(entity.Id, entity.Name, entity.InviteCode, 0, entity.CreatedAt);
+    }
+
+    public async Task<IReadOnlyList<ClassDto>> ListMineAsync(CancellationToken cancellationToken = default)
+    {
+        var teacherId = RequireTeacher();
+
+        var rows = await _db.Classes
+            .Where(c => c.TeacherId == teacherId && !c.IsArchived)
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => new
+            {
+                c.Id,
+                c.Name,
+                c.InviteCode,
+                c.CreatedAt,
+                StudentCount = c.Members.Count(m => m.Status == ClassMemberStatus.Active),
+            })
+            .ToListAsync(cancellationToken);
+
+        return rows
+            .Select(c => new ClassDto(c.Id, c.Name, c.InviteCode, c.StudentCount, c.CreatedAt))
+            .ToList();
+    }
+
+    public async Task<ClassDetailDto> GetAsync(Guid classId, CancellationToken cancellationToken = default)
+    {
+        var entity = await RequireOwnedClassAsync(classId, cancellationToken);
+
+        var students = await _db.ClassMembers
+            .Where(m => m.ClassId == entity.Id && m.Status == ClassMemberStatus.Active)
+            .OrderBy(m => m.Student.DisplayName)
+            .Select(m => new ClassMemberDto(m.StudentId, m.Student.DisplayName, m.Student.Email))
+            .ToListAsync(cancellationToken);
+
+        return new ClassDetailDto(entity.Id, entity.Name, entity.InviteCode, students.Count, students);
+    }
+
+    public async Task<ClassDto> UpdateAsync(Guid classId, SaveClassRequest request, CancellationToken cancellationToken = default)
+    {
+        var entity = await RequireOwnedClassAsync(classId, cancellationToken);
+
+        entity.Name = request.Name.Trim();
+        await _db.SaveChangesAsync(cancellationToken);
+
+        var studentCount = await _db.ClassMembers
+            .CountAsync(m => m.ClassId == entity.Id && m.Status == ClassMemberStatus.Active, cancellationToken);
+
+        return new ClassDto(entity.Id, entity.Name, entity.InviteCode, studentCount, entity.CreatedAt);
+    }
+
+    public async Task ArchiveAsync(Guid classId, CancellationToken cancellationToken = default)
+    {
+        var entity = await RequireOwnedClassAsync(classId, cancellationToken);
+
+        entity.IsArchived = true;
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<ClassInviteCodeDto> GetOrCreateInviteCodeAsync(Guid classId, CancellationToken cancellationToken = default)
+    {
+        var entity = await RequireOwnedClassAsync(classId, cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(entity.InviteCode))
+        {
+            entity.InviteCode = await GenerateUniqueInviteCodeAsync(cancellationToken);
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+
+        return new ClassInviteCodeDto(entity.InviteCode!);
+    }
+
+    public async Task<ClassInviteCodeDto> RegenerateInviteCodeAsync(Guid classId, CancellationToken cancellationToken = default)
+    {
+        var entity = await RequireOwnedClassAsync(classId, cancellationToken);
+
+        entity.InviteCode = await GenerateUniqueInviteCodeAsync(cancellationToken);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return new ClassInviteCodeDto(entity.InviteCode!);
+    }
+
+    public async Task RemoveStudentAsync(Guid classId, Guid studentId, CancellationToken cancellationToken = default)
+    {
+        await RequireOwnedClassAsync(classId, cancellationToken);
+
+        var member = await _db.ClassMembers
+            .FirstOrDefaultAsync(m => m.ClassId == classId && m.StudentId == studentId, cancellationToken);
+
+        // İdempotent: üye yoksa sessizce 204 (DELETE).
+        if (member is not null)
+        {
+            _db.ClassMembers.Remove(member);
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task<IReadOnlyList<StudentClassDto>> ListForStudentAsync(CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        var rows = await _db.ClassMembers
+            .Where(m => m.StudentId == studentId
+                && m.Status == ClassMemberStatus.Active
+                && !m.Class.IsArchived)
+            .OrderByDescending(m => m.CreatedAt)
+            .Select(m => new StudentClassDto(m.ClassId, m.Class.Name, m.Class.Teacher.DisplayName))
+            .ToListAsync(cancellationToken);
+
+        return rows;
+    }
+
+    public async Task<StudentClassDto> JoinByCodeAsync(JoinClassRequest request, CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        var code = (request.Code ?? string.Empty).Trim().ToUpperInvariant();
+        if (code.Length == 0)
+        {
+            throw AppException.BadRequest("Davet kodu boş olamaz.");
+        }
+
+        var entity = await FindJoinableClassByCodeAsync(code, cancellationToken);
+        if (entity is null)
+        {
+            throw AppException.NotFound("Davet kodu geçersiz.");
+        }
+
+        await EnsureClassMembershipAsync(entity.Id, studentId, cancellationToken);
+
+        return new StudentClassDto(entity.Id, entity.Name, entity.Teacher.DisplayName);
+    }
+
+    /// <summary>
+    /// Verilen koda sahip katılınabilir (arşivlenmemiş) sınıfı öğretmeniyle birlikte getirir; yoksa null.
+    /// Hem ClassService.JoinByCode hem de EnrollmentService köprüsü tarafından kullanılır.
+    /// </summary>
+    public async Task<Class?> FindJoinableClassByCodeAsync(string normalizedCode, CancellationToken cancellationToken)
+        => await _db.Classes
+            .Include(c => c.Teacher)
+            .FirstOrDefaultAsync(c => c.InviteCode == normalizedCode && !c.IsArchived, cancellationToken);
+
+    /// <summary>
+    /// (class, student) için Active üyelik yoksa oluşturur (idempotent). Köprü için public.
+    /// </summary>
+    public async Task EnsureClassMembershipAsync(Guid classId, Guid studentId, CancellationToken cancellationToken)
+    {
+        var exists = await _db.ClassMembers
+            .AnyAsync(m => m.ClassId == classId && m.StudentId == studentId, cancellationToken);
+
+        if (exists)
+        {
+            return;
+        }
+
+        _db.ClassMembers.Add(new ClassMember
+        {
+            ClassId = classId,
+            StudentId = studentId,
+            Status = ClassMemberStatus.Active,
+        });
+        await _db.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<Class> RequireOwnedClassAsync(Guid classId, CancellationToken cancellationToken)
+    {
+        var teacherId = RequireTeacher();
+
+        var entity = await _db.Classes.FirstOrDefaultAsync(c => c.Id == classId, cancellationToken);
+        // Sahibi olmayan/yok olan/arşivli sınıf da dahil bulunamayan her durumda 404.
+        if (entity is null || entity.TeacherId != teacherId || entity.IsArchived)
+        {
+            throw AppException.NotFound("Sınıf bulunamadı.");
+        }
+
+        return entity;
+    }
+
+    private Guid RequireTeacher()
+    {
+        if (_currentUser.UserId is not { } userId)
+        {
+            throw AppException.Unauthorized("Oturum gerekli.");
+        }
+
+        if (_currentUser.Role != UserRole.Teacher)
+        {
+            throw new AppException(403, "Bu işlem için öğretmen yetkisi gerekir.");
+        }
+
+        return userId;
+    }
+
+    private Guid RequireStudent()
+    {
+        if (_currentUser.UserId is not { } userId)
+        {
+            throw AppException.Unauthorized("Oturum gerekli.");
+        }
+
+        if (_currentUser.Role != UserRole.Student)
+        {
+            throw new AppException(403, "Bu işlem için öğrenci yetkisi gerekir.");
+        }
+
+        return userId;
+    }
+
+    private async Task<string> GenerateUniqueInviteCodeAsync(CancellationToken cancellationToken)
+    {
+        for (var attempt = 0; attempt < 10; attempt++)
+        {
+            var code = GenerateInviteCode();
+            var exists = await _db.Classes.AnyAsync(c => c.InviteCode == code, cancellationToken);
+            if (!exists)
+            {
+                return code;
+            }
+        }
+
+        throw AppException.Conflict("Davet kodu üretilemedi, lütfen tekrar deneyin.");
+    }
+
+    private static string GenerateInviteCode()
+    {
+        // Karışması kolay karakterler (0/O, 1/I) çıkarılmış 8 haneli kod (EnrollmentService ile aynı alfabe).
+        const string alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        var bytes = RandomNumberGenerator.GetBytes(8);
+        return string.Create(8, bytes, static (span, src) =>
+        {
+            for (var i = 0; i < span.Length; i++)
+            {
+                span[i] = alphabet[src[i] % alphabet.Length];
+            }
+        });
+    }
+}

@@ -13,11 +13,13 @@ public class EnrollmentService : IEnrollmentService
 {
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
+    private readonly Classes.IClassService _classService;
 
-    public EnrollmentService(IAppDbContext db, ICurrentUser currentUser)
+    public EnrollmentService(IAppDbContext db, ICurrentUser currentUser, Classes.IClassService classService)
     {
         _db = db;
         _currentUser = currentUser;
+        _classService = classService;
     }
 
     public async Task<InviteCodeDto> GetOrCreateInviteCodeAsync(CancellationToken cancellationToken = default)
@@ -53,12 +55,23 @@ public class EnrollmentService : IEnrollmentService
             throw AppException.BadRequest("Davet kodu boş olamaz.");
         }
 
-        var teacher = await _db.Users
-            .FirstOrDefaultAsync(u => u.Role == UserRole.Teacher && u.InviteCode == code, cancellationToken);
+        // F4.3 KÖPRÜ (geri uyum): kodu önce sınıf davet kodlarında ara. Bulunursa hem class_members
+        // kaydı oluştur (yeni model) hem de geriye-uyumlu enrollment(Active) yaz (eski TestFlight
+        // sürümü öğretmen↔öğrenci eşleşmesine güvenir).
+        var matchedClass = await _classService.FindJoinableClassByCodeAsync(code, cancellationToken);
+        var teacher = matchedClass is not null
+            ? matchedClass.Teacher
+            : await _db.Users.FirstOrDefaultAsync(
+                u => u.Role == UserRole.Teacher && u.InviteCode == code, cancellationToken);
 
         if (teacher is null)
         {
             throw AppException.NotFound("Davet kodu geçersiz.");
+        }
+
+        if (matchedClass is not null)
+        {
+            await _classService.EnsureClassMembershipAsync(matchedClass.Id, studentId, cancellationToken);
         }
 
         // Idempotent: aynı (teacher, student) çifti zaten varsa mevcut eşleşmeyi döndür.

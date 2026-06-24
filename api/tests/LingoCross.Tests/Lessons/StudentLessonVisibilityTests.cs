@@ -46,6 +46,23 @@ public class StudentLessonVisibilityTests
         await db.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// F4.3: Dersi öğrenciye görünür kılar — derse yayımlı bir oyun ekler, öğretmen için bir sınıf
+    /// oluşturup öğrenciyi Active üye yapar ve oyunu o sınıfa atar. Görünürlük sınıf üyeliğinden türetilir.
+    /// </summary>
+    private static async Task MakeLessonVisibleAsync(AppDbContext db, Guid lessonId, Guid teacherId, Guid studentId)
+    {
+        var game = new Game { LessonId = lessonId, Type = GameType.WordMatching, Title = "Oyun", IsPublished = true, PublishedAt = DateTime.UtcNow };
+        db.Games.Add(game);
+        var klass = new Class { TeacherId = teacherId, Name = "Sınıf", InviteCode = $"V{Guid.NewGuid():N}"[..8].ToUpperInvariant() };
+        db.Classes.Add(klass);
+        await db.SaveChangesAsync();
+
+        db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = studentId, Status = ClassMemberStatus.Active });
+        db.GameAssignments.Add(new GameAssignment { GameId = game.Id, ClassId = klass.Id });
+        await db.SaveChangesAsync();
+    }
+
     [Fact]
     public async Task ListVisible_AsStudent_ReturnsEnrolledPublishedLessonsOnly()
     {
@@ -55,10 +72,12 @@ public class StudentLessonVisibilityTests
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
 
         var visible = await SeedLessonAsync(db, teacher.Id, published: true);
-        await SeedLessonAsync(db, teacher.Id, published: false);       // enrolled ama yayımlanmamış → görünmez
-        await SeedLessonAsync(db, otherTeacher.Id, published: true);   // enrolled değil → görünmez
+        await SeedLessonAsync(db, teacher.Id, published: false);       // yayımlanmamış → görünmez
+        var otherLesson = await SeedLessonAsync(db, otherTeacher.Id, published: true);   // sınıfa atanmamış → görünmez
 
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        // Yalnız 'visible' dersi öğrencinin sınıfına atanmış bir oyuna sahip.
+        await MakeLessonVisibleAsync(db, visible.Id, teacher.Id, student.Id);
 
         var list = await new LessonService(db, TestCurrentUser.Student(student.Id)).ListVisibleAsync();
 
@@ -84,6 +103,8 @@ public class StudentLessonVisibilityTests
         await db.SaveChangesAsync();
 
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        await MakeLessonVisibleAsync(db, active.Id, teacher.Id, student.Id);
+        await MakeLessonVisibleAsync(db, completed.Id, teacher.Id, student.Id);
 
         var list = await new LessonService(db, TestCurrentUser.Student(student.Id)).ListVisibleAsync();
 
@@ -104,6 +125,7 @@ public class StudentLessonVisibilityTests
         lesson.Status = LessonStatus.Completed;
         await db.SaveChangesAsync();
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        await MakeLessonVisibleAsync(db, lesson.Id, teacher.Id, student.Id);
 
         var dto = await new LessonService(db, TestCurrentUser.Student(student.Id)).GetAsync(lesson.Id);
 
@@ -145,6 +167,7 @@ public class StudentLessonVisibilityTests
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
         var lesson = await SeedLessonAsync(db, teacher.Id, published: true);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        await MakeLessonVisibleAsync(db, lesson.Id, teacher.Id, student.Id);
 
         var dto = await new LessonService(db, TestCurrentUser.Student(student.Id)).GetAsync(lesson.Id);
 
@@ -186,6 +209,7 @@ public class StudentLessonVisibilityTests
         var student = await SeedUserAsync(db, UserRole.Student, "s@example.com");
         var lesson = await SeedLessonAsync(db, teacher.Id, published: true);
         await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        await MakeLessonVisibleAsync(db, lesson.Id, teacher.Id, student.Id);
 
         var words = await new WordService(db, TestCurrentUser.Student(student.Id)).ListByLessonAsync(lesson.Id);
 

@@ -33,4 +33,7 @@ public class Game : Entity
     public DateTime? PublishedAt { get; set; }
 
     public ICollection<GameSession> Sessions { get; set; } = new List<GameSession>();
+
+    /// <summary>Bu oyunun atandığı sınıflar (F4.3).</summary>
+    public ICollection<GameAssignment> Assignments { get; set; } = new List<GameAssignment>();
 }
