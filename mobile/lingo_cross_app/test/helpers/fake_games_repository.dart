@@ -10,6 +10,9 @@ class FakeGamesRepository implements GamesRepository {
     this.assignedError,
     this.createValue,
     this.createError,
+    this.myPuzzles = const [],
+    this.myPuzzlesError,
+    this.shareError,
     this.startValue,
     this.startError,
   });
@@ -18,12 +21,18 @@ class FakeGamesRepository implements GamesRepository {
   final GamesFailure? assignedError;
   final GameDto? createValue;
   final GamesFailure? createError;
+  final List<TeacherPuzzleDto> myPuzzles;
+  final GamesFailure? myPuzzlesError;
+  final GamesFailure? shareError;
   final StartGameSessionResponse? startValue;
   final GamesFailure? startError;
 
   int createCount = 0;
   CreateGameRequest? lastCreateRequest;
   String? lastCreateLessonId;
+  int listMyPuzzlesCount = 0;
+  int shareCount = 0;
+  String? lastSharedGameId;
   int startCount = 0;
   String? lastStartGameId;
 
@@ -49,6 +58,30 @@ class FakeGamesRepository implements GamesRepository {
   @override
   Future<List<GameDto>> listForLesson(String lessonId) async =>
       throw UnimplementedError();
+
+  @override
+  Future<List<TeacherPuzzleDto>> listMyPuzzles() async {
+    listMyPuzzlesCount++;
+    if (myPuzzlesError != null) throw myPuzzlesError!;
+    return myPuzzles;
+  }
+
+  @override
+  Future<GameDto> sharePuzzle(String gameId) async {
+    shareCount++;
+    lastSharedGameId = gameId;
+    if (shareError != null) throw shareError!;
+    return GameDto(
+      id: gameId,
+      lessonId: 'l-$gameId',
+      type: GameType.crossword,
+      title: 'Bulmaca',
+      isPublished: true,
+      publishedAt: DateTime(2026, 6, 23),
+      createdAt: DateTime(2026, 6, 23),
+      updatedAt: DateTime(2026, 6, 23),
+    );
+  }
 
   @override
   Future<List<AssignedGameDto>> listAssigned() async {

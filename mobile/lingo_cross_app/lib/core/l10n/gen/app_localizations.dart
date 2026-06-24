@@ -2906,6 +2906,120 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu işlem için yetkiniz yok.'**
   String get trackingErrorForbidden;
+
+  /// No description provided for @teacherDashboardActionMyPuzzlesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmacalarım'**
+  String get teacherDashboardActionMyPuzzlesTitle;
+
+  /// No description provided for @teacherDashboardActionMyPuzzlesDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.'**
+  String get teacherDashboardActionMyPuzzlesDesc;
+
+  /// No description provided for @myPuzzlesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmacalarım'**
+  String get myPuzzlesTitle;
+
+  /// No description provided for @myPuzzlesCreateCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Bulmaca Oluştur'**
+  String get myPuzzlesCreateCta;
+
+  /// No description provided for @myPuzzlesFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get myPuzzlesFilterAll;
+
+  /// No description provided for @myPuzzlesFilterActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif ({count})'**
+  String myPuzzlesFilterActive(int count);
+
+  /// No description provided for @myPuzzlesTypeWordMatching.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime Eşleştirme'**
+  String get myPuzzlesTypeWordMatching;
+
+  /// No description provided for @myPuzzlesTypeCrossword.
+  ///
+  /// In tr, this message translates to:
+  /// **'Crossword'**
+  String get myPuzzlesTypeCrossword;
+
+  /// No description provided for @myPuzzlesStatusActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get myPuzzlesStatusActive;
+
+  /// No description provided for @myPuzzlesCreatedAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturulma: {date}'**
+  String myPuzzlesCreatedAt(String date);
+
+  /// No description provided for @myPuzzlesSharedWith.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaşılan: {count} öğrenci'**
+  String myPuzzlesSharedWith(int count);
+
+  /// No description provided for @myPuzzlesShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaş'**
+  String get myPuzzlesShare;
+
+  /// No description provided for @myPuzzlesShared.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca paylaşıldı.'**
+  String get myPuzzlesShared;
+
+  /// No description provided for @myPuzzlesSeeDetails.
+  ///
+  /// In tr, this message translates to:
+  /// **'Detayları Gör'**
+  String get myPuzzlesSeeDetails;
+
+  /// No description provided for @myPuzzlesStatTotal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam Bulmaca'**
+  String get myPuzzlesStatTotal;
+
+  /// No description provided for @myPuzzlesStatSolves.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrenci Çözümü'**
+  String get myPuzzlesStatSolves;
+
+  /// No description provided for @myPuzzlesEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bulmaca yok'**
+  String get myPuzzlesEmptyTitle;
+
+  /// No description provided for @myPuzzlesEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk bulmacanı oluşturarak başla.'**
+  String get myPuzzlesEmptyDesc;
+
+  /// No description provided for @myPuzzlesErrorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmacalar yüklenemedi'**
+  String get myPuzzlesErrorTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

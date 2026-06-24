@@ -1504,4 +1504,67 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get trackingErrorForbidden => 'Bu işlem için yetkiniz yok.';
+
+  @override
+  String get teacherDashboardActionMyPuzzlesTitle => 'Bulmacalarım';
+
+  @override
+  String get teacherDashboardActionMyPuzzlesDesc => 'Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.';
+
+  @override
+  String get myPuzzlesTitle => 'Bulmacalarım';
+
+  @override
+  String get myPuzzlesCreateCta => 'Yeni Bulmaca Oluştur';
+
+  @override
+  String get myPuzzlesFilterAll => 'Tümü';
+
+  @override
+  String myPuzzlesFilterActive(int count) {
+    return 'Aktif ($count)';
+  }
+
+  @override
+  String get myPuzzlesTypeWordMatching => 'Kelime Eşleştirme';
+
+  @override
+  String get myPuzzlesTypeCrossword => 'Crossword';
+
+  @override
+  String get myPuzzlesStatusActive => 'Aktif';
+
+  @override
+  String myPuzzlesCreatedAt(String date) {
+    return 'Oluşturulma: $date';
+  }
+
+  @override
+  String myPuzzlesSharedWith(int count) {
+    return 'Paylaşılan: $count öğrenci';
+  }
+
+  @override
+  String get myPuzzlesShare => 'Paylaş';
+
+  @override
+  String get myPuzzlesShared => 'Bulmaca paylaşıldı.';
+
+  @override
+  String get myPuzzlesSeeDetails => 'Detayları Gör';
+
+  @override
+  String get myPuzzlesStatTotal => 'Toplam Bulmaca';
+
+  @override
+  String get myPuzzlesStatSolves => 'Öğrenci Çözümü';
+
+  @override
+  String get myPuzzlesEmptyTitle => 'Henüz bulmaca yok';
+
+  @override
+  String get myPuzzlesEmptyDesc => 'İlk bulmacanı oluşturarak başla.';
+
+  @override
+  String get myPuzzlesErrorTitle => 'Bulmacalar yüklenemedi';
 }

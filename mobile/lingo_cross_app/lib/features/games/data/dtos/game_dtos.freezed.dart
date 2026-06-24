@@ -687,6 +687,347 @@ abstract class _AssignedGameDto implements AssignedGameDto {
       throw _privateConstructorUsedError;
 }
 
+TeacherPuzzleDto _$TeacherPuzzleDtoFromJson(Map<String, dynamic> json) {
+  return _TeacherPuzzleDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TeacherPuzzleDto {
+  String get id => throw _privateConstructorUsedError;
+  String get lessonId => throw _privateConstructorUsedError;
+  String get lessonTitle => throw _privateConstructorUsedError;
+  @GameTypeConverter()
+  GameType get type => throw _privateConstructorUsedError;
+  bool get isPublished => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  int get assignedStudentCount => throw _privateConstructorUsedError;
+  int get solveCount => throw _privateConstructorUsedError;
+
+  /// Serializes this TeacherPuzzleDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of TeacherPuzzleDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $TeacherPuzzleDtoCopyWith<TeacherPuzzleDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TeacherPuzzleDtoCopyWith<$Res> {
+  factory $TeacherPuzzleDtoCopyWith(
+    TeacherPuzzleDto value,
+    $Res Function(TeacherPuzzleDto) then,
+  ) = _$TeacherPuzzleDtoCopyWithImpl<$Res, TeacherPuzzleDto>;
+  @useResult
+  $Res call({
+    String id,
+    String lessonId,
+    String lessonTitle,
+    @GameTypeConverter() GameType type,
+    bool isPublished,
+    DateTime createdAt,
+    int assignedStudentCount,
+    int solveCount,
+  });
+}
+
+/// @nodoc
+class _$TeacherPuzzleDtoCopyWithImpl<$Res, $Val extends TeacherPuzzleDto>
+    implements $TeacherPuzzleDtoCopyWith<$Res> {
+  _$TeacherPuzzleDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of TeacherPuzzleDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? lessonId = null,
+    Object? lessonTitle = null,
+    Object? type = null,
+    Object? isPublished = null,
+    Object? createdAt = null,
+    Object? assignedStudentCount = null,
+    Object? solveCount = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            lessonId:
+                null == lessonId
+                    ? _value.lessonId
+                    : lessonId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            lessonTitle:
+                null == lessonTitle
+                    ? _value.lessonTitle
+                    : lessonTitle // ignore: cast_nullable_to_non_nullable
+                        as String,
+            type:
+                null == type
+                    ? _value.type
+                    : type // ignore: cast_nullable_to_non_nullable
+                        as GameType,
+            isPublished:
+                null == isPublished
+                    ? _value.isPublished
+                    : isPublished // ignore: cast_nullable_to_non_nullable
+                        as bool,
+            createdAt:
+                null == createdAt
+                    ? _value.createdAt
+                    : createdAt // ignore: cast_nullable_to_non_nullable
+                        as DateTime,
+            assignedStudentCount:
+                null == assignedStudentCount
+                    ? _value.assignedStudentCount
+                    : assignedStudentCount // ignore: cast_nullable_to_non_nullable
+                        as int,
+            solveCount:
+                null == solveCount
+                    ? _value.solveCount
+                    : solveCount // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$TeacherPuzzleDtoImplCopyWith<$Res>
+    implements $TeacherPuzzleDtoCopyWith<$Res> {
+  factory _$$TeacherPuzzleDtoImplCopyWith(
+    _$TeacherPuzzleDtoImpl value,
+    $Res Function(_$TeacherPuzzleDtoImpl) then,
+  ) = __$$TeacherPuzzleDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    String lessonId,
+    String lessonTitle,
+    @GameTypeConverter() GameType type,
+    bool isPublished,
+    DateTime createdAt,
+    int assignedStudentCount,
+    int solveCount,
+  });
+}
+
+/// @nodoc
+class __$$TeacherPuzzleDtoImplCopyWithImpl<$Res>
+    extends _$TeacherPuzzleDtoCopyWithImpl<$Res, _$TeacherPuzzleDtoImpl>
+    implements _$$TeacherPuzzleDtoImplCopyWith<$Res> {
+  __$$TeacherPuzzleDtoImplCopyWithImpl(
+    _$TeacherPuzzleDtoImpl _value,
+    $Res Function(_$TeacherPuzzleDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of TeacherPuzzleDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? lessonId = null,
+    Object? lessonTitle = null,
+    Object? type = null,
+    Object? isPublished = null,
+    Object? createdAt = null,
+    Object? assignedStudentCount = null,
+    Object? solveCount = null,
+  }) {
+    return _then(
+      _$TeacherPuzzleDtoImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lessonId:
+            null == lessonId
+                ? _value.lessonId
+                : lessonId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        lessonTitle:
+            null == lessonTitle
+                ? _value.lessonTitle
+                : lessonTitle // ignore: cast_nullable_to_non_nullable
+                    as String,
+        type:
+            null == type
+                ? _value.type
+                : type // ignore: cast_nullable_to_non_nullable
+                    as GameType,
+        isPublished:
+            null == isPublished
+                ? _value.isPublished
+                : isPublished // ignore: cast_nullable_to_non_nullable
+                    as bool,
+        createdAt:
+            null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                    as DateTime,
+        assignedStudentCount:
+            null == assignedStudentCount
+                ? _value.assignedStudentCount
+                : assignedStudentCount // ignore: cast_nullable_to_non_nullable
+                    as int,
+        solveCount:
+            null == solveCount
+                ? _value.solveCount
+                : solveCount // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TeacherPuzzleDtoImpl implements _TeacherPuzzleDto {
+  const _$TeacherPuzzleDtoImpl({
+    required this.id,
+    required this.lessonId,
+    required this.lessonTitle,
+    @GameTypeConverter() required this.type,
+    required this.isPublished,
+    required this.createdAt,
+    required this.assignedStudentCount,
+    required this.solveCount,
+  });
+
+  factory _$TeacherPuzzleDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TeacherPuzzleDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String lessonId;
+  @override
+  final String lessonTitle;
+  @override
+  @GameTypeConverter()
+  final GameType type;
+  @override
+  final bool isPublished;
+  @override
+  final DateTime createdAt;
+  @override
+  final int assignedStudentCount;
+  @override
+  final int solveCount;
+
+  @override
+  String toString() {
+    return 'TeacherPuzzleDto(id: $id, lessonId: $lessonId, lessonTitle: $lessonTitle, type: $type, isPublished: $isPublished, createdAt: $createdAt, assignedStudentCount: $assignedStudentCount, solveCount: $solveCount)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TeacherPuzzleDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.lessonId, lessonId) ||
+                other.lessonId == lessonId) &&
+            (identical(other.lessonTitle, lessonTitle) ||
+                other.lessonTitle == lessonTitle) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.isPublished, isPublished) ||
+                other.isPublished == isPublished) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.assignedStudentCount, assignedStudentCount) ||
+                other.assignedStudentCount == assignedStudentCount) &&
+            (identical(other.solveCount, solveCount) ||
+                other.solveCount == solveCount));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    lessonId,
+    lessonTitle,
+    type,
+    isPublished,
+    createdAt,
+    assignedStudentCount,
+    solveCount,
+  );
+
+  /// Create a copy of TeacherPuzzleDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TeacherPuzzleDtoImplCopyWith<_$TeacherPuzzleDtoImpl> get copyWith =>
+      __$$TeacherPuzzleDtoImplCopyWithImpl<_$TeacherPuzzleDtoImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TeacherPuzzleDtoImplToJson(this);
+  }
+}
+
+abstract class _TeacherPuzzleDto implements TeacherPuzzleDto {
+  const factory _TeacherPuzzleDto({
+    required final String id,
+    required final String lessonId,
+    required final String lessonTitle,
+    @GameTypeConverter() required final GameType type,
+    required final bool isPublished,
+    required final DateTime createdAt,
+    required final int assignedStudentCount,
+    required final int solveCount,
+  }) = _$TeacherPuzzleDtoImpl;
+
+  factory _TeacherPuzzleDto.fromJson(Map<String, dynamic> json) =
+      _$TeacherPuzzleDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get lessonId;
+  @override
+  String get lessonTitle;
+  @override
+  @GameTypeConverter()
+  GameType get type;
+  @override
+  bool get isPublished;
+  @override
+  DateTime get createdAt;
+  @override
+  int get assignedStudentCount;
+  @override
+  int get solveCount;
+
+  /// Create a copy of TeacherPuzzleDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TeacherPuzzleDtoImplCopyWith<_$TeacherPuzzleDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 CreateGameRequest _$CreateGameRequestFromJson(Map<String, dynamic> json) {
   return _CreateGameRequest.fromJson(json);
 }

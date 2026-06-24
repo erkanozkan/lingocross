@@ -62,6 +62,32 @@ Map<String, dynamic> _$$AssignedGameDtoImplToJson(
   'publishedAt': instance.publishedAt?.toIso8601String(),
 };
 
+_$TeacherPuzzleDtoImpl _$$TeacherPuzzleDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$TeacherPuzzleDtoImpl(
+  id: json['id'] as String,
+  lessonId: json['lessonId'] as String,
+  lessonTitle: json['lessonTitle'] as String,
+  type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
+  isPublished: json['isPublished'] as bool,
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  assignedStudentCount: (json['assignedStudentCount'] as num).toInt(),
+  solveCount: (json['solveCount'] as num).toInt(),
+);
+
+Map<String, dynamic> _$$TeacherPuzzleDtoImplToJson(
+  _$TeacherPuzzleDtoImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'lessonId': instance.lessonId,
+  'lessonTitle': instance.lessonTitle,
+  'type': const GameTypeConverter().toJson(instance.type),
+  'isPublished': instance.isPublished,
+  'createdAt': instance.createdAt.toIso8601String(),
+  'assignedStudentCount': instance.assignedStudentCount,
+  'solveCount': instance.solveCount,
+};
+
 _$CreateGameRequestImpl _$$CreateGameRequestImplFromJson(
   Map<String, dynamic> json,
 ) => _$CreateGameRequestImpl(
