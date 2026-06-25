@@ -25,6 +25,7 @@ Widget _wrap({
   required FakeGamesRepository gamesRepo,
   required FakeClassesRepository classesRepo,
   String? initialLessonId,
+  List<String>? pushedRoutes,
 }) {
   final router = GoRouter(
     initialLocation: '/start',
@@ -43,6 +44,13 @@ Widget _wrap({
       GoRoute(
         path: '/create',
         builder: (_, __) => CreateGameScreen(initialLessonId: initialLessonId),
+      ),
+      GoRoute(
+        path: '/teacher/classes/new',
+        builder: (_, __) {
+          pushedRoutes?.add('/teacher/classes/new');
+          return const Scaffold(body: Text('CREATE_CLASS'));
+        },
       ),
     ],
   );
@@ -250,7 +258,8 @@ void main() {
     expect(games.createCount, 0);
   });
 
-  testWidgets('Son adım: hiç sınıf yoksa anlamlı boş durum',
+  testWidgets(
+      'BUG 1: hiç sınıf yoksa EN BAŞTA boş durum (sihirbaz gövdesi gizli)',
       (tester) async {
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
@@ -260,12 +269,47 @@ void main() {
     ));
     await _openCreate(tester);
 
-    await _next(tester);
-    await _next(tester);
-    await _next(tester);
-
-    expect(find.text('Henüz sınıfın yok. Önce bir sınıf oluştur.'),
+    // Sihirbazın 1. adımına bile girmeden boş durum görünür.
+    expect(find.text('Önce bir sınıf oluştur'), findsOneWidget);
+    expect(find.text('Bulmaca atayabilmek için en az bir sınıfın olması gerekir.'),
         findsOneWidget);
+    expect(find.text('Sınıf Oluştur'), findsOneWidget);
+    // Sihirbaz adımları / oluştur+yayınla bottom bar görünmez.
+    expect(find.text('Oyun Türünü Seç'), findsNothing);
+    expect(find.text('Bulmacayı Oluştur ve Yayınla'), findsNothing);
+  });
+
+  testWidgets('BUG 1: "Sınıf Oluştur" → /teacher/classes/new push',
+      (tester) async {
+    final pushed = <String>[];
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: FakeGamesRepository(previewValue: _matchingPreview()),
+      classesRepo: FakeClassesRepository(classes: const []),
+      initialLessonId: 'l1',
+      pushedRoutes: pushed,
+    ));
+    await _openCreate(tester);
+
+    await tester.tap(find.text('Sınıf Oluştur'));
+    await tester.pumpAndSettle();
+
+    expect(pushed, contains('/teacher/classes/new'));
+    expect(find.text('CREATE_CLASS'), findsOneWidget);
+  });
+
+  testWidgets('BUG 1: sınıf VARKEN normal sihirbaz görünür (boş durum yok)',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: FakeGamesRepository(previewValue: _matchingPreview()),
+      classesRepo: FakeClassesRepository(classes: [_class()]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    expect(find.text('Oyun Türünü Seç'), findsOneWidget);
+    expect(find.text('Önce bir sınıf oluştur'), findsNothing);
   });
 
   testWidgets('Yetersiz kelime (400) → "en az 4 kelime" mesajı',

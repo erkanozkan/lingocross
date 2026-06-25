@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
 import '../../../classes/data/dtos/class_dtos.dart';
 import '../../../classes/presentation/classes_notifier.dart';
@@ -105,6 +106,16 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
     final classesAsync = ref.watch(classesNotifierProvider);
     final busy = ref.watch(createGameControllerProvider).isLoading;
 
+    // BUG 1: Atanabilir sınıfı olmayan öğretmen sihirbazı sonuna kadar gidip
+    // 4. adımda takılmasın — en başta uyar. "Atanabilir sınıf" tanımı
+    // _StepClasses'in kullandığı listeyle aynıdır (classesNotifier'ın tüm data
+    // listesi). Yalnız data + boş iken boş-durum gösterilir; loading/error
+    // normal akışla devam eder (aşağıda _StepClasses kendi durumlarını yönetir).
+    final hasNoAssignableClasses = classesAsync.maybeWhen(
+      data: (classes) => classes.isEmpty,
+      orElse: () => false,
+    );
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -119,7 +130,11 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           style: AppTypography.headlineMd.copyWith(color: AppColors.primary),
         ),
       ),
-      body: ListView(
+      body: hasNoAssignableClasses
+          ? _NoClassesView(
+              onCreateClass: () => context.push(AppRoutes.classNew),
+            )
+          : ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.marginMobile,
           AppSpacing.lg,
@@ -163,7 +178,10 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
+      // Boş-durumda "Oluştur ve Yayınla" bottom bar gizlenir (kafa karıştırmasın).
+      bottomNavigationBar: hasNoAssignableClasses
+          ? null
+          : Container(
         decoration: const BoxDecoration(
           color: AppColors.surfaceContainerLowest,
           border: Border(top: BorderSide(color: AppColors.outlineVariant)),
@@ -180,6 +198,61 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
               onPressed: (_canSubmit && !busy) ? _submit : null,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// BUG 1 — Atanabilir sınıfı olmayan öğretmen için erken boş-durum.
+///
+/// Sihirbaz gövdesinin tamamı yerine gösterilir; öğretmeni sihirbazı sonuna
+/// kadar gezip 4. adımda takılmaktan kurtarır. "Sınıf Oluştur" → /teacher/classes/new.
+class _NoClassesView extends StatelessWidget {
+  const _NoClassesView({required this.onCreateClass});
+
+  final VoidCallback onCreateClass;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.marginMobile),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: AppColors.secondaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.groups_outlined,
+                  color: AppColors.onSecondary, size: 36),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              l10n.createGameNoClassesTitle,
+              textAlign: TextAlign.center,
+              style: AppTypography.headlineLg,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              l10n.createGameNoClassesDesc,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            PrimaryButton3D(
+              label: l10n.createGameNoClassesAction,
+              trailingIcon: Icons.add,
+              onPressed: onCreateClass,
+            ),
+          ],
         ),
       ),
     );
