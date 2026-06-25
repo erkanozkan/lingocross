@@ -1,3 +1,4 @@
+using LingoCross.Application.Admin;
 using LingoCross.Application.Common.Email;
 using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
@@ -48,6 +49,9 @@ public static class DependencyInjection
 
         // Abonelik/entitlement ayarları (Free limitleri, stub anahtarı, trial süresi).
         services.Configure<SubscriptionOptions>(configuration.GetSection(SubscriptionOptions.SectionName));
+
+        // Back office tek-admin girişi. Email/Password boşsa admin girişi devre dışıdır (servis 503).
+        services.Configure<AdminOptions>(configuration.GetSection(AdminOptions.SectionName));
 
         // Apple IAP makbuz doğrulama. SharedSecret yoksa servis katmanı 503 döner.
         services.Configure<AppleOptions>(configuration.GetSection(AppleOptions.SectionName));

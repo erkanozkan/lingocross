@@ -14,6 +14,13 @@ public interface ITokenService
     /// <summary>Kullanıcı için kısa ömürlü JWT access token üretir (claim: sub/role/email).</summary>
     AccessTokenResult CreateAccessToken(User user);
 
+    /// <summary>
+    /// Back office için Admin rollü JWT access token üretir. UserRole enum'una dokunulmadan,
+    /// claim'ler sub="admin" + role="Admin" + jti ile imzalanır. <paramref name="tokenHours"/>
+    /// token ömrünü saat cinsinden belirler.
+    /// </summary>
+    AccessTokenResult CreateAdminToken(int tokenHours);
+
     /// <summary>Yeni bir opaque refresh token üretir (ham değer + hash).</summary>
     RefreshTokenResult CreateRefreshToken();
 

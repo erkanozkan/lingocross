@@ -57,6 +57,32 @@ public class JwtTokenService : ITokenService
         return new AccessTokenResult(tokenString, expiresAt);
     }
 
+    public AccessTokenResult CreateAdminToken(int tokenHours)
+    {
+        var hours = tokenHours > 0 ? tokenHours : 8;
+        var expiresAt = DateTime.UtcNow.AddHours(hours);
+
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, "admin"),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Role, "Admin"),
+        };
+
+        var credentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            notBefore: DateTime.UtcNow,
+            expires: expiresAt,
+            signingCredentials: credentials);
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        return new AccessTokenResult(tokenString, expiresAt);
+    }
+
     public RefreshTokenResult CreateRefreshToken()
     {
         // 256-bit kriptografik rastgele, URL-safe base64 opaque token.
