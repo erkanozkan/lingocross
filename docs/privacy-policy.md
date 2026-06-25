@@ -1,7 +1,7 @@
 # LingoCross — Gizlilik Politikası / Privacy Policy
 
 > ⚠️ Taslak — hukuki danışmanlık değildir. Yayınlamadan önce bir hukukçuya gözden geçirt.
-> Yürürlük tarihi / Effective date: **[GÜNCELLE]**. İşletme/iletişim: **privacy@lingocross.app**
+> Yürürlük tarihi / Effective date: **25 Haziran 2026 / June 25, 2026**. İşletme/iletişim: **privacy@lingocross.app**
 
 ---
 
