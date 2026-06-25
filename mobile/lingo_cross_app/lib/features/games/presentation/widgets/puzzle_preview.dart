@@ -39,6 +39,9 @@ class PuzzlePreview extends StatelessWidget {
         const SizedBox(height: AppSpacing.lg),
         if (preview.type == GameType.crossword && preview.crossword != null)
           _CrosswordPreview(content: preview.crossword!)
+        else if (preview.type == GameType.scrambled &&
+            preview.scrambled != null)
+          _ScrambledPreview(content: preview.scrambled!)
         else if (preview.wordMatching != null)
           _WordMatchingPreview(
             content: preview.wordMatching!,
@@ -190,6 +193,77 @@ class _PreviewChip extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppTypography.bodyMd.copyWith(color: fg),
+      ),
+    );
+  }
+}
+
+/// Scrambled (Karışık Harfler) örnek görünümü: her kelime için çeviri ipucu +
+/// karışık harf chip'leri (salt-okunur). Cevap dizilmemiş, yalnız yapı gösterilir.
+class _ScrambledPreview extends StatelessWidget {
+  const _ScrambledPreview({required this.content});
+
+  final ScrambledContent content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final item in content.items)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.md),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(
+                  color: AppColors.outlineVariant.withValues(alpha: 0.6),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(item.clue, style: AppTypography.headlineMd),
+                  const SizedBox(height: AppSpacing.sm),
+                  Wrap(
+                    spacing: AppSpacing.xs,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      for (final letter in item.scrambledLetters.split(''))
+                        _LetterChip(letter: letter),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Salt-okunur karışık harf chip'i (önizleme).
+class _LetterChip extends StatelessWidget {
+  const _LetterChip({required this.letter});
+
+  final String letter;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 36,
+      height: 44,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Text(
+        letter,
+        style: AppTypography.headlineMd
+            .copyWith(color: AppColors.onPrimaryContainer),
       ),
     );
   }

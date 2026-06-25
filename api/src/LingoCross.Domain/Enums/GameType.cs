@@ -14,4 +14,7 @@ public enum GameType
 
     /// <summary>Çıkmış soru seti. Faz 2 — rezerve.</summary>
     QuestionSet = 3,
+
+    /// <summary>Harf karıştırma (scrambled): kaynak terimin harfleri karışık verilir, öğrenci doğru sıraya dizer.</summary>
+    Scrambled = 4,
 }

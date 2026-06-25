@@ -134,6 +134,28 @@ GamePreviewResponse _crosswordPreview() {
   );
 }
 
+GamePreviewResponse _scrambledPreview() {
+  return const GamePreviewResponse(
+    type: GameType.scrambled,
+    scrambled: ScrambledContent(
+      items: [
+        ScrambledItem(
+          wordId: 'w1',
+          answer: 'apple',
+          scrambledLetters: 'ppale',
+          clue: 'elma',
+        ),
+        ScrambledItem(
+          wordId: 'w2',
+          answer: 'book',
+          scrambledLetters: 'okbo',
+          clue: 'kitap',
+        ),
+      ],
+    ),
+  );
+}
+
 ClassDto _class({String id = 'cls1', String name = '6-A Sınıfı'}) {
   return ClassDto(
     id: id,
@@ -168,7 +190,7 @@ Future<void> _next(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('Adım 1: iki oyun türü kartı (Çengel Bulmaca aktif)',
+  testWidgets('Adım 1: üç oyun türü kartı (Karışık Harfler dahil)',
       (tester) async {
     await tester.pumpWidget(_wrap(
       lessonsRepo: FakeLessonsRepository(lessons: [_lesson()]),
@@ -180,6 +202,7 @@ void main() {
     expect(find.text('Oyun Türünü Seç'), findsOneWidget);
     expect(find.text('Kelime Eşleştirme'), findsOneWidget);
     expect(find.text('Çengel Bulmaca'), findsOneWidget);
+    expect(find.text('Karışık Harfler'), findsOneWidget);
     expect(find.text('Yakında'), findsNothing);
   });
 
@@ -394,6 +417,61 @@ void main() {
     expect(find.text('Küçük bir böcek'), findsOneWidget);
     // Cevap harfleri ızgarada gösterilmez (statik boş kutular).
     expect(find.text('APPLE'), findsNothing);
+  });
+
+  testWidgets('Scrambled türü seçilince Scrambled tipiyle oluşturulur',
+      (tester) async {
+    final games = FakeGamesRepository(previewValue: _scrambledPreview());
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      classesRepo: FakeClassesRepository(classes: [_class(id: 'cls1')]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await tester.ensureVisible(find.text('Karışık Harfler'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Karışık Harfler'));
+    await tester.pumpAndSettle();
+    await _next(tester);
+    await _next(tester);
+    await _next(tester);
+    await tester.tap(find.text('6-A Sınıfı'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bulmacayı Oluştur'));
+    await tester.pumpAndSettle();
+
+    expect(games.createCount, 1);
+    expect(games.lastCreateRequest?.type, GameType.scrambled);
+  });
+
+  testWidgets('Önizleme adımı: Scrambled ipucu + karışık harf chip render',
+      (tester) async {
+    final games = FakeGamesRepository(previewValue: _scrambledPreview());
+    await tester.pumpWidget(_wrap(
+      lessonsRepo: FakeLessonsRepository(lessons: [_lesson(id: 'l1')]),
+      gamesRepo: games,
+      classesRepo: FakeClassesRepository(classes: [_class(id: 'cls1')]),
+      initialLessonId: 'l1',
+    ));
+    await _openCreate(tester);
+
+    await tester.ensureVisible(find.text('Karışık Harfler'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Karışık Harfler'));
+    await tester.pumpAndSettle();
+    await _next(tester); // tür → ders
+    await _next(tester); // ders → önizleme
+
+    expect(games.lastPreviewType, GameType.scrambled);
+    expect(find.text('Örnek Önizleme'), findsOneWidget);
+    // Çeviri ipuçları gösterilir.
+    expect(find.text('elma'), findsOneWidget);
+    expect(find.text('kitap'), findsOneWidget);
+    // Karışık harfler chip olarak gösterilir (cevap dizilmemiş).
+    expect(find.text('apple'), findsNothing);
+    expect(games.createCount, 0);
   });
 
   testWidgets('Önizleme adımı: yetersiz kelime → net mesaj + Geri Dön',

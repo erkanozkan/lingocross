@@ -1037,4 +1037,187 @@ public class GameServiceTests
             () => svc.PreviewForLessonAsync(Guid.NewGuid(), GameType.WordMatching));
         Assert.Equal(403, ex.StatusCode);
     }
+
+    // ---- Scrambled (harf karıştırma) ----
+
+    /// <summary>Bir kaynak terimin (trim) harfleri ile karıştırılmış dizenin aynı çoklu-küme olduğunu doğrular.</summary>
+    private static void AssertSameMultiset(string answer, string scrambled)
+    {
+        var a = answer.OrderBy(c => c).ToArray();
+        var s = scrambled.OrderBy(c => c).ToArray();
+        Assert.Equal(new string(a), new string(s));
+    }
+
+    [Fact]
+    public async Task Create_Scrambled_WithEnoughEligibleWords_CreatesAndPublishes()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // 5 tek-kelimeli, çevirili kelime → scrambled oluşturulabilir.
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: false,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var game = await svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.Scrambled, null));
+
+        Assert.Equal(GameType.Scrambled, game.Type);
+        Assert.Equal("Harfleri Diz", game.Title);
+        Assert.True(game.IsPublished);
+        Assert.NotNull(game.PublishedAt);
+    }
+
+    [Fact]
+    public async Task Create_Scrambled_InsufficientEligibleWords_Throws400()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // 5 çevirili kelime ama yalnız 3'ü scrambled-uygun (2'si çok-kelimeli/tireli → uygunsuz).
+        var lesson = new Lesson { TeacherId = teacher.Id, Title = "Ders", IsPublished = false };
+        AddWord(lesson, "apple", "elma", 0);
+        AddWord(lesson, "book", "kitap", 1);
+        AddWord(lesson, "table", "masa", 2);
+        AddWord(lesson, "book store", "kitapçı", 3); // boşluk → uygunsuz
+        AddWord(lesson, "re-use", "yeniden kullan", 4); // tire → uygunsuz
+        db.Lessons.Add(lesson);
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.Scrambled, null)));
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.Games.CountAsync());
+    }
+
+    [Fact]
+    public async Task StartSession_Scrambled_ReturnsScrambledContent()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: true,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Scrambled);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var response = await svc.StartSessionAsync(game.Id);
+
+        Assert.Equal(GameType.Scrambled, response.Type);
+        Assert.NotNull(response.Scrambled);
+        Assert.Null(response.WordMatching);
+        Assert.Null(response.Crossword);
+        Assert.Equal(GameSessionStatus.InProgress, response.Session.Status);
+        Assert.Equal(1, await db.GameSessions.CountAsync());
+
+        // 5 kelime ≤ MaxPairs(8) → 5 item.
+        Assert.Equal(5, response.Scrambled!.Items.Count);
+        Assert.All(response.Scrambled!.Items, item =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(item.Answer));
+            Assert.False(string.IsNullOrWhiteSpace(item.Clue));
+            Assert.NotEqual(Guid.Empty, item.WordId);
+            // Karışık harfler cevabın bir permütasyonu (aynı çoklu-küme).
+            AssertSameMultiset(item.Answer, item.ScrambledLetters);
+        });
+    }
+
+    [Fact]
+    public async Task BuildScrambledContent_ItemShapeAndEligibility()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // 4 tek-kelimeli uygun + 2 uygunsuz (çok-kelimeli, tek-harfli).
+        var lesson = new Lesson { TeacherId = teacher.Id, Title = "Ders", IsPublished = false };
+        AddWord(lesson, "apple", "elma", 0);
+        AddWord(lesson, "pear", "armut", 1);
+        AddWord(lesson, "plate", "tabak", 2);
+        AddWord(lesson, "lemon", "limon", 3);
+        AddWord(lesson, "book store", "kitapçı", 4); // çok kelimeli → elenir
+        AddWord(lesson, "a", "bir", 5);              // tek harf → elenir
+        db.Lessons.Add(lesson);
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var preview = await svc.PreviewForLessonAsync(lesson.Id, GameType.Scrambled);
+
+        Assert.NotNull(preview.Scrambled);
+        // Yalnız 4 uygun kelime; uygunsuzlar elenir.
+        Assert.Equal(4, preview.Scrambled!.Items.Count);
+
+        var byClue = new Dictionary<string, string>
+        {
+            ["elma"] = "apple",
+            ["armut"] = "pear",
+            ["tabak"] = "plate",
+            ["limon"] = "lemon",
+        };
+
+        Assert.All(preview.Scrambled!.Items, item =>
+        {
+            // Clue = birincil çeviri; Answer = ilgili terim.
+            Assert.True(byClue.ContainsKey(item.Clue));
+            Assert.Equal(byClue[item.Clue], item.Answer);
+            // ScrambledLetters Answer'ın permütasyonu.
+            AssertSameMultiset(item.Answer, item.ScrambledLetters);
+        });
+
+        // Çok-kelimeli/tek-harfli terimler içerikte yok.
+        Assert.DoesNotContain(preview.Scrambled!.Items, i => i.Answer is "book store" or "a");
+    }
+
+    [Fact]
+    public async Task Preview_Scrambled_ReturnsItems_NoPersistence()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: false,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var preview = await svc.PreviewForLessonAsync(lesson.Id, GameType.Scrambled);
+
+        Assert.Equal(GameType.Scrambled, preview.Type);
+        Assert.NotNull(preview.Scrambled);
+        Assert.Null(preview.WordMatching);
+        Assert.Null(preview.Crossword);
+        Assert.Equal(5, preview.Scrambled!.Items.Count);
+
+        // Kalıcılık yok: ne Game ne de GameSession oluşturuldu.
+        Assert.Equal(0, await db.Games.CountAsync());
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
+
+    [Fact]
+    public async Task StartSession_Scrambled_InsufficientEligible_Throws400_NoSession()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        // Yalnız 3 uygun terim → scrambled oynatılamaz.
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: true,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"));
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+        var game = await SeedGameAsync(db, lesson.Id, published: true, type: GameType.Scrambled);
+        await SeedClassWithMemberAndAssignmentAsync(db, teacher.Id, student.Id, game.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.GameSessions.CountAsync());
+    }
 }

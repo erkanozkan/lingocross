@@ -466,6 +466,8 @@
   "createGameTypeMatchingDesc": "Speed up learning by matching words with their meanings.",
   "createGameTypeCrosswordTitle": "Crossword",
   "createGameTypeCrosswordDesc": "Have them find the words using clues.",
+  "createGameTypeScrambledTitle": "Scrambled Letters",
+  "createGameTypeScrambledDesc": "Have them unscramble the letters into the correct order to find the word.",
   "createGameLessonLabel": "Word List to Use",
   "createGameLessonHint": "Select a lesson…",
   "createGameLessonsEmpty": "You don't have any lessons yet. Create a lesson first.",
@@ -494,6 +496,15 @@
   "gameCrosswordCellNumberedSemantic": "Starting cell of word number {number}",
   "@gameCrosswordCellNumberedSemantic": { "placeholders": { "number": { "type": "int" } } },
   "gameCrosswordCellEmpty": "empty",
+
+  "gameScrambledTitle": "Arrange the Letters",
+  "gameScrambledClueLabel": "TRANSLATION HINT",
+  "gameScrambledInstruction": "Tap the letters to arrange them in the correct order. Tap a placed letter to take it back.",
+  "gameScrambledPrevious": "Previous word",
+  "gameScrambledNext": "Next word",
+  "gameScrambledLetterSemantic": "letter, tap to add",
+  "gameScrambledSlotSemantic": "placed, tap to remove",
+  "gameScrambledEmptySlot": "empty letter slot",
 
   "teacherStudentsAppBarTitle": "My Students",
   "teacherStudentsCodeLabel": "Invite Code",
@@ -620,6 +631,7 @@
   "gameTypeWordMatching": "Word Matching",
   "gameTypeCrossword": "Crossword",
   "gameTypeQuestionSet": "Question Set",
+  "gameTypeScrambled": "Scrambled Letters",
 
   "trackingErrorNetwork": "Connection error. Please try again.",
   "trackingErrorNotFound": "Student not found.",

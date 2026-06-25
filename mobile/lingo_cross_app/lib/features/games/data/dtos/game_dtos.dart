@@ -157,6 +157,38 @@ class WordMatchingContent with _$WordMatchingContent {
       _$WordMatchingContentFromJson(json);
 }
 
+/// Scrambled (karışık harfler) oyununda tek bir kelime (ScrambledItem) — API ile
+/// birebir.
+///
+/// [answer] kaynak (doğru) terim; öğrenci bunu yeniden dizer. [scrambledLetters]
+/// karışık harflerin tek string hâli (ör. "ppela"); istemci karaktere bölerek
+/// havuzu kurar. [clue] hedef dildeki çeviri (ipucu olarak gösterilir).
+@freezed
+class ScrambledItem with _$ScrambledItem {
+  const factory ScrambledItem({
+    required String wordId,
+    required String answer,
+    required String scrambledLetters,
+    required String clue,
+  }) = _ScrambledItem;
+
+  factory ScrambledItem.fromJson(Map<String, dynamic> json) =>
+      _$ScrambledItemFromJson(json);
+}
+
+/// Scrambled (karışık harfler) oyun içeriği (ScrambledContent) — API ile birebir.
+///
+/// [items] her biri bir kelimeyi temsil eder (karışık harfler + çeviri ipucu).
+@freezed
+class ScrambledContent with _$ScrambledContent {
+  const factory ScrambledContent({
+    required List<ScrambledItem> items,
+  }) = _ScrambledContent;
+
+  factory ScrambledContent.fromJson(Map<String, dynamic> json) =>
+      _$ScrambledContentFromJson(json);
+}
+
 /// API'deki int `CrosswordDirection` değerini ([CrosswordDirection]) enum'una çevirir.
 class CrosswordDirectionConverter
     implements JsonConverter<CrosswordDirection, int> {
@@ -216,6 +248,7 @@ class GamePreviewResponse with _$GamePreviewResponse {
     @GameTypeConverter() required GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   }) = _GamePreviewResponse;
 
   factory GamePreviewResponse.fromJson(Map<String, dynamic> json) =>
@@ -234,6 +267,7 @@ class StartGameSessionResponse with _$StartGameSessionResponse {
     @GameTypeConverter() required GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   }) = _StartGameSessionResponse;
 
   factory StartGameSessionResponse.fromJson(Map<String, dynamic> json) =>

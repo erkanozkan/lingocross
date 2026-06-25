@@ -14,6 +14,7 @@ import '../assigned_games_notifier.dart';
 import '../games_failure_messages.dart';
 import '../start_game_controller.dart';
 import 'crossword_game_screen.dart';
+import 'scrambled_game_screen.dart';
 import 'word_matching_game_screen.dart';
 
 /// Oyun başlatma akışını yürüten launcher (`/student/games/:gameId`).
@@ -103,6 +104,19 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
             return CrosswordGameScreen(
               sessionId: response.session.id,
               content: crossword,
+            );
+          case GameType.scrambled:
+            final scrambled = response.scrambled;
+            if (scrambled == null) {
+              return _ErrorScaffold(
+                error: const GamesFailure.unexpected(),
+                isEmpty: false,
+                onRetry: _start,
+              );
+            }
+            return ScrambledGameScreen(
+              sessionId: response.session.id,
+              content: scrambled,
             );
           case GameType.wordMatching:
           case GameType.questionSet:

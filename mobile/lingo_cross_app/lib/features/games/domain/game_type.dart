@@ -4,7 +4,8 @@
 enum GameType {
   wordMatching(1),
   crossword(2),
-  questionSet(3);
+  questionSet(3),
+  scrambled(4);
 
   const GameType(this.value);
 
@@ -14,6 +15,7 @@ enum GameType {
         1 => GameType.wordMatching,
         2 => GameType.crossword,
         3 => GameType.questionSet,
+        4 => GameType.scrambled,
         _ => GameType.wordMatching,
       };
 }

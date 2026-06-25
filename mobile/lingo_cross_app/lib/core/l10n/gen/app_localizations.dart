@@ -2453,6 +2453,18 @@ abstract class AppLocalizations {
   /// **'İpuçları kullanarak kelimeleri bulmalarını sağla.'**
   String get createGameTypeCrosswordDesc;
 
+  /// No description provided for @createGameTypeScrambledTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karışık Harfler'**
+  String get createGameTypeScrambledTitle;
+
+  /// No description provided for @createGameTypeScrambledDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karışık harfleri doğru sıraya dizerek kelimeyi bulmalarını sağla.'**
+  String get createGameTypeScrambledDesc;
+
   /// No description provided for @createGameLessonLabel.
   ///
   /// In tr, this message translates to:
@@ -2602,6 +2614,54 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'boş'**
   String get gameCrosswordCellEmpty;
+
+  /// No description provided for @gameScrambledTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harfleri Diz'**
+  String get gameScrambledTitle;
+
+  /// No description provided for @gameScrambledClueLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÇEVİRİ İPUCU'**
+  String get gameScrambledClueLabel;
+
+  /// No description provided for @gameScrambledInstruction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harflere dokunarak doğru sıraya diz. Geri almak için dizdiğin harfe dokun.'**
+  String get gameScrambledInstruction;
+
+  /// No description provided for @gameScrambledPrevious.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki kelime'**
+  String get gameScrambledPrevious;
+
+  /// No description provided for @gameScrambledNext.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki kelime'**
+  String get gameScrambledNext;
+
+  /// No description provided for @gameScrambledLetterSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'harf, eklemek için dokun'**
+  String get gameScrambledLetterSemantic;
+
+  /// No description provided for @gameScrambledSlotSemantic.
+  ///
+  /// In tr, this message translates to:
+  /// **'yerleştirildi, geri almak için dokun'**
+  String get gameScrambledSlotSemantic;
+
+  /// No description provided for @gameScrambledEmptySlot.
+  ///
+  /// In tr, this message translates to:
+  /// **'boş harf yuvası'**
+  String get gameScrambledEmptySlot;
 
   /// No description provided for @teacherStudentsAppBarTitle.
   ///
@@ -3172,6 +3232,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Soru Seti'**
   String get gameTypeQuestionSet;
+
+  /// No description provided for @gameTypeScrambled.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karışık Harfler'**
+  String get gameTypeScrambled;
 
   /// No description provided for @trackingErrorNetwork.
   ///

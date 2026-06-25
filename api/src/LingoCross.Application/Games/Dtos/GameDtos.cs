@@ -85,7 +85,8 @@ public record PreviewGameRequest(
 public record GamePreviewResponse(
     GameType Type,
     WordMatchingContent? WordMatching,
-    CrosswordContent? Crossword);
+    CrosswordContent? Crossword,
+    ScrambledContent? Scrambled);
 
 /// <summary>Bir oyun oturumunun durumu.</summary>
 public record GameSessionDto(
@@ -110,7 +111,8 @@ public record StartGameSessionResponse(
     GameSessionDto Session,
     GameType Type,
     WordMatchingContent? WordMatching,
-    CrosswordContent? Crossword);
+    CrosswordContent? Crossword,
+    ScrambledContent? Scrambled);
 
 /// <summary>
 /// Kelime eşleştirme oyun içeriği. <see cref="Pairs"/> doğru eşleşmeleri taşır; her çiftin
@@ -160,6 +162,25 @@ public record CrosswordEntry(
     int Col,
     CrosswordDirection Direction,
     int Length);
+
+/// <summary>
+/// Scrambled (harf karıştırma) oyun içeriği. Her <see cref="ScrambledItem"/> bir kelimeyi temsil eder:
+/// kaynak terimin harfleri karıştırılmış olarak verilir, öğrenci doğru sıraya dizer.
+/// </summary>
+public record ScrambledContent(
+    IReadOnlyList<ScrambledItem> Items);
+
+/// <summary>
+/// Tek bir scrambled kelime. <see cref="Answer"/> doğru cevaptır (kaynak terim, olduğu gibi),
+/// <see cref="ScrambledLetters"/> aynı harflerin karıştırılmış hâlidir (çoklu-küme olarak Answer ile aynı),
+/// <see cref="Clue"/> ipucudur (terimin birincil Türkçe karşılığı). MVP'de cevap istemciye gönderilir;
+/// doğrulama istemcide yapılır.
+/// </summary>
+public record ScrambledItem(
+    Guid WordId,
+    string Answer,
+    string ScrambledLetters,
+    string Clue);
 
 /// <summary>Bulmaca kelime yönü. Sayısal değerler istemciyle paylaşılır.</summary>
 public enum CrosswordDirection

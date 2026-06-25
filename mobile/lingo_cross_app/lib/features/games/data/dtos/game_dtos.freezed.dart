@@ -2043,6 +2043,403 @@ abstract class _WordMatchingContent implements WordMatchingContent {
       throw _privateConstructorUsedError;
 }
 
+ScrambledItem _$ScrambledItemFromJson(Map<String, dynamic> json) {
+  return _ScrambledItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ScrambledItem {
+  String get wordId => throw _privateConstructorUsedError;
+  String get answer => throw _privateConstructorUsedError;
+  String get scrambledLetters => throw _privateConstructorUsedError;
+  String get clue => throw _privateConstructorUsedError;
+
+  /// Serializes this ScrambledItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ScrambledItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ScrambledItemCopyWith<ScrambledItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ScrambledItemCopyWith<$Res> {
+  factory $ScrambledItemCopyWith(
+    ScrambledItem value,
+    $Res Function(ScrambledItem) then,
+  ) = _$ScrambledItemCopyWithImpl<$Res, ScrambledItem>;
+  @useResult
+  $Res call({
+    String wordId,
+    String answer,
+    String scrambledLetters,
+    String clue,
+  });
+}
+
+/// @nodoc
+class _$ScrambledItemCopyWithImpl<$Res, $Val extends ScrambledItem>
+    implements $ScrambledItemCopyWith<$Res> {
+  _$ScrambledItemCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ScrambledItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? wordId = null,
+    Object? answer = null,
+    Object? scrambledLetters = null,
+    Object? clue = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            wordId:
+                null == wordId
+                    ? _value.wordId
+                    : wordId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            answer:
+                null == answer
+                    ? _value.answer
+                    : answer // ignore: cast_nullable_to_non_nullable
+                        as String,
+            scrambledLetters:
+                null == scrambledLetters
+                    ? _value.scrambledLetters
+                    : scrambledLetters // ignore: cast_nullable_to_non_nullable
+                        as String,
+            clue:
+                null == clue
+                    ? _value.clue
+                    : clue // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$ScrambledItemImplCopyWith<$Res>
+    implements $ScrambledItemCopyWith<$Res> {
+  factory _$$ScrambledItemImplCopyWith(
+    _$ScrambledItemImpl value,
+    $Res Function(_$ScrambledItemImpl) then,
+  ) = __$$ScrambledItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String wordId,
+    String answer,
+    String scrambledLetters,
+    String clue,
+  });
+}
+
+/// @nodoc
+class __$$ScrambledItemImplCopyWithImpl<$Res>
+    extends _$ScrambledItemCopyWithImpl<$Res, _$ScrambledItemImpl>
+    implements _$$ScrambledItemImplCopyWith<$Res> {
+  __$$ScrambledItemImplCopyWithImpl(
+    _$ScrambledItemImpl _value,
+    $Res Function(_$ScrambledItemImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ScrambledItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? wordId = null,
+    Object? answer = null,
+    Object? scrambledLetters = null,
+    Object? clue = null,
+  }) {
+    return _then(
+      _$ScrambledItemImpl(
+        wordId:
+            null == wordId
+                ? _value.wordId
+                : wordId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        answer:
+            null == answer
+                ? _value.answer
+                : answer // ignore: cast_nullable_to_non_nullable
+                    as String,
+        scrambledLetters:
+            null == scrambledLetters
+                ? _value.scrambledLetters
+                : scrambledLetters // ignore: cast_nullable_to_non_nullable
+                    as String,
+        clue:
+            null == clue
+                ? _value.clue
+                : clue // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ScrambledItemImpl implements _ScrambledItem {
+  const _$ScrambledItemImpl({
+    required this.wordId,
+    required this.answer,
+    required this.scrambledLetters,
+    required this.clue,
+  });
+
+  factory _$ScrambledItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScrambledItemImplFromJson(json);
+
+  @override
+  final String wordId;
+  @override
+  final String answer;
+  @override
+  final String scrambledLetters;
+  @override
+  final String clue;
+
+  @override
+  String toString() {
+    return 'ScrambledItem(wordId: $wordId, answer: $answer, scrambledLetters: $scrambledLetters, clue: $clue)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ScrambledItemImpl &&
+            (identical(other.wordId, wordId) || other.wordId == wordId) &&
+            (identical(other.answer, answer) || other.answer == answer) &&
+            (identical(other.scrambledLetters, scrambledLetters) ||
+                other.scrambledLetters == scrambledLetters) &&
+            (identical(other.clue, clue) || other.clue == clue));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, wordId, answer, scrambledLetters, clue);
+
+  /// Create a copy of ScrambledItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ScrambledItemImplCopyWith<_$ScrambledItemImpl> get copyWith =>
+      __$$ScrambledItemImplCopyWithImpl<_$ScrambledItemImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ScrambledItemImplToJson(this);
+  }
+}
+
+abstract class _ScrambledItem implements ScrambledItem {
+  const factory _ScrambledItem({
+    required final String wordId,
+    required final String answer,
+    required final String scrambledLetters,
+    required final String clue,
+  }) = _$ScrambledItemImpl;
+
+  factory _ScrambledItem.fromJson(Map<String, dynamic> json) =
+      _$ScrambledItemImpl.fromJson;
+
+  @override
+  String get wordId;
+  @override
+  String get answer;
+  @override
+  String get scrambledLetters;
+  @override
+  String get clue;
+
+  /// Create a copy of ScrambledItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ScrambledItemImplCopyWith<_$ScrambledItemImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+ScrambledContent _$ScrambledContentFromJson(Map<String, dynamic> json) {
+  return _ScrambledContent.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ScrambledContent {
+  List<ScrambledItem> get items => throw _privateConstructorUsedError;
+
+  /// Serializes this ScrambledContent to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of ScrambledContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $ScrambledContentCopyWith<ScrambledContent> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ScrambledContentCopyWith<$Res> {
+  factory $ScrambledContentCopyWith(
+    ScrambledContent value,
+    $Res Function(ScrambledContent) then,
+  ) = _$ScrambledContentCopyWithImpl<$Res, ScrambledContent>;
+  @useResult
+  $Res call({List<ScrambledItem> items});
+}
+
+/// @nodoc
+class _$ScrambledContentCopyWithImpl<$Res, $Val extends ScrambledContent>
+    implements $ScrambledContentCopyWith<$Res> {
+  _$ScrambledContentCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of ScrambledContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? items = null}) {
+    return _then(
+      _value.copyWith(
+            items:
+                null == items
+                    ? _value.items
+                    : items // ignore: cast_nullable_to_non_nullable
+                        as List<ScrambledItem>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$ScrambledContentImplCopyWith<$Res>
+    implements $ScrambledContentCopyWith<$Res> {
+  factory _$$ScrambledContentImplCopyWith(
+    _$ScrambledContentImpl value,
+    $Res Function(_$ScrambledContentImpl) then,
+  ) = __$$ScrambledContentImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<ScrambledItem> items});
+}
+
+/// @nodoc
+class __$$ScrambledContentImplCopyWithImpl<$Res>
+    extends _$ScrambledContentCopyWithImpl<$Res, _$ScrambledContentImpl>
+    implements _$$ScrambledContentImplCopyWith<$Res> {
+  __$$ScrambledContentImplCopyWithImpl(
+    _$ScrambledContentImpl _value,
+    $Res Function(_$ScrambledContentImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of ScrambledContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? items = null}) {
+    return _then(
+      _$ScrambledContentImpl(
+        items:
+            null == items
+                ? _value._items
+                : items // ignore: cast_nullable_to_non_nullable
+                    as List<ScrambledItem>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ScrambledContentImpl implements _ScrambledContent {
+  const _$ScrambledContentImpl({required final List<ScrambledItem> items})
+    : _items = items;
+
+  factory _$ScrambledContentImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ScrambledContentImplFromJson(json);
+
+  final List<ScrambledItem> _items;
+  @override
+  List<ScrambledItem> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  String toString() {
+    return 'ScrambledContent(items: $items)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ScrambledContentImpl &&
+            const DeepCollectionEquality().equals(other._items, _items));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_items));
+
+  /// Create a copy of ScrambledContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ScrambledContentImplCopyWith<_$ScrambledContentImpl> get copyWith =>
+      __$$ScrambledContentImplCopyWithImpl<_$ScrambledContentImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ScrambledContentImplToJson(this);
+  }
+}
+
+abstract class _ScrambledContent implements ScrambledContent {
+  const factory _ScrambledContent({required final List<ScrambledItem> items}) =
+      _$ScrambledContentImpl;
+
+  factory _ScrambledContent.fromJson(Map<String, dynamic> json) =
+      _$ScrambledContentImpl.fromJson;
+
+  @override
+  List<ScrambledItem> get items;
+
+  /// Create a copy of ScrambledContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ScrambledContentImplCopyWith<_$ScrambledContentImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 CrosswordEntry _$CrosswordEntryFromJson(Map<String, dynamic> json) {
   return _CrosswordEntry.fromJson(json);
 }
@@ -2580,6 +2977,7 @@ mixin _$GamePreviewResponse {
   GameType get type => throw _privateConstructorUsedError;
   WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
   CrosswordContent? get crossword => throw _privateConstructorUsedError;
+  ScrambledContent? get scrambled => throw _privateConstructorUsedError;
 
   /// Serializes this GamePreviewResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2602,10 +3000,12 @@ abstract class $GamePreviewResponseCopyWith<$Res> {
     @GameTypeConverter() GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   });
 
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   $CrosswordContentCopyWith<$Res>? get crossword;
+  $ScrambledContentCopyWith<$Res>? get scrambled;
 }
 
 /// @nodoc
@@ -2626,6 +3026,7 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
     Object? type = null,
     Object? wordMatching = freezed,
     Object? crossword = freezed,
+    Object? scrambled = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2644,6 +3045,11 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
                     ? _value.crossword
                     : crossword // ignore: cast_nullable_to_non_nullable
                         as CrosswordContent?,
+            scrambled:
+                freezed == scrambled
+                    ? _value.scrambled
+                    : scrambled // ignore: cast_nullable_to_non_nullable
+                        as ScrambledContent?,
           )
           as $Val,
     );
@@ -2676,6 +3082,20 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
       return _then(_value.copyWith(crossword: value) as $Val);
     });
   }
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ScrambledContentCopyWith<$Res>? get scrambled {
+    if (_value.scrambled == null) {
+      return null;
+    }
+
+    return $ScrambledContentCopyWith<$Res>(_value.scrambled!, (value) {
+      return _then(_value.copyWith(scrambled: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -2691,12 +3111,15 @@ abstract class _$$GamePreviewResponseImplCopyWith<$Res>
     @GameTypeConverter() GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   });
 
   @override
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   @override
   $CrosswordContentCopyWith<$Res>? get crossword;
+  @override
+  $ScrambledContentCopyWith<$Res>? get scrambled;
 }
 
 /// @nodoc
@@ -2716,6 +3139,7 @@ class __$$GamePreviewResponseImplCopyWithImpl<$Res>
     Object? type = null,
     Object? wordMatching = freezed,
     Object? crossword = freezed,
+    Object? scrambled = freezed,
   }) {
     return _then(
       _$GamePreviewResponseImpl(
@@ -2734,6 +3158,11 @@ class __$$GamePreviewResponseImplCopyWithImpl<$Res>
                 ? _value.crossword
                 : crossword // ignore: cast_nullable_to_non_nullable
                     as CrosswordContent?,
+        scrambled:
+            freezed == scrambled
+                ? _value.scrambled
+                : scrambled // ignore: cast_nullable_to_non_nullable
+                    as ScrambledContent?,
       ),
     );
   }
@@ -2746,6 +3175,7 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
     @GameTypeConverter() required this.type,
     this.wordMatching,
     this.crossword,
+    this.scrambled,
   });
 
   factory _$GamePreviewResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -2758,10 +3188,12 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
   final WordMatchingContent? wordMatching;
   @override
   final CrosswordContent? crossword;
+  @override
+  final ScrambledContent? scrambled;
 
   @override
   String toString() {
-    return 'GamePreviewResponse(type: $type, wordMatching: $wordMatching, crossword: $crossword)';
+    return 'GamePreviewResponse(type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled)';
   }
 
   @override
@@ -2773,12 +3205,15 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
             (identical(other.wordMatching, wordMatching) ||
                 other.wordMatching == wordMatching) &&
             (identical(other.crossword, crossword) ||
-                other.crossword == crossword));
+                other.crossword == crossword) &&
+            (identical(other.scrambled, scrambled) ||
+                other.scrambled == scrambled));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, type, wordMatching, crossword);
+  int get hashCode =>
+      Object.hash(runtimeType, type, wordMatching, crossword, scrambled);
 
   /// Create a copy of GamePreviewResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -2802,6 +3237,7 @@ abstract class _GamePreviewResponse implements GamePreviewResponse {
     @GameTypeConverter() required final GameType type,
     final WordMatchingContent? wordMatching,
     final CrosswordContent? crossword,
+    final ScrambledContent? scrambled,
   }) = _$GamePreviewResponseImpl;
 
   factory _GamePreviewResponse.fromJson(Map<String, dynamic> json) =
@@ -2814,6 +3250,8 @@ abstract class _GamePreviewResponse implements GamePreviewResponse {
   WordMatchingContent? get wordMatching;
   @override
   CrosswordContent? get crossword;
+  @override
+  ScrambledContent? get scrambled;
 
   /// Create a copy of GamePreviewResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -2836,6 +3274,7 @@ mixin _$StartGameSessionResponse {
   GameType get type => throw _privateConstructorUsedError;
   WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
   CrosswordContent? get crossword => throw _privateConstructorUsedError;
+  ScrambledContent? get scrambled => throw _privateConstructorUsedError;
 
   /// Serializes this StartGameSessionResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -2859,11 +3298,13 @@ abstract class $StartGameSessionResponseCopyWith<$Res> {
     @GameTypeConverter() GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   });
 
   $GameSessionDtoCopyWith<$Res> get session;
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   $CrosswordContentCopyWith<$Res>? get crossword;
+  $ScrambledContentCopyWith<$Res>? get scrambled;
 }
 
 /// @nodoc
@@ -2888,6 +3329,7 @@ class _$StartGameSessionResponseCopyWithImpl<
     Object? type = null,
     Object? wordMatching = freezed,
     Object? crossword = freezed,
+    Object? scrambled = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -2911,6 +3353,11 @@ class _$StartGameSessionResponseCopyWithImpl<
                     ? _value.crossword
                     : crossword // ignore: cast_nullable_to_non_nullable
                         as CrosswordContent?,
+            scrambled:
+                freezed == scrambled
+                    ? _value.scrambled
+                    : scrambled // ignore: cast_nullable_to_non_nullable
+                        as ScrambledContent?,
           )
           as $Val,
     );
@@ -2953,6 +3400,20 @@ class _$StartGameSessionResponseCopyWithImpl<
       return _then(_value.copyWith(crossword: value) as $Val);
     });
   }
+
+  /// Create a copy of StartGameSessionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $ScrambledContentCopyWith<$Res>? get scrambled {
+    if (_value.scrambled == null) {
+      return null;
+    }
+
+    return $ScrambledContentCopyWith<$Res>(_value.scrambled!, (value) {
+      return _then(_value.copyWith(scrambled: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -2969,6 +3430,7 @@ abstract class _$$StartGameSessionResponseImplCopyWith<$Res>
     @GameTypeConverter() GameType type,
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
+    ScrambledContent? scrambled,
   });
 
   @override
@@ -2977,6 +3439,8 @@ abstract class _$$StartGameSessionResponseImplCopyWith<$Res>
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   @override
   $CrosswordContentCopyWith<$Res>? get crossword;
+  @override
+  $ScrambledContentCopyWith<$Res>? get scrambled;
 }
 
 /// @nodoc
@@ -3001,6 +3465,7 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
     Object? type = null,
     Object? wordMatching = freezed,
     Object? crossword = freezed,
+    Object? scrambled = freezed,
   }) {
     return _then(
       _$StartGameSessionResponseImpl(
@@ -3024,6 +3489,11 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
                 ? _value.crossword
                 : crossword // ignore: cast_nullable_to_non_nullable
                     as CrosswordContent?,
+        scrambled:
+            freezed == scrambled
+                ? _value.scrambled
+                : scrambled // ignore: cast_nullable_to_non_nullable
+                    as ScrambledContent?,
       ),
     );
   }
@@ -3037,6 +3507,7 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
     @GameTypeConverter() required this.type,
     this.wordMatching,
     this.crossword,
+    this.scrambled,
   });
 
   factory _$StartGameSessionResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -3051,10 +3522,12 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
   final WordMatchingContent? wordMatching;
   @override
   final CrosswordContent? crossword;
+  @override
+  final ScrambledContent? scrambled;
 
   @override
   String toString() {
-    return 'StartGameSessionResponse(session: $session, type: $type, wordMatching: $wordMatching, crossword: $crossword)';
+    return 'StartGameSessionResponse(session: $session, type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled)';
   }
 
   @override
@@ -3067,13 +3540,21 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
             (identical(other.wordMatching, wordMatching) ||
                 other.wordMatching == wordMatching) &&
             (identical(other.crossword, crossword) ||
-                other.crossword == crossword));
+                other.crossword == crossword) &&
+            (identical(other.scrambled, scrambled) ||
+                other.scrambled == scrambled));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, session, type, wordMatching, crossword);
+  int get hashCode => Object.hash(
+    runtimeType,
+    session,
+    type,
+    wordMatching,
+    crossword,
+    scrambled,
+  );
 
   /// Create a copy of StartGameSessionResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -3097,6 +3578,7 @@ abstract class _StartGameSessionResponse implements StartGameSessionResponse {
     @GameTypeConverter() required final GameType type,
     final WordMatchingContent? wordMatching,
     final CrosswordContent? crossword,
+    final ScrambledContent? scrambled,
   }) = _$StartGameSessionResponseImpl;
 
   factory _StartGameSessionResponse.fromJson(Map<String, dynamic> json) =
@@ -3111,6 +3593,8 @@ abstract class _StartGameSessionResponse implements StartGameSessionResponse {
   WordMatchingContent? get wordMatching;
   @override
   CrosswordContent? get crossword;
+  @override
+  ScrambledContent? get scrambled;
 
   /// Create a copy of StartGameSessionResponse
   /// with the given fields replaced by the non-null parameter values.
