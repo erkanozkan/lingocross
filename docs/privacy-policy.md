@@ -24,7 +24,7 @@ Hesabınızı yönetmek, eğitim içeriğini ve oyunları sağlamak, sonuçları
 
 ### Paylaşım ve işleyiciler
 Hizmeti sağlamak için sınırlı veriyi şu işleyicilerle paylaşırız:
-- **Railway** — sunucu ve veritabanı barındırma (PostgreSQL).
+- **Bulut barındırma sağlayıcısı** — verileriniz güvenli sunucularda barındırılır.
 - **Google Firebase Cloud Messaging** — anlık bildirim iletimi (cihaz jetonu).
 - **Anthropic** — yalnızca kelime tarama kullanıldığında, tanınan kelime metninin yapay zekâ ile düzenlenmesi.
 - **Google ML Kit** — yalnızca cihaz üzerinde metin tanıma/dil algılama (yükleme yapılmaz).
@@ -62,7 +62,7 @@ To manage your account, provide educational content and games, share results wit
 
 ### Sharing and processors
 We share limited data with these processors to run the service:
-- **Railway** — server and database hosting (PostgreSQL).
+- **Cloud hosting provider** — your data is stored on secure servers.
 - **Google Firebase Cloud Messaging** — push notification delivery (device token).
 - **Anthropic** — only when word scanning is used, to clean up recognized word text with AI.
 - **Google ML Kit** — on-device text recognition / language ID only (no upload).
