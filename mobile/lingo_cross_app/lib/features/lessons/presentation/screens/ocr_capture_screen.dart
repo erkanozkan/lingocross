@@ -12,6 +12,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/ocr_service.dart';
 import '../../domain/language_option.dart';
+import '../../domain/ocr_line_parser.dart';
 import '../lessons_notifier.dart';
 import '../ocr_capture_controller.dart';
 import '../widgets/word_form_sheet.dart';
@@ -19,9 +20,10 @@ import 'ocr_review_screen.dart';
 
 /// Ekran A — OCR Yakalama (ux-spec §2, Stitch ekranına birebir).
 ///
-/// Kamera VEYA galeriden foto seç → cihaz-içi ML Kit ile "Kelimeleri Çıkart" →
-/// Ekran B (gözden geçirme). Kamera emülatörde olmayabilir → galeri birinci
-/// sınıf alternatif; izin/erişim hatasında graceful fallback (§5).
+/// Kamera VEYA galeriden foto seç → görüntü bulut AI'ya gönderilip
+/// "Kelimeleri Çıkart" → Ekran B (gözden geçirme). Kamera emülatörde
+/// olmayabilir → galeri birinci sınıf alternatif; izin/erişim hatasında
+/// graceful fallback (§5).
 class OcrCaptureScreen extends ConsumerWidget {
   const OcrCaptureScreen({super.key, required this.lessonId});
 
@@ -105,15 +107,17 @@ class OcrCaptureScreen extends ConsumerWidget {
       } catch (_) {
         failed = true;
       }
+      // AI okuyamadıysa (null) veya hiç kelime çıkmadıysa hata/boş durumu.
+      final candidates = result?.candidates ?? const <OcrCandidate>[];
+      if (result == null) failed = true;
       if (!context.mounted) return;
       await context.push(
         AppRoutes.lessonOcrReview(lessonId),
         extra: OcrReviewArgs(
-          candidates: result?.candidates ?? const [],
+          candidates: candidates,
           sourceLangLabel: sourceLabel,
           targetLangLabel: targetLabel,
           failed: failed,
-          enriched: result?.enriched ?? false,
         ),
       );
     }
@@ -161,8 +165,7 @@ class OcrCaptureScreen extends ConsumerWidget {
           const SizedBox(height: AppSpacing.lg),
           _ExtractButton(
             enabled: state.hasImage && !state.isBusy,
-            scanning: state.isScanning,
-            enriching: state.isEnriching,
+            reading: state.isReading,
             onPressed: extract,
           ),
           const SizedBox(height: AppSpacing.md),
@@ -439,20 +442,18 @@ class _PhotoPreview extends StatelessWidget {
 class _ExtractButton extends StatelessWidget {
   const _ExtractButton({
     required this.enabled,
-    required this.scanning,
-    required this.enriching,
+    required this.reading,
     required this.onPressed,
   });
 
   final bool enabled;
-  final bool scanning;
-  final bool enriching;
+  final bool reading;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final busy = scanning || enriching;
+    final busy = reading;
     final active = enabled && !busy;
     return Semantics(
       liveRegion: busy,
@@ -491,9 +492,7 @@ class _ExtractButton extends StatelessWidget {
                     const SizedBox(width: AppSpacing.sm),
                     Flexible(
                       child: Text(
-                        enriching
-                            ? l10n.ocrCaptureEnriching
-                            : l10n.ocrCaptureScanning,
+                        l10n.ocrCaptureReading,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.headlineMd
                             .copyWith(color: AppColors.onPrimary),

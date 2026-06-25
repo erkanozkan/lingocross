@@ -20,7 +20,6 @@ class OcrReviewArgs {
     required this.sourceLangLabel,
     required this.targetLangLabel,
     this.failed = false,
-    this.enriched = false,
   });
 
   final List<OcrCandidate> candidates;
@@ -31,12 +30,9 @@ class OcrReviewArgs {
   /// Dersin HEDEF dili (karşılık etiketi için), lokalize ad.
   final String targetLangLabel;
 
-  /// ML Kit tarama hata fırlattıysa true → hata boş-durumu gösterilir.
+  /// Bulut AI görüntüyü okuyamadıysa (hata/503/çevrimdışı) true → hata boş
+  /// durumu gösterilir.
   final bool failed;
-
-  /// Bulut AI zenginleştirmesi uygulandıysa true; false → yerel sonuç (fallback).
-  /// false + aday varsa kullanıcıya bilgilendirici bir not gösterilir.
-  final bool enriched;
 }
 
 /// Bir gözden geçirme satırının düzenlenebilir durumu.
@@ -68,9 +64,9 @@ class _ReviewRow {
 
 /// Ekran B — Gözden Geçirme & Düzenleme (ux-spec §3).
 ///
-/// ML Kit adayları kelime kartlarına dönüşür; öğretmen terim + Türkçe karşılık
-/// (+ opsiyonel eşanlam) doldurur, satırları seçer/siler/ekler ve seçilenleri
-/// Words API'ye `source = Ocr` olarak batch kaydeder.
+/// Bulut AI'dan dönen adaylar kelime kartlarına dönüşür; öğretmen terim +
+/// Türkçe karşılık (+ opsiyonel eşanlam) doldurur, satırları seçer/siler/ekler
+/// ve seçilenleri Words API'ye `source = Ocr` olarak batch kaydeder.
 class OcrReviewScreen extends ConsumerStatefulWidget {
   const OcrReviewScreen({
     super.key,
@@ -282,10 +278,6 @@ class _OcrReviewScreenState extends ConsumerState<OcrReviewScreen> {
             recognized: widget.args.candidates.length,
             selected: _selectedCount,
           ),
-          if (!widget.args.enriched) ...[
-            const SizedBox(height: AppSpacing.sm),
-            _AiUnavailableNote(),
-          ],
           if (_showInvalidWarning) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -378,37 +370,6 @@ class _SummaryStrip extends StatelessWidget {
               .copyWith(color: AppColors.onSurfaceVariant),
         ),
       ],
-    );
-  }
-}
-
-/// AI zenginleştirme kullanılamadığında (503/çevrimdışı) gösterilen bilgi notu:
-/// "yerel sonuç gösteriliyor". Hata değil, bilgilendirme tonu (yumuşak konteyner).
-class _AiUnavailableNote extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.secondaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.info_outline,
-              size: 18, color: AppColors.onSecondaryFixedVariant),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(
-            child: Text(
-              l10n.ocrReviewAiUnavailable,
-              style: AppTypography.labelSm
-                  .copyWith(color: AppColors.onSecondaryFixedVariant),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

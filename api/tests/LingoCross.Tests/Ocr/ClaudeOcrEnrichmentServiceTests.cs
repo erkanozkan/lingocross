@@ -9,12 +9,18 @@ namespace LingoCross.Tests.Ocr;
 /// <summary>
 /// ClaudeOcrEnrichmentService akışları: anahtar yokken 503, sahte Claude JSON yanıtının
 /// DTO'ya doğru eşlenmesi (boş/whitespace ayıklama, trim), bozuk JSON'da 503 ve sağlayıcı
-/// hatasının 503'e çevrilmesi. Gerçek ağ/Claude çağrısı yapılmaz.
+/// hatasının 503'e çevrilmesi. Girdi artık base64 görüntüdür; gerçek ağ/Claude çağrısı yapılmaz.
 /// </summary>
 public class ClaudeOcrEnrichmentServiceTests
 {
+    // Tipik küçük base64 örneği (içerik önemsiz; sahte completer çağrıyı yapmaz).
+    private const string SampleImage = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
     private static ClaudeOcrEnrichmentService Build(IClaudeChatCompleter completer)
         => new(completer, NullLogger<ClaudeOcrEnrichmentService>.Instance);
+
+    private static OcrEnrichRequest Request(string image = SampleImage, string mediaType = "image/png")
+        => new(image, mediaType, "en", "tr");
 
     [Fact]
     public async Task Enrich_WhenNotConfigured_Throws503()
@@ -22,7 +28,7 @@ public class ClaudeOcrEnrichmentServiceTests
         var service = Build(new FakeCompleter { IsConfigured = false });
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
-            service.EnrichAsync(new OcrEnrichRequest("happy mutlu")));
+            service.EnrichAsync(Request()));
 
         Assert.Equal(503, ex.StatusCode);
     }
@@ -40,7 +46,7 @@ public class ClaudeOcrEnrichmentServiceTests
             """;
         var service = Build(new FakeCompleter { Json = json });
 
-        var result = await service.EnrichAsync(new OcrEnrichRequest("happy mutlu\nsad üzgün"));
+        var result = await service.EnrichAsync(Request());
 
         Assert.Equal(2, result.Words.Count);
 
@@ -67,7 +73,7 @@ public class ClaudeOcrEnrichmentServiceTests
             """;
         var service = Build(new FakeCompleter { Json = json });
 
-        var result = await service.EnrichAsync(new OcrEnrichRequest("book kitap"));
+        var result = await service.EnrichAsync(Request());
 
         var word = Assert.Single(result.Words);
         Assert.Equal("book", word.Term);
@@ -75,14 +81,15 @@ public class ClaudeOcrEnrichmentServiceTests
     }
 
     [Fact]
-    public async Task Enrich_PassesSystemPromptUserTextAndSchema()
+    public async Task Enrich_PassesSystemPromptImageMediaTypeAndSchema()
     {
         var fake = new FakeCompleter { Json = "{\"words\":[]}" };
         var service = Build(fake);
 
-        await service.EnrichAsync(new OcrEnrichRequest("raw text here", "en", "tr"));
+        await service.EnrichAsync(new OcrEnrichRequest(SampleImage, "image/jpeg", "en", "tr"));
 
-        Assert.Equal("raw text here", fake.LastUserText);
+        Assert.Equal(SampleImage, fake.LastImageBase64);
+        Assert.Equal("image/jpeg", fake.LastMediaType);
         Assert.Contains("en", fake.LastSystemPrompt);
         Assert.Contains("tr", fake.LastSystemPrompt);
         Assert.NotNull(fake.LastSchema);
@@ -95,7 +102,7 @@ public class ClaudeOcrEnrichmentServiceTests
         var service = Build(new FakeCompleter { Json = "not-json{" });
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
-            service.EnrichAsync(new OcrEnrichRequest("happy mutlu")));
+            service.EnrichAsync(Request()));
 
         Assert.Equal(503, ex.StatusCode);
     }
@@ -106,7 +113,7 @@ public class ClaudeOcrEnrichmentServiceTests
         var service = Build(new FakeCompleter { Throw = new HttpRequestException("network down") });
 
         var ex = await Assert.ThrowsAsync<AppException>(() =>
-            service.EnrichAsync(new OcrEnrichRequest("happy mutlu")));
+            service.EnrichAsync(Request()));
 
         Assert.Equal(503, ex.StatusCode);
     }
@@ -118,18 +125,21 @@ public class ClaudeOcrEnrichmentServiceTests
         public Exception? Throw { get; set; }
 
         public string? LastSystemPrompt { get; private set; }
-        public string? LastUserText { get; private set; }
+        public string? LastImageBase64 { get; private set; }
+        public string? LastMediaType { get; private set; }
         public Dictionary<string, JsonElement>? LastSchema { get; private set; }
 
-        public Task<string> CompleteJsonAsync(
+        public Task<string> CompleteJsonFromImageAsync(
             string systemPrompt,
-            string userText,
+            string imageBase64,
+            string mediaType,
             Dictionary<string, JsonElement> schema,
             long maxTokens,
             CancellationToken cancellationToken)
         {
             LastSystemPrompt = systemPrompt;
-            LastUserText = userText;
+            LastImageBase64 = imageBase64;
+            LastMediaType = mediaType;
             LastSchema = schema;
 
             if (Throw is not null)

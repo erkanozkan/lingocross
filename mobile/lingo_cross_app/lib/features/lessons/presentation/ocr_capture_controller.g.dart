@@ -7,13 +7,14 @@ part of 'ocr_capture_controller.dart';
 // **************************************************************************
 
 String _$ocrCaptureControllerHash() =>
-    r'94ee482ee02cb7dc084fc793017fd62796c372af';
+    r'95dcf0c38021baf87e559967c3d708fd81ad9aaf';
 
-/// Ekran A iş akışını yönetir: foto seç → temizle → ML Kit tarama → AI zenginleştirme.
+/// Ekran A iş akışını yönetir: foto seç → temizle → görüntüyü bulut AI'ya
+/// gönderip kelimeleri çıkar.
 ///
-/// `scan()` önce bulut AI'yı dener; hata/503/çevrimdışı veya boş sonuçta yerel
-/// ML Kit ayrıştırma sonucuna düşer (mevcut davranış korunur). OCR tanıma daima
-/// cihaz-içidir; yalnızca zenginleştirme (anlam/eşanlam) buluttadır.
+/// `scan()` görüntüyü base64'e kodlar ve `/api/ocr/enrich`'e gönderir; başarıda
+/// kelime adaylarını döndürür. Hata/503/çevrimdışı/boş sonuç → çağıran taraf
+/// hata/boş durumu gösterir.
 ///
 /// Copied from [OcrCaptureController].
 @ProviderFor(OcrCaptureController)

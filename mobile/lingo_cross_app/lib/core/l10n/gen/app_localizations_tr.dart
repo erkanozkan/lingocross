@@ -831,7 +831,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ocrCaptureHowTitle => 'Nasıl Çalışır?';
 
   @override
-  String get ocrCaptureHowDesc => 'El yazısı listenizin fotoğrafını çekin. Metin tanıma kâğıdı tarar ve kelimeleri otomatik olarak listenize aktarır.';
+  String get ocrCaptureHowDesc => 'El yazısı listenizin fotoğrafını çekin. Yapay zeka fotoğrafı okur ve kelimeleri otomatik olarak listenize aktarır.';
 
   @override
   String get ocrCaptureStep1 => 'Fotoğraf Çek';
@@ -861,10 +861,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ocrCaptureExtract => 'Kelimeleri Çıkart';
 
   @override
-  String get ocrCaptureScanning => 'Taranıyor…';
-
-  @override
-  String get ocrCaptureEnriching => 'Yapay zeka ile düzeltiliyor…';
+  String get ocrCaptureReading => 'Görüntü yapay zeka ile okunuyor…';
 
   @override
   String get ocrCaptureOr => 'VEYA';
@@ -892,10 +889,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get ocrReviewConfidenceNote => 'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.';
-
-  @override
-  String get ocrReviewAiUnavailable => 'Yapay zeka düzeltmesi şu an kullanılamadı; cihazda tanınan sonuç gösteriliyor.';
+  String get ocrReviewConfidenceNote => 'Yapay zeka okuması hatalı olabilir; kaydetmeden önce kontrol edin.';
 
   @override
   String ocrReviewTermLabel(String sourceLang) {

@@ -6,15 +6,15 @@ import '../../../core/network/dio_client.dart';
 import '../domain/ocr_line_parser.dart';
 import 'dtos/ocr_enrich_dtos.dart';
 
-/// OCR ham metnini bulut AI ile zenginleştiren repository (`POST /api/ocr/enrich`).
+/// Görüntüyü bulut AI ile okuyup kelime listesine çeviren repository
+/// (`POST /api/ocr/enrich`).
 ///
 /// Uç Bearer + Teacher korumalıdır (token interceptor başlığı ekler). Sunucuda
-/// AI anahtarı yoksa veya upstream hata olursa **503** döner; bu durumda mobil
-/// tarafta yerel ML Kit ayrıştırmasına düşülmesi beklenir.
+/// AI anahtarı yoksa veya upstream hata olursa **503** döner.
 ///
-/// Sözleşme: [enrich] **başarıda** zenginleştirilmiş kelimeleri, **her türlü
-/// hata/çevrimdışı/503'te `null`** döndürür (asla fırlatmaz). `null` =
-/// "yerel fallback'e geç". Bu sayede çağıran taraf tek bir koşulla karar verir.
+/// Sözleşme: [enrich] **başarıda** kelimeleri, **her türlü hata/çevrimdışı/503
+/// veya boş sonuçta `null`** döndürür (asla fırlatmaz). Çağıran taraf `null`'ı
+/// "AI okuyamadı/hata" olarak yorumlar ve kullanıcıya hata/boş durumu gösterir.
 class OcrEnrichmentRepository {
   OcrEnrichmentRepository(this._dio);
 
@@ -22,16 +22,19 @@ class OcrEnrichmentRepository {
 
   String get _base => AppConfig.apiPrefix;
 
-  /// Ham OCR metnini zenginleştirir. Başarısızlıkta (503/ağ/biçim) `null` döner.
+  /// Base64 kodlu görüntüyü bulut AI'ya gönderip çıkarılan kelimeleri döndürür.
+  /// Başarısızlıkta (503/ağ/biçim/boş) `null` döner.
   Future<List<OcrEnrichedWord>?> enrich({
-    required String rawText,
+    required String imageBase64,
+    required String mediaType,
     required String sourceLanguage,
     required String targetLanguage,
   }) async {
-    if (rawText.trim().isEmpty) return null;
+    if (imageBase64.trim().isEmpty) return null;
     try {
       final request = OcrEnrichRequest(
-        rawText: rawText,
+        imageBase64: imageBase64,
+        mediaType: mediaType,
         sourceLanguage: sourceLanguage,
         targetLanguage: targetLanguage,
       );
@@ -42,10 +45,10 @@ class OcrEnrichmentRepository {
       final data = res.data;
       if (data == null) return null;
       final parsed = OcrEnrichResponse.fromJson(data);
-      // Boş liste de "kullanılabilir sonuç yok" demektir → yerel fallback.
+      // Boş liste de "kullanılabilir sonuç yok" demektir → hata/boş durumu.
       return parsed.words.isEmpty ? null : parsed.words;
     } catch (_) {
-      // 503 (anahtar yok/upstream), ağ hatası, biçim hatası → yerel fallback.
+      // 503 (anahtar yok/upstream), ağ hatası, biçim hatası → null.
       return null;
     }
   }

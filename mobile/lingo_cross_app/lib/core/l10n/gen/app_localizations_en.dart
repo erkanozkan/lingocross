@@ -831,7 +831,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ocrCaptureHowTitle => 'How It Works';
 
   @override
-  String get ocrCaptureHowDesc => 'Take a photo of your handwritten list. Text recognition scans the paper and imports the words into your list automatically.';
+  String get ocrCaptureHowDesc => 'Take a photo of your handwritten list. AI reads the photo and imports the words into your list automatically.';
 
   @override
   String get ocrCaptureStep1 => 'Take Photo';
@@ -861,10 +861,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ocrCaptureExtract => 'Extract Words';
 
   @override
-  String get ocrCaptureScanning => 'Scanning…';
-
-  @override
-  String get ocrCaptureEnriching => 'Fixing with AI…';
+  String get ocrCaptureReading => 'Reading image with AI…';
 
   @override
   String get ocrCaptureOr => 'OR';
@@ -892,10 +889,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get ocrReviewConfidenceNote => 'Text recognition can be inaccurate; review before saving.';
-
-  @override
-  String get ocrReviewAiUnavailable => 'AI correction is currently unavailable; showing the result recognized on your device.';
+  String get ocrReviewConfidenceNote => 'AI reading can be inaccurate; review before saving.';
 
   @override
   String ocrReviewTermLabel(String sourceLang) {
