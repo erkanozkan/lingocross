@@ -30,12 +30,39 @@ public class SubscriptionServiceTests
         TrialDays = 7,
     };
 
-    private static SubscriptionService Svc(AppDbContext db, Guid userId, bool stubEnabled = true)
+    private static SubscriptionService Svc(
+        AppDbContext db,
+        Guid userId,
+        bool stubEnabled = true,
+        IAppleReceiptVerifier? appleVerifier = null,
+        string? appleSharedSecret = "shared-secret")
     {
         var current = TestCurrentUser.Teacher(userId);
         var options = Options.Create(Opts(stubEnabled));
         var entitlement = new EntitlementService(db, current, options);
-        return new SubscriptionService(db, current, entitlement, options);
+        var appleOptions = Options.Create(new AppleOptions { SharedSecret = appleSharedSecret });
+        return new SubscriptionService(
+            db,
+            current,
+            entitlement,
+            options,
+            appleOptions,
+            appleVerifier ?? new FakeAppleReceiptVerifier(new AppleVerifyResult(false, null, null, null, "unset")));
+    }
+
+    /// <summary>Apple'a gerçek istek atmadan sabit sonuç döndüren sahte doğrulayıcı.</summary>
+    private sealed class FakeAppleReceiptVerifier : IAppleReceiptVerifier
+    {
+        private readonly AppleVerifyResult _result;
+        public string? LastReceiptData { get; private set; }
+
+        public FakeAppleReceiptVerifier(AppleVerifyResult result) => _result = result;
+
+        public Task<AppleVerifyResult> VerifyAsync(string receiptData, CancellationToken cancellationToken = default)
+        {
+            LastReceiptData = receiptData;
+            return Task.FromResult(_result);
+        }
     }
 
     private static async Task<Guid> SeedUserAsync(AppDbContext db)
@@ -183,5 +210,131 @@ public class SubscriptionServiceTests
         var dto = await Svc(db, userId, stubEnabled: false).GetMineAsync();
 
         Assert.False(dto.IsPremium);
+    }
+
+    // --- S3: Apple IAP makbuz doğrulama ---
+
+    [Fact]
+    public async Task VerifyApple_ValidMonthlyFutureExpiry_SetsActivePremium()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            IsValid: true,
+            ProductId: AppleOptions.MonthlyProductId,
+            ExpiresAt: DateTimeOffset.UtcNow.AddDays(20),
+            OriginalTransactionId: "txn-1001",
+            RawError: null));
+
+        var dto = await Svc(db, userId, appleVerifier: verifier).VerifyAppleReceiptAsync("base64receipt");
+
+        Assert.True(dto.IsPremium);
+        Assert.Equal(SubscriptionStatus.Active, dto.Status);
+        Assert.Equal(SubscriptionPeriod.Monthly, dto.Period);
+        Assert.NotNull(dto.ExpiresAt);
+
+        var row = await db.Subscriptions.SingleAsync();
+        Assert.Equal(SubscriptionPlan.Premium, row.Plan);
+        Assert.Equal(SubscriptionSource.AppleIap, row.Source);
+        Assert.Equal(SubscriptionStatus.Active, row.Status);
+        Assert.Equal(SubscriptionPeriod.Monthly, row.Period);
+        Assert.Equal("txn-1001", row.StoreTransactionId);
+        Assert.NotNull(row.ExpiresAt);
+    }
+
+    [Fact]
+    public async Task VerifyApple_ValidAnnual_SetsAnnualPeriod()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            true, AppleOptions.AnnualProductId, DateTimeOffset.UtcNow.AddDays(300), "txn-2002", null));
+
+        var dto = await Svc(db, userId, appleVerifier: verifier).VerifyAppleReceiptAsync("r");
+
+        Assert.True(dto.IsPremium);
+        Assert.Equal(SubscriptionPeriod.Annual, dto.Period);
+
+        var row = await db.Subscriptions.SingleAsync();
+        Assert.Equal(SubscriptionPeriod.Annual, row.Period);
+    }
+
+    [Fact]
+    public async Task VerifyApple_ValidButPastExpiry_SetsExpiredNotPremium()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            true, AppleOptions.MonthlyProductId, DateTimeOffset.UtcNow.AddDays(-1), "txn-3003", null));
+
+        var dto = await Svc(db, userId, appleVerifier: verifier).VerifyAppleReceiptAsync("r");
+
+        Assert.False(dto.IsPremium);
+        Assert.Equal(SubscriptionStatus.Expired, dto.Status);
+
+        var row = await db.Subscriptions.SingleAsync();
+        Assert.Equal(SubscriptionStatus.Expired, row.Status);
+        Assert.Equal(SubscriptionSource.AppleIap, row.Source);
+    }
+
+    [Fact]
+    public async Task VerifyApple_InvalidReceipt_Throws400()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeAppleReceiptVerifier(new AppleVerifyResult(false, null, null, null, "21003"));
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => Svc(db, userId, appleVerifier: verifier).VerifyAppleReceiptAsync("r"));
+
+        Assert.Equal(400, ex.StatusCode);
+        Assert.Equal(0, await db.Subscriptions.CountAsync());
+    }
+
+    [Fact]
+    public async Task VerifyApple_NoSharedSecret_Throws503()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            true, AppleOptions.MonthlyProductId, DateTimeOffset.UtcNow.AddDays(10), "txn", null));
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => Svc(db, userId, appleVerifier: verifier, appleSharedSecret: null).VerifyAppleReceiptAsync("r"));
+
+        Assert.Equal(503, ex.StatusCode);
+        Assert.Equal(0, await db.Subscriptions.CountAsync());
+    }
+
+    [Fact]
+    public async Task VerifyApple_EmptyReceipt_Throws400()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => Svc(db, userId).VerifyAppleReceiptAsync("   "));
+
+        Assert.Equal(400, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerifyApple_Upsert_SingleRowPerUser()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+
+        var monthly = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            true, AppleOptions.MonthlyProductId, DateTimeOffset.UtcNow.AddDays(10), "txn-A", null));
+        await Svc(db, userId, appleVerifier: monthly).VerifyAppleReceiptAsync("r1");
+
+        var annual = new FakeAppleReceiptVerifier(new AppleVerifyResult(
+            true, AppleOptions.AnnualProductId, DateTimeOffset.UtcNow.AddDays(300), "txn-B", null));
+        await Svc(db, userId, appleVerifier: annual).VerifyAppleReceiptAsync("r2");
+
+        Assert.Equal(1, await db.Subscriptions.CountAsync(s => s.UserId == userId));
+        var row = await db.Subscriptions.SingleAsync();
+        Assert.Equal(SubscriptionPeriod.Annual, row.Period);
+        Assert.Equal("txn-B", row.StoreTransactionId);
     }
 }

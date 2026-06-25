@@ -9,7 +9,7 @@ namespace LingoCross.Api.Controllers;
 /// <summary>
 /// Abonelik durumu + stub (sahte) satın alma/iptal. GERÇEK ÖDEME YOKTUR. Etkinleştirme/iptal
 /// uçları yalnızca <c>Subscription:StubEnabled</c> açıkken çalışır (aksi halde 503). Apple IAP
-/// doğrulaması ileriye dönük dikiştir (S3) ve şu an 501 döner.
+/// makbuz doğrulaması (<c>apple/verify</c>) gerçek olarak yapılır; <c>Apple:SharedSecret</c> yoksa 503.
 /// </summary>
 [ApiController]
 [Authorize]
@@ -51,11 +51,15 @@ public class SubscriptionController : ControllerBase
     }
 
     /// <summary>
-    /// Apple IAP makbuz doğrulaması (S3 dikişi). Henüz uygulanmadı; 501 Not Implemented döner.
+    /// Apple App Store makbuzunu doğrular ve geçerliyse premium aboneliği (Source=AppleIap) upsert eder.
+    /// <c>Apple:SharedSecret</c> ayarlı değilse 503, makbuz boş/doğrulanamazsa 400 döner.
     /// </summary>
     [HttpPost("apple/verify")]
-    public IActionResult VerifyApple()
-        => StatusCode(StatusCodes.Status501NotImplemented);
+    public async Task<ActionResult<SubscriptionDto>> VerifyApple(VerifyAppleReceiptRequest request, CancellationToken ct)
+    {
+        var dto = await _subscriptionService.VerifyAppleReceiptAsync(request.ReceiptData, ct);
+        return Ok(dto);
+    }
 
     private async Task ValidateAsync<T>(T instance, CancellationToken ct)
     {

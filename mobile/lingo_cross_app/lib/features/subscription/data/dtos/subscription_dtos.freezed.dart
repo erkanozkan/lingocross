@@ -559,3 +559,161 @@ abstract class _ActivateStubRequest implements ActivateStubRequest {
   _$$ActivateStubRequestImplCopyWith<_$ActivateStubRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+AppleVerifyRequest _$AppleVerifyRequestFromJson(Map<String, dynamic> json) {
+  return _AppleVerifyRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$AppleVerifyRequest {
+  String get receiptData => throw _privateConstructorUsedError;
+
+  /// Serializes this AppleVerifyRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of AppleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $AppleVerifyRequestCopyWith<AppleVerifyRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $AppleVerifyRequestCopyWith<$Res> {
+  factory $AppleVerifyRequestCopyWith(
+    AppleVerifyRequest value,
+    $Res Function(AppleVerifyRequest) then,
+  ) = _$AppleVerifyRequestCopyWithImpl<$Res, AppleVerifyRequest>;
+  @useResult
+  $Res call({String receiptData});
+}
+
+/// @nodoc
+class _$AppleVerifyRequestCopyWithImpl<$Res, $Val extends AppleVerifyRequest>
+    implements $AppleVerifyRequestCopyWith<$Res> {
+  _$AppleVerifyRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of AppleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? receiptData = null}) {
+    return _then(
+      _value.copyWith(
+            receiptData:
+                null == receiptData
+                    ? _value.receiptData
+                    : receiptData // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$AppleVerifyRequestImplCopyWith<$Res>
+    implements $AppleVerifyRequestCopyWith<$Res> {
+  factory _$$AppleVerifyRequestImplCopyWith(
+    _$AppleVerifyRequestImpl value,
+    $Res Function(_$AppleVerifyRequestImpl) then,
+  ) = __$$AppleVerifyRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String receiptData});
+}
+
+/// @nodoc
+class __$$AppleVerifyRequestImplCopyWithImpl<$Res>
+    extends _$AppleVerifyRequestCopyWithImpl<$Res, _$AppleVerifyRequestImpl>
+    implements _$$AppleVerifyRequestImplCopyWith<$Res> {
+  __$$AppleVerifyRequestImplCopyWithImpl(
+    _$AppleVerifyRequestImpl _value,
+    $Res Function(_$AppleVerifyRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AppleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? receiptData = null}) {
+    return _then(
+      _$AppleVerifyRequestImpl(
+        receiptData:
+            null == receiptData
+                ? _value.receiptData
+                : receiptData // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$AppleVerifyRequestImpl implements _AppleVerifyRequest {
+  const _$AppleVerifyRequestImpl({required this.receiptData});
+
+  factory _$AppleVerifyRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AppleVerifyRequestImplFromJson(json);
+
+  @override
+  final String receiptData;
+
+  @override
+  String toString() {
+    return 'AppleVerifyRequest(receiptData: $receiptData)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AppleVerifyRequestImpl &&
+            (identical(other.receiptData, receiptData) ||
+                other.receiptData == receiptData));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, receiptData);
+
+  /// Create a copy of AppleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$AppleVerifyRequestImplCopyWith<_$AppleVerifyRequestImpl> get copyWith =>
+      __$$AppleVerifyRequestImplCopyWithImpl<_$AppleVerifyRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$AppleVerifyRequestImplToJson(this);
+  }
+}
+
+abstract class _AppleVerifyRequest implements AppleVerifyRequest {
+  const factory _AppleVerifyRequest({required final String receiptData}) =
+      _$AppleVerifyRequestImpl;
+
+  factory _AppleVerifyRequest.fromJson(Map<String, dynamic> json) =
+      _$AppleVerifyRequestImpl.fromJson;
+
+  @override
+  String get receiptData;
+
+  /// Create a copy of AppleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$AppleVerifyRequestImplCopyWith<_$AppleVerifyRequestImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

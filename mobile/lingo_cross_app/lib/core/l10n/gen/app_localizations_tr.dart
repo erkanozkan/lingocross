@@ -2348,5 +2348,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallActivateError => 'Bir hata oluştu, lütfen tekrar deneyin.';
 
   @override
+  String get paywallRestore => 'Satın Alımları Geri Yükle';
+
+  @override
+  String get paywallRestoreSuccess => 'Premium geri yüklendi.';
+
+  @override
+  String get paywallPurchaseSuccess => 'Premium etkinleştirildi.';
+
+  @override
+  String get paywallPurchaseCanceled => 'Satın alma iptal edildi.';
+
+  @override
+  String get paywallPurchaseError => 'Satın alma tamamlanamadı, lütfen tekrar deneyin.';
+
+  @override
+  String get paywallProductsUnavailable => 'Mağazaya şu an ulaşılamıyor.';
+
+  @override
+  String get paywallProductsError => 'Abonelik bilgileri yüklenemedi.';
+
+  @override
+  String get paywallPriceUnavailable => '—';
+
+  @override
   String get lockedFeatureLabel => 'Premium';
 }

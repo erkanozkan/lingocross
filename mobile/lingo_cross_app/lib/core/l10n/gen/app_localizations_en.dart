@@ -2348,5 +2348,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywallActivateError => 'Something went wrong, please try again.';
 
   @override
+  String get paywallRestore => 'Restore Purchases';
+
+  @override
+  String get paywallRestoreSuccess => 'Premium restored.';
+
+  @override
+  String get paywallPurchaseSuccess => 'Premium activated.';
+
+  @override
+  String get paywallPurchaseCanceled => 'Purchase canceled.';
+
+  @override
+  String get paywallPurchaseError => 'Purchase could not be completed, please try again.';
+
+  @override
+  String get paywallProductsUnavailable => 'The store is currently unreachable.';
+
+  @override
+  String get paywallProductsError => 'Could not load subscription details.';
+
+  @override
+  String get paywallPriceUnavailable => '—';
+
+  @override
   String get lockedFeatureLabel => 'Premium';
 }

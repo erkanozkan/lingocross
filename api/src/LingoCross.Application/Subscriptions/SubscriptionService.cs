@@ -23,17 +23,23 @@ public class SubscriptionService : ISubscriptionService
     private readonly ICurrentUser _currentUser;
     private readonly IEntitlementService _entitlement;
     private readonly SubscriptionOptions _options;
+    private readonly AppleOptions _appleOptions;
+    private readonly IAppleReceiptVerifier _appleVerifier;
 
     public SubscriptionService(
         IAppDbContext db,
         ICurrentUser currentUser,
         IEntitlementService entitlement,
-        IOptions<SubscriptionOptions> options)
+        IOptions<SubscriptionOptions> options,
+        IOptions<AppleOptions> appleOptions,
+        IAppleReceiptVerifier appleVerifier)
     {
         _db = db;
         _currentUser = currentUser;
         _entitlement = entitlement;
         _options = options.Value;
+        _appleOptions = appleOptions.Value;
+        _appleVerifier = appleVerifier;
     }
 
     public async Task<SubscriptionDto> GetMineAsync(CancellationToken cancellationToken = default)
@@ -98,6 +104,61 @@ public class SubscriptionService : ISubscriptionService
             subscription.ExpiresAt = DateTime.UtcNow;
             await _db.SaveChangesAsync(cancellationToken);
         }
+
+        return await BuildDtoAsync(userId, cancellationToken);
+    }
+
+    public async Task<SubscriptionDto> VerifyAppleReceiptAsync(string receiptData, CancellationToken cancellationToken = default)
+    {
+        var userId = RequireUser();
+
+        if (string.IsNullOrWhiteSpace(_appleOptions.SharedSecret))
+        {
+            throw new AppException(503, "Apple IAP yapılandırılmamış.");
+        }
+
+        if (string.IsNullOrWhiteSpace(receiptData))
+        {
+            throw AppException.BadRequest("Makbuz verisi (receiptData) zorunludur.");
+        }
+
+        var result = await _appleVerifier.VerifyAsync(receiptData, cancellationToken);
+        if (!result.IsValid)
+        {
+            throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        }
+
+        var period = AppleOptions.MapPeriod(result.ProductId)
+            ?? throw AppException.BadRequest("Makbuz doğrulanamadı.");
+
+        var now = DateTime.UtcNow;
+        var expiresAt = result.ExpiresAt?.UtcDateTime;
+
+        var subscription = await _db.Subscriptions
+            .FirstOrDefaultAsync(s => s.UserId == userId, cancellationToken);
+
+        if (subscription is null)
+        {
+            subscription = new Subscription { UserId = userId, StartedAt = now };
+            _db.Subscriptions.Add(subscription);
+        }
+        else if (subscription.StartedAt == default)
+        {
+            subscription.StartedAt = now;
+        }
+
+        subscription.Plan = SubscriptionPlan.Premium;
+        subscription.Source = SubscriptionSource.AppleIap;
+        subscription.Period = period;
+        subscription.ExpiresAt = expiresAt;
+        subscription.Status = expiresAt is { } exp && exp > now
+            ? SubscriptionStatus.Active
+            : SubscriptionStatus.Expired;
+        // Tam makbuz (uzun, 256 kolon sınırını aşar) saklanmaz; mağaza işlem kimliği yeterli referanstır.
+        subscription.StoreTransactionId = result.OriginalTransactionId;
+        subscription.LatestReceiptRef = result.OriginalTransactionId;
+
+        await _db.SaveChangesAsync(cancellationToken);
 
         return await BuildDtoAsync(userId, cancellationToken);
     }

@@ -53,3 +53,11 @@ _$ActivateStubRequestImpl _$$ActivateStubRequestImplFromJson(
 Map<String, dynamic> _$$ActivateStubRequestImplToJson(
   _$ActivateStubRequestImpl instance,
 ) => <String, dynamic>{'period': instance.period, 'trial': instance.trial};
+
+_$AppleVerifyRequestImpl _$$AppleVerifyRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$AppleVerifyRequestImpl(receiptData: json['receiptData'] as String);
+
+Map<String, dynamic> _$$AppleVerifyRequestImplToJson(
+  _$AppleVerifyRequestImpl instance,
+) => <String, dynamic>{'receiptData': instance.receiptData};

@@ -90,3 +90,17 @@ class ActivateStubRequest with _$ActivateStubRequest {
   factory ActivateStubRequest.fromJson(Map<String, dynamic> json) =>
       _$ActivateStubRequestFromJson(json);
 }
+
+/// Apple makbuz doğrulama isteği — `POST /api/subscription/apple/verify`.
+///
+/// [receiptData] StoreKit'in döndürdüğü base64 makbuz
+/// (`PurchaseDetails.verificationData.serverVerificationData`).
+@freezed
+class AppleVerifyRequest with _$AppleVerifyRequest {
+  const factory AppleVerifyRequest({
+    required String receiptData,
+  }) = _AppleVerifyRequest;
+
+  factory AppleVerifyRequest.fromJson(Map<String, dynamic> json) =>
+      _$AppleVerifyRequestFromJson(json);
+}

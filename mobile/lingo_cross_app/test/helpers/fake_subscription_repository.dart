@@ -13,7 +13,12 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
   int getMineCount = 0;
   int activateCount = 0;
   int cancelCount = 0;
+  int verifyAppleCount = 0;
   ActivateStubRequest? lastActivateRequest;
+  String? lastReceiptData;
+
+  /// verifyApple başarısız olsun istenirse atanır (örn. doğrulama reddi).
+  Object? verifyAppleError;
 
   @override
   Future<SubscriptionDto> getMine() async {
@@ -26,6 +31,15 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
     activateCount++;
     lastActivateRequest = request;
     if (activateError != null) throw activateError!;
+    current = premiumSubscription();
+    return current;
+  }
+
+  @override
+  Future<SubscriptionDto> verifyApple(String receiptData) async {
+    verifyAppleCount++;
+    lastReceiptData = receiptData;
+    if (verifyAppleError != null) throw verifyAppleError!;
     current = premiumSubscription();
     return current;
   }
