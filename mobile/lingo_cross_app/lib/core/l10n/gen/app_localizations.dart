@@ -3923,6 +3923,24 @@ abstract class AppLocalizations {
   /// **'Sınıflar yüklenemedi.'**
   String get createGameClassesError;
 
+  /// No description provided for @createGameNoClassesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önce bir sınıf oluştur'**
+  String get createGameNoClassesTitle;
+
+  /// No description provided for @createGameNoClassesDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca atayabilmek için en az bir sınıfın olması gerekir.'**
+  String get createGameNoClassesDesc;
+
+  /// No description provided for @createGameNoClassesAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf Oluştur'**
+  String get createGameNoClassesAction;
+
   /// No description provided for @notificationSettingsTitle.
   ///
   /// In tr, this message translates to:

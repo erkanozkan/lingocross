@@ -2067,6 +2067,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGameClassesError => 'Sınıflar yüklenemedi.';
 
   @override
+  String get createGameNoClassesTitle => 'Önce bir sınıf oluştur';
+
+  @override
+  String get createGameNoClassesDesc => 'Bulmaca atayabilmek için en az bir sınıfın olması gerekir.';
+
+  @override
+  String get createGameNoClassesAction => 'Sınıf Oluştur';
+
+  @override
   String get notificationSettingsTitle => 'Bildirim Ayarları';
 
   @override

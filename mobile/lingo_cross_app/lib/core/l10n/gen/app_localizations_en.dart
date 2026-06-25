@@ -2067,6 +2067,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGameClassesError => 'Couldn\'t load classes.';
 
   @override
+  String get createGameNoClassesTitle => 'Create a class first';
+
+  @override
+  String get createGameNoClassesDesc => 'You need at least one class before you can assign a puzzle.';
+
+  @override
+  String get createGameNoClassesAction => 'Create a Class';
+
+  @override
   String get notificationSettingsTitle => 'Notification Settings';
 
   @override

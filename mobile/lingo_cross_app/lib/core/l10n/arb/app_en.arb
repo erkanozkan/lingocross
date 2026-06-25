@@ -772,6 +772,9 @@
   "createGameStepNext": "Next Step",
   "createGameClassesEmpty": "You don't have any classes yet. Create a class first.",
   "createGameClassesError": "Couldn't load classes.",
+  "createGameNoClassesTitle": "Create a class first",
+  "createGameNoClassesDesc": "You need at least one class before you can assign a puzzle.",
+  "createGameNoClassesAction": "Create a Class",
 
   "notificationSettingsTitle": "Notification Settings",
   "notificationMasterTitle": "Notifications",
