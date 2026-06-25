@@ -5,12 +5,15 @@ part 'ocr_enrich_dtos.g.dart';
 
 /// POST /api/ocr/enrich isteği.
 ///
-/// [rawText] ML Kit'in tanıdığı ham metindir; satırlar `\n` ile ayrılır.
-/// Kaynak/hedef dil ISO kodlarıdır (`en`, `tr`).
+/// [imageBase64] kelime listesi fotoğrafının base64 (data: öneki olmadan)
+/// gösterimidir; bulut AI görüntüyü okur ve kelimeleri çıkarır. [mediaType]
+/// görüntünün MIME tipidir (`image/jpeg`, `image/png`). Kaynak/hedef dil ISO
+/// kodlarıdır (`en`, `tr`).
 @freezed
 class OcrEnrichRequest with _$OcrEnrichRequest {
   const factory OcrEnrichRequest({
-    required String rawText,
+    required String imageBase64,
+    required String mediaType,
     required String sourceLanguage,
     required String targetLanguage,
   }) = _OcrEnrichRequest;

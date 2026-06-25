@@ -38,7 +38,7 @@ public class OcrControllerTests
             new FakeEntitlementService { Premium = true },
             new EmptyServiceProvider());
 
-        var result = await controller.Enrich(new OcrEnrichRequest("happy mutlu"), default);
+        var result = await controller.Enrich(new OcrEnrichRequest("aW1hZ2U=", "image/jpeg"), default);
 
         var ok = Assert.IsType<OkObjectResult>(result.Result);
         var body = Assert.IsType<OcrEnrichResponse>(ok.Value);
@@ -55,7 +55,7 @@ public class OcrControllerTests
             new EmptyServiceProvider());
 
         var ex = await Assert.ThrowsAsync<AppException>(
-            () => controller.Enrich(new OcrEnrichRequest("happy mutlu"), default));
+            () => controller.Enrich(new OcrEnrichRequest("aW1hZ2U=", "image/jpeg"), default));
 
         Assert.Equal(402, ex.StatusCode);
         Assert.Equal("subscription_required", ex.Code);

@@ -1,12 +1,13 @@
 namespace LingoCross.Application.Ocr.Dtos;
 
 /// <summary>
-/// OCR ham metnini Claude ile zenginleştirme isteği. Ham metinde Türkçe karakter
-/// hataları (ör. "Öğlen" → "Qğlen") olabilir; servis bunları düzeltir, satırları
-/// terim ↔ karşılık olarak ayırır ve eşanlamlar üretir.
+/// Bir kelime listesi görüntüsünü (genellikle el yazısı, kâğıttan fotoğraf) Claude vision
+/// ile zenginleştirme isteği. Görüntü doğrudan modele gönderilir; model satırları kaynak
+/// terim ↔ hedef karşılık olarak ayırır ve eşanlamlar üretir. Cihaz-içi OCR'a gerek yoktur.
 /// </summary>
 public record OcrEnrichRequest(
-    string RawText,
+    string ImageBase64,
+    string MediaType = "image/jpeg",
     string SourceLanguage = "en",
     string TargetLanguage = "tr");
 

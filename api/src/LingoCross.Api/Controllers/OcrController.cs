@@ -27,8 +27,8 @@ public class OcrController : ControllerBase
     }
 
     /// <summary>
-    /// OCR ham metnini Claude ile zenginleştirir: Türkçe karakter düzeltme, terim/karşılık
-    /// ayrımı ve eşanlam üretimi. OCR Premium özelliğidir; Free öğretmen 402 (feature="ocr") alır.
+    /// Kelime listesi görüntüsünü (base64) Claude vision ile zenginleştirir: görüntüyü doğrudan
+    /// okuyup terim/karşılık ayrımı ve eşanlam üretir. OCR Premium özelliğidir; Free öğretmen 402 (feature="ocr") alır.
     /// Rol kapısı (yalnız Teacher) [Authorize] ile sağlanır → öğrenci 403. Yapılandırma yoksa veya
     /// sağlayıcı hatasında 503 döner.
     /// </summary>

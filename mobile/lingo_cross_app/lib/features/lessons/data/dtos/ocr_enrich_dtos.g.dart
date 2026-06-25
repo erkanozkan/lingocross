@@ -9,7 +9,8 @@ part of 'ocr_enrich_dtos.dart';
 _$OcrEnrichRequestImpl _$$OcrEnrichRequestImplFromJson(
   Map<String, dynamic> json,
 ) => _$OcrEnrichRequestImpl(
-  rawText: json['rawText'] as String,
+  imageBase64: json['imageBase64'] as String,
+  mediaType: json['mediaType'] as String,
   sourceLanguage: json['sourceLanguage'] as String,
   targetLanguage: json['targetLanguage'] as String,
 );
@@ -17,7 +18,8 @@ _$OcrEnrichRequestImpl _$$OcrEnrichRequestImplFromJson(
 Map<String, dynamic> _$$OcrEnrichRequestImplToJson(
   _$OcrEnrichRequestImpl instance,
 ) => <String, dynamic>{
-  'rawText': instance.rawText,
+  'imageBase64': instance.imageBase64,
+  'mediaType': instance.mediaType,
   'sourceLanguage': instance.sourceLanguage,
   'targetLanguage': instance.targetLanguage,
 };

@@ -53,8 +53,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   google_fonts: ^6.3.2
-  google_mlkit_text_recognition: ^0.15.0
-  google_mlkit_language_id: ^0.13.0
+  # OCR kelime listesi fotoğrafı seçimi (kamera/galeri). Görüntü bulut AI'ya
+  # gönderilir; cihaz-içi metin tanıma kullanılmaz.
   image_picker: ^1.2.1
   # Login "Beni Hatırla" tercihi (e-posta + checkbox; ŞİFRE SAKLANMAZ)
   shared_preferences: ^2.3.2

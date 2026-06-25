@@ -21,7 +21,8 @@ OcrEnrichRequest _$OcrEnrichRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OcrEnrichRequest {
-  String get rawText => throw _privateConstructorUsedError;
+  String get imageBase64 => throw _privateConstructorUsedError;
+  String get mediaType => throw _privateConstructorUsedError;
   String get sourceLanguage => throw _privateConstructorUsedError;
   String get targetLanguage => throw _privateConstructorUsedError;
 
@@ -42,7 +43,12 @@ abstract class $OcrEnrichRequestCopyWith<$Res> {
     $Res Function(OcrEnrichRequest) then,
   ) = _$OcrEnrichRequestCopyWithImpl<$Res, OcrEnrichRequest>;
   @useResult
-  $Res call({String rawText, String sourceLanguage, String targetLanguage});
+  $Res call({
+    String imageBase64,
+    String mediaType,
+    String sourceLanguage,
+    String targetLanguage,
+  });
 }
 
 /// @nodoc
@@ -60,16 +66,22 @@ class _$OcrEnrichRequestCopyWithImpl<$Res, $Val extends OcrEnrichRequest>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? rawText = null,
+    Object? imageBase64 = null,
+    Object? mediaType = null,
     Object? sourceLanguage = null,
     Object? targetLanguage = null,
   }) {
     return _then(
       _value.copyWith(
-            rawText:
-                null == rawText
-                    ? _value.rawText
-                    : rawText // ignore: cast_nullable_to_non_nullable
+            imageBase64:
+                null == imageBase64
+                    ? _value.imageBase64
+                    : imageBase64 // ignore: cast_nullable_to_non_nullable
+                        as String,
+            mediaType:
+                null == mediaType
+                    ? _value.mediaType
+                    : mediaType // ignore: cast_nullable_to_non_nullable
                         as String,
             sourceLanguage:
                 null == sourceLanguage
@@ -96,7 +108,12 @@ abstract class _$$OcrEnrichRequestImplCopyWith<$Res>
   ) = __$$OcrEnrichRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String rawText, String sourceLanguage, String targetLanguage});
+  $Res call({
+    String imageBase64,
+    String mediaType,
+    String sourceLanguage,
+    String targetLanguage,
+  });
 }
 
 /// @nodoc
@@ -113,16 +130,22 @@ class __$$OcrEnrichRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? rawText = null,
+    Object? imageBase64 = null,
+    Object? mediaType = null,
     Object? sourceLanguage = null,
     Object? targetLanguage = null,
   }) {
     return _then(
       _$OcrEnrichRequestImpl(
-        rawText:
-            null == rawText
-                ? _value.rawText
-                : rawText // ignore: cast_nullable_to_non_nullable
+        imageBase64:
+            null == imageBase64
+                ? _value.imageBase64
+                : imageBase64 // ignore: cast_nullable_to_non_nullable
+                    as String,
+        mediaType:
+            null == mediaType
+                ? _value.mediaType
+                : mediaType // ignore: cast_nullable_to_non_nullable
                     as String,
         sourceLanguage:
             null == sourceLanguage
@@ -143,7 +166,8 @@ class __$$OcrEnrichRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
   const _$OcrEnrichRequestImpl({
-    required this.rawText,
+    required this.imageBase64,
+    required this.mediaType,
     required this.sourceLanguage,
     required this.targetLanguage,
   });
@@ -152,7 +176,9 @@ class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
       _$$OcrEnrichRequestImplFromJson(json);
 
   @override
-  final String rawText;
+  final String imageBase64;
+  @override
+  final String mediaType;
   @override
   final String sourceLanguage;
   @override
@@ -160,7 +186,7 @@ class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
 
   @override
   String toString() {
-    return 'OcrEnrichRequest(rawText: $rawText, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage)';
+    return 'OcrEnrichRequest(imageBase64: $imageBase64, mediaType: $mediaType, sourceLanguage: $sourceLanguage, targetLanguage: $targetLanguage)';
   }
 
   @override
@@ -168,7 +194,10 @@ class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OcrEnrichRequestImpl &&
-            (identical(other.rawText, rawText) || other.rawText == rawText) &&
+            (identical(other.imageBase64, imageBase64) ||
+                other.imageBase64 == imageBase64) &&
+            (identical(other.mediaType, mediaType) ||
+                other.mediaType == mediaType) &&
             (identical(other.sourceLanguage, sourceLanguage) ||
                 other.sourceLanguage == sourceLanguage) &&
             (identical(other.targetLanguage, targetLanguage) ||
@@ -177,8 +206,13 @@ class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, rawText, sourceLanguage, targetLanguage);
+  int get hashCode => Object.hash(
+    runtimeType,
+    imageBase64,
+    mediaType,
+    sourceLanguage,
+    targetLanguage,
+  );
 
   /// Create a copy of OcrEnrichRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -199,7 +233,8 @@ class _$OcrEnrichRequestImpl implements _OcrEnrichRequest {
 
 abstract class _OcrEnrichRequest implements OcrEnrichRequest {
   const factory _OcrEnrichRequest({
-    required final String rawText,
+    required final String imageBase64,
+    required final String mediaType,
     required final String sourceLanguage,
     required final String targetLanguage,
   }) = _$OcrEnrichRequestImpl;
@@ -208,7 +243,9 @@ abstract class _OcrEnrichRequest implements OcrEnrichRequest {
       _$OcrEnrichRequestImpl.fromJson;
 
   @override
-  String get rawText;
+  String get imageBase64;
+  @override
+  String get mediaType;
   @override
   String get sourceLanguage;
   @override

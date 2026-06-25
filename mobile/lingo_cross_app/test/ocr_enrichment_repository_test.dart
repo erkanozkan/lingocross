@@ -65,7 +65,8 @@ void main() {
       final repo = OcrEnrichmentRepository(_dioWith(adapter));
 
       final words = await repo.enrich(
-        rawText: 'apple\nbook',
+        imageBase64: 'AAAA',
+        mediaType: 'image/jpeg',
         sourceLanguage: 'en',
         targetLanguage: 'tr',
       );
@@ -78,21 +79,23 @@ void main() {
       expect(words[1].term, 'book');
       expect(words[1].synonyms, isEmpty);
 
-      // İstek gövdesi sözleşmeyle uyumlu olmalı.
+      // İstek gövdesi sözleşmeyle uyumlu olmalı (görüntü gönderilir).
       final sent = jsonDecode(captured) as Map<String, dynamic>;
-      expect(sent['rawText'], 'apple\nbook');
+      expect(sent['imageBase64'], 'AAAA');
+      expect(sent['mediaType'], 'image/jpeg');
       expect(sent['sourceLanguage'], 'en');
       expect(sent['targetLanguage'], 'tr');
     });
 
-    test('503 (anahtar yok/upstream) → null (yerel fallback)', () async {
+    test('503 (anahtar yok/upstream) → null', () async {
       final adapter = _FakeAdapter(
         (_) => _json(503, {'title': 'Service Unavailable'}),
       );
       final repo = OcrEnrichmentRepository(_dioWith(adapter));
 
       final words = await repo.enrich(
-        rawText: 'apple',
+        imageBase64: 'AAAA',
+        mediaType: 'image/jpeg',
         sourceLanguage: 'en',
         targetLanguage: 'tr',
       );
@@ -100,13 +103,14 @@ void main() {
       expect(words, isNull);
     });
 
-    test('ağ hatası → null (yerel fallback)', () async {
+    test('ağ hatası → null', () async {
       final dio = Dio(BaseOptions(baseUrl: 'http://test.local'));
       dio.httpClientAdapter = _ThrowingAdapter();
       final repo = OcrEnrichmentRepository(dio);
 
       final words = await repo.enrich(
-        rawText: 'apple',
+        imageBase64: 'AAAA',
+        mediaType: 'image/jpeg',
         sourceLanguage: 'en',
         targetLanguage: 'tr',
       );
@@ -114,12 +118,13 @@ void main() {
       expect(words, isNull);
     });
 
-    test('boş words listesi → null (yerel fallback)', () async {
+    test('boş words listesi → null', () async {
       final adapter = _FakeAdapter((_) => _json(200, {'words': <dynamic>[]}));
       final repo = OcrEnrichmentRepository(_dioWith(adapter));
 
       final words = await repo.enrich(
-        rawText: 'apple',
+        imageBase64: 'AAAA',
+        mediaType: 'image/jpeg',
         sourceLanguage: 'en',
         targetLanguage: 'tr',
       );
@@ -127,7 +132,7 @@ void main() {
       expect(words, isNull);
     });
 
-    test('boş rawText → istek yapılmadan null', () async {
+    test('boş imageBase64 → istek yapılmadan null', () async {
       var called = false;
       final adapter = _FakeAdapter((_) {
         called = true;
@@ -136,7 +141,8 @@ void main() {
       final repo = OcrEnrichmentRepository(_dioWith(adapter));
 
       final words = await repo.enrich(
-        rawText: '   ',
+        imageBase64: '   ',
+        mediaType: 'image/jpeg',
         sourceLanguage: 'en',
         targetLanguage: 'tr',
       );

@@ -12,8 +12,10 @@ namespace LingoCross.Infrastructure.Ocr;
 
 /// <summary>
 /// <see cref="IOcrEnrichmentService"/>'i resmi Anthropic C# SDK (model: claude-haiku-4-5,
-/// yapılandırılmış JSON çıktısı) ile uygular. API anahtarı yoksa veya sağlayıcı/ağ hatası
-/// olursa 503 (<see cref="AppException"/>) fırlatır; mobil istemci yerel ayrıştırmaya düşer.
+/// vision + yapılandırılmış JSON çıktısı) ile uygular. Cihaz-içi OCR yerine görüntünün kendisi
+/// (base64) doğrudan Claude'a gönderilir; böylece el yazısı yanlış okumaları model tarafından
+/// yorumlanır. API anahtarı yoksa veya sağlayıcı/ağ hatası olursa 503 (<see cref="AppException"/>)
+/// fırlatır; mobil istemci yerel ayrıştırmaya düşer.
 ///
 /// Asıl SDK çağrısı <see cref="IClaudeChatCompleter"/> arkasına alınmıştır; böylece servis,
 /// gerçek ağ çağrısı yapmadan test edilebilir.
@@ -51,9 +53,10 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
         string json;
         try
         {
-            json = await _completer.CompleteJsonAsync(
+            json = await _completer.CompleteJsonFromImageAsync(
                 systemPrompt,
-                request.RawText,
+                request.ImageBase64,
+                request.MediaType,
                 BuildSchema(request.SourceLanguage, request.TargetLanguage),
                 MaxTokens,
                 cancellationToken);
@@ -98,10 +101,9 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
 
     private static string BuildSystemPrompt(string sourceLanguage, string targetLanguage)
         => $"""
-            Sen bir dil öğretmeni asistanısın. Sana OCR ile bir kâğıttan okunmuş ham kelime
-            metni verilecek. Bu metinde Türkçe karakterler yanlış tanınmış olabilir
-            (örn. "Öğlen" → "Qğlen", "yarısı" → "yarlsl"). Görevlerin:
-            1) Türkçe karakter hatalarını düzelt (ı/i, ö/o, ü/u, ş/s, ç/c, ğ/g).
+            Sen bir dil öğretmeni asistanısın. Sana bir öğretmenin kâğıda (çoğu zaman EL YAZISIYLA)
+            yazdığı bir kelime listesinin görüntüsü verilecek. Görevlerin:
+            1) Görüntüyü dikkatle oku; el yazısını ve olası belirsizlikleri bağlama göre yorumla.
             2) Her satırı bir kaynak dil terimi ('{sourceLanguage}') ile hedef dil karşılığına
                ('{targetLanguage}') ayır. Satırda sıra fark etmez; hangisinin '{sourceLanguage}'
                hangisinin '{targetLanguage}' olduğunu dile göre belirle. 'term' alanına
@@ -111,7 +113,7 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
                '{sourceLanguage}' dilinde yazılır — '{targetLanguage}' (meaning) dilinde DEĞİL.
                Örneğin '{sourceLanguage}' = İngilizce ise eşanlamlar İngilizce olmalıdır.
                Uygun eşanlam yoksa boş liste döndür.
-            Yalnızca verilen JSON şemasına uygun çıktı üret. Anlamsız/eksik satırları atla.
+            Yalnızca verilen JSON şemasına uygun çıktı üret. Okunamayan/anlamsız satırları atla.
             """;
 
     private static Dictionary<string, JsonElement> BuildSchema(string sourceLanguage, string targetLanguage) => new()
@@ -168,25 +170,24 @@ public class ClaudeOcrEnrichmentService : IOcrEnrichmentService
 
 /// <summary>
 /// Anthropic SDK çağrısını soyutlayan iç arayüz. Servis bu arayüze bağlanır; gerçek
-/// implementasyon SDK'yı sarar, testler sahte verir.
+/// implementasyon SDK'yı sarar (görüntü içerik bloğu + talimat), testler sahte verir.
 /// </summary>
 internal interface IClaudeChatCompleter
 {
     bool IsConfigured { get; }
 
-    Task<string> CompleteJsonAsync(
+    Task<string> CompleteJsonFromImageAsync(
         string systemPrompt,
-        string userText,
+        string imageBase64,
+        string mediaType,
         Dictionary<string, JsonElement> schema,
         long maxTokens,
         CancellationToken cancellationToken);
 }
 
-/// <summary>Anthropic resmi C# SDK üzerinden çalışan gerçek tamamlayıcı.</summary>
+/// <summary>Anthropic resmi C# SDK üzerinden çalışan gerçek tamamlayıcı (vision).</summary>
 internal sealed class AnthropicChatCompleter : IClaudeChatCompleter
 {
-    private const string ModelId = "claude-haiku-4-5";
-
     private readonly string? _apiKey;
     private readonly Lazy<AnthropicClient> _client;
 
@@ -198,13 +199,28 @@ internal sealed class AnthropicChatCompleter : IClaudeChatCompleter
 
     public bool IsConfigured => !string.IsNullOrWhiteSpace(_apiKey);
 
-    public async Task<string> CompleteJsonAsync(
+    public async Task<string> CompleteJsonFromImageAsync(
         string systemPrompt,
-        string userText,
+        string imageBase64,
+        string mediaType,
         Dictionary<string, JsonElement> schema,
         long maxTokens,
         CancellationToken cancellationToken)
     {
+        // Görüntü içerik bloğu: base64 kaynak + (varsa) kısa metin talimatı tek mesaj içinde.
+        var imageBlock = new ImageBlockParam
+        {
+            Source = new Base64ImageSource
+            {
+                Data = imageBase64,
+                MediaType = ToMediaType(mediaType),
+            },
+        };
+        var instructionBlock = new TextBlockParam(
+            "Bu görüntüdeki kelime listesini oku ve verilen JSON şemasına göre çıkar.");
+
+        var content = new List<ContentBlockParam> { imageBlock, instructionBlock };
+
         var parameters = new MessageCreateParams
         {
             Model = Model.ClaudeHaiku4_5,
@@ -214,7 +230,7 @@ internal sealed class AnthropicChatCompleter : IClaudeChatCompleter
             {
                 Format = new JsonOutputFormat { Schema = schema },
             },
-            Messages = [new MessageParam { Role = Role.User, Content = userText }],
+            Messages = [new MessageParam { Role = Role.User, Content = content }],
         };
 
         var response = await _client.Value.Messages.Create(parameters, cancellationToken);
@@ -233,4 +249,10 @@ internal sealed class AnthropicChatCompleter : IClaudeChatCompleter
 
         return text;
     }
+
+    private static MediaType ToMediaType(string mediaType) => mediaType switch
+    {
+        "image/png" => Anthropic.Models.Messages.MediaType.ImagePng,
+        _ => Anthropic.Models.Messages.MediaType.ImageJpeg,
+    };
 }

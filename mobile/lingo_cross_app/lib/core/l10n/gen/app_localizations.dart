@@ -1682,7 +1682,7 @@ abstract class AppLocalizations {
   /// No description provided for @ocrCaptureHowDesc.
   ///
   /// In tr, this message translates to:
-  /// **'El yazısı listenizin fotoğrafını çekin. Metin tanıma kâğıdı tarar ve kelimeleri otomatik olarak listenize aktarır.'**
+  /// **'El yazısı listenizin fotoğrafını çekin. Yapay zeka fotoğrafı okur ve kelimeleri otomatik olarak listenize aktarır.'**
   String get ocrCaptureHowDesc;
 
   /// No description provided for @ocrCaptureStep1.
@@ -1739,17 +1739,11 @@ abstract class AppLocalizations {
   /// **'Kelimeleri Çıkart'**
   String get ocrCaptureExtract;
 
-  /// No description provided for @ocrCaptureScanning.
+  /// OCR yakalama ekranında görüntü bulut AI'ya gönderilip okunurken gösterilen yükleme metni.
   ///
   /// In tr, this message translates to:
-  /// **'Taranıyor…'**
-  String get ocrCaptureScanning;
-
-  /// OCR yakalama ekranında bulut AI zenginleştirmesi sürerken gösterilen yükleme metni.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yapay zeka ile düzeltiliyor…'**
-  String get ocrCaptureEnriching;
+  /// **'Görüntü yapay zeka ile okunuyor…'**
+  String get ocrCaptureReading;
 
   /// No description provided for @ocrCaptureOr.
   ///
@@ -1796,14 +1790,8 @@ abstract class AppLocalizations {
   /// No description provided for @ocrReviewConfidenceNote.
   ///
   /// In tr, this message translates to:
-  /// **'Metin tanıma hatalı olabilir; kaydetmeden önce kontrol edin.'**
+  /// **'Yapay zeka okuması hatalı olabilir; kaydetmeden önce kontrol edin.'**
   String get ocrReviewConfidenceNote;
-
-  /// AI zenginleştirme (503/çevrimdışı) başarısız olup yerel ML Kit sonucuna düşüldüğünde gösterilen bilgi notu.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yapay zeka düzeltmesi şu an kullanılamadı; cihazda tanınan sonuç gösteriliyor.'**
-  String get ocrReviewAiUnavailable;
 
   /// No description provided for @ocrReviewTermLabel.
   ///

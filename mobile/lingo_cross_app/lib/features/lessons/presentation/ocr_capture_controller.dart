@@ -6,11 +6,12 @@ import '../domain/ocr_line_parser.dart';
 
 part 'ocr_capture_controller.g.dart';
 
-/// Yakalama ekranı (Ekran A) durumu: seçilen foto + tarama durumu.
+/// Yakalama ekranı (Ekran A) durumu: seçilen foto + işleme durumu.
 ///
-/// [scanning] ML Kit cihaz-içi tanıma; [enriching] bulut AI zenginleştirmesi
-/// (kullanıcıya "Yapay zeka ile düzeltiliyor…" gösterilir).
-enum OcrCapturePhase { idle, scanning, enriching }
+/// [reading] seçilen görüntünün base64'e kodlanıp bulut AI'ya gönderildiği ve
+/// kelimelerin çıkarıldığı aşamadır (kullanıcıya "Görüntü yapay zeka ile
+/// okunuyor…" gösterilir). Cihaz-içi metin tanıma kaldırıldı.
+enum OcrCapturePhase { idle, reading }
 
 class OcrCaptureState {
   const OcrCaptureState({
@@ -27,10 +28,10 @@ class OcrCaptureState {
   final bool permissionError;
 
   bool get hasImage => imagePath != null;
-  bool get isScanning => phase == OcrCapturePhase.scanning;
-  bool get isEnriching => phase == OcrCapturePhase.enriching;
 
-  /// ML Kit tarama VEYA AI zenginleştirme sürüyor → ekran kilitli/yükleniyor.
+  /// Bulut AI görüntüyü okuyor → ekran kilitli/yükleniyor.
+  bool get isReading => phase == OcrCapturePhase.reading;
+
   bool get isBusy => phase != OcrCapturePhase.idle;
 
   OcrCaptureState copyWith({
@@ -47,22 +48,19 @@ class OcrCaptureState {
   }
 }
 
-/// `scan()` sonucu: gözden geçirmeye taşınacak adaylar + AI kullanılıp
-/// kullanılmadığı (UI bilgi metni için).
+/// `scan()` sonucu: gözden geçirmeye taşınacak adaylar.
 class OcrScanResult {
-  const OcrScanResult({required this.candidates, required this.enriched});
+  const OcrScanResult({required this.candidates});
 
   final List<OcrCandidate> candidates;
-
-  /// true → bulut AI zenginleştirmesi başarıyla uygulandı; false → yerel fallback.
-  final bool enriched;
 }
 
-/// Ekran A iş akışını yönetir: foto seç → temizle → ML Kit tarama → AI zenginleştirme.
+/// Ekran A iş akışını yönetir: foto seç → temizle → görüntüyü bulut AI'ya
+/// gönderip kelimeleri çıkar.
 ///
-/// `scan()` önce bulut AI'yı dener; hata/503/çevrimdışı veya boş sonuçta yerel
-/// ML Kit ayrıştırma sonucuna düşer (mevcut davranış korunur). OCR tanıma daima
-/// cihaz-içidir; yalnızca zenginleştirme (anlam/eşanlam) buluttadır.
+/// `scan()` görüntüyü base64'e kodlar ve `/api/ocr/enrich`'e gönderir; başarıda
+/// kelime adaylarını döndürür. Hata/503/çevrimdışı/boş sonuç → çağıran taraf
+/// hata/boş durumu gösterir.
 @riverpod
 class OcrCaptureController extends _$OcrCaptureController {
   @override
@@ -91,11 +89,11 @@ class OcrCaptureController extends _$OcrCaptureController {
     state = state.copyWith(clearImage: true, phase: OcrCapturePhase.idle);
   }
 
-  /// Seçili fotoyu tarar; önce bulut AI ile zenginleştirmeyi dener, başarısızsa
-  /// yerel ML Kit adaylarına düşer. Foto yoksa null.
+  /// Seçili fotoyu base64'e kodlayıp bulut AI'ya gönderir ve çıkarılan kelime
+  /// adaylarını döndürür. Foto yoksa null.
   ///
-  /// ML Kit tanıma hata fırlatırsa çağıran yakalar (ekran hata durumuna geçer);
-  /// state her durumda idle'a döner.
+  /// AI okuyamazsa (hata/503/çevrimdışı/boş) `null` döner. Kodlama hatası
+  /// fırlatırsa çağıran yakalar; state her durumda idle'a döner.
   ///
   /// [sourceLanguage]/[targetLanguage] ders dilleridir (ISO kodu); enrich
   /// isteğinin gövdesine konur.
@@ -105,35 +103,17 @@ class OcrCaptureController extends _$OcrCaptureController {
   }) async {
     final path = state.imagePath;
     if (path == null) return null;
-    state = state.copyWith(phase: OcrCapturePhase.scanning);
+    state = state.copyWith(phase: OcrCapturePhase.reading);
     try {
-      // 1) Cihaz-içi ML Kit tanıma (her zaman çalışır; yerel fallback adayları).
-      // Dil-yönü düzeltmesi dersin kaynak/hedef çiftine göre yapılır (F9.2).
-      final recognition = await _service.recognize(
-        path,
+      final payload = await _service.encode(path);
+      final words = await _enrichment.enrich(
+        imageBase64: payload.base64,
+        mediaType: payload.mediaType,
         sourceLanguage: sourceLanguage,
         targetLanguage: targetLanguage,
       );
-
-      // 2) Bulut AI zenginleştirme dene. Hata/503/boş → null → yerel fallback.
-      state = state.copyWith(phase: OcrCapturePhase.enriching);
-      final enrichedWords = await _enrichment.enrich(
-        rawText: recognition.rawText,
-        sourceLanguage: sourceLanguage,
-        targetLanguage: targetLanguage,
-      );
-
-      if (enrichedWords != null) {
-        return OcrScanResult(
-          candidates: enrichedWordsToCandidates(enrichedWords),
-          enriched: true,
-        );
-      }
-      // Yerel fallback (mevcut davranış aynen).
-      return OcrScanResult(
-        candidates: recognition.candidates,
-        enriched: false,
-      );
+      if (words == null) return null;
+      return OcrScanResult(candidates: enrichedWordsToCandidates(words));
     } finally {
       state = state.copyWith(phase: OcrCapturePhase.idle);
     }
