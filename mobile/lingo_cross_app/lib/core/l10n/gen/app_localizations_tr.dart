@@ -1258,6 +1258,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGameTypeCrosswordDesc => 'İpuçları kullanarak kelimeleri bulmalarını sağla.';
 
   @override
+  String get createGameTypeScrambledTitle => 'Karışık Harfler';
+
+  @override
+  String get createGameTypeScrambledDesc => 'Karışık harfleri doğru sıraya dizerek kelimeyi bulmalarını sağla.';
+
+  @override
   String get createGameLessonLabel => 'Kullanılacak Kelime Listesi';
 
   @override
@@ -1335,6 +1341,30 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gameCrosswordCellEmpty => 'boş';
+
+  @override
+  String get gameScrambledTitle => 'Harfleri Diz';
+
+  @override
+  String get gameScrambledClueLabel => 'ÇEVİRİ İPUCU';
+
+  @override
+  String get gameScrambledInstruction => 'Harflere dokunarak doğru sıraya diz. Geri almak için dizdiğin harfe dokun.';
+
+  @override
+  String get gameScrambledPrevious => 'Önceki kelime';
+
+  @override
+  String get gameScrambledNext => 'Sonraki kelime';
+
+  @override
+  String get gameScrambledLetterSemantic => 'harf, eklemek için dokun';
+
+  @override
+  String get gameScrambledSlotSemantic => 'yerleştirildi, geri almak için dokun';
+
+  @override
+  String get gameScrambledEmptySlot => 'boş harf yuvası';
 
   @override
   String get teacherStudentsAppBarTitle => 'Öğrencilerim';
@@ -1664,6 +1694,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get gameTypeQuestionSet => 'Soru Seti';
+
+  @override
+  String get gameTypeScrambled => 'Karışık Harfler';
 
   @override
   String get trackingErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';

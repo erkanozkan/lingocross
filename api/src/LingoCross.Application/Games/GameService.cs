@@ -54,6 +54,17 @@ public class GameService : IGameService
 
                 break;
 
+            case GameType.Scrambled:
+                // Oynanabilirlik: ders en az MinWordsToPlay scrambled-uygun (tek kelime, ≥2 harf, çevirili) kelime içermeli.
+                var scrambledEligible = await CountScrambledEligibleWordsAsync(lesson.Id, cancellationToken);
+                if (scrambledEligible < MinWordsToPlay)
+                {
+                    throw AppException.BadRequest(
+                        $"Bu ders için oyun oluşturulamıyor; en az {MinWordsToPlay} uygun (tek kelimeli, çevirili) kelime gerekir.");
+                }
+
+                break;
+
             case GameType.Crossword:
                 // Crossword için: terim İngilizce (yalnız A–Z, ≥2 harf) VE birincil/ilk çevirisi (ipucu) dolu olmalı.
                 var crosswordEligible = await CountCrosswordEligibleWordsAsync(lesson.Id, cancellationToken);
@@ -268,6 +279,7 @@ public class GameService : IGameService
         // (SaveChanges'tan önce olduğu için) oturum oluşturulmaz.
         WordMatchingContent? wordMatching = null;
         CrosswordContent? crossword = null;
+        ScrambledContent? scrambled = null;
 
         switch (game.Type)
         {
@@ -277,6 +289,10 @@ public class GameService : IGameService
 
             case GameType.Crossword:
                 crossword = await BuildCrosswordContentAsync(game.LessonId, cancellationToken);
+                break;
+
+            case GameType.Scrambled:
+                scrambled = await BuildScrambledContentAsync(game.LessonId, cancellationToken);
                 break;
 
             default:
@@ -293,7 +309,7 @@ public class GameService : IGameService
         _db.GameSessions.Add(session);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return new StartGameSessionResponse(ToDto(session), game.Type, wordMatching, crossword);
+        return new StartGameSessionResponse(ToDto(session), game.Type, wordMatching, crossword, scrambled);
     }
 
     public async Task<GameSessionDto> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken = default)
@@ -357,6 +373,7 @@ public class GameService : IGameService
         // HİÇBİR ŞEY KAYDEDİLMEZ: yalnız okuma + bellek içi üretim, SaveChanges yok.
         WordMatchingContent? wordMatching = null;
         CrosswordContent? crossword = null;
+        ScrambledContent? scrambled = null;
 
         switch (type)
         {
@@ -368,11 +385,15 @@ public class GameService : IGameService
                 crossword = await BuildCrosswordContentAsync(lesson.Id, cancellationToken);
                 break;
 
+            case GameType.Scrambled:
+                scrambled = await BuildScrambledContentAsync(lesson.Id, cancellationToken);
+                break;
+
             default:
                 throw AppException.BadRequest("Geçersiz oyun türü.");
         }
 
-        return new GamePreviewResponse(type, wordMatching, crossword);
+        return new GamePreviewResponse(type, wordMatching, crossword, scrambled);
     }
 
     /// <summary>
@@ -600,6 +621,114 @@ public class GameService : IGameService
         return result.Content;
     }
 
+    /// <summary>
+    /// Dersin kelimelerinden scrambled (harf karıştırma) içeriği üretir: birincil/ilk çevirisi (ipucu) olan
+    /// VE scrambled-uygun (tek kelime, ≥2 harf) terimler alınır, deterministik karıştırılır ve en çok
+    /// <see cref="MaxPairs"/> tanesi seçilir. Yeterli uygun kelime yoksa AppException(400).
+    /// Her item: cevap=terim (olduğu gibi), ipucu=birincil çeviri, karışık=terim harflerinin permütasyonu.
+    /// </summary>
+    private async Task<ScrambledContent> BuildScrambledContentAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        var words = await _db.Words
+            .Where(w => w.LessonId == lessonId)
+            .Include(w => w.Translations)
+            .OrderBy(w => w.SortOrder)
+            .ThenBy(w => w.CreatedAt)
+            .ToListAsync(cancellationToken);
+
+        // Uygun aday: terim scrambled-uygun (tek kelime, ≥2 karakter) VE bir ipucu (birincil/ilk çeviri) var.
+        var eligible = words
+            .Where(w => IsEligibleForScrambled(w.Term))
+            .Select(w => new
+            {
+                Word = w,
+                Clue = PrimaryTranslation(w),
+            })
+            .Where(x => x.Clue is not null)
+            .ToList();
+
+        if (eligible.Count < MinWordsToPlay)
+        {
+            throw AppException.BadRequest(
+                $"Bu ders için harf karıştırma oyunu oynatılamıyor; en az {MinWordsToPlay} uygun " +
+                "(tek kelimeli, çevirili) kelime gerekir.");
+        }
+
+        // Deterministik karıştırma sonrası ilk N kelime.
+        var chosen = Shuffle(eligible).Take(MaxPairs).ToList();
+
+        var items = chosen
+            .Select(x => new ScrambledItem(
+                x.Word.Id,
+                x.Word.Term.Trim(),
+                ScrambleLetters(x.Word.Term.Trim()),
+                x.Clue!))
+            .ToList();
+
+        return new ScrambledContent(items);
+    }
+
+    /// <summary>
+    /// Bir terimin scrambled'a uygun olup olmadığı: trim sonrası boş değil, boşluk/tire İÇERMEZ (tek kelime),
+    /// en az 2 karakter. Aksanlı harfler olduğu gibi kalır (A–Z zorunluluğu YOK).
+    /// </summary>
+    private static bool IsEligibleForScrambled(string term)
+    {
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return false;
+        }
+
+        var trimmed = term.Trim();
+        if (trimmed.Length < 2)
+        {
+            return false;
+        }
+
+        // Çok-kelimeli / tireli ifadeler elenir (Crossword'ün eleme mantığı; ama A–Z şartı yok).
+        foreach (var ch in trimmed)
+        {
+            if (char.IsWhiteSpace(ch) || ch is '-' or '‐' or '‑' or '‒' or '–' or '—')
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Terimin (trim edilmiş) karakterlerini deterministik (_random) karıştırır. Sonuç orijinale eşitse
+    /// birkaç kez (5) yeniden dener; hâlâ eşitse (tek/aynı harfli kelime) olduğu gibi bırakır.
+    /// </summary>
+    private string ScrambleLetters(string term)
+    {
+        var chars = term.ToCharArray();
+        if (chars.Length < 2)
+        {
+            return term;
+        }
+
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            // Fisher–Yates; enjekte edilen Random ile testlerde deterministik.
+            for (var i = chars.Length - 1; i > 0; i--)
+            {
+                var j = _random.Next(i + 1);
+                (chars[i], chars[j]) = (chars[j], chars[i]);
+            }
+
+            var candidate = new string(chars);
+            if (!string.Equals(candidate, term, StringComparison.Ordinal))
+            {
+                return candidate;
+            }
+        }
+
+        // Karıştırma orijinalden farklılaştırılamadı (örn. tüm harfler aynı) → son hâli döndür.
+        return new string(chars);
+    }
+
     private static string? PrimaryTranslation(Word word)
     {
         var primary = word.Translations.FirstOrDefault(t => t.IsPrimary)
@@ -706,6 +835,20 @@ public class GameService : IGameService
             && PrimaryTranslation(w) is not null);
     }
 
+    /// <summary>
+    /// Dersin scrambled-uygun kelime sayısı: terim tek kelime (boşluk/tire içermez), ≥2 karakter VE bir
+    /// çevirisi (ipucu) dolu. Terim eleme kuralı SQL'e çevrilemediği için bellekte değerlendirilir.
+    /// </summary>
+    private async Task<int> CountScrambledEligibleWordsAsync(Guid lessonId, CancellationToken cancellationToken)
+    {
+        var words = await _db.Words
+            .Where(w => w.LessonId == lessonId)
+            .Include(w => w.Translations)
+            .ToListAsync(cancellationToken);
+
+        return words.Count(w => IsEligibleForScrambled(w.Term) && PrimaryTranslation(w) is not null);
+    }
+
     private static string? NormalizeTitle(string? title)
         => string.IsNullOrWhiteSpace(title) ? null : title.Trim();
 
@@ -713,6 +856,7 @@ public class GameService : IGameService
     {
         GameType.WordMatching => "Kelime Eşleştirme",
         GameType.Crossword => "Bulmaca",
+        GameType.Scrambled => "Harfleri Diz",
         _ => "Oyun",
     };
 

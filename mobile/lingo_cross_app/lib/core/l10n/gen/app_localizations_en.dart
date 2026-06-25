@@ -1258,6 +1258,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGameTypeCrosswordDesc => 'Have them find the words using clues.';
 
   @override
+  String get createGameTypeScrambledTitle => 'Scrambled Letters';
+
+  @override
+  String get createGameTypeScrambledDesc => 'Have them unscramble the letters into the correct order to find the word.';
+
+  @override
   String get createGameLessonLabel => 'Word List to Use';
 
   @override
@@ -1335,6 +1341,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameCrosswordCellEmpty => 'empty';
+
+  @override
+  String get gameScrambledTitle => 'Arrange the Letters';
+
+  @override
+  String get gameScrambledClueLabel => 'TRANSLATION HINT';
+
+  @override
+  String get gameScrambledInstruction => 'Tap the letters to arrange them in the correct order. Tap a placed letter to take it back.';
+
+  @override
+  String get gameScrambledPrevious => 'Previous word';
+
+  @override
+  String get gameScrambledNext => 'Next word';
+
+  @override
+  String get gameScrambledLetterSemantic => 'letter, tap to add';
+
+  @override
+  String get gameScrambledSlotSemantic => 'placed, tap to remove';
+
+  @override
+  String get gameScrambledEmptySlot => 'empty letter slot';
 
   @override
   String get teacherStudentsAppBarTitle => 'My Students';
@@ -1664,6 +1694,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameTypeQuestionSet => 'Question Set';
+
+  @override
+  String get gameTypeScrambled => 'Scrambled Letters';
 
   @override
   String get trackingErrorNetwork => 'Connection error. Please try again.';

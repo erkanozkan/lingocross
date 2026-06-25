@@ -466,6 +466,8 @@
   "createGameTypeMatchingDesc": "Kelime ve anlamlarını eşleştirerek öğrenmeyi hızlandır.",
   "createGameTypeCrosswordTitle": "Çengel Bulmaca",
   "createGameTypeCrosswordDesc": "İpuçları kullanarak kelimeleri bulmalarını sağla.",
+  "createGameTypeScrambledTitle": "Karışık Harfler",
+  "createGameTypeScrambledDesc": "Karışık harfleri doğru sıraya dizerek kelimeyi bulmalarını sağla.",
   "createGameLessonLabel": "Kullanılacak Kelime Listesi",
   "createGameLessonHint": "Bir ders seçin…",
   "createGameLessonsEmpty": "Henüz dersin yok. Önce bir ders oluştur.",
@@ -494,6 +496,15 @@
   "gameCrosswordCellNumberedSemantic": "{number} numaralı kelimenin başlangıç hücresi",
   "@gameCrosswordCellNumberedSemantic": { "placeholders": { "number": { "type": "int" } } },
   "gameCrosswordCellEmpty": "boş",
+
+  "gameScrambledTitle": "Harfleri Diz",
+  "gameScrambledClueLabel": "ÇEVİRİ İPUCU",
+  "gameScrambledInstruction": "Harflere dokunarak doğru sıraya diz. Geri almak için dizdiğin harfe dokun.",
+  "gameScrambledPrevious": "Önceki kelime",
+  "gameScrambledNext": "Sonraki kelime",
+  "gameScrambledLetterSemantic": "harf, eklemek için dokun",
+  "gameScrambledSlotSemantic": "yerleştirildi, geri almak için dokun",
+  "gameScrambledEmptySlot": "boş harf yuvası",
 
   "teacherStudentsAppBarTitle": "Öğrencilerim",
   "teacherStudentsCodeLabel": "Davet Kodu",
@@ -620,6 +631,7 @@
   "gameTypeWordMatching": "Kelime Eşleştirme",
   "gameTypeCrossword": "Bulmaca",
   "gameTypeQuestionSet": "Soru Seti",
+  "gameTypeScrambled": "Karışık Harfler",
 
   "trackingErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
   "trackingErrorNotFound": "Öğrenci bulunamadı.",

@@ -346,6 +346,15 @@ class _StepGameType extends StatelessWidget {
           selected: selectedType == GameType.crossword,
           onTap: () => onSelect(GameType.crossword),
         ),
+        const SizedBox(height: AppSpacing.lg),
+        _GameTypeCard(
+          icon: Icons.shuffle,
+          iconBg: AppColors.secondaryContainer,
+          title: l10n.createGameTypeScrambledTitle,
+          desc: l10n.createGameTypeScrambledDesc,
+          selected: selectedType == GameType.scrambled,
+          onTap: () => onSelect(GameType.scrambled),
+        ),
       ],
     );
   }

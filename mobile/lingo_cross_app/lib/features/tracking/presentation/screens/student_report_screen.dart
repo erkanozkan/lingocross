@@ -330,6 +330,7 @@ class _ResultCard extends StatelessWidget {
     GameType.wordMatching => l10n.gameTypeWordMatching,
     GameType.crossword => l10n.gameTypeCrossword,
     GameType.questionSet => l10n.gameTypeQuestionSet,
+    GameType.scrambled => l10n.gameTypeScrambled,
   };
 }
 
