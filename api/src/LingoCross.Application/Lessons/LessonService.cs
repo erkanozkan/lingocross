@@ -42,8 +42,10 @@ public class LessonService : ILessonService
             SourceLanguage = NormalizeLang(request.SourceLanguage, "en"),
             TargetLanguage = NormalizeLang(request.TargetLanguage, "tr"),
             ScheduledLabel = NormalizeLabel(request.ScheduledLabel),
-            Status = LessonStatus.Draft,
-            IsPublished = false,
+            // Dersler artık oto-yayınlanır: oluşturulur oluşturulmaz Active + yayımlı. Manuel "Yayınla"
+            // adımı kaldırıldı (atanan bulmacanın Draft ders yüzünden oynanamaması tuzağını önler).
+            Status = LessonStatus.Active,
+            IsPublished = true,
         };
 
         _db.Lessons.Add(lesson);

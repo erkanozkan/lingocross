@@ -110,6 +110,10 @@ public class GameService : IGameService
             game.PublishedAt ??= now;
         }
 
+        // Savunmacı oto-yayın: bir bulmaca varsa dersi de yayımla. Yeni dersler zaten yayımlı oluşturulur;
+        // bu, eski Draft dersler için atanan bulmacanın oynanamaması tuzağını kapatır.
+        EnsureLessonPublished(lesson);
+
         await _db.SaveChangesAsync(cancellationToken);
 
         // F4.3: classIds verilirse oyun oluşturma ile aynı akışta sınıflara atanır (set semantiği).
@@ -445,6 +449,13 @@ public class GameService : IGameService
         {
             game.IsPublished = true;
             game.PublishedAt ??= DateTime.UtcNow;
+
+            // Savunmacı oto-yayın: ≥1 sınıf atandıysa ilgili dersi de yayımla (eski Draft dersler için).
+            var lesson = await _db.Lessons.FirstOrDefaultAsync(l => l.Id == game.LessonId, cancellationToken);
+            if (lesson is not null)
+            {
+                EnsureLessonPublished(lesson);
+            }
         }
 
         await _db.SaveChangesAsync(cancellationToken);
@@ -847,6 +858,21 @@ public class GameService : IGameService
             .ToListAsync(cancellationToken);
 
         return words.Count(w => IsEligibleForScrambled(w.Term) && PrimaryTranslation(w) is not null);
+    }
+
+    /// <summary>
+    /// Savunmacı oto-yayın: bir bulmaca oluşturulduğunda/atandığında ilgili dersin de yayımlı olmasını
+    /// garanti eder. IsPublished her durumda true yapılır. Status yalnızca Completed DEĞİLSE Active'e
+    /// çekilir (tamamlanmış bir dersi yeniden Active'e döndürmeyiz; yine de yayımlı kalır).
+    /// SaveChanges çağıran taraftadır.
+    /// </summary>
+    private static void EnsureLessonPublished(Lesson lesson)
+    {
+        lesson.IsPublished = true;
+        if (lesson.Status != LessonStatus.Completed)
+        {
+            lesson.Status = LessonStatus.Active;
+        }
     }
 
     private static string? NormalizeTitle(string? title)

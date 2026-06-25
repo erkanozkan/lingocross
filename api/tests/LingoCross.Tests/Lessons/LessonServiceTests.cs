@@ -43,7 +43,8 @@ public class LessonServiceTests
         Assert.Equal("Hayvanlar", dto.Title);
         Assert.Equal("en", dto.SourceLanguage);
         Assert.Equal("tr", dto.TargetLanguage);
-        Assert.False(dto.IsPublished);
+        // Dersler artık oto-yayınlanır: oluşturulduğu an Active + yayımlı.
+        Assert.True(dto.IsPublished);
         Assert.Equal(teacherId, dto.TeacherId);
         Assert.Equal(1, await db.Lessons.CountAsync());
     }
@@ -150,7 +151,7 @@ public class LessonServiceTests
     }
 
     [Fact]
-    public async Task Create_DefaultsToDraftStatus()
+    public async Task Create_AutoPublishes_ActiveAndPublished()
     {
         var db = NewDb();
         var teacherId = await SeedTeacherAsync(db);
@@ -158,8 +159,9 @@ public class LessonServiceTests
 
         var dto = await service.CreateAsync(Req());
 
-        Assert.Equal((int)LessonStatus.Draft, dto.Status);
-        Assert.False(dto.IsPublished);
+        // Manuel "Yayınla" adımı kaldırıldı: yeni ders oto-yayınlı (Active + IsPublished).
+        Assert.Equal((int)LessonStatus.Active, dto.Status);
+        Assert.True(dto.IsPublished);
     }
 
     [Fact]
@@ -246,6 +248,8 @@ public class LessonServiceTests
         var current = TestCurrentUser.Teacher(teacherId);
         var lessonSvc = new LessonService(db, current);
         var lesson = await CreateLessonWithWordAsync(db, lessonSvc, current);
+        // Dersler artık oto-yayınlı oluşturulur; Draft durumunu testlemek için önce yayından kaldır.
+        await lessonSvc.UnpublishAsync(lesson.Id);
 
         var ex = await Assert.ThrowsAsync<AppException>(() => lessonSvc.CompleteAsync(lesson.Id));
         Assert.Equal(400, ex.StatusCode);

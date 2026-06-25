@@ -256,6 +256,91 @@ public class GameServiceTests
         Assert.Equal(404, ex.StatusCode);
     }
 
+    // ---- Oto-yayın: bulmaca oluşturma/atama ile ders de yayımlanır ----
+
+    [Fact]
+    public async Task Create_Game_OnDraftLesson_AutoPublishesLesson()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        // Bilerek Draft + yayımsız kurulmuş eski bir ders.
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: false, translatedWordCount: 5);
+        lesson.Status = LessonStatus.Draft;
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        await svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.WordMatching, null));
+
+        var stored = await db.Lessons.SingleAsync(l => l.Id == lesson.Id);
+        Assert.True(stored.IsPublished);
+        Assert.Equal(LessonStatus.Active, stored.Status);
+    }
+
+    [Fact]
+    public async Task Assign_OnDraftLesson_AutoPublishesLesson()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, published: false, translatedWordCount: 5);
+        lesson.Status = LessonStatus.Draft;
+        await db.SaveChangesAsync();
+
+        // Oyunu da yayımsız seed et; sınıf atayınca hem oyun hem ders yayımlanmalı.
+        var game = await SeedGameAsync(db, lesson.Id, published: false);
+        var klass = new Class { TeacherId = teacher.Id, Name = "9A", InviteCode = "ABC12345" };
+        db.Classes.Add(klass);
+        await db.SaveChangesAsync();
+        db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = student.Id, Status = ClassMemberStatus.Active });
+        await db.SaveChangesAsync();
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        await svc.SetAssignmentsAsync(game.Id, new SetGameAssignmentsRequest(new[] { klass.Id }));
+
+        var storedLesson = await db.Lessons.SingleAsync(l => l.Id == lesson.Id);
+        var storedGame = await db.Games.SingleAsync(g => g.Id == game.Id);
+        Assert.True(storedLesson.IsPublished);
+        Assert.Equal(LessonStatus.Active, storedLesson.Status);
+        Assert.True(storedGame.IsPublished);
+    }
+
+    [Fact]
+    public async Task StartSession_AfterCreateAndAssign_OnInitiallyDraftLesson_PassesPublishedGate()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        // Başta Draft + yayımsız ders.
+        var lesson = await SeedLessonWithTermsAsync(db, teacher.Id, published: false,
+            ("apple", "elma"),
+            ("pear", "armut"),
+            ("plate", "tabak"),
+            ("lemon", "limon"),
+            ("melon", "kavun"));
+        lesson.Status = LessonStatus.Draft;
+        await db.SaveChangesAsync();
+        await EnrollAsync(db, teacher.Id, student.Id, EnrollmentStatus.Active);
+
+        // Sınıf + öğrenci üyeliği.
+        var klass = new Class { TeacherId = teacher.Id, Name = "9A", InviteCode = "DEF67890" };
+        db.Classes.Add(klass);
+        await db.SaveChangesAsync();
+        db.ClassMembers.Add(new ClassMember { ClassId = klass.Id, StudentId = student.Id, Status = ClassMemberStatus.Active });
+        await db.SaveChangesAsync();
+
+        // Öğretmen oyunu sınıfa atayarak oluşturur (create + assign tek akış).
+        var teacherSvc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        var game = await teacherSvc.CreateForLessonAsync(
+            lesson.Id, new CreateGameRequest(GameType.WordMatching, null, new[] { klass.Id }));
+
+        // Öğrenci, ders başta Draft olmasına rağmen lesson-published kapısına takılmadan başlatabilir.
+        var studentSvc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var response = await studentSvc.StartSessionAsync(game.Id);
+
+        Assert.Equal(GameSessionStatus.InProgress, response.Session.Status);
+        Assert.NotNull(response.WordMatching);
+    }
+
     // ---- F2.2: ListForLesson (öğretmen, salt-okunur) ----
 
     [Fact]
