@@ -32,7 +32,7 @@
 <li><b>Eğitim içeriği:</b> oluşturduğunuz sınıflar, dersler, kelimeler ve çeviriler, oyunlar ve atamalar.</li>
 <li><b>Kullanım/sonuç verileri:</b> oyun sonuçları (başarı, süre, kelime bazlı doğru/yanlış) ve öğretmenle paylaşımı.</li>
 <li><b>Bildirim:</b> izin verirseniz anlık bildirim için cihaz jetonu (FCM).</li>
-<li><b>Kamera/Fotoğraflar:</b> kelime tarama kullanılırsa metin cihazınızda tanınır. Tanınan metin (görüntü değil) yapay zekâ düzenlemesi için sunucumuza ve bir yapay zekâ sağlayıcısına iletilebilir. Fotoğraflar yüklenmez/saklanmaz.</li>
+<li><b>Kamera/Fotoğraflar:</b> kelime tarama kullanırsanız, çektiğiniz veya seçtiğiniz fotoğraf, içindeki kelimeleri çıkarmak için bir yapay zekâ sağlayıcısına gönderilir. Fotoğraf yalnız bu işlem için kullanılır ve kalıcı olarak saklanmaz.</li>
 <li><b>Abonelik durumu:</b> plan (ücretsiz/Premium).</li>
 </ul>
 <p>Konum, rehber, reklam tanımlayıcıları toplamayız. Üçüncü taraf reklam ağı veya analitik SDK kullanmayız.</p>
@@ -42,8 +42,7 @@
 <ul>
 <li><b>Bulut barındırma sağlayıcısı</b> — verileriniz güvenli sunucularda barındırılır.</li>
 <li><b>Anlık bildirim sağlayıcısı</b> — bildirimlerin iletimi (cihaz jetonu).</li>
-<li><b>Yapay zekâ sağlayıcısı</b> — yalnızca kelime tarama kullanıldığında, tanınan metnin yapay zekâ ile düzenlenmesi.</li>
-<li><b>Cihaz-içi metin tanıma</b> — yalnızca cihaz üzerinde metin tanıma/dil algılama (yükleme yok).</li>
+<li><b>Yapay zekâ sağlayıcısı</b> — kelime tarama kullanıldığında, taranan fotoğraftaki kelimelerin okunup çıkarılması.</li>
 </ul>
 <h3>Saklama ve silme</h3>
 <p>Verilerinizi hesabınız aktif olduğu sürece saklarız. Silme için <code>privacy@lingocross.app</code> adresine yazabilir veya (eklendiğinde) uygulama içi hesap silme özelliğini kullanabilirsiniz.</p>
@@ -60,7 +59,7 @@
 <li><b>Educational content:</b> classes, lessons, words and translations, games and assignments you create.</li>
 <li><b>Usage/results:</b> game results (accuracy, time, per-word correct/incorrect) and whether shared with the teacher.</li>
 <li><b>Notifications:</b> if allowed, a device push token (FCM).</li>
-<li><b>Camera/Photos:</b> if word scanning is used, text is recognized on your device. The recognized text (not the image) may be sent to our server and an AI provider for AI cleanup. Photos are not uploaded or stored.</li>
+<li><b>Camera/Photos:</b> if you use word scanning, the photo you take or select is sent to an AI provider to extract the words in it. The photo is used only for this purpose and is not stored permanently.</li>
 <li><b>Subscription status:</b> plan (free/Premium).</li>
 </ul>
 <p>We do not collect location, contacts or advertising identifiers, and use no third-party ad networks or analytics SDKs.</p>
@@ -70,8 +69,7 @@
 <ul>
 <li><b>Cloud hosting provider</b> — your data is stored on secure servers.</li>
 <li><b>Push notification provider</b> — push delivery (device token).</li>
-<li><b>AI provider</b> — only when word scanning is used, to clean up recognized text with AI.</li>
-<li><b>On-device text recognition</b> — on-device text recognition / language ID only (no upload).</li>
+<li><b>AI provider</b> — when word scanning is used, to read and extract words from the scanned photo.</li>
 </ul>
 <h3>Retention and deletion</h3>
 <p>We retain your data while your account is active. To delete it, email <code>privacy@lingocross.app</code> or use in-app account deletion (once available).</p>
