@@ -1,4 +1,5 @@
 using FluentValidation;
+using LingoCross.Application.Admin;
 using LingoCross.Application.Auth;
 using LingoCross.Application.Classes;
 using LingoCross.Application.Common.Persistence;
@@ -54,6 +55,9 @@ public static class DependencyInjection
         services.AddScoped<IDeviceService, DeviceService>();
         services.AddScoped<INotificationPreferenceService, NotificationPreferenceService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
+        // Back office (salt-okur admin uçları + tek-admin env girişi).
+        services.AddScoped<IAdminAuthService, AdminAuthService>();
+        services.AddScoped<IAdminMetricsService, AdminMetricsService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;
