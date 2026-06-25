@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/locked_feature_badge.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/word_dtos.dart';
 import '../../domain/language_option.dart';
@@ -77,7 +78,13 @@ class WordListScreen extends ConsumerWidget {
       context.push(AppRoutes.lessonOcrCapture(lessonId));
     }
 
-    return Scaffold(
+    return RefreshOnMount(
+      onMount: () {
+        // DÜZELTME 3: ekrana girişte ders bilgisi + kelimeleri tazele.
+        ref.invalidate(lessonProvider(lessonId));
+        ref.invalidate(wordsNotifierProvider(lessonId));
+      },
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -178,6 +185,7 @@ class WordListScreen extends ConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 

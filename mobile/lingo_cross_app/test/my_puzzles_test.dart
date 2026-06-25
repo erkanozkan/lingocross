@@ -108,18 +108,27 @@ void main() {
     expect(find.text('22'), findsOneWidget); // 10 + 5 + 7
   });
 
-  testWidgets('Paylaş butonu sharePuzzle çağırır + snackbar gösterir',
+  testWidgets('DÜZELTME 2: manuel "Paylaş" aksiyonu YOK (oto-yayın)',
       (tester) async {
     final games = FakeGamesRepository(myPuzzles: [_puzzle(id: 'g9')]);
     await tester.pumpWidget(_wrap(games));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Paylaş'));
+    // Paylaş butonu kaldırıldı; share asla çağrılmaz.
+    expect(find.text('Paylaş'), findsNothing);
+    expect(games.shareCount, 0);
+    // "Detayları Gör" kalır.
+    expect(find.text('Detayları Gör'), findsOneWidget);
+  });
+
+  testWidgets('DÜZELTME 3: ekrana girişte myPuzzles bir kez yenilenir',
+      (tester) async {
+    final games = FakeGamesRepository(myPuzzles: [_puzzle(id: 'g9')]);
+    await tester.pumpWidget(_wrap(games));
     await tester.pumpAndSettle();
 
-    expect(games.shareCount, 1);
-    expect(games.lastSharedGameId, 'g9');
-    expect(find.text('Bulmaca paylaşıldı.'), findsOneWidget);
+    // İlk build (provider build) + initState refresh → en az 2 çağrı.
+    expect(games.listMyPuzzlesCount, greaterThanOrEqualTo(2));
   });
 
   testWidgets('Boş durum: bulmaca yokken anlamlı boş mesaj', (tester) async {

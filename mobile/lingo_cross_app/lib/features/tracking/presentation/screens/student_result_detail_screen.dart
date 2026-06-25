@@ -43,6 +43,23 @@ class _StudentResultDetailScreenState
   _DetailFilter _filter = _DetailFilter.all;
 
   @override
+  void initState() {
+    super.initState();
+    // DÜZELTME 3: ekrana girişte bir kez tazele (mevcut veri korunur).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref
+          .read(
+            studentResultDetailNotifierProvider(
+              widget.studentId,
+              widget.resultId,
+            ).notifier,
+          )
+          .refresh();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final detailAsync = ref.watch(

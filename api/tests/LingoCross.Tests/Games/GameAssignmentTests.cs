@@ -178,6 +178,41 @@ public class GameAssignmentTests
         Assert.Equal(c1.Id, assignments.ClassIds[0]);
     }
 
+    [Fact]
+    public async Task SetAssignments_WithAtLeastOneClass_AutoPublishesGame()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedPublishedLessonWithWordsAsync(db, teacher.Id);
+        // Savunmacı yol: yayımsız kurulmuş bir oyun, sınıf atanınca yayımlanır.
+        var game = await SeedGameAsync(db, lesson.Id, published: false);
+        var c1 = await SeedClassAsync(db, teacher.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        await svc.SetAssignmentsAsync(game.Id, new SetGameAssignmentsRequest([c1.Id]));
+
+        var reloaded = await db.Games.AsNoTracking().FirstAsync(g => g.Id == game.Id);
+        Assert.True(reloaded.IsPublished);
+        Assert.NotNull(reloaded.PublishedAt);
+    }
+
+    [Fact]
+    public async Task SetAssignments_EmptyList_DoesNotUnpublishGame()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var lesson = await SeedPublishedLessonWithWordsAsync(db, teacher.Id);
+        var game = await SeedGameAsync(db, lesson.Id, published: true);
+        var c1 = await SeedClassAsync(db, teacher.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Teacher(teacher.Id), SeededRandom());
+        await svc.SetAssignmentsAsync(game.Id, new SetGameAssignmentsRequest([c1.Id]));
+        await svc.SetAssignmentsAsync(game.Id, new SetGameAssignmentsRequest([]));
+
+        var reloaded = await db.Games.AsNoTracking().FirstAsync(g => g.Id == game.Id);
+        Assert.True(reloaded.IsPublished); // yayımda kalır; geri almıyoruz
+    }
+
     // ---- Sınıf-tabanlı görünürlük ----
 
     [Fact]

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../enrollment/presentation/widgets/student_bottom_nav.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
@@ -32,7 +33,10 @@ class StudentResultsHistoryScreen extends ConsumerWidget {
     final name = ref.watch(authNotifierProvider).user?.displayName ?? '';
     final resultsAsync = ref.watch(resultsHistoryNotifierProvider);
 
-    return Scaffold(
+    return RefreshOnMount(
+      // DÜZELTME 3: Raporlar sekmesine girişte sonuç geçmişini tazele.
+      onMount: () => ref.invalidate(resultsHistoryNotifierProvider),
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: ResultTopAppBar(
         userName: name,
@@ -82,6 +86,7 @@ class StudentResultsHistoryScreen extends ConsumerWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -964,6 +964,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentDashboardSubtitle => 'Günün kelime avına hazır mısın?';
 
   @override
+  String get studentDashboardMyClassesTitle => 'Sınıflarım';
+
+  @override
+  String studentDashboardMyClassTeacher(String teacher) {
+    return 'Öğretmen: $teacher';
+  }
+
+  @override
+  String get studentDashboardMyClassesEmpty => 'Henüz bir sınıfa katılmadın.';
+
+  @override
   String studentDashboardStreak(int days) {
     return '$days';
   }
@@ -1277,7 +1288,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createGamePreviewEmpty => 'Önizlenecek içerik bulunamadı.';
 
   @override
-  String get createGameSubmit => 'Bulmacayı Oluştur ve Yayınla';
+  String get createGameSubmit => 'Bulmacayı Oluştur';
 
   @override
   String get createGameSuccess => 'Bulmaca oluşturuldu ve yayınlandı.';
@@ -1701,12 +1712,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String myPuzzlesSharedWith(int count) {
     return 'Paylaşılan: $count öğrenci';
   }
-
-  @override
-  String get myPuzzlesShare => 'Paylaş';
-
-  @override
-  String get myPuzzlesShared => 'Bulmaca paylaşıldı.';
 
   @override
   String get myPuzzlesSeeDetails => 'Detayları Gör';

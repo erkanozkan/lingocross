@@ -546,17 +546,28 @@ class _Actions extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.marginMobile),
           child: Column(
             children: [
-              PrimaryButton3D(
-                label: submitting ? l10n.wordsFormSaving : l10n.wordsFormSave,
-                isLoading: submitting,
-                onPressed: onSave,
-              ),
-              if (!isEdit) ...[
+              // DÜZELTME 4: Ekle modunda birincil (büyük) aksiyon "Kaydet ve
+              // Yeni Ekle"; "Kaydet" (kaydet & kapat) ikincil olur. Düzenle
+              // modunda tek birincil "Kaydet" (değişmez).
+              if (isEdit)
+                PrimaryButton3D(
+                  label: submitting ? l10n.wordsFormSaving : l10n.wordsFormSave,
+                  isLoading: submitting,
+                  onPressed: onSave,
+                )
+              else ...[
+                PrimaryButton3D(
+                  label: submitting
+                      ? l10n.wordsFormSaving
+                      : l10n.wordsFormSaveAndNew,
+                  isLoading: submitting,
+                  onPressed: onSaveAndNew,
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 TextButton(
-                  onPressed: submitting ? null : onSaveAndNew,
+                  onPressed: submitting ? null : onSave,
                   child: Text(
-                    l10n.wordsFormSaveAndNew,
+                    l10n.wordsFormSave,
                     style: AppTypography.labelLg
                         .copyWith(color: AppColors.primary),
                   ),

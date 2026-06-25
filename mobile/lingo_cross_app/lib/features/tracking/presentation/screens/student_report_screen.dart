@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../games/domain/game_type.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
 import '../../../results/presentation/result_date_format.dart';
@@ -41,7 +42,11 @@ class StudentReportScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final resultsAsync = ref.watch(studentResultsNotifierProvider(studentId));
 
-    return Scaffold(
+    return RefreshOnMount(
+      // DÜZELTME 3: ekrana girişte öğrenci sonuçlarını tazele.
+      onMount: () =>
+          ref.invalidate(studentResultsNotifierProvider(studentId)),
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -92,6 +97,7 @@ class StudentReportScreen extends ConsumerWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

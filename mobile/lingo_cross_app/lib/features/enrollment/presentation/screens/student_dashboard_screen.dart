@@ -8,7 +8,10 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../auth/presentation/auth_notifier.dart';
+import '../../../classes/data/dtos/class_dtos.dart';
+import '../../../classes/presentation/my_classes_notifier.dart';
 import '../../../games/data/dtos/game_dtos.dart';
 import '../../../games/presentation/assigned_games_notifier.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
@@ -35,15 +38,19 @@ class StudentDashboardScreen extends ConsumerWidget {
     final name = ref.watch(authNotifierProvider).user?.displayName ?? '';
     final enrollmentsAsync = ref.watch(enrollmentsNotifierProvider);
     final gamesAsync = ref.watch(assignedGamesNotifierProvider);
+    final myClassesAsync = ref.watch(myClassesNotifierProvider);
 
     Future<void> refreshAll() async {
       await Future.wait([
         ref.read(enrollmentsNotifierProvider.notifier).refresh(),
         ref.read(assignedGamesNotifierProvider.notifier).refresh(),
+        ref.read(myClassesNotifierProvider.notifier).refresh(),
       ]);
     }
 
-    return Scaffold(
+    return RefreshOnMount(
+      onMount: refreshAll,
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -89,6 +96,7 @@ class StudentDashboardScreen extends ConsumerWidget {
           children: [
             _Greeting(name: name),
             const SizedBox(height: AppSpacing.lg),
+            _MyClassesSection(myClassesAsync: myClassesAsync),
             _Content(
               enrollmentsAsync: enrollmentsAsync,
               gamesAsync: gamesAsync,
@@ -96,6 +104,120 @@ class StudentDashboardScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    ),
+    );
+  }
+}
+
+/// "Sınıflarım" bölümü (DÜZELTME 1) — öğrencinin katıldığı sınıfları
+/// (`GET /api/classes/me`) sınıf adı + öğretmen adıyla gösterir.
+///
+/// Hiç sınıf yoksa kısa bir boş satır gösterilir (öğretmene/sınıfa katıl ipucu
+/// dashboard'ın diğer bölümlerinde zaten var). Yükleniyor → ince skeleton;
+/// hata → bölüm gizlenir (mevcut UI bozulmasın).
+class _MyClassesSection extends StatelessWidget {
+  const _MyClassesSection({required this.myClassesAsync});
+
+  final AsyncValue<List<ClassMembershipDto>> myClassesAsync;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    // Hata → bölümü gizle (dashboard'ın geri kalanı bozulmasın).
+    if (myClassesAsync.hasError) return const SizedBox.shrink();
+
+    final classes = myClassesAsync.value;
+
+    // İlk yükleme (veri henüz yok) → ince skeleton.
+    if (classes == null && myClassesAsync.isLoading) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionLabel(l10n.studentDashboardMyClassesTitle),
+          const SizedBox(height: AppSpacing.sm),
+          const SkeletonCard(height: 72),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+      );
+    }
+
+    final list = classes ?? const <ClassMembershipDto>[];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(l10n.studentDashboardMyClassesTitle),
+        const SizedBox(height: AppSpacing.sm),
+        if (list.isEmpty)
+          _ProgressNotice(
+            icon: Icons.school_outlined,
+            text: l10n.studentDashboardMyClassesEmpty,
+          )
+        else
+          for (final c in list) ...[
+            _MyClassRow(membership: c),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+        const SizedBox(height: AppSpacing.lg),
+      ],
+    );
+  }
+}
+
+/// Tek sınıf satırı: sınıf adı + öğretmen adı (Lumina kart/satır).
+class _MyClassRow extends StatelessWidget {
+  const _MyClassRow({required this.membership});
+
+  final ClassMembershipDto membership;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: AppShadows.soft,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: const Icon(Icons.school, color: AppColors.primary),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  membership.className,
+                  style: AppTypography.headlineMd,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppSpacing.base),
+                Text(
+                  l10n.studentDashboardMyClassTeacher(membership.teacherName),
+                  style: AppTypography.labelSm
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

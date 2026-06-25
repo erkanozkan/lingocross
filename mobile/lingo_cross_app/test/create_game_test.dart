@@ -201,7 +201,7 @@ void main() {
     // Adım 4: sınıf seç.
     await tester.tap(find.text('6-A Sınıfı'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
+    await tester.tap(find.text('Bulmacayı Oluştur'));
     await tester.pumpAndSettle();
 
     expect(games.createCount, 1);
@@ -229,14 +229,14 @@ void main() {
     await _next(tester);
     await tester.tap(find.text('6-A Sınıfı'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
+    await tester.tap(find.text('Bulmacayı Oluştur'));
     await tester.pumpAndSettle();
 
     expect(games.createCount, 1);
     expect(games.lastCreateRequest?.type, GameType.crossword);
   });
 
-  testWidgets('Sınıf seçilmeden "Oluştur ve Yayınla" tetiklenmez',
+  testWidgets('Sınıf seçilmeden "Bulmacayı Oluştur" tetiklenmez',
       (tester) async {
     final games = FakeGamesRepository(previewValue: _matchingPreview());
     await tester.pumpWidget(_wrap(
@@ -251,7 +251,7 @@ void main() {
     await _next(tester);
     await _next(tester);
     // Sınıf seçilmedi → buton pasif; dokunsa bile create çağrılmaz.
-    await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'),
+    await tester.tap(find.text('Bulmacayı Oluştur'),
         warnIfMissed: false);
     await tester.pumpAndSettle();
 
@@ -276,7 +276,7 @@ void main() {
     expect(find.text('Sınıf Oluştur'), findsOneWidget);
     // Sihirbaz adımları / oluştur+yayınla bottom bar görünmez.
     expect(find.text('Oyun Türünü Seç'), findsNothing);
-    expect(find.text('Bulmacayı Oluştur ve Yayınla'), findsNothing);
+    expect(find.text('Bulmacayı Oluştur'), findsNothing);
   });
 
   testWidgets('BUG 1: "Sınıf Oluştur" → /teacher/classes/new push',
@@ -331,7 +331,7 @@ void main() {
     await _next(tester);
     await tester.tap(find.text('6-A Sınıfı'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bulmacayı Oluştur ve Yayınla'));
+    await tester.tap(find.text('Bulmacayı Oluştur'));
     await tester.pumpAndSettle();
 
     expect(

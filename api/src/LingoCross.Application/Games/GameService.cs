@@ -418,6 +418,14 @@ public class GameService : IGameService
             _db.GameAssignments.Add(new GameAssignment { GameId = game.Id, ClassId = classId });
         }
 
+        // Oto-yayın: ≥1 sınıf atanan oyun her durumda yayımlı olur. Atama listesi boşaltılırsa
+        // IsPublished'a dokunmayız (yayımda kalır; geri almıyoruz).
+        if (desired.Count > 0)
+        {
+            game.IsPublished = true;
+            game.PublishedAt ??= DateTime.UtcNow;
+        }
+
         await _db.SaveChangesAsync(cancellationToken);
 
         // Best-effort push: yalnız YENİ eklenen sınıfların aktif öğrencilerine "yeni ödev" bildirimi.

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../enrollment/presentation/enrollments_notifier.dart';
 import '../../data/dtos/lesson_dtos.dart';
 import '../../data/dtos/word_dtos.dart';
@@ -36,7 +37,13 @@ class LessonDetailScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final lessonAsync = ref.watch(lessonProvider(lessonId));
 
-    return Scaffold(
+    return RefreshOnMount(
+      onMount: () {
+        // DÜZELTME 3: ekrana girişte ders + kelimeleri tazele.
+        ref.invalidate(lessonProvider(lessonId));
+        ref.invalidate(wordsNotifierProvider(lessonId));
+      },
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -79,6 +86,7 @@ class LessonDetailScreen extends ConsumerWidget {
         data: (lesson) => _ActionsBar(lesson: lesson),
         orElse: () => null,
       ),
+    ),
     );
   }
 }

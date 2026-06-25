@@ -964,6 +964,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studentDashboardSubtitle => 'Ready for today\'s word hunt?';
 
   @override
+  String get studentDashboardMyClassesTitle => 'My Classes';
+
+  @override
+  String studentDashboardMyClassTeacher(String teacher) {
+    return 'Teacher: $teacher';
+  }
+
+  @override
+  String get studentDashboardMyClassesEmpty => 'You haven\'t joined a class yet.';
+
+  @override
   String studentDashboardStreak(int days) {
     return '$days';
   }
@@ -1277,7 +1288,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createGamePreviewEmpty => 'No content to preview.';
 
   @override
-  String get createGameSubmit => 'Create and Publish Puzzle';
+  String get createGameSubmit => 'Create Puzzle';
 
   @override
   String get createGameSuccess => 'Puzzle created and published.';
@@ -1701,12 +1712,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String myPuzzlesSharedWith(int count) {
     return 'Shared with: $count students';
   }
-
-  @override
-  String get myPuzzlesShare => 'Share';
-
-  @override
-  String get myPuzzlesShared => 'Puzzle shared.';
 
   @override
   String get myPuzzlesSeeDetails => 'See Details';
