@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
+import 'package:lingo_cross_app/features/classes/data/classes_repository.dart';
+import 'package:lingo_cross_app/features/classes/data/dtos/class_dtos.dart';
 import 'package:lingo_cross_app/features/enrollment/data/dtos/enrollment_dtos.dart';
 import 'package:lingo_cross_app/features/enrollment/data/enrollment_repository.dart';
 import 'package:lingo_cross_app/features/enrollment/domain/enrollment_status.dart';
@@ -15,6 +17,7 @@ import 'package:lingo_cross_app/features/games/domain/game_type.dart';
 import 'package:lingo_cross_app/features/profile/data/dtos/student_stats_dto.dart';
 import 'package:lingo_cross_app/features/profile/data/student_stats_repository.dart';
 
+import 'helpers/fake_classes_repository.dart';
 import 'helpers/fake_enrollment_repository.dart';
 import 'helpers/fake_games_repository.dart';
 import 'helpers/fake_student_stats_repository.dart';
@@ -26,6 +29,7 @@ Widget _wrap({
   required FakeEnrollmentRepository enrollmentRepo,
   required FakeGamesRepository gamesRepo,
   FakeStudentStatsRepository? statsRepo,
+  FakeClassesRepository? classesRepo,
 }) {
   lastGameId = null;
   lastResultId = null;
@@ -63,6 +67,8 @@ Widget _wrap({
       gamesRepositoryProvider.overrideWithValue(gamesRepo),
       studentStatsRepositoryProvider
           .overrideWithValue(statsRepo ?? FakeStudentStatsRepository()),
+      classesRepositoryProvider
+          .overrideWithValue(classesRepo ?? FakeClassesRepository()),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -371,5 +377,41 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('results-screen'), findsOneWidget);
+  });
+
+  testWidgets('DÜZELTME 1: "Sınıflarım" bölümü sınıf adı + öğretmeni gösterir',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: const []),
+      classesRepo: FakeClassesRepository(
+        memberships: const [
+          ClassMembershipDto(
+            classId: 'c1',
+            className: '7-A İngilizce',
+            teacherName: 'Ayşe Öğretmen',
+          ),
+        ],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.text('Sınıflarım'.toUpperCase()), findsOneWidget);
+    expect(find.text('7-A İngilizce'), findsOneWidget);
+    expect(find.text('Öğretmen: Ayşe Öğretmen'), findsOneWidget);
+  });
+
+  testWidgets('DÜZELTME 1: hiç sınıf yoksa boş durum metni',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: const []),
+      classesRepo: FakeClassesRepository(memberships: const []),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.text('Henüz bir sınıfa katılmadın.'), findsOneWidget);
   });
 }

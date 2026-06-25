@@ -1913,6 +1913,24 @@ abstract class AppLocalizations {
   /// **'Günün kelime avına hazır mısın?'**
   String get studentDashboardSubtitle;
 
+  /// No description provided for @studentDashboardMyClassesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıflarım'**
+  String get studentDashboardMyClassesTitle;
+
+  /// No description provided for @studentDashboardMyClassTeacher.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmen: {teacher}'**
+  String studentDashboardMyClassTeacher(String teacher);
+
+  /// No description provided for @studentDashboardMyClassesEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir sınıfa katılmadın.'**
+  String get studentDashboardMyClassesEmpty;
+
   /// No description provided for @studentDashboardStreak.
   ///
   /// In tr, this message translates to:
@@ -2498,7 +2516,7 @@ abstract class AppLocalizations {
   /// No description provided for @createGameSubmit.
   ///
   /// In tr, this message translates to:
-  /// **'Bulmacayı Oluştur ve Yayınla'**
+  /// **'Bulmacayı Oluştur'**
   String get createGameSubmit;
 
   /// No description provided for @createGameSuccess.
@@ -3238,18 +3256,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Paylaşılan: {count} öğrenci'**
   String myPuzzlesSharedWith(int count);
-
-  /// No description provided for @myPuzzlesShare.
-  ///
-  /// In tr, this message translates to:
-  /// **'Paylaş'**
-  String get myPuzzlesShare;
-
-  /// No description provided for @myPuzzlesShared.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bulmaca paylaşıldı.'**
-  String get myPuzzlesShared;
 
   /// No description provided for @myPuzzlesSeeDetails.
   ///

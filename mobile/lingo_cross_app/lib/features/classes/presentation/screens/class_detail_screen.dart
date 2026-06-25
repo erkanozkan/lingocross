@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../data/dtos/class_dtos.dart';
 import '../class_detail_notifier.dart';
 import '../class_invite_code_notifier.dart';
@@ -40,7 +41,9 @@ class ClassDetailScreen extends ConsumerWidget {
       ]);
     }
 
-    return Scaffold(
+    return RefreshOnMount(
+      onMount: refreshAll,
+      child: Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
         backgroundColor: AppColors.surface,
@@ -87,6 +90,7 @@ class ClassDetailScreen extends ConsumerWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

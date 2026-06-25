@@ -13,17 +13,18 @@ import '../../../lessons/presentation/widgets/skeleton_card.dart';
 import '../../../results/presentation/result_date_format.dart';
 import '../../data/dtos/game_dtos.dart';
 import '../../domain/game_type.dart';
-import '../games_failure_messages.dart';
 import '../my_puzzles_notifier.dart';
-import '../share_puzzle_controller.dart';
 
 /// Bulmacalarım (Öğretmen) — Stitch `5fc69fda…` birebir.
 ///
 /// "+ Yeni Bulmaca Oluştur" CTA → mevcut create ekranı. Filtre çipleri
 /// (Tümü / Aktif). Bulmaca kartları: tür rozeti + Aktif durumu + ders başlığı +
-/// "Paylaşılan: {n} öğrenci" + oluşturma tarihi + Paylaş + Detayları Gör.
+/// "Paylaşılan: {n} öğrenci" + oluşturma tarihi + Detayları Gör.
 /// Alt istatistik: Toplam Bulmaca (liste uzunluğu) + Öğrenci Çözümü (solveCount
 /// toplamı). Boş/yükleniyor (skeleton)/hata + pull-to-refresh.
+///
+/// Bulmacalar oluşturulduğunda otomatik yayımlanır; manuel "Paylaş" aksiyonu
+/// yoktur (DÜZELTME 2). Ekrana girişte bir kez yenilenir (DÜZELTME 3).
 ///
 /// Stitch'teki Taslak/Arşiv çipleri ve Word Search türü bu fazda yok (karar
 /// gereği kalıcı taslak/Word Search kapsam dışı).
@@ -39,31 +40,20 @@ enum _PuzzleFilter { all, active }
 class _MyPuzzlesScreenState extends ConsumerState<MyPuzzlesScreen> {
   _PuzzleFilter _filter = _PuzzleFilter.all;
 
-  Future<void> _share(String gameId) async {
-    final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final ok = await ref.read(sharePuzzleControllerProvider.notifier).share(gameId);
-    if (!mounted) return;
-    if (ok) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.myPuzzlesShared)));
-      await ref.read(myPuzzlesNotifierProvider.notifier).refresh();
-    } else {
-      final error = ref.read(sharePuzzleControllerProvider).error;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            error == null ? l10n.commonErrorGeneric : gamesFailureMessage(error, l10n),
-          ),
-        ),
-      );
-    }
+  @override
+  void initState() {
+    super.initState();
+    // DÜZELTME 3: ekrana girişte bir kez güncel veriyi çek (mevcut veri
+    // gösterilmeye devam eder, boş ekran flaşı olmaz).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(myPuzzlesNotifierProvider.notifier).refresh();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final puzzlesAsync = ref.watch(myPuzzlesNotifierProvider);
-    final sharing = ref.watch(sharePuzzleControllerProvider).isLoading;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -106,8 +96,6 @@ class _MyPuzzlesScreenState extends ConsumerState<MyPuzzlesScreen> {
                 puzzles: puzzles,
                 filter: _filter,
                 onFilterChanged: (f) => setState(() => _filter = f),
-                sharing: sharing,
-                onShare: _share,
               ),
             ),
           ],
@@ -123,15 +111,11 @@ class _PuzzlesBody extends StatelessWidget {
     required this.puzzles,
     required this.filter,
     required this.onFilterChanged,
-    required this.sharing,
-    required this.onShare,
   });
 
   final List<TeacherPuzzleDto> puzzles;
   final _PuzzleFilter filter;
   final ValueChanged<_PuzzleFilter> onFilterChanged;
-  final bool sharing;
-  final Future<void> Function(String gameId) onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +137,7 @@ class _PuzzlesBody extends StatelessWidget {
           _EmptyPuzzles(onCreate: () => context.push(AppRoutes.gameNew))
         else
           for (final puzzle in visible) ...[
-            _PuzzleCard(puzzle: puzzle, sharing: sharing, onShare: onShare),
+            _PuzzleCard(puzzle: puzzle),
             const SizedBox(height: AppSpacing.md),
           ],
         const SizedBox(height: AppSpacing.lg),
@@ -237,15 +221,9 @@ class _Chip extends StatelessWidget {
 
 /// Tek bulmaca kartı (Stitch puzzle-card birebir).
 class _PuzzleCard extends StatelessWidget {
-  const _PuzzleCard({
-    required this.puzzle,
-    required this.sharing,
-    required this.onShare,
-  });
+  const _PuzzleCard({required this.puzzle});
 
   final TeacherPuzzleDto puzzle;
-  final bool sharing;
-  final Future<void> Function(String gameId) onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -293,17 +271,6 @@ class _PuzzleCard extends StatelessWidget {
             icon: Icons.groups,
             text: l10n.myPuzzlesSharedWith(puzzle.assignedStudentCount),
             emphasize: true,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: _ShareButton(
-                  busy: sharing,
-                  onPressed: () => onShare(puzzle.id),
-                ),
-              ),
-            ],
           ),
           const SizedBox(height: AppSpacing.sm),
           const Divider(height: 1, color: AppColors.outlineVariant),
@@ -422,53 +389,6 @@ class _MetaRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// "Paylaş" butonu (Stitch primary tab button). busy → spinner.
-class _ShareButton extends StatelessWidget {
-  const _ShareButton({required this.busy, required this.onPressed});
-
-  final bool busy;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Material(
-      color: AppColors.primary,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: InkWell(
-        onTap: busy ? null : onPressed,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Container(
-          height: 44,
-          alignment: Alignment.center,
-          child: busy
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
-                  ),
-                )
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.share, color: AppColors.onPrimary, size: 20),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      l10n.myPuzzlesShare,
-                      style: AppTypography.labelLg
-                          .copyWith(color: AppColors.onPrimary),
-                    ),
-                  ],
-                ),
-        ),
-      ),
     );
   }
 }

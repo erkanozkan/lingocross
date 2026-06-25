@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
+import 'package:lingo_cross_app/core/widgets/primary_button_3d.dart';
 import 'package:lingo_cross_app/features/lessons/data/lessons_repository.dart';
 import 'package:lingo_cross_app/features/lessons/presentation/widgets/word_form_sheet.dart';
 
@@ -71,5 +72,23 @@ void main() {
 
     expect(find.text('Spanish meaning(s)'), findsOneWidget);
     expect(find.text('Term (German)'), findsOneWidget);
+  });
+
+  testWidgets(
+      'DÜZELTME 4: Ekle modunda büyük birincil buton "Kaydet ve Yeni Ekle"',
+      (tester) async {
+    await tester.pumpWidget(
+      _wrap(sourceLangLabel: 'İngilizce', targetLangLabel: 'Almanca'),
+    );
+    await tester.pumpAndSettle();
+
+    // Büyük birincil aksiyon (PrimaryButton3D) = "Kaydet ve Yeni Ekle".
+    final primary = tester.widget<PrimaryButton3D>(find.byType(PrimaryButton3D));
+    expect(primary.label, 'Kaydet ve Yeni Ekle');
+
+    // "Kaydet" ikincil olarak ayrı bir buton şeklinde mevcut.
+    expect(find.widgetWithText(TextButton, 'Kaydet'), findsOneWidget);
+    // "İptal" (vazgeç) korunur.
+    expect(find.widgetWithText(TextButton, 'İptal'), findsOneWidget);
   });
 }
