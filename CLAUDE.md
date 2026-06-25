@@ -25,9 +25,10 @@ UI çok dilli olacak şekilde hazırlanır ama **sadece Türkçe** ile başlanı
 - **Çıkmış Sorular Listesi** ve **Soru Çözüm Ekranı**
 - Bu ekranlara dokunulmaz; veri modelinde yalnızca ileriye dönük "dikiş" bırakılır.
 
-> ⚠️ **OCR MVP'dedir.** Öğretmen kelimeleri kâğıda yazıp kameradan okutur; cihaz-içi
-> Google ML Kit ile metin tanınır, öğretmen gözden geçirip kaydeder. Manuel giriş hem OCR
-> sonrası düzenleme hem de doğrudan ekleme için her zaman mevcuttur. Ayrıntı: `docs/DESIGN.md`.
+> ⚠️ **Kameradan kelime tarama MVP'dedir (Premium özelliği).** Öğretmen kelimeleri kâğıda yazıp
+> kameradan/galeriden okutur; **görüntü doğrudan bulut yapay zekâ (Claude vision) ile okunur**
+> (el yazısı dahil), öğretmen gözden geçirip kaydeder. ML Kit / cihaz-içi OCR kaldırıldı. Manuel
+> giriş hem AI sonrası düzenleme hem de doğrudan ekleme için her zaman mevcuttur. Ayrıntı: `docs/DESIGN.md`.
 
 ## Teknoloji
 
@@ -71,10 +72,11 @@ flutter analyze
 > Not (ortam): Bu makinede NuGet/pub restore için ağ, sandbox kapalıyken çalışır. Docker daemon'ı
 > kullanıcı başlatır. NuGet yalnız nuget.org'a gider. Lokal Postgres host portu **5433**.
 >
-> Not (iOS + ML Kit): OCR için `google_mlkit_text_recognition` iOS deployment target **≥15.5**
-> ister (Podfile + Runner ayarlandı) ve **Apple Silicon iOS Simülatöründe arm64 dilimi yok** →
-> `EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64` ile x86_64+Rosetta çalışır (repo'da ayarlı).
-> **OCR kamerası simülatörde çalışmaz** (galeri çalışır); tam OCR doğrulaması gerçek cihazda.
+> Not (iOS kamera tarama): Kelime tarama artık **cihaz-içi ML Kit değil, bulut Claude vision**
+> ile çalışır — görüntü base64 olarak `POST /api/ocr/enrich`'e gider. ML Kit bağımlılıkları ve
+> `EXCLUDED_ARCHS[sdk=iphonesimulator*]=arm64` workaround'u **kaldırıldı** (arm64 simülatör çalışır).
+> Kamera çekimi simülatörde çalışmaz (galeri çalışır); tam doğrulama gerçek cihazda. Tarama Premium
+> + internet ister; Anthropic anahtarı yoksa `/api/ocr/enrich` 503 döner.
 
 ## Ekip & İş Akışı
 

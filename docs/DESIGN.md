@@ -154,9 +154,10 @@ Ekran HTML/screenshot'ı `mcp__stitch__get_screen` ile `projects/{id}/screens/{s
 Stitch'teki **"Kelime Listesi Yükle (OCR)"** ekranı esas alınır. Öğretmenler kelimeleri iki
 yolla girer:
 
-1. **OCR (kameradan):** Öğretmen kelimeleri kâğıda yazar, kameradan/galeriden okutur. Cihaz-içi
-   **Google ML Kit Text Recognition** metni satırlara ayırır. OCR tamamen istemci tarafında çalışır.
-2. **Manuel:** OCR sonucunu düzenleme **ve** OCR'sız doğrudan ekleme aynı formdan yapılır.
+1. **Kameradan (AI):** Öğretmen kelimeleri kâğıda yazar, kameradan/galeriden okutur. Çekilen/seçilen
+   **görüntü doğrudan bulut yapay zekâ (Claude vision)** ile okunur (el yazısı dahil) ve terim/çeviri
+   çiftleri çıkarılır. (Cihaz-içi ML Kit kaldırıldı; tarama **Premium** + internet ister.)
+2. **Manuel:** AI sonucunu düzenleme **ve** AI'sız doğrudan ekleme aynı formdan yapılır.
 
 **Gözden geçirme/düzenleme ekranı** (UX Designer tasarlar, Lumina Learning dilini birebir korur):
 - OCR'dan gelen her satır bir **kelime adayı**; öğretmen düzeltir/siler/ekler.
