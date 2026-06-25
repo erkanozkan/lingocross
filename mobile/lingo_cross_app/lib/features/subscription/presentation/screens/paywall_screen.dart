@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -8,21 +11,23 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
-import '../../data/dtos/subscription_dtos.dart';
-import '../../domain/subscription_failure.dart';
-import '../subscription_notifier.dart';
+import '../../data/iap_providers.dart';
+import '../../data/iap_service.dart';
+import '../../domain/iap_products.dart';
 
-/// Seçilebilir abonelik planı (fiyatlar henüz yer tutucu).
+/// Seçilebilir abonelik planı.
 enum _PaywallPlan { monthly, annual }
 
-/// Paywall ekranı (F8.2) — Stitch "Premium (Paywall)" tasarımı birebir.
+/// Paywall ekranı (F8.2 / S3) — Stitch "Premium (Paywall)" tasarımı birebir.
 ///
 /// Sabit üst bar (Premium + kapat), ortalı hero, feature banner, fayda listesi,
-/// seçilebilir plan kartları (varsayılan Yıllık) ve sabit alt footer (CTA +
-/// "Şimdilik geç"). İçerik AI wording'i kullanır (OCR yerine "AI").
+/// seçilebilir plan kartları (varsayılan Yıllık), "Satın Alımları Geri Yükle"
+/// metin butonu ve sabit alt footer (CTA + "Şimdilik geç"). İçerik AI wording'i
+/// kullanır (OCR yerine "AI").
 ///
-/// CTA seçilen plana göre [SubscriptionNotifier.activate] (stub) çağırır; başarı
-/// → bilgi + pop, 503 → "satın alma kapalı (test)" mesajı.
+/// Gerçek Apple satın alması yapar: açılışta StoreKit'ten ürün fiyatları çekilir,
+/// CTA seçili ürünü [IapService.buy] ile satın alır; sonuç `purchaseEvents`
+/// üzerinden gelir (doğrulama backend'de). Başarı → bilgi + pop.
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key, this.feature});
 
@@ -35,7 +40,122 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   _PaywallPlan _selected = _PaywallPlan.annual;
-  bool _submitting = false;
+
+  /// Satın alma / geri yükleme akışı sürerken footer spinner + kilit.
+  bool _busy = false;
+
+  IapProductsState _products = const IapProductsState(loading: true);
+  StreamSubscription<IapProductsState>? _productsSub;
+  StreamSubscription<IapPurchaseEvent>? _purchaseSub;
+
+  IapService get _service => ref.read(iapServiceProvider);
+
+  @override
+  void initState() {
+    super.initState();
+    final service = _service;
+    _products = service.productsState;
+    _productsSub = service.productsStream.listen((s) {
+      if (mounted) setState(() => _products = s);
+    });
+    _purchaseSub = service.purchaseEvents.listen(_onPurchaseEvent);
+    // Açılışta ürünleri (yeniden) çek.
+    unawaited(service.loadProducts());
+  }
+
+  @override
+  void dispose() {
+    _productsSub?.cancel();
+    _purchaseSub?.cancel();
+    super.dispose();
+  }
+
+  String get _selectedProductId => switch (_selected) {
+        _PaywallPlan.monthly => IapProducts.monthly,
+        _PaywallPlan.annual => IapProducts.yearly,
+      };
+
+  ProductDetails? get _selectedProduct => _products.byId(_selectedProductId);
+
+  void _onPurchaseEvent(IapPurchaseEvent event) {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    switch (event.outcome) {
+      case IapPurchaseOutcome.pending:
+        setState(() => _busy = true);
+      case IapPurchaseOutcome.success:
+        setState(() => _busy = false);
+        _showSuccess(l10n.paywallPurchaseSuccess);
+        context.pop();
+      case IapPurchaseOutcome.canceled:
+        setState(() => _busy = false);
+        _showError(l10n.paywallPurchaseCanceled);
+      case IapPurchaseOutcome.error:
+        setState(() => _busy = false);
+        _showError(l10n.paywallPurchaseError);
+    }
+  }
+
+  void _showSuccess(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.tertiary,
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.onTertiary),
+        ),
+      ),
+    );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppColors.error,
+        content: Text(
+          message,
+          style: const TextStyle(color: AppColors.onError),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _upgrade() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context);
+    final product = _selectedProduct;
+    if (product == null) {
+      _showError(l10n.paywallProductsError);
+      return;
+    }
+    setState(() => _busy = true);
+    try {
+      await _service.buy(product);
+      // Sonuç purchaseEvents üzerinden gelir; busy orada temizlenir.
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      _showError(l10n.paywallPurchaseError);
+    }
+  }
+
+  Future<void> _restore() async {
+    if (_busy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _busy = true);
+    try {
+      await _service.restore();
+      // Geri yüklenen işlemler purchaseStream → purchaseEvents üzerinden
+      // doğrulanır; success olayı pop ettirir. Akış olay üretmezse spinner'ı
+      // bir süre sonra serbest bırakmak için busy'i burada bırakmıyoruz —
+      // ancak hiç olay gelmezse kullanıcı kapatabilir (footer "Şimdilik geç"
+      // busy iken kilitli; bu nedenle restore sonrası kısa bekleme).
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _busy = false);
+      _showError(l10n.paywallPurchaseError);
+    }
+  }
 
   /// Banner metni; feature bilinmiyorsa null → banner gizlenir.
   String? _bannerText(AppLocalizations l10n) {
@@ -49,53 +169,13 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     };
   }
 
-  ActivateStubRequest _request() {
-    return switch (_selected) {
-      _PaywallPlan.monthly => const ActivateStubRequest(period: 1),
-      _PaywallPlan.annual => const ActivateStubRequest(period: 2),
-    };
-  }
-
-  Future<void> _upgrade() async {
-    if (_submitting) return;
-    setState(() => _submitting = true);
-    final messenger = ScaffoldMessenger.of(context);
-    final l10n = AppLocalizations.of(context);
-    try {
-      await ref
-          .read(subscriptionNotifierProvider.notifier)
-          .activate(_request());
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.tertiary,
-          content: Text(
-            l10n.paywallActivateSuccess,
-            style: const TextStyle(color: AppColors.onTertiary),
-          ),
-        ),
-      );
-      context.pop();
-    } catch (e) {
-      if (!mounted) return;
-      final message = e is SubscriptionFailure
-          ? e.maybeWhen(
-              purchaseDisabled: () => l10n.paywallPurchaseDisabled,
-              orElse: () => l10n.paywallActivateError,
-            )
-          : l10n.paywallActivateError;
-      messenger.showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.error,
-          content: Text(
-            message,
-            style: const TextStyle(color: AppColors.onError),
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+  /// Plan kartında gösterilecek fiyat: ürün yüklendiyse mağaza fiyatı, yoksa
+  /// uygun yer tutucu/mesaj.
+  String _priceFor(AppLocalizations l10n, String productId) {
+    if (_products.loading) return l10n.paywallPriceUnavailable;
+    if (_products.unavailable) return l10n.paywallPriceUnavailable;
+    final product = _products.byId(productId);
+    return product?.price ?? l10n.paywallPriceUnavailable;
   }
 
   @override
@@ -103,9 +183,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final l10n = AppLocalizations.of(context);
     final banner = _bannerText(l10n);
 
+    // Ürünler hiç gelmedi (mağaza yok / sorgu hatası) → bilgilendirici not.
+    final productsProblem = !_products.loading &&
+        (_products.unavailable || _products.queryError);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
-      // Sabit üst bar: sol "Premium", sağ kapat (X).
       appBar: AppBar(
         backgroundColor: AppColors.surface,
         elevation: 0,
@@ -119,7 +202,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.close, color: AppColors.primary, size: 28),
-            onPressed: () => context.pop(),
+            onPressed: _busy ? null : () => context.pop(),
           ),
           const SizedBox(width: AppSpacing.xs),
         ],
@@ -134,7 +217,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             AppSpacing.xl,
           ),
           children: [
-            // Hero.
             const _Hero(),
             const SizedBox(height: AppSpacing.xs),
             Text(
@@ -153,12 +235,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            // Feature banner (feature bilinmiyorsa gizli).
             if (banner != null) ...[
               _Banner(text: banner),
               const SizedBox(height: AppSpacing.xl),
             ],
-            // Fayda listesi.
             _Benefit(text: l10n.paywallBenefitUnlimitedClasses),
             const SizedBox(height: AppSpacing.md),
             _Benefit(text: l10n.paywallBenefitOcr),
@@ -167,25 +247,45 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             const SizedBox(height: AppSpacing.md),
             _Benefit(text: l10n.paywallBenefitReports),
             const SizedBox(height: AppSpacing.xl),
-            // Plan kartları.
             _PlanCard(
               title: l10n.paywallPlanAnnualTitle,
               subtitle: l10n.paywallPlanAnnualSubtitle,
-              price: l10n.paywallPlanPriceComingSoon,
+              price: _priceFor(l10n, IapProducts.yearly),
               period: l10n.paywallPlanAnnualPeriod,
               badge: l10n.paywallPlanBestValue,
               selected: _selected == _PaywallPlan.annual,
-              onTap: () => setState(() => _selected = _PaywallPlan.annual),
+              onTap: _busy
+                  ? null
+                  : () => setState(() => _selected = _PaywallPlan.annual),
             ),
             const SizedBox(height: AppSpacing.md),
             _PlanCard(
               title: l10n.paywallPlanMonthlyTitle,
               subtitle: l10n.paywallPlanMonthlySubtitle,
-              price: l10n.paywallPlanPriceComingSoon,
+              price: _priceFor(l10n, IapProducts.monthly),
               period: l10n.paywallPlanMonthlyPeriod,
               selected: _selected == _PaywallPlan.monthly,
-              onTap: () => setState(() => _selected = _PaywallPlan.monthly),
+              onTap: _busy
+                  ? null
+                  : () => setState(() => _selected = _PaywallPlan.monthly),
             ),
+            if (productsProblem) ...[
+              const SizedBox(height: AppSpacing.md),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                ),
+                child: Text(
+                  _products.unavailable
+                      ? l10n.paywallProductsUnavailable
+                      : l10n.paywallProductsError,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.labelSm.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.md),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -200,13 +300,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           ],
         ),
       ),
-      // Sabit alt footer: CTA + "Şimdilik geç".
       bottomNavigationBar: _Footer(
         ctaLabel: l10n.paywallCta,
         skipLabel: l10n.paywallSkip,
-        submitting: _submitting,
+        restoreLabel: l10n.paywallRestore,
+        busy: _busy,
         onUpgrade: _upgrade,
-        onSkip: _submitting ? null : () => context.pop(),
+        onRestore: _busy ? null : _restore,
+        onSkip: _busy ? null : () => context.pop(),
       ),
     );
   }
@@ -340,7 +441,7 @@ class _PlanCard extends StatelessWidget {
   final String price;
   final String period;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final String? badge;
 
   @override
@@ -480,20 +581,24 @@ class _Radio extends StatelessWidget {
 }
 
 /// Sabit alt footer: surface-container-lowest zemin + üst kenarlık + soft
-/// gölge, tam genişlik CTA + "Şimdilik geç" metin butonu.
+/// gölge, tam genişlik CTA + "Geri Yükle" + "Şimdilik geç" metin butonları.
 class _Footer extends StatelessWidget {
   const _Footer({
     required this.ctaLabel,
     required this.skipLabel,
-    required this.submitting,
+    required this.restoreLabel,
+    required this.busy,
     required this.onUpgrade,
+    required this.onRestore,
     required this.onSkip,
   });
 
   final String ctaLabel;
   final String skipLabel;
-  final bool submitting;
+  final String restoreLabel;
+  final bool busy;
   final VoidCallback onUpgrade;
+  final VoidCallback? onRestore;
   final VoidCallback? onSkip;
 
   @override
@@ -519,10 +624,19 @@ class _Footer extends StatelessWidget {
             children: [
               PrimaryButton3D(
                 label: ctaLabel,
-                isLoading: submitting,
+                isLoading: busy,
                 onPressed: onUpgrade,
               ),
               const SizedBox(height: AppSpacing.xs),
+              TextButton(
+                onPressed: onRestore,
+                child: Text(
+                  restoreLabel,
+                  style: AppTypography.labelLg.copyWith(
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
               TextButton(
                 onPressed: onSkip,
                 child: Text(

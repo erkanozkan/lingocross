@@ -26,3 +26,8 @@ public record SubscriptionDto(
 /// <c>Period</c> yok sayılır; aksi halde <c>Period</c> zorunludur (aylık/yıllık).
 /// </summary>
 public record ActivateStubRequest(SubscriptionPeriod? Period, bool Trial);
+
+/// <summary>
+/// Apple IAP makbuz doğrulama isteği. <c>ReceiptData</c> cihazdan gelen base64 App Store makbuzudur.
+/// </summary>
+public record VerifyAppleReceiptRequest(string ReceiptData);

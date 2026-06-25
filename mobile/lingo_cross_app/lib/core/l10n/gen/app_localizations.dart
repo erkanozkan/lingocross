@@ -4481,6 +4481,54 @@ abstract class AppLocalizations {
   /// **'Bir hata oluştu, lütfen tekrar deneyin.'**
   String get paywallActivateError;
 
+  /// Apple zorunlu geri yükleme butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın Alımları Geri Yükle'**
+  String get paywallRestore;
+
+  /// Geri yükleme + doğrulama başarısı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium geri yüklendi.'**
+  String get paywallRestoreSuccess;
+
+  /// Gerçek satın alma + doğrulama başarısı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium etkinleştirildi.'**
+  String get paywallPurchaseSuccess;
+
+  /// Kullanıcı satın almayı iptal etti.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alma iptal edildi.'**
+  String get paywallPurchaseCanceled;
+
+  /// Satın alma veya doğrulama hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Satın alma tamamlanamadı, lütfen tekrar deneyin.'**
+  String get paywallPurchaseError;
+
+  /// StoreKit kullanılamıyor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mağazaya şu an ulaşılamıyor.'**
+  String get paywallProductsUnavailable;
+
+  /// Ürün sorgusu başarısız/boş.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik bilgileri yüklenemedi.'**
+  String get paywallProductsError;
+
+  /// Ürün fiyatı yüklenemediğinde yer tutucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'—'**
+  String get paywallPriceUnavailable;
+
   /// Kilitli özellik rozeti etiketi.
   ///
   /// In tr, this message translates to:

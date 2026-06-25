@@ -3,15 +3,22 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:lingo_cross_app/core/l10n/gen/app_localizations.dart';
 import 'package:lingo_cross_app/core/theme/app_theme.dart';
+import 'package:lingo_cross_app/features/subscription/data/iap_providers.dart';
 import 'package:lingo_cross_app/features/subscription/data/subscription_repository.dart';
-import 'package:lingo_cross_app/features/subscription/domain/subscription_failure.dart';
+import 'package:lingo_cross_app/features/subscription/domain/iap_products.dart';
 import 'package:lingo_cross_app/features/subscription/presentation/screens/paywall_screen.dart';
 
+import 'helpers/fake_iap_client.dart';
 import 'helpers/fake_subscription_repository.dart';
 
-Widget _wrap(FakeSubscriptionRepository repo, {String? feature}) {
+Widget _wrap(
+  FakeIapClient client,
+  FakeSubscriptionRepository repo, {
+  String? feature,
+}) {
   final router = GoRouter(
     initialLocation: '/start',
     routes: [
@@ -37,6 +44,7 @@ Widget _wrap(FakeSubscriptionRepository repo, {String? feature}) {
   return ProviderScope(
     overrides: [
       subscriptionRepositoryProvider.overrideWithValue(repo),
+      iapClientProvider.overrideWithValue(client),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -53,86 +61,129 @@ Widget _wrap(FakeSubscriptionRepository repo, {String? feature}) {
   );
 }
 
-/// Paywall içeriği uzun + sabit footer var; tüm kartlar (Yıllık/Aylık) test
-/// yüzeyinde aynı anda görünsün diye uzun bir görünüm boyutu kullanılır.
 void _useTallSurface(WidgetTester tester) {
-  tester.view.physicalSize = const Size(390 * 3, 1400 * 3);
+  tester.view.physicalSize = const Size(390 * 3, 1500 * 3);
   tester.view.devicePixelRatio = 3.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
 }
 
 void main() {
-  testWidgets('Yükselt CTA → activate(period:2) çağrılır + başarıda pop',
+  testWidgets('Açılışta ürün fiyatları ProductDetails\'ten gösterilir',
       (tester) async {
     _useTallSurface(tester);
     final repo = FakeSubscriptionRepository(initial: freeSubscription());
-    await tester.pumpWidget(_wrap(repo, feature: 'ocr'));
+    final client = FakeIapClient();
+    addTearDown(client.dispose);
+    await tester.pumpWidget(_wrap(client, repo, feature: 'ocr'));
     await tester.pumpAndSettle();
-
-    // Paywall'ı aç.
     await tester.tap(find.text('OPEN'));
     await tester.pumpAndSettle();
 
     final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
 
-    // AI banner'ı görünür (feature=ocr → "AI ile kelime tarama Premium'da").
+    // AI banner + iki plan kartı + gerçek fiyatlar.
     expect(find.text(l10n.paywallBannerOcr), findsOneWidget);
-
-    // Hero + alt başlık + AI fayda metni + iki plan kartı görünür.
-    expect(find.text(l10n.paywallHeadline), findsOneWidget);
-    expect(find.text(l10n.paywallSubtitle), findsOneWidget);
-    expect(find.text(l10n.paywallBenefitOcr), findsOneWidget); // "AI ile kelime tarama"
     expect(find.text(l10n.paywallPlanAnnualTitle), findsOneWidget);
     expect(find.text(l10n.paywallPlanMonthlyTitle), findsOneWidget);
+    expect(find.text('₺399,99'), findsOneWidget); // yıllık
+    expect(find.text('₺49,99'), findsOneWidget); // aylık
+    // Geri yükleme butonu (Apple zorunlu) görünür.
+    expect(find.text(l10n.paywallRestore), findsOneWidget);
+  });
 
-    // Varsayılan seçim Yıllık → period=2 ile activate.
-    await tester.tap(find.text(l10n.paywallCta));
+  testWidgets('Yükselt CTA → buyNonConsumable + purchased event → verify + pop',
+      (tester) async {
+    _useTallSurface(tester);
+    final repo = FakeSubscriptionRepository(initial: freeSubscription());
+    final client = FakeIapClient();
+    addTearDown(client.dispose);
+    await tester.pumpWidget(_wrap(client, repo));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OPEN'));
     await tester.pumpAndSettle();
 
-    expect(repo.activateCount, 1);
-    expect(repo.lastActivateRequest?.period, 2);
-    expect(repo.lastActivateRequest?.trial, false);
+    final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
 
-    // Başarıda paywall pop edildi → başlangıç ekranı geri gelir.
+    // Varsayılan seçim Yıllık → CTA buy çağırır.
+    await tester.tap(find.text(l10n.paywallCta));
+    await tester.pump();
+    expect(client.buyCount, 1);
+
+    // Mağaza purchased olayını yayınlar → verify + complete + pop.
+    client.emit([
+      fakePurchase(
+        productId: IapProducts.yearly,
+        status: PurchaseStatus.purchased,
+        receipt: 'receipt-xyz',
+      ),
+    ]);
+    await tester.pumpAndSettle();
+
+    expect(repo.verifyAppleCount, 1);
+    expect(repo.lastReceiptData, 'receipt-xyz');
+    expect(client.completeCount, 1);
+    expect(find.text(l10n.paywallPurchaseSuccess), findsOneWidget);
+    // Başarıda paywall pop edildi.
     expect(find.text('OPEN'), findsOneWidget);
   });
 
-  testWidgets('Aylık seçimi → activate(period:1)', (tester) async {
+  testWidgets('canceled olayı → "iptal" mesajı, pop olmaz', (tester) async {
     _useTallSurface(tester);
     final repo = FakeSubscriptionRepository(initial: freeSubscription());
-    await tester.pumpWidget(_wrap(repo));
+    final client = FakeIapClient();
+    addTearDown(client.dispose);
+    await tester.pumpWidget(_wrap(client, repo));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OPEN'));
     await tester.pumpAndSettle();
 
     final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
 
-    await tester.tap(find.text(l10n.paywallPlanMonthlyTitle));
-    await tester.pump();
     await tester.tap(find.text(l10n.paywallCta));
+    await tester.pump();
+    client.emit([
+      fakePurchase(
+        productId: IapProducts.yearly,
+        status: PurchaseStatus.canceled,
+      ),
+    ]);
     await tester.pumpAndSettle();
 
-    expect(repo.lastActivateRequest?.period, 1);
+    expect(repo.verifyAppleCount, 0);
+    expect(find.text(l10n.paywallPurchaseCanceled), findsOneWidget);
+    expect(find.text(l10n.paywallCta), findsOneWidget); // paywall açık
   });
 
-  testWidgets('503 (purchaseDisabled) → "satın alma kapalı" mesajı, pop olmaz',
-      (tester) async {
+  testWidgets('Geri Yükle → restorePurchases çağrılır', (tester) async {
     _useTallSurface(tester);
-    final repo = FakeSubscriptionRepository(initial: freeSubscription())
-      ..activateError = const SubscriptionFailure.purchaseDisabled();
-    await tester.pumpWidget(_wrap(repo));
+    final repo = FakeSubscriptionRepository(initial: freeSubscription());
+    final client = FakeIapClient();
+    addTearDown(client.dispose);
+    await tester.pumpWidget(_wrap(client, repo));
     await tester.pumpAndSettle();
     await tester.tap(find.text('OPEN'));
     await tester.pumpAndSettle();
 
     final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
 
-    await tester.tap(find.text(l10n.paywallCta));
+    await tester.tap(find.text(l10n.paywallRestore));
+    await tester.pump();
+
+    expect(client.restoreCount, 1);
+  });
+
+  testWidgets('Mağaza yok → fiyat yer tutucu + uyarı mesajı', (tester) async {
+    _useTallSurface(tester);
+    final repo = FakeSubscriptionRepository(initial: freeSubscription());
+    final client = FakeIapClient(available: false);
+    addTearDown(client.dispose);
+    await tester.pumpWidget(_wrap(client, repo));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OPEN'));
     await tester.pumpAndSettle();
 
-    expect(find.text(l10n.paywallPurchaseDisabled), findsOneWidget);
-    // Hata → paywall açık kalır (CTA hâlâ görünür).
-    expect(find.text(l10n.paywallCta), findsOneWidget);
+    final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
+    expect(find.text(l10n.paywallProductsUnavailable), findsOneWidget);
   });
 }

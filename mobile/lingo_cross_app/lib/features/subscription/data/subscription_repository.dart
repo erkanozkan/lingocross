@@ -42,6 +42,22 @@ class SubscriptionRepository {
     }
   }
 
+  /// Apple makbuzunu doğrular (`POST /api/subscription/apple/verify`).
+  ///
+  /// Başarıda güncel (Premium) [SubscriptionDto] döner; doğrulama başarısızsa
+  /// [SubscriptionFailure] fırlatır (premium verilmez).
+  Future<SubscriptionDto> verifyApple(String receiptData) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/subscription/apple/verify',
+        data: AppleVerifyRequest(receiptData: receiptData).toJson(),
+      );
+      return SubscriptionDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   /// Aboneliği iptal eder (`POST /api/subscription/cancel`). Güncel durumu döner.
   Future<SubscriptionDto> cancel() async {
     try {

@@ -17,4 +17,11 @@ public interface ISubscriptionService
 
     /// <summary>STUB: geçerli kullanıcının aboneliğini iptal eder (Free'ye düşer). StubEnabled false ise 503.</summary>
     Task<SubscriptionDto> CancelAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Apple App Store makbuzunu doğrular ve geçerliyse geçerli kullanıcının aboneliğini upsert eder
+    /// (Premium / Source=AppleIap). <c>Apple:SharedSecret</c> ayarlı değilse 503, makbuz boşsa 400,
+    /// doğrulanamazsa 400 fırlatır.
+    /// </summary>
+    Task<SubscriptionDto> VerifyAppleReceiptAsync(string receiptData, CancellationToken cancellationToken = default);
 }

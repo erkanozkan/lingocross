@@ -9,6 +9,7 @@ using LingoCross.Infrastructure.Notifications;
 using LingoCross.Application.Subscriptions;
 using LingoCross.Infrastructure.Ocr;
 using LingoCross.Infrastructure.Persistence;
+using LingoCross.Infrastructure.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,11 @@ public static class DependencyInjection
 
         // Abonelik/entitlement ayarları (Free limitleri, stub anahtarı, trial süresi).
         services.Configure<SubscriptionOptions>(configuration.GetSection(SubscriptionOptions.SectionName));
+
+        // Apple IAP makbuz doğrulama. SharedSecret yoksa servis katmanı 503 döner.
+        services.Configure<AppleOptions>(configuration.GetSection(AppleOptions.SectionName));
+        services.AddHttpClient();
+        services.AddScoped<IAppleReceiptVerifier, AppleReceiptVerifier>();
 
         return services;
     }
