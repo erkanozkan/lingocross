@@ -23,8 +23,9 @@ import '../widgets/skeleton_card.dart';
 ///
 /// Başlık + durum rozeti + tarih, "Paylaşılan Sınıflar" (atanan öğrenci sayısı —
 /// enrollment'tan), ders içeriği (description), kelime önizleme (ilk birkaç +
-/// "Tümünü Gör" → word_list), aksiyonlar (Dersi Düzenle + duruma göre
-/// publish/unpublish/complete + "Ödev Ataması Yap" → F2.2 placeholder).
+/// "Tümünü Gör" → word_list), aksiyonlar (Dersi Düzenle + "Ödev Ataması Yap").
+/// Dersler oluşturulurken otomatik yayımlanır; manuel yayın/tamamla aksiyonu yok.
+/// Durum rozeti yalnızca bilgi amaçlı gösterilir.
 class LessonDetailScreen extends ConsumerWidget {
   const LessonDetailScreen({super.key, required this.lessonId});
 
@@ -447,129 +448,36 @@ class _ActionsBar extends ConsumerWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             children: [
-              _StatusActionRow(lesson: lesson, busy: busy),
-              const SizedBox(height: AppSpacing.sm),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: busy
-                          ? null
-                          : () =>
-                              context.push(AppRoutes.lessonEdit(lesson.id)),
-                      icon: const Icon(Icons.edit),
-                      label: Text(l10n.lessonDetailEdit),
-                    ),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: busy
+                      ? null
+                      : () => context.push(AppRoutes.lessonEdit(lesson.id)),
+                  icon: const Icon(Icons.edit),
+                  label: Text(l10n.lessonDetailEdit),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: busy
+                      ? null
+                      : () =>
+                          context.push(AppRoutes.gameNewForLesson(lesson.id)),
+                  icon: const Icon(Icons.assignment_add),
+                  label: Text(
+                    l10n.lessonDetailAssignHomework,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: busy
-                          ? null
-                          : () => context.push(
-                              AppRoutes.gameNewForLesson(lesson.id)),
-                      icon: const Icon(Icons.assignment_add),
-                      label: Text(
-                        l10n.lessonDetailAssignHomework,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-}
-
-/// Duruma göre yayın aksiyonu: Draft → Yayınla; Active → Tamamla + Yayından
-/// Kaldır; Completed → aksiyon yok (yalnız düzenle/ödev kalır).
-class _StatusActionRow extends ConsumerWidget {
-  const _StatusActionRow({required this.lesson, required this.busy});
-
-  final LessonDto lesson;
-  final bool busy;
-
-  Future<void> _run(
-    BuildContext context,
-    WidgetRef ref,
-    Future<LessonDto?> Function() op,
-    String successMsg,
-  ) async {
-    final l10n = AppLocalizations.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final result = await op();
-    if (!context.mounted) return;
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(result != null ? successMsg : l10n.lessonDetailActionError),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final controller = ref.read(lessonFormControllerProvider.notifier);
-
-    switch (lesson.status) {
-      case LessonStatus.draft:
-        return SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: busy
-                ? null
-                : () => _run(context, ref, () => controller.publish(lesson.id),
-                    l10n.lessonDetailPublishedSnack),
-            icon: const Icon(Icons.send),
-            label: Text(l10n.lessonDetailPublish),
-          ),
-        );
-      case LessonStatus.active:
-        return Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: busy
-                    ? null
-                    : () => _run(context, ref,
-                        () => controller.unpublish(lesson.id),
-                        l10n.lessonDetailUnpublishedSnack),
-                icon: const Icon(Icons.visibility_off),
-                label: Text(
-                  l10n.lessonDetailUnpublish,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: busy
-                    ? null
-                    : () => _run(context, ref,
-                        () => controller.complete(lesson.id),
-                        l10n.lessonDetailCompletedSnack),
-                icon: const Icon(Icons.check_circle),
-                label: Text(
-                  l10n.lessonDetailComplete,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
-        );
-      case LessonStatus.completed:
-        return const SizedBox.shrink();
-    }
   }
 }
