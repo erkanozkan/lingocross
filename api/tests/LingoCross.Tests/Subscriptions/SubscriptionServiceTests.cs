@@ -6,6 +6,7 @@ using LingoCross.Domain.Enums;
 using LingoCross.Infrastructure.Persistence;
 using LingoCross.Tests.Lessons;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace LingoCross.Tests.Subscriptions;
@@ -47,7 +48,8 @@ public class SubscriptionServiceTests
             entitlement,
             options,
             appleOptions,
-            appleVerifier ?? new FakeAppleReceiptVerifier(new AppleVerifyResult(false, null, null, null, "unset")));
+            appleVerifier ?? new FakeAppleReceiptVerifier(new AppleVerifyResult(false, null, null, null, "unset")),
+            NullLogger<SubscriptionService>.Instance);
     }
 
     /// <summary>Apple'a gerçek istek atmadan sabit sonuç döndüren sahte doğrulayıcı.</summary>
