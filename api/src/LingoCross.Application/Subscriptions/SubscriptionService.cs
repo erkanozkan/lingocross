@@ -5,6 +5,7 @@ using LingoCross.Application.Subscriptions.Dtos;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace LingoCross.Application.Subscriptions;
@@ -25,6 +26,7 @@ public class SubscriptionService : ISubscriptionService
     private readonly SubscriptionOptions _options;
     private readonly AppleOptions _appleOptions;
     private readonly IAppleReceiptVerifier _appleVerifier;
+    private readonly ILogger<SubscriptionService> _logger;
 
     public SubscriptionService(
         IAppDbContext db,
@@ -32,7 +34,8 @@ public class SubscriptionService : ISubscriptionService
         IEntitlementService entitlement,
         IOptions<SubscriptionOptions> options,
         IOptions<AppleOptions> appleOptions,
-        IAppleReceiptVerifier appleVerifier)
+        IAppleReceiptVerifier appleVerifier,
+        ILogger<SubscriptionService> logger)
     {
         _db = db;
         _currentUser = currentUser;
@@ -40,6 +43,7 @@ public class SubscriptionService : ISubscriptionService
         _options = options.Value;
         _appleOptions = appleOptions.Value;
         _appleVerifier = appleVerifier;
+        _logger = logger;
     }
 
     public async Task<SubscriptionDto> GetMineAsync(CancellationToken cancellationToken = default)
@@ -125,11 +129,19 @@ public class SubscriptionService : ISubscriptionService
         var result = await _appleVerifier.VerifyAsync(receiptData, cancellationToken);
         if (!result.IsValid)
         {
+            _logger.LogWarning(
+                "Apple makbuz doğrulaması geçersiz. Sebep={Reason}, BeklenenBundleId={BundleId}",
+                result.RawError, _appleOptions.BundleId);
             throw AppException.BadRequest("Makbuz doğrulanamadı.");
         }
 
-        var period = AppleOptions.MapPeriod(result.ProductId)
-            ?? throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        var period = AppleOptions.MapPeriod(result.ProductId);
+        if (period is null)
+        {
+            _logger.LogWarning(
+                "Apple makbuzu geçerli ama ürün tanınmadı. ProductId={ProductId}", result.ProductId);
+            throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        }
 
         var now = DateTime.UtcNow;
         var expiresAt = result.ExpiresAt?.UtcDateTime;
