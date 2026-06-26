@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +26,14 @@ Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase'i başlat (iOS: GoogleService-Info.plist'ten otomatik okunur;
-  // iOS-only olduğu için firebase_options.dart gerekmez).
-  await Firebase.initializeApp();
-
-  // Arka plan push işleyicisini kaydet.
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+  // Push yalnızca iOS'ta etkin (GoogleService-Info.plist'ten otomatik okunur;
+  // firebase_options.dart gerekmez). Android'de google-services.json olmadığı
+  // için Firebase.initializeApp() fırlatır ve açılışta çökerdi → iOS-only guard.
+  if (Platform.isIOS) {
+    await Firebase.initializeApp();
+    // Arka plan push işleyicisini kaydet.
+    FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+  }
 
   // SharedPreferences senkron erişim için açılışta yüklenir; loginPrefsProvider
   // bunu override edilen sharedPreferencesProvider üzerinden okur.
