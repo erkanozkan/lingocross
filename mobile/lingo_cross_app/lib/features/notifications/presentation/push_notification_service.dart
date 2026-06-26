@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,10 @@ class PushNotificationService extends _$PushNotificationService {
 
   @override
   void build() {
+    // Push yalnızca iOS'ta etkin. Android'de Firebase başlatılmadığı için
+    // (google-services.json yok) hiçbir FCM çağrısı yapılmamalı.
+    if (!Platform.isIOS) return;
+
     // Auth durumunu izle; authenticated → kayıt, unauthenticated → temizlik.
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
       final wasAuth = previous?.isAuthenticated ?? false;
