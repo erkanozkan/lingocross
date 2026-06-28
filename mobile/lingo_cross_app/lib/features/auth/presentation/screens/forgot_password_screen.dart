@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,9 +17,10 @@ import '../auth_validators.dart';
 
 /// Şifremi Unuttum ekranı (UX: auth-forgot-password.md).
 ///
-/// Güvenlik: kayıtlı olmayan e-posta sızdırılmaz → her geçerli e-posta aynı
-/// başarı bloğunu gösterir. Başlık `headline-lg` (orchestrator: headline-lg-mobile
-/// tanımsız). "Tekrar gönder" 30sn cooldown'lı.
+/// Güvenlik: kayıtlı olmayan e-posta sızdırılmaz → her geçerli e-posta için
+/// kod giriş ekranına geçilir (kod gönderildi/gönderilmedi ayrımı yapılmaz).
+/// Başlık `headline-lg`. Başarıda kod + yeni şifre ekranına (ResetPassword)
+/// e-posta `extra` ile taşınarak geçilir; "tekrar gönder" orada yönetilir.
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -35,28 +34,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _emailController = TextEditingController();
 
   bool _loading = false;
-  bool _success = false;
   String? _errorMessage;
-
-  Timer? _cooldownTimer;
-  int _cooldownSeconds = 0;
-  static const int _cooldownDuration = 30;
 
   @override
   void dispose() {
-    _cooldownTimer?.cancel();
     _emailController.dispose();
     super.dispose();
-  }
-
-  void _startCooldown() {
-    _cooldownTimer?.cancel();
-    setState(() => _cooldownSeconds = _cooldownDuration);
-    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) return;
-      setState(() => _cooldownSeconds--);
-      if (_cooldownSeconds <= 0) timer.cancel();
-    });
   }
 
   Future<void> _submit() async {
@@ -65,13 +48,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _loading = true);
+    final email = _emailController.text.trim();
     try {
-      await ref.read(authRepositoryProvider).forgotPassword(
-            email: _emailController.text.trim(),
-          );
+      await ref.read(authRepositoryProvider).forgotPassword(email: email);
       if (!mounted) return;
-      setState(() => _success = true);
-      _startCooldown();
+      // Güvenlik: kayıtlı/değil ayrımı yapılmadan kod giriş ekranına geç
+      // (e-posta `extra` ile taşınır). "Tekrar gönder" orada yönetilir.
+      context.push(AppRoutes.resetPassword, extra: email);
     } on AuthFailure catch (failure) {
       if (!mounted) return;
       // Yalnız ağ/sunucu hatası gösterilir (kayıtlı olmama gizlenir).
@@ -82,11 +65,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
-  }
-
-  Future<void> _resend() async {
-    if (_cooldownSeconds > 0) return;
-    await _submit();
   }
 
   @override
@@ -121,7 +99,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   horizontal: AppSpacing.marginMobile,
                   vertical: AppSpacing.lg,
                 ),
-                child: _success ? _buildSuccess(l10n) : _buildForm(l10n),
+                child: _buildForm(l10n),
               ),
             ),
           ),
@@ -185,57 +163,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             onPressed: _submit,
           ),
           const SizedBox(height: AppSpacing.xl),
-          _buildSupport(l10n),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuccess(AppLocalizations l10n) {
-    final resendLabel = _cooldownSeconds > 0
-        ? '${l10n.authForgotSuccessResend} ($_cooldownSeconds)'
-        : l10n.authForgotSuccessResend;
-
-    return Semantics(
-      liveRegion: true,
-      child: Column(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: const BoxDecoration(
-              color: AppColors.tertiaryFixed,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.check_circle,
-                color: AppColors.onTertiaryFixed, size: 32),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(l10n.authForgotSuccessTitle, style: AppTypography.headlineMd),
-          const SizedBox(height: AppSpacing.xs),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 280),
-            child: Text(
-              l10n.authForgotSuccessDescription,
-              textAlign: TextAlign.center,
-              style: AppTypography.bodyMd
-                  .copyWith(color: AppColors.onSurfaceVariant),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          TextButton(
-            onPressed:
-                (_loading || _cooldownSeconds > 0) ? null : _resend,
-            child: Text(
-              resendLabel,
-              style: AppTypography.labelLg.copyWith(
-                color: _cooldownSeconds > 0
-                    ? AppColors.onSurfaceVariant
-                    : AppColors.primary,
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
           _buildSupport(l10n),
         ],
       ),

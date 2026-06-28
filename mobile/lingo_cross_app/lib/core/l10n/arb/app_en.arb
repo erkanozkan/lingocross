@@ -59,10 +59,31 @@
   "authForgotSupportContact": "Contact Support",
   "authForgotErrorNetwork": "Connection error. Please try again.",
 
+  "authResetTitle": "Reset Password",
+  "authResetDescription": "Enter the 6-digit code sent to {email} and set your new password.",
+  "@authResetDescription": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "authResetCodeLabel": "Verification Code",
+  "authResetCodeHint": "000000",
+  "authResetNewPasswordLabel": "New Password",
+  "authResetNewPasswordHint": "At least 8 characters",
+  "authResetConfirmPasswordLabel": "New Password (again)",
+  "authResetConfirmPasswordHint": "Re-enter the password",
+  "authResetSubmit": "Reset Password",
+  "authResetSuccess": "Your password has been updated. You can sign in with your new password.",
+  "authResetResend": "Didn't get the code? Resend",
+  "authResetErrorCodeInvalid": "The code is invalid or expired. Please try again.",
+
   "authValidationEmailRequired": "Email address is required.",
   "authValidationEmailInvalid": "Enter a valid email address.",
   "authValidationPasswordRequired": "Password is required.",
   "authValidationPasswordTooShort": "Password must be at least 8 characters.",
+  "authValidationPasswordMismatch": "Passwords do not match.",
+  "authValidationCodeRequired": "Verification code is required.",
+  "authValidationCodeInvalid": "The code must be 6 digits.",
   "authValidationFullNameRequired": "Full name is required.",
   "authValidationTermsRequired": "Accept the terms to continue.",
 

@@ -59,10 +59,31 @@
   "authForgotSupportContact": "Destekle İletişime Geçin",
   "authForgotErrorNetwork": "Bağlantı hatası. Lütfen tekrar deneyin.",
 
+  "authResetTitle": "Şifreyi Sıfırla",
+  "authResetDescription": "{email} adresine gönderilen 6 haneli kodu girin ve yeni şifrenizi belirleyin.",
+  "@authResetDescription": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "authResetCodeLabel": "Doğrulama Kodu",
+  "authResetCodeHint": "000000",
+  "authResetNewPasswordLabel": "Yeni Şifre",
+  "authResetNewPasswordHint": "En az 8 karakter",
+  "authResetConfirmPasswordLabel": "Yeni Şifre (Tekrar)",
+  "authResetConfirmPasswordHint": "Şifreyi tekrar girin",
+  "authResetSubmit": "Şifreyi Sıfırla",
+  "authResetSuccess": "Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.",
+  "authResetResend": "Kod gelmedi mi? Tekrar gönder",
+  "authResetErrorCodeInvalid": "Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.",
+
   "authValidationEmailRequired": "E-posta adresi gerekli.",
   "authValidationEmailInvalid": "Geçerli bir e-posta adresi girin.",
   "authValidationPasswordRequired": "Şifre gerekli.",
   "authValidationPasswordTooShort": "Şifre en az 8 karakter olmalı.",
+  "authValidationPasswordMismatch": "Şifreler eşleşmiyor.",
+  "authValidationCodeRequired": "Doğrulama kodu gerekli.",
+  "authValidationCodeInvalid": "Kod 6 rakam olmalı.",
   "authValidationFullNameRequired": "Ad soyad gerekli.",
   "authValidationTermsRequired": "Devam etmek için koşulları kabul edin.",
 

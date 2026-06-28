@@ -19,11 +19,13 @@ public class AuthServiceTests
 {
     private sealed class CapturingEmailSender : IEmailSender
     {
-        public string? LastToken { get; private set; }
+        public string? LastCode { get; private set; }
+        public int SendCount { get; private set; }
 
-        public Task SendPasswordResetAsync(string toEmail, string resetToken, CancellationToken ct = default)
+        public Task SendPasswordResetAsync(string toEmail, string code, CancellationToken ct = default)
         {
-            LastToken = resetToken;
+            LastCode = code;
+            SendCount++;
             return Task.CompletedTask;
         }
     }
@@ -125,9 +127,12 @@ public class AuthServiceTests
         await service.RegisterAsync(TeacherReg());
 
         await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
-        Assert.NotNull(email.LastToken);
+        Assert.NotNull(email.LastCode);
+        // 6 haneli kod üretilmiş olmalı.
+        Assert.Matches("^[0-9]{6}$", email.LastCode!);
 
-        await service.ResetPasswordAsync(new ResetPasswordRequest(email.LastToken!, "YeniSifre9!"));
+        await service.ResetPasswordAsync(
+            new ResetPasswordRequest("teacher@example.com", email.LastCode!, "YeniSifre9!"));
 
         // Eski şifre artık geçersiz, yenisi geçerli.
         await Assert.ThrowsAsync<AppException>(() =>
@@ -140,13 +145,114 @@ public class AuthServiceTests
     }
 
     [Fact]
+    public async Task ForgotPassword_InvalidatesPreviousUnusedCode_AndKeepsOnlyOneActive()
+    {
+        var (service, db, email) = CreateSut();
+        await service.RegisterAsync(TeacherReg());
+
+        await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
+        var firstCode = email.LastCode!;
+
+        await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
+        var secondCode = email.LastCode!;
+
+        Assert.Equal(2, email.SendCount);
+
+        // Yalnız bir aktif (kullanılmamış) kod kalmalı.
+        Assert.Equal(1, await db.PasswordResetTokens.CountAsync(t => t.UsedAt == null));
+
+        // İlk kod artık geçersiz olmalı.
+        await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", firstCode, "YeniSifre9!")));
+
+        // İkinci kod hâlâ çalışmalı.
+        await service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", secondCode, "YeniSifre9!"));
+        var login = await service.LoginAsync(new LoginRequest("teacher@example.com", "YeniSifre9!"));
+        Assert.False(string.IsNullOrWhiteSpace(login.AccessToken));
+    }
+
+    [Fact]
+    public async Task ResetPassword_WrongCode_IncrementsAttempts_AndThrows400()
+    {
+        var (service, db, email) = CreateSut();
+        await service.RegisterAsync(TeacherReg());
+        await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
+
+        var ex = await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", "000000", "YeniSifre9!")));
+        Assert.Equal(400, ex.StatusCode);
+
+        var token = await db.PasswordResetTokens.SingleAsync();
+        Assert.Equal(1, token.Attempts);
+        Assert.Null(token.UsedAt);
+    }
+
+    [Fact]
+    public async Task ResetPassword_FifthWrongAttempt_InvalidatesCode()
+    {
+        var (service, db, email) = CreateSut();
+        await service.RegisterAsync(TeacherReg());
+        await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
+        var realCode = email.LastCode!;
+        // Gerçek kodla çakışmayacak bir yanlış kod seç.
+        var wrongCode = realCode == "111111" ? "222222" : "111111";
+
+        // 1–4. yanlış denemeler "Kod hatalı".
+        for (var i = 0; i < 4; i++)
+        {
+            await Assert.ThrowsAsync<AppException>(() =>
+                service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", wrongCode, "YeniSifre9!")));
+        }
+
+        // 5. yanlış deneme kodu geçersiz kılar.
+        var ex = await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", wrongCode, "YeniSifre9!")));
+        Assert.Equal(400, ex.StatusCode);
+
+        var token = await db.PasswordResetTokens.SingleAsync();
+        Assert.NotNull(token.UsedAt);
+
+        // Artık doğru kod bile işe yaramaz (kod geçersiz kılındı).
+        await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", realCode, "YeniSifre9!")));
+    }
+
+    [Fact]
+    public async Task ResetPassword_ExpiredCode_Throws400()
+    {
+        var (service, db, email) = CreateSut();
+        await service.RegisterAsync(TeacherReg());
+        await service.ForgotPasswordAsync(new ForgotPasswordRequest("teacher@example.com"));
+        var code = email.LastCode!;
+
+        // Kodun süresini geçmişe çek.
+        var token = await db.PasswordResetTokens.SingleAsync();
+        token.ExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+        await db.SaveChangesAsync();
+
+        var ex = await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("teacher@example.com", code, "YeniSifre9!")));
+        Assert.Equal(400, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task ResetPassword_UnknownEmail_Throws400_WithoutEnumeration()
+    {
+        var (service, _, _) = CreateSut();
+
+        var ex = await Assert.ThrowsAsync<AppException>(() =>
+            service.ResetPasswordAsync(new ResetPasswordRequest("nobody@example.com", "123456", "YeniSifre9!")));
+        Assert.Equal(400, ex.StatusCode);
+    }
+
+    [Fact]
     public async Task ForgotPassword_IsSilent_ForUnknownEmail()
     {
         var (service, _, email) = CreateSut();
 
         await service.ForgotPasswordAsync(new ForgotPasswordRequest("nobody@example.com"));
 
-        Assert.Null(email.LastToken);
+        Assert.Null(email.LastCode);
     }
 
     [Fact]

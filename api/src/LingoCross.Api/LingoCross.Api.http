@@ -48,12 +48,13 @@ Content-Type: application/json
   "email": "ogretmen@example.com"
 }
 
-### Şifre sıfırlama (token dev log'undan)
+### Şifre sıfırlama (6 haneli kod e-postadan; dev'de log'a yazılır)
 POST {{LingoCross.Api_HostAddress}}/api/auth/reset-password
 Content-Type: application/json
 
 {
-  "token": "<reset-token>",
+  "email": "ogretmen@example.com",
+  "code": "123456",
   "newPassword": "YeniSifre9!"
 }
 

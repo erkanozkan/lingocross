@@ -11,6 +11,7 @@ import '../../features/auth/presentation/auth_state.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/classes/presentation/screens/class_detail_screen.dart';
 import '../../features/classes/presentation/screens/classes_list_screen.dart';
 import '../../features/classes/presentation/screens/create_class_screen.dart';
@@ -49,6 +50,11 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
+
+  /// Şifre sıfırlama — 6 haneli kod + yeni şifre. E-posta forgot ekranından
+  /// `extra` (String) ile taşınır; doğrudan derin-bağlantıda (extra yok)
+  /// login'e geri yönlendirilir.
+  static const String resetPassword = '/reset-password';
 
   /// Hesap Ayarları (F4.2) — profilden push'lanır. `/account/...` prefix'i
   /// teacher/student'a uymadığı için her iki rol erişir (guard'da authed yeter).
@@ -168,7 +174,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final homeForRole = isTeacher ? AppRoutes.teacher : AppRoutes.student;
       final onAuthRoute = loc == AppRoutes.login ||
           loc == AppRoutes.register ||
-          loc == AppRoutes.forgotPassword;
+          loc == AppRoutes.forgotPassword ||
+          loc == AppRoutes.resetPassword;
       final onTeacherRoute = loc.startsWith(AppRoutes.teacher);
       final onStudentRoute = loc.startsWith(AppRoutes.student);
 
@@ -201,6 +208,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.forgotPassword,
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      // Şifre Sıfırlama — kod + yeni şifre. E-posta `extra` ile taşınır;
+      // yoksa/boşsa login'e yönlendirme savunması (builder içinde).
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) {
+          final email = state.extra is String ? state.extra as String : '';
+          if (email.trim().isEmpty) return const LoginScreen();
+          return ResetPasswordScreen(email: email);
+        },
       ),
       // Hesap Ayarları (F4.2) — her iki rol için ortak (authed yeterli).
       GoRoute(

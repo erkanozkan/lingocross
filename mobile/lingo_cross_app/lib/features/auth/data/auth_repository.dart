@@ -65,6 +65,46 @@ class AuthRepository {
     }
   }
 
+  /// Şifre sıfırlar: e-postaya gönderilen 6 haneli kod + yeni şifre
+  /// (POST /auth/reset-password → 200). Kod hatalı/süresi dolmuş/çok fazla
+  /// deneme → 400 ProblemDetails → [AuthFailure.resetCodeInvalid] (varsa
+  /// backend `detail`/`title` mesajıyla). Diğer durumlar ağ/genel hataya eşlenir.
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    try {
+      await _dio.post<dynamic>(
+        '$_base/auth/reset-password',
+        data: ResetPasswordRequest(
+          email: email,
+          code: code,
+          newPassword: newPassword,
+        ).toJson(),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw AuthFailure.resetCodeInvalid(
+          message: _problemDetailsMessage(e.response?.data),
+        );
+      }
+      throw _mapNetworkOrGeneric(e);
+    }
+  }
+
+  /// ProblemDetails gövdesinden gösterilebilir mesajı çıkarır (`detail`,
+  /// yoksa `title`). Beklenmeyen biçim → null (UI genel metne düşer).
+  String? _problemDetailsMessage(Object? data) {
+    if (data is Map) {
+      final detail = data['detail'];
+      if (detail is String && detail.trim().isNotEmpty) return detail;
+      final title = data['title'];
+      if (title is String && title.trim().isNotEmpty) return title;
+    }
+    return null;
+  }
+
   /// Mevcut kullanıcı profili (GET /auth/me). Authenticated Dio kullanılır;
   /// 401 olursa interceptor refresh dener. Token geçersizse hata fırlatır.
   Future<UserDto> me() async {

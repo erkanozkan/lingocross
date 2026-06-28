@@ -11,7 +11,10 @@ namespace LingoCross.Application.Auth;
 
 public class AuthService : IAuthService
 {
-    private static readonly TimeSpan PasswordResetTokenLifetime = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan PasswordResetTokenLifetime = TimeSpan.FromMinutes(15);
+
+    /// <summary>Bir kod, bu kadar yanlış denemeden sonra geçersiz kılınır (brute-force koruması).</summary>
+    private const int MaxResetAttempts = 5;
 
     /// <summary>UI'ın desteklediği diller; bunun dışındaki değerler yok sayılır.</summary>
     private static readonly HashSet<string> SupportedLocales = new(StringComparer.OrdinalIgnoreCase) { "tr", "en" };
@@ -144,33 +147,69 @@ public class AuthService : IAuthService
             return;
         }
 
-        var token = _tokenService.CreateRefreshToken();
+        var now = DateTime.UtcNow;
+
+        // Aynı anda yalnızca tek aktif kod olsun: kullanıcının kullanılmamış eski kodlarını geçersiz kıl.
+        var activeCodes = await _db.PasswordResetTokens
+            .Where(t => t.UserId == user.Id && t.UsedAt == null)
+            .ToListAsync(cancellationToken);
+        foreach (var c in activeCodes)
+        {
+            c.UsedAt = now;
+        }
+
+        // 6 haneli rastgele kod (000000–999999, baştaki sıfırlar korunur).
+        var code = System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+
         var resetToken = new PasswordResetToken
         {
             UserId = user.Id,
-            TokenHash = token.TokenHash,
-            ExpiresAt = DateTime.UtcNow.Add(PasswordResetTokenLifetime),
+            TokenHash = _tokenService.HashRefreshToken(code),
+            ExpiresAt = now.Add(PasswordResetTokenLifetime),
         };
         _db.PasswordResetTokens.Add(resetToken);
         await _db.SaveChangesAsync(cancellationToken);
 
-        await _emailSender.SendPasswordResetAsync(user.Email, token.Token, cancellationToken);
+        await _emailSender.SendPasswordResetAsync(user.Email, code, cancellationToken);
     }
 
     public async Task ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
     {
-        var hash = _tokenService.HashRefreshToken(request.Token);
+        var email = NormalizeEmail(request.Email);
+        var now = DateTime.UtcNow;
 
-        var resetToken = await _db.PasswordResetTokens
-            .Include(t => t.User)
-            .FirstOrDefaultAsync(t => t.TokenHash == hash, cancellationToken);
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
-        if (resetToken is null || resetToken.UsedAt is not null || DateTime.UtcNow >= resetToken.ExpiresAt)
+        // Enumeration sızdırmamak için kullanıcı yoksa da "geçersiz/süresi dolmuş" mesajı dön.
+        var resetToken = user is null
+            ? null
+            : await _db.PasswordResetTokens
+                .Include(t => t.User)
+                .Where(t => t.UserId == user.Id && t.UsedAt == null)
+                .OrderByDescending(t => t.CreatedAt)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        if (resetToken is null || resetToken.UsedAt is not null || now >= resetToken.ExpiresAt)
         {
-            throw AppException.BadRequest("Şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş.");
+            throw AppException.BadRequest("Kod geçersiz veya süresi dolmuş.");
         }
 
-        resetToken.UsedAt = DateTime.UtcNow;
+        var providedHash = _tokenService.HashRefreshToken(request.Code);
+        if (!string.Equals(providedHash, resetToken.TokenHash, StringComparison.Ordinal))
+        {
+            resetToken.Attempts++;
+            if (resetToken.Attempts >= MaxResetAttempts)
+            {
+                resetToken.UsedAt = now;
+                await _db.SaveChangesAsync(cancellationToken);
+                throw AppException.BadRequest("Çok fazla hatalı deneme. Yeni kod isteyin.");
+            }
+
+            await _db.SaveChangesAsync(cancellationToken);
+            throw AppException.BadRequest("Kod hatalı.");
+        }
+
+        resetToken.UsedAt = now;
         resetToken.User.PasswordHash = _passwordHasher.Hash(request.NewPassword);
 
         // Güvenlik: şifre değişince kullanıcının tüm aktif refresh token'larını iptal et.

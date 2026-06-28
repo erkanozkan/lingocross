@@ -22,6 +22,7 @@ mixin _$AuthFailure {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) => throw _privateConstructorUsedError;
@@ -30,6 +31,7 @@ mixin _$AuthFailure {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) => throw _privateConstructorUsedError;
@@ -38,6 +40,7 @@ mixin _$AuthFailure {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -47,6 +50,7 @@ mixin _$AuthFailure {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) => throw _privateConstructorUsedError;
@@ -55,6 +59,7 @@ mixin _$AuthFailure {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) => throw _privateConstructorUsedError;
@@ -63,6 +68,7 @@ mixin _$AuthFailure {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -137,6 +143,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -149,6 +156,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -161,6 +169,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -177,6 +186,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -189,6 +199,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -201,6 +212,7 @@ class _$InvalidCredentialsImpl implements InvalidCredentials {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -262,6 +274,7 @@ class _$EmailTakenImpl implements EmailTaken {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -274,6 +287,7 @@ class _$EmailTakenImpl implements EmailTaken {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -286,6 +300,7 @@ class _$EmailTakenImpl implements EmailTaken {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -302,6 +317,7 @@ class _$EmailTakenImpl implements EmailTaken {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -314,6 +330,7 @@ class _$EmailTakenImpl implements EmailTaken {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -326,6 +343,7 @@ class _$EmailTakenImpl implements EmailTaken {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -388,6 +406,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -400,6 +419,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -412,6 +432,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -428,6 +449,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -440,6 +462,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -452,6 +475,7 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -465,6 +489,177 @@ class _$WrongCurrentPasswordImpl implements WrongCurrentPassword {
 
 abstract class WrongCurrentPassword implements AuthFailure {
   const factory WrongCurrentPassword() = _$WrongCurrentPasswordImpl;
+}
+
+/// @nodoc
+abstract class _$$ResetCodeInvalidImplCopyWith<$Res> {
+  factory _$$ResetCodeInvalidImplCopyWith(
+    _$ResetCodeInvalidImpl value,
+    $Res Function(_$ResetCodeInvalidImpl) then,
+  ) = __$$ResetCodeInvalidImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String? message});
+}
+
+/// @nodoc
+class __$$ResetCodeInvalidImplCopyWithImpl<$Res>
+    extends _$AuthFailureCopyWithImpl<$Res, _$ResetCodeInvalidImpl>
+    implements _$$ResetCodeInvalidImplCopyWith<$Res> {
+  __$$ResetCodeInvalidImplCopyWithImpl(
+    _$ResetCodeInvalidImpl _value,
+    $Res Function(_$ResetCodeInvalidImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AuthFailure
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? message = freezed}) {
+    return _then(
+      _$ResetCodeInvalidImpl(
+        message:
+            freezed == message
+                ? _value.message
+                : message // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$ResetCodeInvalidImpl implements ResetCodeInvalid {
+  const _$ResetCodeInvalidImpl({this.message});
+
+  @override
+  final String? message;
+
+  @override
+  String toString() {
+    return 'AuthFailure.resetCodeInvalid(message: $message)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ResetCodeInvalidImpl &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, message);
+
+  /// Create a copy of AuthFailure
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ResetCodeInvalidImplCopyWith<_$ResetCodeInvalidImpl> get copyWith =>
+      __$$ResetCodeInvalidImplCopyWithImpl<_$ResetCodeInvalidImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() invalidCredentials,
+    required TResult Function() emailTaken,
+    required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
+    required TResult Function() network,
+    required TResult Function() unexpected,
+  }) {
+    return resetCodeInvalid(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? invalidCredentials,
+    TResult? Function()? emailTaken,
+    TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
+    TResult? Function()? network,
+    TResult? Function()? unexpected,
+  }) {
+    return resetCodeInvalid?.call(message);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? invalidCredentials,
+    TResult Function()? emailTaken,
+    TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
+    TResult Function()? network,
+    TResult Function()? unexpected,
+    required TResult orElse(),
+  }) {
+    if (resetCodeInvalid != null) {
+      return resetCodeInvalid(message);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(InvalidCredentials value) invalidCredentials,
+    required TResult Function(EmailTaken value) emailTaken,
+    required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
+    required TResult Function(NetworkFailure value) network,
+    required TResult Function(UnexpectedFailure value) unexpected,
+  }) {
+    return resetCodeInvalid(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(InvalidCredentials value)? invalidCredentials,
+    TResult? Function(EmailTaken value)? emailTaken,
+    TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
+    TResult? Function(NetworkFailure value)? network,
+    TResult? Function(UnexpectedFailure value)? unexpected,
+  }) {
+    return resetCodeInvalid?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(InvalidCredentials value)? invalidCredentials,
+    TResult Function(EmailTaken value)? emailTaken,
+    TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
+    TResult Function(NetworkFailure value)? network,
+    TResult Function(UnexpectedFailure value)? unexpected,
+    required TResult orElse(),
+  }) {
+    if (resetCodeInvalid != null) {
+      return resetCodeInvalid(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ResetCodeInvalid implements AuthFailure {
+  const factory ResetCodeInvalid({final String? message}) =
+      _$ResetCodeInvalidImpl;
+
+  String? get message;
+
+  /// Create a copy of AuthFailure
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ResetCodeInvalidImplCopyWith<_$ResetCodeInvalidImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -513,6 +708,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -525,6 +721,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -537,6 +734,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -553,6 +751,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -565,6 +764,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -577,6 +777,7 @@ class _$NetworkFailureImpl implements NetworkFailure {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),
@@ -638,6 +839,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     required TResult Function() invalidCredentials,
     required TResult Function() emailTaken,
     required TResult Function() wrongCurrentPassword,
+    required TResult Function(String? message) resetCodeInvalid,
     required TResult Function() network,
     required TResult Function() unexpected,
   }) {
@@ -650,6 +852,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     TResult? Function()? invalidCredentials,
     TResult? Function()? emailTaken,
     TResult? Function()? wrongCurrentPassword,
+    TResult? Function(String? message)? resetCodeInvalid,
     TResult? Function()? network,
     TResult? Function()? unexpected,
   }) {
@@ -662,6 +865,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     TResult Function()? invalidCredentials,
     TResult Function()? emailTaken,
     TResult Function()? wrongCurrentPassword,
+    TResult Function(String? message)? resetCodeInvalid,
     TResult Function()? network,
     TResult Function()? unexpected,
     required TResult orElse(),
@@ -678,6 +882,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     required TResult Function(InvalidCredentials value) invalidCredentials,
     required TResult Function(EmailTaken value) emailTaken,
     required TResult Function(WrongCurrentPassword value) wrongCurrentPassword,
+    required TResult Function(ResetCodeInvalid value) resetCodeInvalid,
     required TResult Function(NetworkFailure value) network,
     required TResult Function(UnexpectedFailure value) unexpected,
   }) {
@@ -690,6 +895,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     TResult? Function(InvalidCredentials value)? invalidCredentials,
     TResult? Function(EmailTaken value)? emailTaken,
     TResult? Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult? Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult? Function(NetworkFailure value)? network,
     TResult? Function(UnexpectedFailure value)? unexpected,
   }) {
@@ -702,6 +908,7 @@ class _$UnexpectedFailureImpl implements UnexpectedFailure {
     TResult Function(InvalidCredentials value)? invalidCredentials,
     TResult Function(EmailTaken value)? emailTaken,
     TResult Function(WrongCurrentPassword value)? wrongCurrentPassword,
+    TResult Function(ResetCodeInvalid value)? resetCodeInvalid,
     TResult Function(NetworkFailure value)? network,
     TResult Function(UnexpectedFailure value)? unexpected,
     required TResult orElse(),

@@ -12,7 +12,7 @@ public record LogoutRequest(string RefreshToken);
 
 public record ForgotPasswordRequest(string Email);
 
-public record ResetPasswordRequest(string Token, string NewPassword);
+public record ResetPasswordRequest(string Email, string Code, string NewPassword);
 
 public record UpdateProfileRequest(string DisplayName, string? PreferredLocale = null);
 

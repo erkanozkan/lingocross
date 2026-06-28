@@ -162,6 +162,44 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authForgotErrorNetwork => 'Bağlantı hatası. Lütfen tekrar deneyin.';
 
   @override
+  String get authResetTitle => 'Şifreyi Sıfırla';
+
+  @override
+  String authResetDescription(String email) {
+    return '$email adresine gönderilen 6 haneli kodu girin ve yeni şifrenizi belirleyin.';
+  }
+
+  @override
+  String get authResetCodeLabel => 'Doğrulama Kodu';
+
+  @override
+  String get authResetCodeHint => '000000';
+
+  @override
+  String get authResetNewPasswordLabel => 'Yeni Şifre';
+
+  @override
+  String get authResetNewPasswordHint => 'En az 8 karakter';
+
+  @override
+  String get authResetConfirmPasswordLabel => 'Yeni Şifre (Tekrar)';
+
+  @override
+  String get authResetConfirmPasswordHint => 'Şifreyi tekrar girin';
+
+  @override
+  String get authResetSubmit => 'Şifreyi Sıfırla';
+
+  @override
+  String get authResetSuccess => 'Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.';
+
+  @override
+  String get authResetResend => 'Kod gelmedi mi? Tekrar gönder';
+
+  @override
+  String get authResetErrorCodeInvalid => 'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.';
+
+  @override
   String get authValidationEmailRequired => 'E-posta adresi gerekli.';
 
   @override
@@ -172,6 +210,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get authValidationPasswordTooShort => 'Şifre en az 8 karakter olmalı.';
+
+  @override
+  String get authValidationPasswordMismatch => 'Şifreler eşleşmiyor.';
+
+  @override
+  String get authValidationCodeRequired => 'Doğrulama kodu gerekli.';
+
+  @override
+  String get authValidationCodeInvalid => 'Kod 6 rakam olmalı.';
 
   @override
   String get authValidationFullNameRequired => 'Ad soyad gerekli.';

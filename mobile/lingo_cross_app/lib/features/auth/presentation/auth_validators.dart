@@ -40,4 +40,26 @@ abstract final class AuthValidators {
     if (v.isEmpty) return l10n.authValidationFullNameRequired;
     return null;
   }
+
+  static final RegExp _sixDigits = RegExp(r'^\d{6}$');
+
+  /// Şifre sıfırlama kodu: tam 6 rakam (API kuralı).
+  static String? resetCode(String? value, AppLocalizations l10n) {
+    final v = value?.trim() ?? '';
+    if (v.isEmpty) return l10n.authValidationCodeRequired;
+    if (!_sixDigits.hasMatch(v)) return l10n.authValidationCodeInvalid;
+    return null;
+  }
+
+  /// Yeni şifre (tekrar): boş değil + [original] ile birebir eşit.
+  static String? confirmPassword(
+    String? value,
+    String original,
+    AppLocalizations l10n,
+  ) {
+    final v = value ?? '';
+    if (v.isEmpty) return l10n.authValidationPasswordRequired;
+    if (v != original) return l10n.authValidationPasswordMismatch;
+    return null;
+  }
 }

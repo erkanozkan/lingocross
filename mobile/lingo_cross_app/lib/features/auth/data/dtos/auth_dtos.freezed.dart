@@ -911,7 +911,8 @@ UpdateProfileRequest _$UpdateProfileRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UpdateProfileRequest {
-  String get displayName => throw _privateConstructorUsedError;
+  String get displayName =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(includeIfNull: false)
   String? get preferredLocale => throw _privateConstructorUsedError;
 
@@ -1033,6 +1034,7 @@ class _$UpdateProfileRequestImpl implements _UpdateProfileRequest {
 
   @override
   final String displayName;
+  // ignore: invalid_annotation_target
   @override
   @JsonKey(includeIfNull: false)
   final String? preferredLocale;
@@ -1085,7 +1087,7 @@ abstract class _UpdateProfileRequest implements UpdateProfileRequest {
       _$UpdateProfileRequestImpl.fromJson;
 
   @override
-  String get displayName;
+  String get displayName; // ignore: invalid_annotation_target
   @override
   @JsonKey(includeIfNull: false)
   String? get preferredLocale;
@@ -1291,7 +1293,8 @@ ResetPasswordRequest _$ResetPasswordRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ResetPasswordRequest {
-  String get token => throw _privateConstructorUsedError;
+  String get email => throw _privateConstructorUsedError;
+  String get code => throw _privateConstructorUsedError;
   String get newPassword => throw _privateConstructorUsedError;
 
   /// Serializes this ResetPasswordRequest to a JSON map.
@@ -1311,7 +1314,7 @@ abstract class $ResetPasswordRequestCopyWith<$Res> {
     $Res Function(ResetPasswordRequest) then,
   ) = _$ResetPasswordRequestCopyWithImpl<$Res, ResetPasswordRequest>;
   @useResult
-  $Res call({String token, String newPassword});
+  $Res call({String email, String code, String newPassword});
 }
 
 /// @nodoc
@@ -1331,13 +1334,22 @@ class _$ResetPasswordRequestCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? token = null, Object? newPassword = null}) {
+  $Res call({
+    Object? email = null,
+    Object? code = null,
+    Object? newPassword = null,
+  }) {
     return _then(
       _value.copyWith(
-            token:
-                null == token
-                    ? _value.token
-                    : token // ignore: cast_nullable_to_non_nullable
+            email:
+                null == email
+                    ? _value.email
+                    : email // ignore: cast_nullable_to_non_nullable
+                        as String,
+            code:
+                null == code
+                    ? _value.code
+                    : code // ignore: cast_nullable_to_non_nullable
                         as String,
             newPassword:
                 null == newPassword
@@ -1359,7 +1371,7 @@ abstract class _$$ResetPasswordRequestImplCopyWith<$Res>
   ) = __$$ResetPasswordRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String token, String newPassword});
+  $Res call({String email, String code, String newPassword});
 }
 
 /// @nodoc
@@ -1375,13 +1387,22 @@ class __$$ResetPasswordRequestImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? token = null, Object? newPassword = null}) {
+  $Res call({
+    Object? email = null,
+    Object? code = null,
+    Object? newPassword = null,
+  }) {
     return _then(
       _$ResetPasswordRequestImpl(
-        token:
-            null == token
-                ? _value.token
-                : token // ignore: cast_nullable_to_non_nullable
+        email:
+            null == email
+                ? _value.email
+                : email // ignore: cast_nullable_to_non_nullable
+                    as String,
+        code:
+            null == code
+                ? _value.code
+                : code // ignore: cast_nullable_to_non_nullable
                     as String,
         newPassword:
             null == newPassword
@@ -1397,7 +1418,8 @@ class __$$ResetPasswordRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ResetPasswordRequestImpl implements _ResetPasswordRequest {
   const _$ResetPasswordRequestImpl({
-    required this.token,
+    required this.email,
+    required this.code,
     required this.newPassword,
   });
 
@@ -1405,13 +1427,15 @@ class _$ResetPasswordRequestImpl implements _ResetPasswordRequest {
       _$$ResetPasswordRequestImplFromJson(json);
 
   @override
-  final String token;
+  final String email;
+  @override
+  final String code;
   @override
   final String newPassword;
 
   @override
   String toString() {
-    return 'ResetPasswordRequest(token: $token, newPassword: $newPassword)';
+    return 'ResetPasswordRequest(email: $email, code: $code, newPassword: $newPassword)';
   }
 
   @override
@@ -1419,14 +1443,15 @@ class _$ResetPasswordRequestImpl implements _ResetPasswordRequest {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ResetPasswordRequestImpl &&
-            (identical(other.token, token) || other.token == token) &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.code, code) || other.code == code) &&
             (identical(other.newPassword, newPassword) ||
                 other.newPassword == newPassword));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, token, newPassword);
+  int get hashCode => Object.hash(runtimeType, email, code, newPassword);
 
   /// Create a copy of ResetPasswordRequest
   /// with the given fields replaced by the non-null parameter values.
@@ -1448,7 +1473,8 @@ class _$ResetPasswordRequestImpl implements _ResetPasswordRequest {
 
 abstract class _ResetPasswordRequest implements ResetPasswordRequest {
   const factory _ResetPasswordRequest({
-    required final String token,
+    required final String email,
+    required final String code,
     required final String newPassword,
   }) = _$ResetPasswordRequestImpl;
 
@@ -1456,7 +1482,9 @@ abstract class _ResetPasswordRequest implements ResetPasswordRequest {
       _$ResetPasswordRequestImpl.fromJson;
 
   @override
-  String get token;
+  String get email;
+  @override
+  String get code;
   @override
   String get newPassword;
 

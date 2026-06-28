@@ -401,6 +401,78 @@ abstract class AppLocalizations {
   /// **'Bağlantı hatası. Lütfen tekrar deneyin.'**
   String get authForgotErrorNetwork;
 
+  /// No description provided for @authResetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreyi Sıfırla'**
+  String get authResetTitle;
+
+  /// No description provided for @authResetDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'{email} adresine gönderilen 6 haneli kodu girin ve yeni şifrenizi belirleyin.'**
+  String authResetDescription(String email);
+
+  /// No description provided for @authResetCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama Kodu'**
+  String get authResetCodeLabel;
+
+  /// No description provided for @authResetCodeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'000000'**
+  String get authResetCodeHint;
+
+  /// No description provided for @authResetNewPasswordLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Şifre'**
+  String get authResetNewPasswordLabel;
+
+  /// No description provided for @authResetNewPasswordHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'En az 8 karakter'**
+  String get authResetNewPasswordHint;
+
+  /// No description provided for @authResetConfirmPasswordLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Şifre (Tekrar)'**
+  String get authResetConfirmPasswordLabel;
+
+  /// No description provided for @authResetConfirmPasswordHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreyi tekrar girin'**
+  String get authResetConfirmPasswordHint;
+
+  /// No description provided for @authResetSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreyi Sıfırla'**
+  String get authResetSubmit;
+
+  /// No description provided for @authResetSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreniz güncellendi. Yeni şifrenizle giriş yapabilirsiniz.'**
+  String get authResetSuccess;
+
+  /// No description provided for @authResetResend.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod gelmedi mi? Tekrar gönder'**
+  String get authResetResend;
+
+  /// No description provided for @authResetErrorCodeInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod hatalı veya süresi dolmuş. Lütfen tekrar deneyin.'**
+  String get authResetErrorCodeInvalid;
+
   /// No description provided for @authValidationEmailRequired.
   ///
   /// In tr, this message translates to:
@@ -424,6 +496,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Şifre en az 8 karakter olmalı.'**
   String get authValidationPasswordTooShort;
+
+  /// No description provided for @authValidationPasswordMismatch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şifreler eşleşmiyor.'**
+  String get authValidationPasswordMismatch;
+
+  /// No description provided for @authValidationCodeRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama kodu gerekli.'**
+  String get authValidationCodeRequired;
+
+  /// No description provided for @authValidationCodeInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod 6 rakam olmalı.'**
+  String get authValidationCodeInvalid;
 
   /// No description provided for @authValidationFullNameRequired.
   ///

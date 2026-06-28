@@ -99,10 +99,14 @@ class ChangePasswordRequest with _$ChangePasswordRequest {
 }
 
 /// POST /api/auth/reset-password isteği (ResetPasswordRequest).
+///
+/// Backend sözleşmesi: `{ email, code, newPassword }`. Kod tam 6 rakam, 15 dk
+/// geçerli; hata → 400 ProblemDetails.
 @freezed
 class ResetPasswordRequest with _$ResetPasswordRequest {
   const factory ResetPasswordRequest({
-    required String token,
+    required String email,
+    required String code,
     required String newPassword,
   }) = _ResetPasswordRequest;
 

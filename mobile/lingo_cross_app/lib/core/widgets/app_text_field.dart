@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
@@ -25,6 +26,9 @@ class AppTextField extends StatefulWidget {
     this.trailing,
     this.trailingLink,
     this.maxLines = 1,
+    this.inputFormatters,
+    this.textAlign = TextAlign.start,
+    this.style,
   });
 
   final String label;
@@ -47,6 +51,15 @@ class AppTextField extends StatefulWidget {
 
   /// Çok satırlı giriş için satır sayısı (varsayılan 1).
   final int maxLines;
+
+  /// Giriş biçimlendiriciler (örn. yalnız rakam, uzunluk sınırı).
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Metin hizalaması (örn. kod alanında ortalı).
+  final TextAlign textAlign;
+
+  /// Metin stili (varsayılan `bodyMd`; örn. kod alanında büyük + harf aralıklı).
+  final TextStyle? style;
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -107,7 +120,9 @@ class _AppTextFieldState extends State<AppTextField> {
           autofillHints: widget.autofillHints,
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onFieldSubmitted,
-          style: AppTypography.bodyMd,
+          inputFormatters: widget.inputFormatters,
+          textAlign: widget.textAlign,
+          style: widget.style ?? AppTypography.bodyMd,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: widget.validator == null
               ? null

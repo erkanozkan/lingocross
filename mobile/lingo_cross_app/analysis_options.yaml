@@ -9,6 +9,15 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  # Üretilen kod analizden hariç (freezed/json_serializable/l10n). Bu dosyalar
+  # elle düzenlenmez; generator sürüm farkları zararsız uyarılar (örn.
+  # duplicate_ignore) üretebildiği için analiz dışı bırakılır.
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+    - "lib/core/l10n/gen/**"
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`

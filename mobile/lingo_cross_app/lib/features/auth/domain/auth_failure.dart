@@ -15,6 +15,12 @@ sealed class AuthFailure with _$AuthFailure {
   /// 400 — şifre değiştirmede mevcut şifre hatalı.
   const factory AuthFailure.wrongCurrentPassword() = WrongCurrentPassword;
 
+  /// 400 — şifre sıfırlamada kod hatalı/süresi dolmuş/çok fazla deneme.
+  /// Backend ProblemDetails `detail`/`title` mesajını taşır (kullanıcıya
+  /// gösterilebilir); mesaj yoksa [message] null'dır.
+  const factory AuthFailure.resetCodeInvalid({String? message}) =
+      ResetCodeInvalid;
+
   /// Ağ/bağlantı hatası.
   const factory AuthFailure.network() = NetworkFailure;
 

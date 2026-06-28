@@ -162,6 +162,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authForgotErrorNetwork => 'Connection error. Please try again.';
 
   @override
+  String get authResetTitle => 'Reset Password';
+
+  @override
+  String authResetDescription(String email) {
+    return 'Enter the 6-digit code sent to $email and set your new password.';
+  }
+
+  @override
+  String get authResetCodeLabel => 'Verification Code';
+
+  @override
+  String get authResetCodeHint => '000000';
+
+  @override
+  String get authResetNewPasswordLabel => 'New Password';
+
+  @override
+  String get authResetNewPasswordHint => 'At least 8 characters';
+
+  @override
+  String get authResetConfirmPasswordLabel => 'New Password (again)';
+
+  @override
+  String get authResetConfirmPasswordHint => 'Re-enter the password';
+
+  @override
+  String get authResetSubmit => 'Reset Password';
+
+  @override
+  String get authResetSuccess => 'Your password has been updated. You can sign in with your new password.';
+
+  @override
+  String get authResetResend => 'Didn\'t get the code? Resend';
+
+  @override
+  String get authResetErrorCodeInvalid => 'The code is invalid or expired. Please try again.';
+
+  @override
   String get authValidationEmailRequired => 'Email address is required.';
 
   @override
@@ -172,6 +210,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authValidationPasswordTooShort => 'Password must be at least 8 characters.';
+
+  @override
+  String get authValidationPasswordMismatch => 'Passwords do not match.';
+
+  @override
+  String get authValidationCodeRequired => 'Verification code is required.';
+
+  @override
+  String get authValidationCodeInvalid => 'The code must be 6 digits.';
 
   @override
   String get authValidationFullNameRequired => 'Full name is required.';

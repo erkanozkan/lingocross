@@ -39,7 +39,20 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<ITokenService, JwtTokenService>();
-        services.AddScoped<IEmailSender, LoggingEmailSender>();
+
+        // E-posta gönderimi: Gmail API (HTTPS) — Railway giden SMTP portlarını (587/465) bloklar.
+        // Gmail ayarları (ServiceAccountJson + SenderEmail) doluysa Workspace üzerinden gerçek
+        // gönderim; aksi halde geliştirme için log'a yazan stub.
+        services.Configure<GmailOptions>(configuration.GetSection(GmailOptions.SectionName));
+        var gmail = configuration.GetSection(GmailOptions.SectionName).Get<GmailOptions>() ?? new GmailOptions();
+        if (gmail.IsConfigured)
+        {
+            services.AddScoped<IEmailSender, GmailApiEmailSender>();
+        }
+        else
+        {
+            services.AddScoped<IEmailSender, LoggingEmailSender>();
+        }
 
         // OCR zenginleştirme (Claude). Anahtar yoksa servis 503 fırlatır; mobil yerel ayrıştırmaya düşer.
         services.AddScoped<IOcrEnrichmentService, ClaudeOcrEnrichmentService>();

@@ -17,6 +17,18 @@ class FakeAuthRepository implements AuthRepository {
   /// Atanırsa `deleteAccount()` bu hatayı fırlatır (hata akışı testi için).
   Object? deleteAccountError;
 
+  // --- Şifre sıfırlama (forgot/reset) kayıtları + yapılandırılabilir hata. ---
+  int forgotPasswordCount = 0;
+  String? lastForgotEmail;
+
+  int resetPasswordCount = 0;
+  String? lastResetEmail;
+  String? lastResetCode;
+  String? lastResetNewPassword;
+
+  /// Atanırsa `resetPassword()` bu hatayı fırlatır (hata akışı testi için).
+  Object? resetPasswordError;
+
   @override
   Future<UserDto> me() async => user;
 
@@ -49,8 +61,24 @@ class FakeAuthRepository implements AuthRepository {
       throw UnimplementedError();
 
   @override
-  Future<void> forgotPassword({required String email}) =>
-      throw UnimplementedError();
+  Future<void> forgotPassword({required String email}) async {
+    forgotPasswordCount++;
+    lastForgotEmail = email;
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    resetPasswordCount++;
+    lastResetEmail = email;
+    lastResetCode = code;
+    lastResetNewPassword = newPassword;
+    final error = resetPasswordError;
+    if (error != null) throw error;
+  }
 
   @override
   Future<UserDto> updateProfile({

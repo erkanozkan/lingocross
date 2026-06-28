@@ -8,6 +8,11 @@ String authFailureMessage(Object error, AppLocalizations l10n) {
       InvalidCredentials() => l10n.authLoginErrorInvalidCredentials,
       EmailTaken() => l10n.authRegisterErrorEmailTaken,
       WrongCurrentPassword() => l10n.accountChangePasswordWrongCurrent,
+      // Backend 400 mesajı varsa onu göster; yoksa genel "kod hatalı" metni.
+      ResetCodeInvalid(:final message) =>
+        (message != null && message.trim().isNotEmpty)
+            ? message
+            : l10n.authResetErrorCodeInvalid,
       NetworkFailure() => l10n.authLoginErrorNetwork,
       UnexpectedFailure() => l10n.commonErrorGeneric,
     };

@@ -19,6 +19,7 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
 
         builder.Property(t => t.ExpiresAt).IsRequired();
         builder.Property(t => t.UsedAt);
+        builder.Property(t => t.Attempts).IsRequired().HasDefaultValue(0);
 
         builder.Property(t => t.CreatedAt).IsRequired();
         builder.Property(t => t.UpdatedAt).IsRequired();

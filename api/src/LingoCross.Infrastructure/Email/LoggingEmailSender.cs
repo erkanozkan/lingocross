@@ -16,11 +16,11 @@ public class LoggingEmailSender : IEmailSender
         _logger = logger;
     }
 
-    public Task SendPasswordResetAsync(string toEmail, string resetToken, CancellationToken cancellationToken = default)
+    public Task SendPasswordResetAsync(string toEmail, string code, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(
-            "[DEV EMAIL] Şifre sıfırlama -> {Email} | reset token: {ResetToken}",
-            toEmail, resetToken);
+            "[DEV EMAIL] Şifre sıfırlama -> {Email} | kod: {Code}",
+            toEmail, code);
         return Task.CompletedTask;
     }
 }
