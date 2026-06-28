@@ -3,6 +3,7 @@ using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
 using LingoCross.Application.Games.Dtos;
 using LingoCross.Application.Notifications;
+using LingoCross.Application.Subscriptions;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -24,8 +25,11 @@ public class GameService : IGameService
     private readonly ICurrentUser _currentUser;
     private readonly Random _random;
     private readonly PushDispatcher? _push;
+    private readonly IEntitlementService? _entitlement;
 
-    public GameService(IAppDbContext db, ICurrentUser currentUser, Random? random = null, PushDispatcher? push = null)
+    // entitlement opsiyoneldir: null verildiğinde Premium kapısı uygulanmaz (Premium gibi davranır).
+    // Üretimde DI her zaman gerçek servisi enjekte eder; testler kapı dışı senaryolarda null bırakabilir.
+    public GameService(IAppDbContext db, ICurrentUser currentUser, Random? random = null, PushDispatcher? push = null, IEntitlementService? entitlement = null)
     {
         _db = db;
         _currentUser = currentUser;
@@ -33,10 +37,17 @@ public class GameService : IGameService
         _random = random ?? Random.Shared;
         // Push opsiyonel: enjekte edilmezse tetikler atlanır (testler için no-op).
         _push = push;
+        _entitlement = entitlement;
     }
 
     public async Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default)
     {
+        // Bulmaca/oyun oluşturma Premium özelliğidir: Free öğretmen herhangi bir iş yapılmadan 402 alır.
+        if (_entitlement is not null)
+        {
+            await _entitlement.RequirePuzzleCreateAsync(cancellationToken);
+        }
+
         // Yalnızca ders sahibi öğretmen oluşturabilir.
         var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);
 

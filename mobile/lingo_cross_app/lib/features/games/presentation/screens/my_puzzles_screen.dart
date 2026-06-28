@@ -11,6 +11,8 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
 import '../../../results/presentation/result_date_format.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/game_dtos.dart';
 import '../../domain/game_type.dart';
 import '../my_puzzles_notifier.dart';
@@ -54,6 +56,18 @@ class _MyPuzzlesScreenState extends ConsumerState<MyPuzzlesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final puzzlesAsync = ref.watch(myPuzzlesNotifierProvider);
+    // Bulmaca oluşturma Premium-only (puzzle_create). Free kullanıcı kilitli;
+    // durum belirsizse kilitsiz (reaktif 402 güvenlik ağı).
+    final createLocked = ref.watch(subscriptionNotifierProvider).maybeWhen(
+          data: (sub) => sub.puzzleCreateLocked,
+          orElse: () => false,
+        );
+
+    void onCreate() => context.push(
+          createLocked
+              ? AppRoutes.paywallFor('puzzle_create')
+              : AppRoutes.gameNew,
+        );
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -82,8 +96,8 @@ class _MyPuzzlesScreenState extends ConsumerState<MyPuzzlesScreen> {
           children: [
             PrimaryButton3D(
               label: l10n.myPuzzlesCreateCta,
-              trailingIcon: Icons.add,
-              onPressed: () => context.push(AppRoutes.gameNew),
+              trailingIcon: createLocked ? Icons.lock : Icons.add,
+              onPressed: onCreate,
             ),
             const SizedBox(height: AppSpacing.lg),
             puzzlesAsync.when(
@@ -96,6 +110,8 @@ class _MyPuzzlesScreenState extends ConsumerState<MyPuzzlesScreen> {
                 puzzles: puzzles,
                 filter: _filter,
                 onFilterChanged: (f) => setState(() => _filter = f),
+                onCreate: onCreate,
+                createLocked: createLocked,
               ),
             ),
           ],
@@ -111,11 +127,15 @@ class _PuzzlesBody extends StatelessWidget {
     required this.puzzles,
     required this.filter,
     required this.onFilterChanged,
+    required this.onCreate,
+    required this.createLocked,
   });
 
   final List<TeacherPuzzleDto> puzzles;
   final _PuzzleFilter filter;
   final ValueChanged<_PuzzleFilter> onFilterChanged;
+  final VoidCallback onCreate;
+  final bool createLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +154,7 @@ class _PuzzlesBody extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         if (visible.isEmpty)
-          _EmptyPuzzles(onCreate: () => context.push(AppRoutes.gameNew))
+          _EmptyPuzzles(onCreate: onCreate, createLocked: createLocked)
         else
           for (final puzzle in visible) ...[
             _PuzzleCard(puzzle: puzzle),
@@ -498,9 +518,10 @@ class _StatCard extends StatelessWidget {
 
 /// Boş durum: "Henüz bulmaca yok — Yeni Bulmaca Oluştur".
 class _EmptyPuzzles extends StatelessWidget {
-  const _EmptyPuzzles({required this.onCreate});
+  const _EmptyPuzzles({required this.onCreate, this.createLocked = false});
 
   final VoidCallback onCreate;
+  final bool createLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -530,9 +551,12 @@ class _EmptyPuzzles extends StatelessWidget {
                 AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),
-          FilledButton(
+          FilledButton.icon(
             onPressed: onCreate,
-            child: Text(l10n.myPuzzlesCreateCta),
+            icon: createLocked
+                ? const Icon(Icons.lock, size: 18)
+                : const SizedBox.shrink(),
+            label: Text(l10n.myPuzzlesCreateCta),
           ),
         ],
       ),

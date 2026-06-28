@@ -9,6 +9,10 @@ extension Entitlement on SubscriptionDto {
   /// OCR (kameradan tarama) kilitli mi.
   bool get ocrLocked => !isPremium && !ocrEnabled;
 
+  /// Bulmaca/oyun oluşturma kilitli mi (Premium-only özellik). Free kullanıcı
+  /// için her zaman kilitli; backend de oluşturmada 402 (puzzle_create) döner.
+  bool get puzzleCreateLocked => !isPremium;
+
   /// Mevcut [currentCount] sınıf varken yeni sınıf oluşturulabilir mi.
   bool canCreateClass(int currentCount) {
     if (isPremium || unlimitedClasses) return true;

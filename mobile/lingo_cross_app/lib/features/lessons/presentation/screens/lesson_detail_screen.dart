@@ -10,6 +10,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/refresh_on_mount.dart';
 import '../../../enrollment/presentation/enrollments_notifier.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/lesson_dtos.dart';
 import '../../data/dtos/word_dtos.dart';
 import '../../domain/lesson_status.dart';
@@ -438,6 +440,12 @@ class _ActionsBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final busy = ref.watch(lessonFormControllerProvider).isLoading;
+    // Bulmaca oluşturma Premium-only (puzzle_create). Free → paywall.
+    final puzzleCreateLocked =
+        ref.watch(subscriptionNotifierProvider).maybeWhen(
+              data: (sub) => sub.puzzleCreateLocked,
+              orElse: () => false,
+            );
 
     return Container(
       decoration: const BoxDecoration(
@@ -464,9 +472,14 @@ class _ActionsBar extends ConsumerWidget {
                 child: FilledButton.icon(
                   onPressed: busy
                       ? null
-                      : () =>
-                          context.push(AppRoutes.gameNewForLesson(lesson.id)),
-                  icon: const Icon(Icons.assignment_add),
+                      : () => context.push(
+                            puzzleCreateLocked
+                                ? AppRoutes.paywallFor('puzzle_create')
+                                : AppRoutes.gameNewForLesson(lesson.id),
+                          ),
+                  icon: Icon(
+                    puzzleCreateLocked ? Icons.lock : Icons.assignment_add,
+                  ),
                   label: Text(
                     l10n.lessonDetailAssignHomework,
                     maxLines: 1,

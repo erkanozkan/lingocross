@@ -3,6 +3,8 @@ using LingoCross.Application.Classes.Dtos;
 using LingoCross.Application.Common.Exceptions;
 using LingoCross.Application.Enrollments;
 using LingoCross.Application.Enrollments.Dtos;
+using LingoCross.Application.Games;
+using LingoCross.Application.Games.Dtos;
 using LingoCross.Application.Lessons;
 using LingoCross.Application.Lessons.Dtos;
 using LingoCross.Application.Subscriptions;
@@ -273,5 +275,58 @@ public class EntitlementEnforcementTests
         await enrollSvc.JoinByCodeAsync(new JoinByCodeRequest("TEACH111"));
 
         Assert.Equal(1, await db.Enrollments.CountAsync(e => e.StudentId == student.Id));
+    }
+
+    // ---- Bulmaca/oyun oluşturma (Premium kapısı) ----
+
+    /// <summary>Verilen sayıda çevirili kelime içeren bir ders kurar (oyun oluşturma için yeterli içerik).</summary>
+    private static async Task<Lesson> SeedLessonWithWordsAsync(AppDbContext db, Guid teacherId, int translatedWordCount)
+    {
+        var lesson = new Lesson { TeacherId = teacherId, Title = "Ders", IsPublished = false };
+        for (var i = 0; i < translatedWordCount; i++)
+        {
+            var word = new Word { Term = $"term{i}", SortOrder = i, Source = WordSource.Manual };
+            word.Translations.Add(new WordTranslation { Text = $"çeviri{i}", IsPrimary = true });
+            lesson.Words.Add(word);
+        }
+        db.Lessons.Add(lesson);
+        await db.SaveChangesAsync();
+        return lesson;
+    }
+
+    [Fact]
+    public async Task PuzzleCreate_Free_Throws402_PuzzleCreate()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var current = TestCurrentUser.Teacher(teacher.Id);
+        // İçerik fazlasıyla yeterli; yine de Free öğretmen oyun oluşturamaz (kapı içerikten önce).
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, translatedWordCount: 5);
+        var svc = new GameService(db, current, random: new Random(12345), push: null, entitlement: Entitlement(db, current));
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.WordMatching, "Hafta 1")));
+        Assert.Equal(402, ex.StatusCode);
+        Assert.Equal("subscription_required", ex.Code);
+        Assert.Equal("puzzle_create", ex.Feature);
+        // Hiçbir oyun oluşturulmamış olmalı (iş yapılmadan reddedildi).
+        Assert.Equal(0, await db.Games.CountAsync());
+    }
+
+    [Fact]
+    public async Task PuzzleCreate_Premium_Succeeds()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        await MakePremiumAsync(db, teacher.Id);
+        var current = TestCurrentUser.Teacher(teacher.Id);
+        var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, translatedWordCount: 5);
+        var svc = new GameService(db, current, random: new Random(12345), push: null, entitlement: Entitlement(db, current));
+
+        var game = await svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.WordMatching, "Hafta 1"));
+
+        Assert.Equal(GameType.WordMatching, game.Type);
+        Assert.True(game.IsPublished);
+        Assert.Equal(1, await db.Games.CountAsync(g => g.LessonId == lesson.Id));
     }
 }

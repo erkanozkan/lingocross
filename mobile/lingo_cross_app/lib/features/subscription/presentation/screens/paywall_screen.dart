@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -164,6 +165,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       'class_limit' => l10n.paywallBannerClassLimit,
       'lesson_limit' => l10n.paywallBannerLessonLimit,
       'multi_teacher' => l10n.paywallBannerMultiTeacher,
+      'puzzle_create' => l10n.paywallBannerPuzzleCreate,
       null => null,
       _ => l10n.paywallBannerDefault,
     };
@@ -297,6 +299,19 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.xs),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: Text(
+                l10n.paywallAutoRenewNote,
+                textAlign: TextAlign.center,
+                style: AppTypography.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            const _LegalLinks(),
           ],
         ),
       ),
@@ -309,6 +324,60 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         onRestore: _busy ? null : _restore,
         onSkip: _busy ? null : () => context.pop(),
       ),
+    );
+  }
+}
+
+/// App Review 3.1.2(c) zorunlu yasal bağlantılar: Gizlilik Politikası ve
+/// Kullanım Koşulları (EULA). Küçük, soluk, dokunulabilir metin bağlantıları;
+/// harici tarayıcıda açılır.
+class _LegalLinks extends StatelessWidget {
+  const _LegalLinks();
+
+  static final Uri _privacyUrl =
+      Uri.parse('https://lingocross.pages.dev/privacy-policy.html');
+  static final Uri _termsUrl = Uri.parse(
+    'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/',
+  );
+
+  Future<void> _open(Uri url) async {
+    await launchUrl(url, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final linkStyle = AppTypography.labelSm.copyWith(
+      color: AppColors.onSurfaceVariant,
+      decoration: TextDecoration.underline,
+      decorationColor: AppColors.onSurfaceVariant,
+    );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: () => _open(_privacyUrl),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            child: Text(l10n.paywallPrivacyLink, style: linkStyle),
+          ),
+        ),
+        Text(
+          '·',
+          style: AppTypography.labelSm.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        InkWell(
+          onTap: () => _open(_termsUrl),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.base),
+            child: Text(l10n.paywallTermsLink, style: linkStyle),
+          ),
+        ),
+      ],
     );
   }
 }

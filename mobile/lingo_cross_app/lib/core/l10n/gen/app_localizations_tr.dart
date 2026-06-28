@@ -2332,6 +2332,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallBannerMultiTeacher => 'Birden fazla öğretmen Premium\'da';
 
   @override
+  String get paywallBannerPuzzleCreate => 'Bulmaca oluşturma Premium\'da';
+
+  @override
   String get paywallBannerDefault => 'Tüm özellikler Premium\'da';
 
   @override
@@ -2390,6 +2393,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get paywallRestore => 'Satın Alımları Geri Yükle';
+
+  @override
+  String get paywallAutoRenewNote => 'Abonelik otomatik yenilenir, istediğin zaman iptal edebilirsin.';
+
+  @override
+  String get paywallPrivacyLink => 'Gizlilik Politikası';
+
+  @override
+  String get paywallTermsLink => 'Kullanım Koşulları';
 
   @override
   String get paywallRestoreSuccess => 'Premium geri yüklendi.';

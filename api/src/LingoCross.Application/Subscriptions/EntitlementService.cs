@@ -72,6 +72,17 @@ public class EntitlementService : IEntitlementService
         }
     }
 
+    public async Task RequirePuzzleCreateAsync(CancellationToken cancellationToken = default)
+    {
+        var snapshot = await GetCurrentAsync(cancellationToken);
+        if (!snapshot.IsPremium)
+        {
+            throw AppException.PaymentRequired(
+                "Bulmaca oluşturmak Premium özelliğidir. Premium ile sınırsız bulmaca oluşturun.",
+                "puzzle_create");
+        }
+    }
+
     public async Task RequireClassQuotaAsync(int currentCount, CancellationToken cancellationToken = default)
     {
         var snapshot = await GetCurrentAsync(cancellationToken);

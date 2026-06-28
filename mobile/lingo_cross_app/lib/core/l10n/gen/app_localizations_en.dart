@@ -2332,6 +2332,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywallBannerMultiTeacher => 'Multiple teachers are in Premium';
 
   @override
+  String get paywallBannerPuzzleCreate => 'Puzzle creation is in Premium';
+
+  @override
   String get paywallBannerDefault => 'All features are in Premium';
 
   @override
@@ -2390,6 +2393,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paywallRestore => 'Restore Purchases';
+
+  @override
+  String get paywallAutoRenewNote => 'Subscription auto-renews; cancel anytime.';
+
+  @override
+  String get paywallPrivacyLink => 'Privacy Policy';
+
+  @override
+  String get paywallTermsLink => 'Terms of Use (EULA)';
 
   @override
   String get paywallRestoreSuccess => 'Premium restored.';

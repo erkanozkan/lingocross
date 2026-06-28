@@ -10,6 +10,8 @@ import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/refresh_on_mount.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/class_dtos.dart';
 import '../class_detail_notifier.dart';
 import '../class_invite_code_notifier.dart';
@@ -28,6 +30,12 @@ class ClassDetailScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final detailAsync = ref.watch(classDetailNotifierProvider(classId));
     final codeAsync = ref.watch(classInviteCodeNotifierProvider(classId));
+    // Bulmaca oluşturma Premium-only (puzzle_create). Free → paywall.
+    final puzzleCreateLocked =
+        ref.watch(subscriptionNotifierProvider).maybeWhen(
+              data: (sub) => sub.puzzleCreateLocked,
+              orElse: () => false,
+            );
 
     final title = detailAsync.maybeWhen(
       data: (d) => d.name,
@@ -85,7 +93,12 @@ class ClassDetailScreen extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.md),
             child: _AssignHomeworkButton(
-              onTap: () => context.push(AppRoutes.gameNew),
+              locked: puzzleCreateLocked,
+              onTap: () => context.push(
+                puzzleCreateLocked
+                    ? AppRoutes.paywallFor('puzzle_create')
+                    : AppRoutes.gameNew,
+              ),
             ),
           ),
         ),
@@ -458,9 +471,10 @@ class _StudentRow extends StatelessWidget {
 }
 
 class _AssignHomeworkButton extends StatelessWidget {
-  const _AssignHomeworkButton({required this.onTap});
+  const _AssignHomeworkButton({required this.onTap, this.locked = false});
 
   final VoidCallback onTap;
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -492,6 +506,11 @@ class _AssignHomeworkButton extends StatelessWidget {
                 style:
                     AppTypography.headlineMd.copyWith(color: AppColors.onSecondary),
               ),
+              if (locked) ...[
+                const SizedBox(width: AppSpacing.sm),
+                const Icon(Icons.lock,
+                    color: AppColors.onSecondary, size: 20),
+              ],
             ],
           ),
         ),

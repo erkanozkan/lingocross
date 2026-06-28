@@ -45,7 +45,8 @@ public static class DependencyInjection
                 sp.GetRequiredService<IAppDbContext>(),
                 sp.GetRequiredService<ICurrentUser>(),
                 random: null,
-                push: sp.GetRequiredService<PushDispatcher>()));
+                push: sp.GetRequiredService<PushDispatcher>(),
+                entitlement: sp.GetRequiredService<IEntitlementService>()));
         services.AddScoped<IResultService>(sp =>
             new ResultService(
                 sp.GetRequiredService<IAppDbContext>(),

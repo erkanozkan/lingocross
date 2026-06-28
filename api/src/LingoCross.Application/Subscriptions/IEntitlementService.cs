@@ -28,6 +28,9 @@ public interface IEntitlementService
     /// <summary>Geçerli kullanıcı OCR'a yetkili değilse 402 (feature="ocr") fırlatır.</summary>
     Task RequireOcrAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>Geçerli kullanıcı Premium değilse 402 (feature="puzzle_create") fırlatır. Yeni bulmaca/oyun oluşturulmadan önce çağrılır.</summary>
+    Task RequirePuzzleCreateAsync(CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Mevcut (arşivlenmemiş) sınıf sayısı limiti aşıyorsa 402 (feature="class_limit") fırlatır.
     /// Yeni sınıf eklenmeden önce çağrılır.

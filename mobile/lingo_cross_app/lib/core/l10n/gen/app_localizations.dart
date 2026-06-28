@@ -4445,6 +4445,12 @@ abstract class AppLocalizations {
   /// **'Birden fazla öğretmen Premium\'da'**
   String get paywallBannerMultiTeacher;
 
+  /// No description provided for @paywallBannerPuzzleCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulmaca oluşturma Premium\'da'**
+  String get paywallBannerPuzzleCreate;
+
   /// No description provided for @paywallBannerDefault.
   ///
   /// In tr, this message translates to:
@@ -4564,6 +4570,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Satın Alımları Geri Yükle'**
   String get paywallRestore;
+
+  /// Otomatik yenileme açıklaması (App Review 3.1.2).
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik otomatik yenilenir, istediğin zaman iptal edebilirsin.'**
+  String get paywallAutoRenewNote;
+
+  /// Gizlilik politikası bağlantısı (App Review 3.1.2).
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get paywallPrivacyLink;
+
+  /// Kullanım koşulları (EULA) bağlantısı (App Review 3.1.2).
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım Koşulları'**
+  String get paywallTermsLink;
 
   /// Geri yükleme + doğrulama başarısı.
   ///

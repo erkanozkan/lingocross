@@ -35,6 +35,17 @@ internal sealed class FakeEntitlementService : IEntitlementService
         return Task.CompletedTask;
     }
 
+    public Task RequirePuzzleCreateAsync(CancellationToken cancellationToken = default)
+    {
+        if (!Premium)
+        {
+            throw Application.Common.Exceptions.AppException.PaymentRequired(
+                "Bulmaca oluşturmak Premium özelliğidir.", "puzzle_create");
+        }
+
+        return Task.CompletedTask;
+    }
+
     public Task RequireClassQuotaAsync(int currentCount, CancellationToken cancellationToken = default)
     {
         if (!Premium && currentCount >= MaxClasses)
