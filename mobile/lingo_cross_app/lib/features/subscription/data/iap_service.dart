@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -189,7 +190,13 @@ class IapService {
     final receipt = purchase.verificationData.serverVerificationData;
     var verified = false;
     try {
-      await _repository.verifyApple(receipt);
+      // Platforma göre doğrulama: iOS Apple makbuzu, Android'de
+      // serverVerificationData Google Play satın alma token'ıdır.
+      if (Platform.isAndroid) {
+        await _repository.verifyGoogle(receipt, purchase.productID);
+      } else {
+        await _repository.verifyApple(receipt);
+      }
       verified = true;
     } catch (_) {
       verified = false;

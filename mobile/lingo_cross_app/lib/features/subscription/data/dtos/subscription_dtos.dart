@@ -104,3 +104,20 @@ class AppleVerifyRequest with _$AppleVerifyRequest {
   factory AppleVerifyRequest.fromJson(Map<String, dynamic> json) =>
       _$AppleVerifyRequestFromJson(json);
 }
+
+/// Google Play satın alma doğrulama isteği —
+/// `POST /api/subscription/google/verify`.
+///
+/// [purchaseToken] Google Play'in döndürdüğü satın alma token'ı (Android'de
+/// `PurchaseDetails.verificationData.serverVerificationData`). [productId]
+/// abonelik ürün kimliği (`PurchaseDetails.productID`).
+@freezed
+class GoogleVerifyRequest with _$GoogleVerifyRequest {
+  const factory GoogleVerifyRequest({
+    required String purchaseToken,
+    required String productId,
+  }) = _GoogleVerifyRequest;
+
+  factory GoogleVerifyRequest.fromJson(Map<String, dynamic> json) =>
+      _$GoogleVerifyRequestFromJson(json);
+}

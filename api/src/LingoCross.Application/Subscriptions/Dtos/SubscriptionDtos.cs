@@ -31,3 +31,9 @@ public record ActivateStubRequest(SubscriptionPeriod? Period, bool Trial);
 /// Apple IAP makbuz doğrulama isteği. <c>ReceiptData</c> cihazdan gelen base64 App Store makbuzudur.
 /// </summary>
 public record VerifyAppleReceiptRequest(string ReceiptData);
+
+/// <summary>
+/// Google Play IAP doğrulama isteği. <c>PurchaseToken</c> cihazdan gelen satın alma jetonu,
+/// <c>ProductId</c> ise satın alınan abonelik ürün kimliğidir (Apple ile ortak).
+/// </summary>
+public record VerifyGoogleReceiptRequest(string PurchaseToken, string ProductId);

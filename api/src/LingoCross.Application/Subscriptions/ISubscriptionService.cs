@@ -24,4 +24,11 @@ public interface ISubscriptionService
     /// doğrulanamazsa 400 fırlatır.
     /// </summary>
     Task<SubscriptionDto> VerifyAppleReceiptAsync(string receiptData, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Google Play satın alma jetonunu doğrular ve geçerliyse geçerli kullanıcının aboneliğini upsert
+    /// eder (Premium / Source=GoogleIap). <c>Google:ServiceAccountJson</c>/<c>Google:PackageName</c>
+    /// ayarlı değilse 503, jeton/ürün boşsa 400, doğrulanamazsa 400 fırlatır.
+    /// </summary>
+    Task<SubscriptionDto> VerifyGoogleReceiptAsync(string purchaseToken, string productId, CancellationToken cancellationToken = default);
 }
