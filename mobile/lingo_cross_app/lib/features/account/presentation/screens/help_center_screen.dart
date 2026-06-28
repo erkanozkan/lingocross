@@ -23,7 +23,7 @@ class HelpCenterScreen extends StatefulWidget {
 }
 
 class _HelpCenterScreenState extends State<HelpCenterScreen> {
-  static const String _supportEmail = 'destek@lingocross.app';
+  static const String _supportEmail = 'support@duocross.com';
 
   final TextEditingController _searchController = TextEditingController();
   String _query = '';

@@ -1,7 +1,7 @@
 # LingoCross — Gizlilik Politikası / Privacy Policy
 
 > ⚠️ Taslak — hukuki danışmanlık değildir. Yayınlamadan önce bir hukukçuya gözden geçirt.
-> Yürürlük tarihi / Effective date: **25 Haziran 2026 / June 25, 2026**. İşletme/iletişim: **privacy@lingocross.app**
+> Yürürlük tarihi / Effective date: **25 Haziran 2026 / June 25, 2026**. İşletme/iletişim: **support@duocross.com**
 
 ---
 
@@ -29,13 +29,13 @@ Hizmeti sağlamak için sınırlı veriyi şu işleyicilerle paylaşırız:
 - **Yapay zekâ sağlayıcısı** — kelime tarama kullanıldığında, taranan fotoğraftaki kelimelerin okunup çıkarılması.
 
 ### Saklama ve silme
-Verilerinizi hesabınız aktif olduğu sürece saklarız. Hesabınızı ve ilişkili verilerinizi silmek isterseniz **privacy@lingocross.app** adresinden talep edebilir veya (eklendiğinde) uygulama içi hesap silme özelliğini kullanabilirsiniz.
+Verilerinizi hesabınız aktif olduğu sürece saklarız. Hesabınızı ve ilişkili verilerinizi silmek isterseniz **support@duocross.com** adresinden talep edebilir veya (eklendiğinde) uygulama içi hesap silme özelliğini kullanabilirsiniz.
 
 ### Çocuklar
 Uygulama öğretmen gözetiminde kullanım için tasarlanmıştır. Reşit olmayan öğrenciler söz konusu olduğunda, gerekli ebeveyn/okul onaylarının alınması öğretmen/okul sorumluluğundadır. 13 yaşından küçüklerden bilerek onaysız veri toplamayız.
 
 ### Haklarınız
-Verilerinize erişme, düzeltme ve silinmesini isteme haklarına sahipsiniz. Talepler için **privacy@lingocross.app**.
+Verilerinize erişme, düzeltme ve silinmesini isteme haklarına sahipsiniz. Talepler için **support@duocross.com**.
 
 ### Değişiklikler
 Bu politikayı güncelleyebiliriz; önemli değişiklikleri uygulama üzerinden duyururuz.
@@ -66,13 +66,13 @@ We share limited data with these processors to run the service:
 - **AI provider** — when word scanning is used, to read and extract words from the scanned photo.
 
 ### Retention and deletion
-We retain your data while your account is active. To delete your account and associated data, contact **privacy@lingocross.app** or use in-app account deletion (once available).
+We retain your data while your account is active. To delete your account and associated data, contact **support@duocross.com** or use in-app account deletion (once available).
 
 ### Children
 The app is designed for use under teacher supervision. Where students are minors, obtaining any required parental/school consent is the responsibility of the teacher/school. We do not knowingly collect data from children under 13 without consent.
 
 ### Your rights
-You may access, correct, and request deletion of your data. Contact **privacy@lingocross.app**.
+You may access, correct, and request deletion of your data. Contact **support@duocross.com**.
 
 ### Changes
 We may update this policy; we will announce material changes in the app.

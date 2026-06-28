@@ -2302,7 +2302,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacySection6Body => 'For questions about our privacy policy, you can contact us:';
 
   @override
-  String get privacyContactEmail => 'privacy@lingocross.app';
+  String get privacyContactEmail => 'support@duocross.com';
 
   @override
   String get privacyContactLocation => 'Maslak, Istanbul / Türkiye';

@@ -1,14 +1,14 @@
 # LingoCross — Destek / Support
 
 > App Store "Support URL" için. Barındırma seçenekleri aşağıda (README of docs/store-launch).
-> İletişim: **destek@lingocross.app**
+> İletişim: **support@duocross.com**
 
 ---
 
 ## 🇹🇷 Türkçe
 
 ### İletişim
-Soru, sorun ve geri bildirim için: **destek@lingocross.app**
+Soru, sorun ve geri bildirim için: **support@duocross.com**
 
 ### Sık sorulanlar
 - **Nasıl başlarım?** Öğretmen ya da öğrenci olarak hesap oluştur. Öğretmenler sınıf/ders açıp kelime ekler ve oyun atar; öğrenciler öğretmenin verdiği davet kodu ile sınıfa katılır.
@@ -17,14 +17,14 @@ Soru, sorun ve geri bildirim için: **destek@lingocross.app**
 - **Sonucumu öğretmen göremiyor.** Atanan bir bulmacayı tamamladığında sonucun otomatik paylaşılır. Bağlantını kontrol et.
 - **Bildirim almıyorum.** Ayarlar → Bildirim Ayarları'ndan açık olduğundan ve cihaz bildirim izninin verildiğinden emin ol.
 - **Dilimi nasıl değiştiririm?** Ayarlar → Dil Tercihi (Türkçe/İngilizce).
-- **Hesabımı nasıl silerim?** **destek@lingocross.app** adresine yaz (uygulama içi silme yakında).
+- **Hesabımı nasıl silerim?** **support@duocross.com** adresine yaz (uygulama içi silme yakında).
 
 ---
 
 ## 🇬🇧 English
 
 ### Contact
-For questions, issues and feedback: **destek@lingocross.app**
+For questions, issues and feedback: **support@duocross.com**
 
 ### FAQ
 - **How do I start?** Create an account as a teacher or student. Teachers create classes/lessons, add words and assign games; students join a class with the teacher's invite code.
@@ -33,4 +33,4 @@ For questions, issues and feedback: **destek@lingocross.app**
 - **My teacher can't see my result.** When you complete an assigned puzzle, your result is shared automatically. Check your connection.
 - **I'm not getting notifications.** Check Settings → Notification Settings and that the device notification permission is granted.
 - **How do I change the language?** Settings → Language Preference (Turkish/English).
-- **How do I delete my account?** Email **destek@lingocross.app** (in-app deletion coming soon).
+- **How do I delete my account?** Email **support@duocross.com** (in-app deletion coming soon).

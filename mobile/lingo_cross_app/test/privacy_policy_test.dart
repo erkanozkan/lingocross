@@ -38,6 +38,6 @@ void main() {
     expect(find.text('4. Üçüncü Taraf Hizmetler'), findsOneWidget);
     expect(find.text('5. Haklarınız'), findsOneWidget);
     expect(find.text('6. İletişim'), findsOneWidget);
-    expect(find.textContaining('@lingocross.app'), findsOneWidget);
+    expect(find.textContaining('@duocross.com'), findsOneWidget);
   });
 }

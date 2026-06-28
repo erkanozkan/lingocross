@@ -4388,7 +4388,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactEmail.
   ///
   /// In tr, this message translates to:
-  /// **'privacy@lingocross.app'**
+  /// **'support@duocross.com'**
   String get privacyContactEmail;
 
   /// No description provided for @privacyContactLocation.
