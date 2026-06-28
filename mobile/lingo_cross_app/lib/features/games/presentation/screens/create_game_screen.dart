@@ -15,6 +15,8 @@ import '../../../classes/presentation/widgets/class_badge.dart';
 import '../../../lessons/data/dtos/lesson_dtos.dart';
 import '../../../lessons/domain/language_option.dart';
 import '../../../lessons/presentation/lessons_notifier.dart';
+import '../../../subscription/domain/entitlement.dart';
+import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../domain/game_type.dart';
 import '../../domain/games_failure.dart';
 import '../create_game_controller.dart';
@@ -48,6 +50,11 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   String? _selectedLessonId;
   final Set<String> _selectedClassIds = {};
 
+  /// Bulmaca oluşturma Premium-only. Free kullanıcı sihirbazı hiç görmesin diye
+  /// ekran açılır açılmaz paywall'a yönlendirilir; bu bayrak tekrarlı yönlendirmeyi
+  /// engeller (build birden çok kez çalışabilir).
+  bool _redirectedToPaywall = false;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +71,15 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
       };
 
   void _goStep(int step) => setState(() => _step = step);
+
+  /// Kilit kapısı görünümü: abonelik çözülürken / paywall'a yönlendirilirken
+  /// kısa bir spinner. Sihirbazın free kullanıcıya hiç açılmamasını sağlar.
+  Widget _buildGateSpinner() => const Scaffold(
+        backgroundColor: AppColors.surface,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
 
   Future<void> _submit() async {
     if (!_canSubmit) return;
@@ -102,6 +118,31 @@ class _CreateGameScreenState extends ConsumerState<CreateGameScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+
+    // Bulmaca oluşturma tamamen Premium. Tüm giriş noktaları (dashboard, ders/sınıf
+    // detayı, "Ödev Ata") buraya çıkar; kilit burada — tek çoke noktasında — uygulanır.
+    // Abonelik durumu yüklenene kadar sihirbaz açılmaz (yükleniyor → spinner). Free
+    // çözülünce paywall'a yönlendir; adımlar hiç görünmez. (Hata durumunda sihirbaza
+    // izin verilir; backend 402 puzzle_create güvenlik ağıdır.)
+    final subAsync = ref.watch(subscriptionNotifierProvider);
+    final gate = subAsync.when(
+      loading: () => _buildGateSpinner(),
+      error: (_, __) => null,
+      data: (sub) {
+        if (!sub.puzzleCreateLocked) return null;
+        if (!_redirectedToPaywall) {
+          _redirectedToPaywall = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              context.pushReplacement(AppRoutes.paywallFor('puzzle_create'));
+            }
+          });
+        }
+        return _buildGateSpinner();
+      },
+    );
+    if (gate != null) return gate;
+
     final lessonsAsync = ref.watch(lessonsNotifierProvider);
     final classesAsync = ref.watch(classesNotifierProvider);
     final busy = ref.watch(createGameControllerProvider).isLoading;
