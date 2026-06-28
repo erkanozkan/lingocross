@@ -50,6 +50,46 @@ void main() {
       expect(dto.maxLessons, 3);
       expect(dto.expiresAt, isNull);
     });
+
+    // REGRESYON: Backend Free kullanıcı için `period: null` döner (0 DEĞİL).
+    // Eski converter `int` beklediği için `null as int` parse'ı patlatıyordu →
+    // getMine() hataya düşüyor, Free kullanıcı kilitsiz görünüyor, bulmaca
+    // sihirbazı açılıyor ve paywall ancak sonda 402 ile çıkıyordu. Gerçek
+    // prod payload'ı (period null, expiresAt yok) sorunsuz çözülmeli.
+    test('Free (GERÇEK prod payload): period null → none, parse patlamaz', () {
+      final dto = SubscriptionDto.fromJson({
+        'plan': 1, // backend Free yanıtında plan=1 döner; isPremium otoritedir
+        'status': 0,
+        'period': null, // <-- kritik: Free'de null
+        'expiresAt': null,
+        'isPremium': false,
+        'maxClasses': 2,
+        'maxLessons': 5,
+        'maxTeachers': 1,
+        'ocrEnabled': false,
+      });
+
+      expect(dto.period, SubscriptionPeriod.none);
+      expect(dto.isPremium, false);
+      expect(dto.puzzleCreateLocked, true); // Free → bulmaca oluşturma kilitli
+      expect(dto.ocrLocked, true);
+    });
+
+    test('Premium toJson/fromJson round-trip: period korunur', () {
+      const original = SubscriptionDto(
+        plan: SubscriptionPlan.premium,
+        status: SubscriptionStatus.active,
+        period: SubscriptionPeriod.monthly,
+        isPremium: true,
+        maxClasses: -1,
+        maxLessons: -1,
+        maxTeachers: -1,
+        ocrEnabled: true,
+      );
+      final round = SubscriptionDto.fromJson(original.toJson());
+      expect(round.period, SubscriptionPeriod.monthly);
+      expect(round.puzzleCreateLocked, false);
+    });
   });
 
   group('ActivateStubRequest JSON (API sözleşmesi)', () {

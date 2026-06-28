@@ -29,15 +29,22 @@ class SubscriptionStatusConverter
 }
 
 /// API'deki int `SubscriptionPeriod` değerini ([SubscriptionPeriod]) enum'una çevirir.
+///
+/// Backend Free kullanıcı için `period: null` döner; bu yüzden converter null-güvenli
+/// olmalıdır (`int?`). Aksi halde `null as int` parse'ı patlatır → tüm SubscriptionDto
+/// çözümlenemez → abonelik durumu hataya düşer ve Free kullanıcı yanlış (kilitsiz)
+/// görünür. null → [SubscriptionPeriod.none].
 class SubscriptionPeriodConverter
-    implements JsonConverter<SubscriptionPeriod, int> {
+    implements JsonConverter<SubscriptionPeriod, int?> {
   const SubscriptionPeriodConverter();
 
   @override
-  SubscriptionPeriod fromJson(int json) => SubscriptionPeriod.fromValue(json);
+  SubscriptionPeriod fromJson(int? json) =>
+      json == null ? SubscriptionPeriod.none : SubscriptionPeriod.fromValue(json);
 
   @override
-  int toJson(SubscriptionPeriod object) => object.value;
+  int? toJson(SubscriptionPeriod object) =>
+      object == SubscriptionPeriod.none ? null : object.value;
 }
 
 /// Kullanıcının abonelik/entitlement durumu (SubscriptionDto) — API ile birebir.

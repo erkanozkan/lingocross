@@ -16,7 +16,7 @@ _$SubscriptionDtoImpl _$$SubscriptionDtoImplFromJson(
     (json['status'] as num).toInt(),
   ),
   period: const SubscriptionPeriodConverter().fromJson(
-    (json['period'] as num).toInt(),
+    (json['period'] as num?)?.toInt(),
   ),
   expiresAt:
       json['expiresAt'] == null
