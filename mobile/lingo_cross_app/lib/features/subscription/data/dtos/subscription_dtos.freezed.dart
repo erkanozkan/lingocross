@@ -717,3 +717,183 @@ abstract class _AppleVerifyRequest implements AppleVerifyRequest {
   _$$AppleVerifyRequestImplCopyWith<_$AppleVerifyRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+GoogleVerifyRequest _$GoogleVerifyRequestFromJson(Map<String, dynamic> json) {
+  return _GoogleVerifyRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GoogleVerifyRequest {
+  String get purchaseToken => throw _privateConstructorUsedError;
+  String get productId => throw _privateConstructorUsedError;
+
+  /// Serializes this GoogleVerifyRequest to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GoogleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GoogleVerifyRequestCopyWith<GoogleVerifyRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GoogleVerifyRequestCopyWith<$Res> {
+  factory $GoogleVerifyRequestCopyWith(
+    GoogleVerifyRequest value,
+    $Res Function(GoogleVerifyRequest) then,
+  ) = _$GoogleVerifyRequestCopyWithImpl<$Res, GoogleVerifyRequest>;
+  @useResult
+  $Res call({String purchaseToken, String productId});
+}
+
+/// @nodoc
+class _$GoogleVerifyRequestCopyWithImpl<$Res, $Val extends GoogleVerifyRequest>
+    implements $GoogleVerifyRequestCopyWith<$Res> {
+  _$GoogleVerifyRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GoogleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? purchaseToken = null, Object? productId = null}) {
+    return _then(
+      _value.copyWith(
+            purchaseToken:
+                null == purchaseToken
+                    ? _value.purchaseToken
+                    : purchaseToken // ignore: cast_nullable_to_non_nullable
+                        as String,
+            productId:
+                null == productId
+                    ? _value.productId
+                    : productId // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$GoogleVerifyRequestImplCopyWith<$Res>
+    implements $GoogleVerifyRequestCopyWith<$Res> {
+  factory _$$GoogleVerifyRequestImplCopyWith(
+    _$GoogleVerifyRequestImpl value,
+    $Res Function(_$GoogleVerifyRequestImpl) then,
+  ) = __$$GoogleVerifyRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String purchaseToken, String productId});
+}
+
+/// @nodoc
+class __$$GoogleVerifyRequestImplCopyWithImpl<$Res>
+    extends _$GoogleVerifyRequestCopyWithImpl<$Res, _$GoogleVerifyRequestImpl>
+    implements _$$GoogleVerifyRequestImplCopyWith<$Res> {
+  __$$GoogleVerifyRequestImplCopyWithImpl(
+    _$GoogleVerifyRequestImpl _value,
+    $Res Function(_$GoogleVerifyRequestImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GoogleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? purchaseToken = null, Object? productId = null}) {
+    return _then(
+      _$GoogleVerifyRequestImpl(
+        purchaseToken:
+            null == purchaseToken
+                ? _value.purchaseToken
+                : purchaseToken // ignore: cast_nullable_to_non_nullable
+                    as String,
+        productId:
+            null == productId
+                ? _value.productId
+                : productId // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GoogleVerifyRequestImpl implements _GoogleVerifyRequest {
+  const _$GoogleVerifyRequestImpl({
+    required this.purchaseToken,
+    required this.productId,
+  });
+
+  factory _$GoogleVerifyRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GoogleVerifyRequestImplFromJson(json);
+
+  @override
+  final String purchaseToken;
+  @override
+  final String productId;
+
+  @override
+  String toString() {
+    return 'GoogleVerifyRequest(purchaseToken: $purchaseToken, productId: $productId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GoogleVerifyRequestImpl &&
+            (identical(other.purchaseToken, purchaseToken) ||
+                other.purchaseToken == purchaseToken) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, purchaseToken, productId);
+
+  /// Create a copy of GoogleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GoogleVerifyRequestImplCopyWith<_$GoogleVerifyRequestImpl> get copyWith =>
+      __$$GoogleVerifyRequestImplCopyWithImpl<_$GoogleVerifyRequestImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GoogleVerifyRequestImplToJson(this);
+  }
+}
+
+abstract class _GoogleVerifyRequest implements GoogleVerifyRequest {
+  const factory _GoogleVerifyRequest({
+    required final String purchaseToken,
+    required final String productId,
+  }) = _$GoogleVerifyRequestImpl;
+
+  factory _GoogleVerifyRequest.fromJson(Map<String, dynamic> json) =
+      _$GoogleVerifyRequestImpl.fromJson;
+
+  @override
+  String get purchaseToken;
+  @override
+  String get productId;
+
+  /// Create a copy of GoogleVerifyRequest
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GoogleVerifyRequestImplCopyWith<_$GoogleVerifyRequestImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

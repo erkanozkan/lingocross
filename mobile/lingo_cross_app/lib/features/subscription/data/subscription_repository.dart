@@ -58,6 +58,29 @@ class SubscriptionRepository {
     }
   }
 
+  /// Google Play satın alma token'ını doğrular
+  /// (`POST /api/subscription/google/verify`).
+  ///
+  /// Başarıda güncel (Premium) [SubscriptionDto] döner; doğrulama başarısızsa
+  /// [SubscriptionFailure] fırlatır (premium verilmez).
+  Future<SubscriptionDto> verifyGoogle(
+    String purchaseToken,
+    String productId,
+  ) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/subscription/google/verify',
+        data: GoogleVerifyRequest(
+          purchaseToken: purchaseToken,
+          productId: productId,
+        ).toJson(),
+      );
+      return SubscriptionDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   /// Aboneliği iptal eder (`POST /api/subscription/cancel`). Güncel durumu döner.
   Future<SubscriptionDto> cancel() async {
     try {

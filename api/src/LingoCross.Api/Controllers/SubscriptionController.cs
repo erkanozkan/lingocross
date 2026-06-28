@@ -61,6 +61,18 @@ public class SubscriptionController : ControllerBase
         return Ok(dto);
     }
 
+    /// <summary>
+    /// Google Play satın alma jetonunu doğrular ve geçerliyse premium aboneliği (Source=GoogleIap) upsert eder.
+    /// <c>Google:ServiceAccountJson</c>/<c>Google:PackageName</c> ayarlı değilse 503, jeton/ürün boş veya
+    /// doğrulanamazsa 400 döner.
+    /// </summary>
+    [HttpPost("google/verify")]
+    public async Task<ActionResult<SubscriptionDto>> VerifyGoogle(VerifyGoogleReceiptRequest request, CancellationToken ct)
+    {
+        var dto = await _subscriptionService.VerifyGoogleReceiptAsync(request.PurchaseToken, request.ProductId, ct);
+        return Ok(dto);
+    }
+
     private async Task ValidateAsync<T>(T instance, CancellationToken ct)
     {
         if (_services.GetService(typeof(IValidator<T>)) is not IValidator<T> validator)

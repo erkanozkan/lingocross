@@ -26,6 +26,8 @@ public class SubscriptionService : ISubscriptionService
     private readonly SubscriptionOptions _options;
     private readonly AppleOptions _appleOptions;
     private readonly IAppleReceiptVerifier _appleVerifier;
+    private readonly GoogleOptions _googleOptions;
+    private readonly IGoogleReceiptVerifier _googleVerifier;
     private readonly ILogger<SubscriptionService> _logger;
 
     public SubscriptionService(
@@ -35,6 +37,8 @@ public class SubscriptionService : ISubscriptionService
         IOptions<SubscriptionOptions> options,
         IOptions<AppleOptions> appleOptions,
         IAppleReceiptVerifier appleVerifier,
+        IOptions<GoogleOptions> googleOptions,
+        IGoogleReceiptVerifier googleVerifier,
         ILogger<SubscriptionService> logger)
     {
         _db = db;
@@ -43,6 +47,8 @@ public class SubscriptionService : ISubscriptionService
         _options = options.Value;
         _appleOptions = appleOptions.Value;
         _appleVerifier = appleVerifier;
+        _googleOptions = googleOptions.Value;
+        _googleVerifier = googleVerifier;
         _logger = logger;
     }
 
@@ -167,6 +173,81 @@ public class SubscriptionService : ISubscriptionService
             ? SubscriptionStatus.Active
             : SubscriptionStatus.Expired;
         // Tam makbuz (uzun, 256 kolon sınırını aşar) saklanmaz; mağaza işlem kimliği yeterli referanstır.
+        subscription.StoreTransactionId = result.OriginalTransactionId;
+        subscription.LatestReceiptRef = result.OriginalTransactionId;
+
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return await BuildDtoAsync(userId, cancellationToken);
+    }
+
+    public async Task<SubscriptionDto> VerifyGoogleReceiptAsync(string purchaseToken, string productId, CancellationToken cancellationToken = default)
+    {
+        var userId = RequireUser();
+
+        if (string.IsNullOrWhiteSpace(_googleOptions.ServiceAccountJson)
+            || string.IsNullOrWhiteSpace(_googleOptions.PackageName))
+        {
+            throw new AppException(503, "Google IAP yapılandırılmamış.");
+        }
+
+        if (string.IsNullOrWhiteSpace(purchaseToken))
+        {
+            throw AppException.BadRequest("Satın alma jetonu (purchaseToken) zorunludur.");
+        }
+
+        if (string.IsNullOrWhiteSpace(productId))
+        {
+            throw AppException.BadRequest("Ürün kimliği (productId) zorunludur.");
+        }
+
+        if (!AppleOptions.IsKnownProduct(productId))
+        {
+            _logger.LogWarning("Google doğrulaması: tanınmayan ürün kimliği. ProductId={ProductId}", productId);
+            throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        }
+
+        var result = await _googleVerifier.VerifyAsync(purchaseToken, productId, cancellationToken);
+        if (!result.IsValid)
+        {
+            _logger.LogWarning(
+                "Google satın alma doğrulaması geçersiz. Sebep={Reason}, PackageName={PackageName}",
+                result.RawError, _googleOptions.PackageName);
+            throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        }
+
+        var period = AppleOptions.MapPeriod(result.ProductId);
+        if (period is null)
+        {
+            _logger.LogWarning(
+                "Google satın alması geçerli ama ürün tanınmadı. ProductId={ProductId}", result.ProductId);
+            throw AppException.BadRequest("Makbuz doğrulanamadı.");
+        }
+
+        var now = DateTime.UtcNow;
+        var expiresAt = result.ExpiresAt?.UtcDateTime;
+
+        var subscription = await _db.Subscriptions
+            .FirstOrDefaultAsync(s => s.UserId == userId, cancellationToken);
+
+        if (subscription is null)
+        {
+            subscription = new Subscription { UserId = userId, StartedAt = now };
+            _db.Subscriptions.Add(subscription);
+        }
+        else if (subscription.StartedAt == default)
+        {
+            subscription.StartedAt = now;
+        }
+
+        subscription.Plan = SubscriptionPlan.Premium;
+        subscription.Source = SubscriptionSource.GoogleIap;
+        subscription.Period = period;
+        subscription.ExpiresAt = expiresAt;
+        subscription.Status = expiresAt is { } exp && exp > now
+            ? SubscriptionStatus.Active
+            : SubscriptionStatus.Expired;
+        // Tam jeton (uzun, 256 kolon sınırını aşar) saklanmaz; mağaza işlem kimliği yeterli referanstır.
         subscription.StoreTransactionId = result.OriginalTransactionId;
         subscription.LatestReceiptRef = result.OriginalTransactionId;
 

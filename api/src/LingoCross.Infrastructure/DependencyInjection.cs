@@ -58,6 +58,10 @@ public static class DependencyInjection
         services.AddHttpClient();
         services.AddScoped<IAppleReceiptVerifier, AppleReceiptVerifier>();
 
+        // Google Play IAP doğrulama. ServiceAccountJson/PackageName yoksa servis katmanı 503 döner.
+        services.Configure<GoogleOptions>(configuration.GetSection(GoogleOptions.SectionName));
+        services.AddScoped<IGoogleReceiptVerifier, GoogleReceiptVerifier>();
+
         return services;
     }
 

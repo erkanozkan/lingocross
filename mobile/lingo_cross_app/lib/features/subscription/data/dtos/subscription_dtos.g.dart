@@ -61,3 +61,17 @@ _$AppleVerifyRequestImpl _$$AppleVerifyRequestImplFromJson(
 Map<String, dynamic> _$$AppleVerifyRequestImplToJson(
   _$AppleVerifyRequestImpl instance,
 ) => <String, dynamic>{'receiptData': instance.receiptData};
+
+_$GoogleVerifyRequestImpl _$$GoogleVerifyRequestImplFromJson(
+  Map<String, dynamic> json,
+) => _$GoogleVerifyRequestImpl(
+  purchaseToken: json['purchaseToken'] as String,
+  productId: json['productId'] as String,
+);
+
+Map<String, dynamic> _$$GoogleVerifyRequestImplToJson(
+  _$GoogleVerifyRequestImpl instance,
+) => <String, dynamic>{
+  'purchaseToken': instance.purchaseToken,
+  'productId': instance.productId,
+};

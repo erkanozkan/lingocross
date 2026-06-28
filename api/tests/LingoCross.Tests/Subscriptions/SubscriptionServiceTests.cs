@@ -36,12 +36,19 @@ public class SubscriptionServiceTests
         Guid userId,
         bool stubEnabled = true,
         IAppleReceiptVerifier? appleVerifier = null,
-        string? appleSharedSecret = "shared-secret")
+        string? appleSharedSecret = "shared-secret",
+        IGoogleReceiptVerifier? googleVerifier = null,
+        string? googleServiceAccountJson = "x")
     {
         var current = TestCurrentUser.Teacher(userId);
         var options = Options.Create(Opts(stubEnabled));
         var entitlement = new EntitlementService(db, current, options);
         var appleOptions = Options.Create(new AppleOptions { SharedSecret = appleSharedSecret });
+        var googleOptions = Options.Create(new GoogleOptions
+        {
+            ServiceAccountJson = googleServiceAccountJson,
+            PackageName = "com.lingocross.lingo_cross_app",
+        });
         return new SubscriptionService(
             db,
             current,
@@ -49,6 +56,8 @@ public class SubscriptionServiceTests
             options,
             appleOptions,
             appleVerifier ?? new FakeAppleReceiptVerifier(new AppleVerifyResult(false, null, null, null, "unset")),
+            googleOptions,
+            googleVerifier ?? new FakeGoogleReceiptVerifier(new GoogleVerifyResult(false, null, null, null, "unset")),
             NullLogger<SubscriptionService>.Instance);
     }
 
@@ -63,6 +72,23 @@ public class SubscriptionServiceTests
         public Task<AppleVerifyResult> VerifyAsync(string receiptData, CancellationToken cancellationToken = default)
         {
             LastReceiptData = receiptData;
+            return Task.FromResult(_result);
+        }
+    }
+
+    /// <summary>Google'a gerçek istek atmadan sabit sonuç döndüren sahte doğrulayıcı.</summary>
+    private sealed class FakeGoogleReceiptVerifier : IGoogleReceiptVerifier
+    {
+        private readonly GoogleVerifyResult _result;
+        public string? LastPurchaseToken { get; private set; }
+        public string? LastProductId { get; private set; }
+
+        public FakeGoogleReceiptVerifier(GoogleVerifyResult result) => _result = result;
+
+        public Task<GoogleVerifyResult> VerifyAsync(string purchaseToken, string productId, CancellationToken cancellationToken = default)
+        {
+            LastPurchaseToken = purchaseToken;
+            LastProductId = productId;
             return Task.FromResult(_result);
         }
     }
@@ -338,5 +364,52 @@ public class SubscriptionServiceTests
         var row = await db.Subscriptions.SingleAsync();
         Assert.Equal(SubscriptionPeriod.Annual, row.Period);
         Assert.Equal("txn-B", row.StoreTransactionId);
+    }
+
+    // --- Google Play IAP doğrulama ---
+
+    [Fact]
+    public async Task VerifyGoogle_ValidMonthlyFutureExpiry_SetsActivePremium()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeGoogleReceiptVerifier(new GoogleVerifyResult(
+            IsValid: true,
+            ProductId: AppleOptions.MonthlyProductId,
+            ExpiresAt: DateTimeOffset.UtcNow.AddDays(20),
+            OriginalTransactionId: "order-1001",
+            RawError: null));
+
+        var dto = await Svc(db, userId, googleVerifier: verifier)
+            .VerifyGoogleReceiptAsync("purchase-token", AppleOptions.MonthlyProductId);
+
+        Assert.True(dto.IsPremium);
+        Assert.Equal(SubscriptionStatus.Active, dto.Status);
+        Assert.Equal(SubscriptionPeriod.Monthly, dto.Period);
+        Assert.NotNull(dto.ExpiresAt);
+
+        var row = await db.Subscriptions.SingleAsync();
+        Assert.Equal(SubscriptionPlan.Premium, row.Plan);
+        Assert.Equal(SubscriptionSource.GoogleIap, row.Source);
+        Assert.Equal(SubscriptionStatus.Active, row.Status);
+        Assert.Equal(SubscriptionPeriod.Monthly, row.Period);
+        Assert.Equal("order-1001", row.StoreTransactionId);
+        Assert.NotNull(row.ExpiresAt);
+    }
+
+    [Fact]
+    public async Task VerifyGoogle_NoServiceAccountJson_Throws503()
+    {
+        var db = NewDb();
+        var userId = await SeedUserAsync(db);
+        var verifier = new FakeGoogleReceiptVerifier(new GoogleVerifyResult(
+            true, AppleOptions.MonthlyProductId, DateTimeOffset.UtcNow.AddDays(10), "order", null));
+
+        var ex = await Assert.ThrowsAsync<AppException>(
+            () => Svc(db, userId, googleVerifier: verifier, googleServiceAccountJson: "")
+                .VerifyGoogleReceiptAsync("purchase-token", AppleOptions.MonthlyProductId));
+
+        Assert.Equal(503, ex.StatusCode);
+        Assert.Equal(0, await db.Subscriptions.CountAsync());
     }
 }

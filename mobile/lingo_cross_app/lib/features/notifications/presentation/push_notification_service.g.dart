@@ -7,7 +7,7 @@ part of 'push_notification_service.dart';
 // **************************************************************************
 
 String _$pushNotificationServiceHash() =>
-    r'79fb3729727da4ffee8ba650d01e9d4c4793e46c';
+    r'b02eb945f633c869445bd332d154ae0e52b51df1';
 
 /// Push bildirim kaydını oturum durumuna bağlayan servis.
 ///
