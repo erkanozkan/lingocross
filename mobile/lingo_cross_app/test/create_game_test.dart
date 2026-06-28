@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +17,28 @@ import 'package:lingo_cross_app/features/games/presentation/screens/create_game_
 import 'package:lingo_cross_app/features/lessons/data/dtos/lesson_dtos.dart';
 import 'package:lingo_cross_app/features/lessons/data/lessons_repository.dart';
 import 'package:lingo_cross_app/features/lessons/domain/lesson_status.dart';
+import 'package:lingo_cross_app/features/subscription/data/dtos/subscription_dtos.dart';
+import 'package:lingo_cross_app/features/subscription/presentation/subscription_notifier.dart';
 
 import 'helpers/fake_classes_repository.dart';
 import 'helpers/fake_games_repository.dart';
 import 'helpers/fake_lessons_repository.dart';
+import 'helpers/fake_subscription_repository.dart';
+
+/// Test amaçlı subscription notifier: önceden belirlenen [value]'yu döner.
+/// [loadingForever] true ise build hiç tamamlanmaz → AsyncLoading'de kalır.
+class _StubSubscriptionNotifier extends SubscriptionNotifier {
+  _StubSubscriptionNotifier({this.value, this.loadingForever = false});
+
+  final SubscriptionDto? value;
+  final bool loadingForever;
+
+  @override
+  Future<SubscriptionDto> build() {
+    if (loadingForever) return Completer<SubscriptionDto>().future;
+    return Future.value(value);
+  }
+}
 
 Widget _wrap({
   required FakeLessonsRepository lessonsRepo,
@@ -26,6 +46,9 @@ Widget _wrap({
   required FakeClassesRepository classesRepo,
   String? initialLessonId,
   List<String>? pushedRoutes,
+  // Bulmaca oluşturma Premium-only; sihirbazı test eden senaryolar için varsayılan
+  // premium. Gate testleri free/loading override geçer.
+  SubscriptionNotifier Function()? subOverride,
 }) {
   final router = GoRouter(
     initialLocation: '/start',
@@ -46,6 +69,13 @@ Widget _wrap({
         builder: (_, __) => CreateGameScreen(initialLessonId: initialLessonId),
       ),
       GoRoute(
+        path: '/paywall',
+        builder: (context, state) {
+          pushedRoutes?.add(state.uri.toString());
+          return const Scaffold(body: Text('PAYWALL'));
+        },
+      ),
+      GoRoute(
         path: '/teacher/classes/new',
         builder: (_, __) {
           pushedRoutes?.add('/teacher/classes/new');
@@ -59,6 +89,10 @@ Widget _wrap({
       lessonsRepositoryProvider.overrideWithValue(lessonsRepo),
       gamesRepositoryProvider.overrideWithValue(gamesRepo),
       classesRepositoryProvider.overrideWithValue(classesRepo),
+      subscriptionNotifierProvider.overrideWith(
+        subOverride ??
+            () => _StubSubscriptionNotifier(value: premiumSubscription()),
+      ),
     ],
     child: MaterialApp.router(
       theme: AppTheme.light,
@@ -190,6 +224,61 @@ Future<void> _next(WidgetTester tester) async {
 }
 
 void main() {
+  group('Bulmaca oluşturma Premium kapısı (giriş noktası)', () {
+    testWidgets('FREE → sihirbaz HİÇ açılmaz, doğrudan paywall (puzzle_create)',
+        (tester) async {
+      final pushed = <String>[];
+      await tester.pumpWidget(_wrap(
+        lessonsRepo: FakeLessonsRepository(lessons: [_lesson()]),
+        gamesRepo: FakeGamesRepository(),
+        classesRepo: FakeClassesRepository(classes: [_class()]),
+        pushedRoutes: pushed,
+        subOverride: () => _StubSubscriptionNotifier(value: freeSubscription()),
+      ));
+      await _openCreate(tester);
+
+      // Paywall'a yönlenildi; sihirbazın ilk adımı (Oyun Türünü Seç) görünmez.
+      expect(find.text('PAYWALL'), findsOneWidget);
+      expect(pushed.any((r) => r.contains('feature=puzzle_create')), isTrue);
+      expect(find.text('Oyun Türünü Seç'), findsNothing);
+    });
+
+    testWidgets('LOADING → sihirbaz açılmaz (spinner), paywall beklenir',
+        (tester) async {
+      await tester.pumpWidget(_wrap(
+        lessonsRepo: FakeLessonsRepository(lessons: [_lesson()]),
+        gamesRepo: FakeGamesRepository(),
+        classesRepo: FakeClassesRepository(classes: [_class()]),
+        subOverride: () => _StubSubscriptionNotifier(loadingForever: true),
+      ));
+      await tester.pump();
+      await tester.tap(find.text('open'));
+      // pumpAndSettle yok (sonsuz loading); navigasyon için birkaç frame.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      // Abonelik çözülene kadar sihirbaz adımı render edilmez; gate spinner görünür.
+      expect(find.text('Oyun Türünü Seç'), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsWidgets);
+    });
+
+    testWidgets('PREMIUM → sihirbaz normal açılır', (tester) async {
+      final pushed = <String>[];
+      await tester.pumpWidget(_wrap(
+        lessonsRepo: FakeLessonsRepository(lessons: [_lesson()]),
+        gamesRepo: FakeGamesRepository(),
+        classesRepo: FakeClassesRepository(classes: [_class()]),
+        pushedRoutes: pushed,
+        subOverride: () =>
+            _StubSubscriptionNotifier(value: premiumSubscription()),
+      ));
+      await _openCreate(tester);
+
+      expect(find.text('Oyun Türünü Seç'), findsOneWidget);
+      expect(find.text('PAYWALL'), findsNothing);
+    });
+  });
+
   testWidgets('Adım 1: üç oyun türü kartı (Karışık Harfler dahil)',
       (tester) async {
     await tester.pumpWidget(_wrap(

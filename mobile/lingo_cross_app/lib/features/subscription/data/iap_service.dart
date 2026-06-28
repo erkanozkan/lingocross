@@ -102,6 +102,13 @@ class IapService {
 
   StreamSubscription<List<PurchaseDetails>>? _sub;
 
+  /// Kullanıcının "Satın Alımları Geri Yükle"ye bastığı an. `restored` durumundaki
+  /// işlemler YALNIZCA bu pencere içinde (kullanıcı isteğiyle) doğrulanıp premium
+  /// verir. Aksi halde açılışta StoreKit'in otomatik replay ettiği geçmiş (örn.
+  /// sandbox) abonelikler sessizce premium açar; bu da paywall'ı keşfedilmez kılar
+  /// ve free kullanıcıyı yanlışlıkla premium gösterir. Backend tek doğruluk kaynağı.
+  DateTime? _restoreRequestedAt;
+
   final StreamController<IapProductsState> _productsController =
       StreamController<IapProductsState>.broadcast();
   final StreamController<IapPurchaseEvent> _purchaseController =
@@ -157,8 +164,12 @@ class IapService {
   }
 
   /// Geçmiş satın alımları geri yükler; sonuçlar [purchaseStream] üzerinden
-  /// doğrulanır.
-  Future<void> restore() => _client.restorePurchases();
+  /// doğrulanır. Kullanıcı isteğini işaretler ki yalnızca bu pencerede gelen
+  /// `restored` işlemler premium versin (açılış otomatik replay'i değil).
+  Future<void> restore() {
+    _restoreRequestedAt = DateTime.now();
+    return _client.restorePurchases();
+  }
 
   Future<void> _onPurchaseUpdate(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
@@ -180,10 +191,29 @@ class IapService {
         await _completeIfNeeded(purchase);
         return;
       case PurchaseStatus.purchased:
-      case PurchaseStatus.restored:
+        // Kullanıcının bizzat yaptığı (veya tamamlanmamış) satın alma → her zaman doğrula.
         await _verifyAndComplete(purchase);
         return;
+      case PurchaseStatus.restored:
+        // `restored` yalnızca kullanıcı "Geri Yükle"ye bastıysa premium verir.
+        // Açılışta StoreKit'in otomatik replay ettiği geçmiş abonelikler sessizce
+        // kuyruktan temizlenir (premium VERİLMEZ, olay yayılmaz) — paywall keşfedilebilir
+        // kalır ve free kullanıcı yanlışlıkla premium görünmez. Premium dönmüşse zaten
+        // backend getMine() ile yansır.
+        if (_isUserInitiatedRestore) {
+          await _verifyAndComplete(purchase);
+        } else {
+          await _completeIfNeeded(purchase);
+        }
+        return;
     }
+  }
+
+  /// Son ~60 sn içinde kullanıcı "Geri Yükle"ye bastı mı? Restore tek seferde
+  /// birden çok işlem yayabildiği için zaman penceresi kullanılır.
+  bool get _isUserInitiatedRestore {
+    final at = _restoreRequestedAt;
+    return at != null && DateTime.now().difference(at) < const Duration(seconds: 60);
   }
 
   Future<void> _verifyAndComplete(PurchaseDetails purchase) async {

@@ -92,11 +92,38 @@ void main() {
       expect(events, contains(IapPurchaseOutcome.success));
     });
 
-    test('restored + verify başarılı → success', () async {
+    test('kullanıcı restore() çağırınca restored + verify başarılı → success',
+        () async {
       final client = FakeIapClient();
       addTearDown(client.dispose);
       final repo = FakeSubscriptionRepository();
       final service = _service(client, repo);
+      final events = <IapPurchaseOutcome>[];
+      service.purchaseEvents.listen((e) => events.add(e.outcome));
+
+      // Kullanıcı "Geri Yükle"ye bastı → bu pencerede gelen restored doğrulanır.
+      await service.restore();
+      client.emit([
+        fakePurchase(
+          productId: IapProducts.monthly,
+          status: PurchaseStatus.restored,
+        ),
+      ]);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repo.verifyAppleCount, 1);
+      expect(events, contains(IapPurchaseOutcome.success));
+    });
+
+    test(
+        'açılışta otomatik replay edilen restored → premium VERİLMEZ, sessizce '
+        'complete (verify yok, olay yok)', () async {
+      final client = FakeIapClient();
+      addTearDown(client.dispose);
+      final repo = FakeSubscriptionRepository();
+      var verifiedCalls = 0;
+      // Hiç restore() çağrılmadan (otomatik replay) restored gelir.
+      final service = _service(client, repo, onVerified: () => verifiedCalls++);
       final events = <IapPurchaseOutcome>[];
       service.purchaseEvents.listen((e) => events.add(e.outcome));
 
@@ -108,8 +135,10 @@ void main() {
       ]);
       await Future<void>.delayed(Duration.zero);
 
-      expect(repo.verifyAppleCount, 1);
-      expect(events, contains(IapPurchaseOutcome.success));
+      expect(repo.verifyAppleCount, 0); // doğrulama yok → premium verilmez
+      expect(verifiedCalls, 0); // entitlement tazelenmez
+      expect(client.completeCount, 1); // kuyrukta takılmasın diye yine complete
+      expect(events, isEmpty); // sessiz: paywall'a yanıltıcı olay gitmez
     });
 
     test('verify başarısız → premium verilmez ama complete YİNE çağrılır + error',
