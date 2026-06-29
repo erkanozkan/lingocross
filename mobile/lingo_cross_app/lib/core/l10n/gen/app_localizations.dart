@@ -2789,6 +2789,12 @@ abstract class AppLocalizations {
   /// **'Önceki'**
   String get questionSetPrevious;
 
+  /// No description provided for @questionSetElapsed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Süre {time}'**
+  String questionSetElapsed(String time);
+
   /// No description provided for @questionSetSelectAnswer.
   ///
   /// In tr, this message translates to:

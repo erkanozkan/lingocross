@@ -1434,6 +1434,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get questionSetPrevious => 'Previous';
 
   @override
+  String questionSetElapsed(String time) {
+    return 'Time $time';
+  }
+
+  @override
   String get questionSetSelectAnswer => 'Choose an answer';
 
   @override

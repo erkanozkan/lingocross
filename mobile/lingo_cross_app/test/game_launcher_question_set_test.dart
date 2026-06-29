@@ -86,7 +86,8 @@ void main() {
     await tester.pump(); // session resolved
 
     expect(find.byType(QuestionSetGameScreen), findsOneWidget);
-    expect(find.text('Çıkmış Sorular'), findsOneWidget); // başlık
+    // Başlık + alt başlık aynı metni gösterir (Stitch header).
+    expect(find.text('Çıkmış Sorular'), findsWidgets); // başlık/alt başlık
     expect(find.text('Tanımlayıcı soru kökü?'), findsOneWidget);
     expect(find.text('Birinci şık'), findsOneWidget);
     expect(games.lastStartGameId, 'g1');

@@ -7,7 +7,7 @@ part of 'subscription_notifier.dart';
 // **************************************************************************
 
 String _$subscriptionNotifierHash() =>
-    r'd043c2a458f3f2b0462fede95a254618a723c4a2';
+    r'49f0a07c5e46c9b1d219fbccd9c9abe3512292d1';
 
 /// Kullanıcının abonelik/entitlement durumunu yöneten async notifier.
 ///
