@@ -2231,6 +2231,102 @@ abstract class AppLocalizations {
   /// **'Derse katıldın'**
   String get studentDashboardJoined;
 
+  /// No description provided for @studentDashboardGameDescItems.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} öğeyle pratiğini geliştir.'**
+  String studentDashboardGameDescItems(int count);
+
+  /// No description provided for @studentDashboardExamsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınavlara Hazırlan'**
+  String get studentDashboardExamsTitle;
+
+  /// No description provided for @studentDashboardExamsCardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get studentDashboardExamsCardTitle;
+
+  /// No description provided for @studentDashboardExamsCardDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'LGS, YDT ve YDS çıkmış sorularını çözerek kendini test et.'**
+  String get studentDashboardExamsCardDesc;
+
+  /// No description provided for @studentDashboardProgressGamesPlayed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanan Oyun'**
+  String get studentDashboardProgressGamesPlayed;
+
+  /// No description provided for @studentDashboardProgressAccuracy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortalama Doğruluk'**
+  String get studentDashboardProgressAccuracy;
+
+  /// No description provided for @studentDashboardProgressTrendUp.
+  ///
+  /// In tr, this message translates to:
+  /// **'↑ %{delta}'**
+  String studentDashboardProgressTrendUp(int delta);
+
+  /// No description provided for @studentDashboardProgressTrendDown.
+  ///
+  /// In tr, this message translates to:
+  /// **'↓ %{delta}'**
+  String studentDashboardProgressTrendDown(int delta);
+
+  /// No description provided for @studentDashboardWeeklyMinutes.
+  ///
+  /// In tr, this message translates to:
+  /// **'{minutes} / {goal} dk'**
+  String studentDashboardWeeklyMinutes(int minutes, int goal);
+
+  /// No description provided for @studentDashboardWeeklyRemaining.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefine {minutes} dakika kaldı.'**
+  String studentDashboardWeeklyRemaining(int minutes);
+
+  /// No description provided for @studentDashboardWeeklyReached.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık hedefine ulaştın!'**
+  String get studentDashboardWeeklyReached;
+
+  /// No description provided for @studentExamsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınavlara Hazırlan'**
+  String get studentExamsTitle;
+
+  /// No description provided for @studentExamsSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sana atanan çıkmış soru setlerini çöz ve kendini test et.'**
+  String get studentExamsSubtitle;
+
+  /// No description provided for @studentExamsQuestionCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} soru'**
+  String studentExamsQuestionCount(int count);
+
+  /// No description provided for @studentExamsEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz sana sınav atanmadı'**
+  String get studentExamsEmptyTitle;
+
+  /// No description provided for @studentExamsEmptyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğretmenin bir çıkmış soru seti atadığında burada görünecek.'**
+  String get studentExamsEmptyDesc;
+
   /// No description provided for @studentJoinAppBarTitle.
   ///
   /// In tr, this message translates to:

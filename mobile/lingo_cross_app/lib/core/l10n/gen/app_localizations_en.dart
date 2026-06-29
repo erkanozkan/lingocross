@@ -1141,6 +1141,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studentDashboardJoined => 'You joined the class';
 
   @override
+  String studentDashboardGameDescItems(int count) {
+    return 'Practice with $count items and sharpen your skills.';
+  }
+
+  @override
+  String get studentDashboardExamsTitle => 'Prepare for Exams';
+
+  @override
+  String get studentDashboardExamsCardTitle => 'Past Exam Questions';
+
+  @override
+  String get studentDashboardExamsCardDesc => 'Test yourself by solving past LGS, YDT and YDS exam questions.';
+
+  @override
+  String get studentDashboardProgressGamesPlayed => 'Games Completed';
+
+  @override
+  String get studentDashboardProgressAccuracy => 'Average Accuracy';
+
+  @override
+  String studentDashboardProgressTrendUp(int delta) {
+    return '↑ $delta%';
+  }
+
+  @override
+  String studentDashboardProgressTrendDown(int delta) {
+    return '↓ $delta%';
+  }
+
+  @override
+  String studentDashboardWeeklyMinutes(int minutes, int goal) {
+    return '$minutes / $goal min';
+  }
+
+  @override
+  String studentDashboardWeeklyRemaining(int minutes) {
+    return '$minutes minutes left to reach your goal.';
+  }
+
+  @override
+  String get studentDashboardWeeklyReached => 'You\'ve reached your weekly goal!';
+
+  @override
+  String get studentExamsTitle => 'Prepare for Exams';
+
+  @override
+  String get studentExamsSubtitle => 'Solve the past-question sets assigned to you and test yourself.';
+
+  @override
+  String studentExamsQuestionCount(int count) {
+    return '$count questions';
+  }
+
+  @override
+  String get studentExamsEmptyTitle => 'No exams assigned yet';
+
+  @override
+  String get studentExamsEmptyDesc => 'Once your teacher assigns a past-question set, it\'ll appear here.';
+
+  @override
   String get studentJoinAppBarTitle => 'Join a Teacher';
 
   @override

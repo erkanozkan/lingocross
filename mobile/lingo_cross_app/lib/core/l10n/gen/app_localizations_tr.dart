@@ -1141,6 +1141,66 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentDashboardJoined => 'Derse katıldın';
 
   @override
+  String studentDashboardGameDescItems(int count) {
+    return '$count öğeyle pratiğini geliştir.';
+  }
+
+  @override
+  String get studentDashboardExamsTitle => 'Sınavlara Hazırlan';
+
+  @override
+  String get studentDashboardExamsCardTitle => 'Çıkmış Sorular';
+
+  @override
+  String get studentDashboardExamsCardDesc => 'LGS, YDT ve YDS çıkmış sorularını çözerek kendini test et.';
+
+  @override
+  String get studentDashboardProgressGamesPlayed => 'Tamamlanan Oyun';
+
+  @override
+  String get studentDashboardProgressAccuracy => 'Ortalama Doğruluk';
+
+  @override
+  String studentDashboardProgressTrendUp(int delta) {
+    return '↑ %$delta';
+  }
+
+  @override
+  String studentDashboardProgressTrendDown(int delta) {
+    return '↓ %$delta';
+  }
+
+  @override
+  String studentDashboardWeeklyMinutes(int minutes, int goal) {
+    return '$minutes / $goal dk';
+  }
+
+  @override
+  String studentDashboardWeeklyRemaining(int minutes) {
+    return 'Hedefine $minutes dakika kaldı.';
+  }
+
+  @override
+  String get studentDashboardWeeklyReached => 'Haftalık hedefine ulaştın!';
+
+  @override
+  String get studentExamsTitle => 'Sınavlara Hazırlan';
+
+  @override
+  String get studentExamsSubtitle => 'Sana atanan çıkmış soru setlerini çöz ve kendini test et.';
+
+  @override
+  String studentExamsQuestionCount(int count) {
+    return '$count soru';
+  }
+
+  @override
+  String get studentExamsEmptyTitle => 'Henüz sana sınav atanmadı';
+
+  @override
+  String get studentExamsEmptyDesc => 'Öğretmenin bir çıkmış soru seti atadığında burada görünecek.';
+
+  @override
   String get studentJoinAppBarTitle => 'Öğretmene Katıl';
 
   @override

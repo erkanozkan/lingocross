@@ -14,7 +14,7 @@ import 'package:lingo_cross_app/features/enrollment/presentation/screens/student
 import 'package:lingo_cross_app/features/games/data/dtos/game_dtos.dart';
 import 'package:lingo_cross_app/features/games/data/games_repository.dart';
 import 'package:lingo_cross_app/features/games/domain/game_type.dart';
-import 'package:lingo_cross_app/features/profile/data/dtos/student_stats_dto.dart';
+import 'package:lingo_cross_app/features/profile/data/dtos/student_progress_dto.dart';
 import 'package:lingo_cross_app/features/profile/data/student_stats_repository.dart';
 
 import 'helpers/fake_classes_repository.dart';
@@ -105,6 +105,7 @@ AssignedGameDto _game({
   String lessonTitle = 'Ünite 3',
   String teacherName = 'Ayşe',
   int words = 5,
+  GameType type = GameType.wordMatching,
   bool isCompleted = false,
   String? resultId,
   int? score,
@@ -114,7 +115,7 @@ AssignedGameDto _game({
     id: id,
     lessonId: 'l1',
     lessonTitle: lessonTitle,
-    type: GameType.wordMatching,
+    type: type,
     title: title,
     wordCount: words,
     teacherName: teacherName,
@@ -320,13 +321,21 @@ void main() {
     expect(find.text('Tamamlanan Bulmacalar'), findsNothing);
   });
 
-  testWidgets('Gelişim Özeti: oyun oynanmışsa gerçek oyun + doğruluk gösterir',
+  testWidgets(
+      'Gelişim Özeti: oyun oynanmışsa oyun sayısı + doğruluk + haftalık hedef',
       (tester) async {
     await tester.pumpWidget(_wrap(
       enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
       gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
       statsRepo: FakeStudentStatsRepository(
-        stats: const StudentStatsDto(gamesPlayed: 7, averageAccuracy: 82),
+        progress: const StudentProgressDto(
+          gamesPlayed: 7,
+          averageAccuracy: 82,
+          accuracyTrendDelta: 3,
+          weeklyMinutes: 320,
+          weeklyGoalMinutes: 500,
+          streakDays: 4,
+        ),
       ),
     ));
     await tester.pump();
@@ -335,8 +344,11 @@ void main() {
     await tester.scrollUntilVisible(find.text('Raporlarım'), 200,
         scrollable: find.byType(Scrollable).first);
     expect(find.text('Raporlarım'), findsOneWidget);
-    expect(find.text('7'), findsOneWidget);
-    expect(find.text('%82'), findsOneWidget);
+    expect(find.text('7'), findsOneWidget); // Tamamlanan Oyun
+    expect(find.text('%82'), findsOneWidget); // Ortalama Doğruluk
+    expect(find.text('↑ %3'), findsOneWidget); // pozitif trend
+    expect(find.text('320 / 500 dk'), findsOneWidget); // haftalık hedef
+    expect(find.textContaining('180 dakika kaldı'), findsOneWidget);
     expect(find.text('Henüz oyun oynamadın.'), findsNothing);
   });
 
@@ -346,7 +358,13 @@ void main() {
       enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
       gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
       statsRepo: FakeStudentStatsRepository(
-        stats: const StudentStatsDto(gamesPlayed: 0, averageAccuracy: 0),
+        progress: const StudentProgressDto(
+          gamesPlayed: 0,
+          averageAccuracy: 0,
+          weeklyMinutes: 0,
+          weeklyGoalMinutes: 500,
+          streakDays: 0,
+        ),
       ),
     ));
     await tester.pump();
@@ -357,13 +375,41 @@ void main() {
     expect(find.text('Henüz oyun oynamadın.'), findsOneWidget);
   });
 
+  testWidgets('Greeting: streakDays > 0 ise ateş rozeti görünür',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
+      statsRepo: FakeStudentStatsRepository(
+        progress: const StudentProgressDto(
+          gamesPlayed: 2,
+          averageAccuracy: 90,
+          weeklyMinutes: 10,
+          weeklyGoalMinutes: 500,
+          streakDays: 5,
+        ),
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.byIcon(Icons.local_fire_department), findsOneWidget);
+    expect(find.text('5'), findsOneWidget);
+  });
+
   testWidgets('Gelişim Özeti "Raporlarım" → sonuç ekranına gider',
       (tester) async {
     await tester.pumpWidget(_wrap(
       enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
       gamesRepo: FakeGamesRepository(assigned: [_game(title: 'Ünite 3 Bulmaca')]),
       statsRepo: FakeStudentStatsRepository(
-        stats: const StudentStatsDto(gamesPlayed: 3, averageAccuracy: 70),
+        progress: const StudentProgressDto(
+          gamesPlayed: 3,
+          averageAccuracy: 70,
+          weeklyMinutes: 50,
+          weeklyGoalMinutes: 500,
+          streakDays: 1,
+        ),
       ),
     ));
     await tester.pump();
@@ -377,6 +423,46 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('results-screen'), findsOneWidget);
+  });
+
+  testWidgets(
+      'DÜZELTME 2: questionSet oyun listesinde DEĞİL; Sınavlara Hazırlan kartı',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [
+          _game(id: 'g1', title: 'Eşleştirme Oyunu'),
+          _game(
+            id: 'q1',
+            title: 'LGS Çıkmış Sorular',
+            type: GameType.questionSet,
+          ),
+        ],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    // questionSet günün oyunu/atanan listesinde gösterilmez.
+    expect(find.text('Eşleştirme Oyunu'), findsOneWidget);
+    expect(find.text('LGS Çıkmış Sorular'), findsNothing);
+    // Sınavlara Hazırlan kartı görünür (≥1 atanan sınav).
+    expect(find.text('Çıkmış Sorular'), findsOneWidget);
+  });
+
+  testWidgets('Atanan sınav yoksa Sınavlara Hazırlan kartı gizli',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      enrollmentRepo: FakeEnrollmentRepository(enrollments: [_enrollment()]),
+      gamesRepo: FakeGamesRepository(
+        assigned: [_game(id: 'g1', title: 'Eşleştirme Oyunu')],
+      ),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.text('Çıkmış Sorular'), findsNothing);
   });
 
   testWidgets('DÜZELTME 1: "Sınıflarım" bölümü sınıf adı + öğretmeni gösterir',

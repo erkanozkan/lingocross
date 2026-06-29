@@ -22,6 +22,7 @@ import '../../features/games/presentation/screens/create_game_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/games/presentation/screens/my_puzzles_screen.dart';
 import '../../features/games/presentation/screens/question_topics_screen.dart';
+import '../../features/games/presentation/screens/student_exams_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
 import '../../features/lessons/presentation/screens/lessons_list_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
@@ -83,6 +84,9 @@ abstract final class AppRoutes {
 
   /// Öğrenci geçmiş sonuçları (M5 — "Raporlar" sekmesi).
   static const String studentResults = '/student/results';
+
+  /// Sınavlara Hazırlan (Çıkmış Sorular) — atanan questionSet listesi.
+  static const String studentExams = '/student/exams';
 
   static String studentLesson(String id) => '/student/lessons/$id';
 
@@ -275,6 +279,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/student/games/:gameId',
         builder: (context, state) =>
             GameLauncherScreen(gameId: state.pathParameters['gameId']!),
+      ),
+      // Sınavlara Hazırlan (Çıkmış Sorular) — atanan questionSet listesi.
+      GoRoute(
+        path: AppRoutes.studentExams,
+        builder: (context, state) => const StudentExamsScreen(),
       ),
       // Geçmiş sonuçlar listesi (M5 — "Raporlar" sekmesi).
       GoRoute(

@@ -4,12 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/network/dio_client.dart';
 import '../domain/profile_failure.dart';
+import 'dtos/student_progress_dto.dart';
 import 'dtos/student_stats_dto.dart';
 
 /// Öğrenci profil istatistikleriyle konuşan repository.
 ///
-/// `GET /api/students/me/stats` (Student) → tamamlanmış oyun sayısı + ortalama
-/// başarı puanı. Bearer token interceptor tarafından eklenir.
+/// - `GET /api/students/me/stats` (Student) → tamamlanmış oyun sayısı + ortalama
+///   başarı puanı.
+/// - `GET /api/students/me/progress` (Student) → gelişim özeti bentosu
+///   (oynanan oyun, doğruluk + trend, haftalık süre/hedef, seri).
+///
+/// Bearer token interceptor tarafından eklenir.
 class StudentStatsRepository {
   StudentStatsRepository(this._dio);
 
@@ -24,6 +29,18 @@ class StudentStatsRepository {
         '$_base/students/me/stats',
       );
       return StudentStatsDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Geçerli öğrencinin gelişim özetini getirir (`GET /students/me/progress`).
+  Future<StudentProgressDto> getMyProgress() async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '$_base/students/me/progress',
+      );
+      return StudentProgressDto.fromJson(res.data!);
     } on DioException catch (e) {
       throw _mapError(e);
     }

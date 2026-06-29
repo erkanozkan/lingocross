@@ -16,8 +16,10 @@ import '../../../games/data/dtos/game_dtos.dart';
 import '../../../games/domain/game_type.dart';
 import '../../../games/presentation/assigned_games_notifier.dart';
 import '../../../games/presentation/widgets/game_card.dart';
+import '../../../games/presentation/widgets/game_preview_thumbnail.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
-import '../../../profile/presentation/student_stats_notifier.dart';
+import '../../../profile/data/dtos/student_progress_dto.dart';
+import '../../../profile/presentation/student_progress_notifier.dart';
 import '../../data/dtos/enrollment_dtos.dart';
 import '../enrollments_notifier.dart';
 import '../widgets/student_bottom_nav.dart';
@@ -41,12 +43,18 @@ class StudentDashboardScreen extends ConsumerWidget {
     final enrollmentsAsync = ref.watch(enrollmentsNotifierProvider);
     final gamesAsync = ref.watch(assignedGamesNotifierProvider);
     final myClassesAsync = ref.watch(myClassesNotifierProvider);
+    // Greeting streak rozeti için gelişim özeti (varsa) seri günü.
+    final streakDays = ref.watch(studentProgressNotifierProvider).maybeWhen(
+          data: (p) => p.streakDays,
+          orElse: () => 0,
+        );
 
     Future<void> refreshAll() async {
       await Future.wait([
         ref.read(enrollmentsNotifierProvider.notifier).refresh(),
         ref.read(assignedGamesNotifierProvider.notifier).refresh(),
         ref.read(myClassesNotifierProvider.notifier).refresh(),
+        ref.read(studentProgressNotifierProvider.notifier).refresh(),
       ]);
     }
 
@@ -96,7 +104,7 @@ class StudentDashboardScreen extends ConsumerWidget {
             AppSpacing.xl,
           ),
           children: [
-            _Greeting(name: name),
+            _Greeting(name: name, streakDays: streakDays),
             const SizedBox(height: AppSpacing.lg),
             _MyClassesSection(myClassesAsync: myClassesAsync),
             _Content(
@@ -298,8 +306,17 @@ class _Content extends StatelessWidget {
       return bd.compareTo(ad);
     }
 
-    final allGames = (gamesAsync.value ?? const <AssignedGameDto>[]).toList()
-      ..sort(byNewest);
+    final allAssigned =
+        (gamesAsync.value ?? const <AssignedGameDto>[]).toList()
+          ..sort(byNewest);
+
+    // DÜZELTME 2: çıkmış sorular (questionSet) oyunlardan AYRILIR — "Günün
+    // Oyunu"/"Atanan Bulmacalar" yalnız oyun türlerini içerir; sınavlar ayrı
+    // "Sınavlara Hazırlan" kartından erişilir.
+    final exams =
+        allAssigned.where((g) => g.type == GameType.questionSet).toList();
+    final allGames =
+        allAssigned.where((g) => g.type != GameType.questionSet).toList();
 
     // Oynanabilir (henüz tamamlanmamış) ile tamamlanmış bulmacaları ayır.
     // Tamamlananlar yalnız istatistik içindir; "atanan" listesinden çıkar.
@@ -329,6 +346,12 @@ class _Content extends StatelessWidget {
           if (completed.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.lg),
             _CompletedSection(games: completed),
+          ],
+          if (exams.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.lg),
+            _ExamsSection(
+              onTap: () => context.push(AppRoutes.studentExams),
+            ),
           ],
           const SizedBox(height: AppSpacing.lg),
           _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
@@ -367,10 +390,90 @@ class _Content extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _CompletedSection(games: completed),
         ],
+        if (exams.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          _ExamsSection(
+            onTap: () => context.push(AppRoutes.studentExams),
+          ),
+        ],
         const SizedBox(height: AppSpacing.lg),
         _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
         const SizedBox(height: AppSpacing.lg),
         const _ProgressSummarySection(),
+      ],
+    );
+  }
+}
+
+/// "Sınavlara Hazırlan" bölümü (DÜZELTME 2) — Stitch primary-container kartı.
+/// Dokununca [StudentExamsScreen]'e gider (atanan questionSet listesi).
+class _ExamsSection extends StatelessWidget {
+  const _ExamsSection({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(l10n.studentDashboardExamsTitle),
+        const SizedBox(height: AppSpacing.sm),
+        Material(
+          color: AppColors.primaryContainer,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                boxShadow: AppShadows.level2,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.onPrimary.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                    child: const Icon(Icons.menu_book,
+                        color: AppColors.onPrimaryContainer, size: 28),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.studentDashboardExamsCardTitle,
+                          style: AppTypography.headlineMd
+                              .copyWith(color: AppColors.onPrimaryContainer),
+                        ),
+                        const SizedBox(height: AppSpacing.base),
+                        Text(
+                          l10n.studentDashboardExamsCardDesc,
+                          style: AppTypography.bodyMd.copyWith(
+                            color: AppColors.onPrimaryContainer
+                                .withValues(alpha: 0.85),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  const Icon(Icons.chevron_right,
+                      color: AppColors.onPrimaryContainer),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -546,27 +649,76 @@ class _CompletedBadge extends StatelessWidget {
 }
 
 class _Greeting extends StatelessWidget {
-  const _Greeting({required this.name});
+  const _Greeting({required this.name, this.streakDays = 0});
 
   final String name;
+  final int streakDays;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(
-          l10n.studentDashboardGreeting(name),
-          style: AppTypography.headlineMd,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.studentDashboardGreeting(name),
+                style: AppTypography.headlineMd,
+              ),
+              const SizedBox(height: AppSpacing.base),
+              Text(
+                l10n.studentDashboardSubtitle,
+                style: AppTypography.bodyMd
+                    .copyWith(color: AppColors.onSurfaceVariant),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: AppSpacing.base),
-        Text(
-          l10n.studentDashboardSubtitle,
-          style:
-              AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
-        ),
+        if (streakDays > 0) ...[
+          const SizedBox(width: AppSpacing.sm),
+          _StreakBadge(days: streakDays),
+        ],
       ],
+    );
+  }
+}
+
+/// Greeting'deki günlük seri rozeti — turuncu (secondaryContainer) ateş ikonu +
+/// seri günü. 0 ise gösterilmez (sade).
+class _StreakBadge extends StatelessWidget {
+  const _StreakBadge({required this.days});
+
+  final int days;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      label: l10n.studentDashboardStreakSemantic(days),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+        decoration: BoxDecoration(
+          color: AppColors.secondaryContainer,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.local_fire_department,
+                color: AppColors.onSecondaryFixedVariant, size: 20),
+            const SizedBox(width: AppSpacing.base),
+            Text(
+              l10n.studentDashboardStreak(days),
+              style: AppTypography.headlineMd
+                  .copyWith(color: AppColors.onSecondaryFixedVariant),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -702,12 +854,17 @@ class _GameOfDayCardState extends State<_GameOfDayCard> {
                     Text(widget.game.title, style: AppTypography.headlineLg),
                     const SizedBox(height: AppSpacing.base),
                     Text(
-                      l10n.studentDashboardGameDesc(widget.game.wordCount),
+                      // Eşleştirme için "X kelime", diğer türler için "X öğe".
+                      widget.game.type == GameType.wordMatching
+                          ? l10n.studentDashboardGameDesc(widget.game.wordCount)
+                          : l10n.studentDashboardGameDescItems(
+                              widget.game.wordCount),
                       style: AppTypography.bodyMd
                           .copyWith(color: AppColors.onSurfaceVariant),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    _WordPairPreview(),
+                    // Türe-özel temsili mini görsel (gerçek içerik değil).
+                    GamePreviewThumbnail(type: widget.game.type),
                     const SizedBox(height: AppSpacing.md),
                     _PlayButton(label: l10n.studentDashboardPlayGame),
                   ],
@@ -746,70 +903,6 @@ class _AssignedChip extends StatelessWidget {
               style:
                   AppTypography.labelSm.copyWith(color: AppColors.tertiary)),
         ],
-      ),
-    );
-  }
-}
-
-/// Sapma 1: crossword grid yerine "İngilizce ↔ Türkçe" çift rozetleri.
-class _WordPairPreview extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    const pairs = [
-      ('apple', 'elma'),
-      ('book', 'kitap'),
-      ('water', 'su'),
-    ];
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
-      child: Column(
-        children: [
-          for (var i = 0; i < pairs.length; i++) ...[
-            Row(
-              children: [
-                Expanded(child: _Pill(pairs[i].$1)),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-                  child: Icon(Icons.compare_arrows,
-                      size: 18, color: AppColors.primary),
-                ),
-                Expanded(child: _Pill(pairs[i].$2)),
-              ],
-            ),
-            if (i != pairs.length - 1)
-              const SizedBox(height: AppSpacing.xs),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _Pill extends StatelessWidget {
-  const _Pill(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppRadius.base),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        text,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: AppTypography.labelLg.copyWith(color: AppColors.primary),
       ),
     );
   }
@@ -1006,17 +1099,18 @@ class _JoinTeacherLink extends StatelessWidget {
   }
 }
 
-/// Gelişim Özeti — `GET /students/me/stats` gerçek verisinden: oynanan oyun
-/// sayısı + ortalama doğruluk mini kartları + "Raporlarım" kısayolu.
-/// Veri yoksa (hiç oyun oynanmadı) "Henüz oyun oynamadın" + Oyna CTA.
-/// Yükleniyor/hata durumları ele alınır.
+/// Gelişim Özeti — `GET /students/me/progress` gerçek verisinden Stitch
+/// `55a66eca…` bentosu: Tamamlanan Oyun + Ortalama Doğruluk (trend) +
+/// tam-genişlik Haftalık Hedef ilerleme çubuğu. "Raporlarım" kısayolu başlıkta.
+/// Veri yoksa (hiç oyun oynanmadı) "Henüz oyun oynamadın" satırı; yükleniyor/
+/// hata durumları ele alınır.
 class _ProgressSummarySection extends ConsumerWidget {
   const _ProgressSummarySection();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final statsAsync = ref.watch(studentStatsNotifierProvider);
+    final progressAsync = ref.watch(studentProgressNotifierProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1047,40 +1141,20 @@ class _ProgressSummarySection extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
-        statsAsync.when(
-          loading: () => const SkeletonCard(height: 96),
+        progressAsync.when(
+          loading: () => const SkeletonCard(height: 200),
           error: (_, __) => _ProgressNotice(
             icon: Icons.cloud_off,
             text: l10n.studentDashboardStatsError,
           ),
-          data: (stats) {
-            if (stats.gamesPlayed <= 0) {
-              return const _ProgressEmpty();
+          data: (progress) {
+            if (progress.gamesPlayed <= 0) {
+              return _ProgressNotice(
+                icon: Icons.insights,
+                text: l10n.studentDashboardStatsEmpty,
+              );
             }
-            return Row(
-              children: [
-                Expanded(
-                  child: _ProgressStatCard(
-                    icon: Icons.extension,
-                    iconColor: AppColors.primary,
-                    iconBg: AppColors.primaryFixed,
-                    value: '${stats.gamesPlayed}',
-                    label: l10n.studentDashboardStatGames,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: _ProgressStatCard(
-                    icon: Icons.verified,
-                    iconColor: AppColors.tertiary,
-                    iconBg: AppColors.tertiaryFixed,
-                    value: l10n
-                        .studentDashboardStatAccuracyValue(stats.accuracyPercent),
-                    label: l10n.studentDashboardStatAccuracy,
-                  ),
-                ),
-              ],
-            );
+            return _ProgressBento(progress: progress);
           },
         ),
       ],
@@ -1088,61 +1162,140 @@ class _ProgressSummarySection extends ConsumerWidget {
   }
 }
 
-/// Gelişim özeti mini metrik kartı (oyun sayısı / doğruluk).
-class _ProgressStatCard extends StatelessWidget {
-  const _ProgressStatCard({
+/// Gelişim özeti bento ızgarası: 2 küçük metrik kart + tam-genişlik haftalık
+/// hedef kartı (Stitch düzeni).
+class _ProgressBento extends StatelessWidget {
+  const _ProgressBento({required this.progress});
+
+  final StudentProgressDto progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _MetricCard(
+                  icon: Icons.sports_esports,
+                  iconColor: AppColors.primary,
+                  value: '${progress.gamesPlayed}',
+                  valueColor: AppColors.primary,
+                  label: l10n.studentDashboardProgressGamesPlayed,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: _MetricCard(
+                  icon: Icons.track_changes,
+                  iconColor: AppColors.tertiary,
+                  value: l10n.studentDashboardStatAccuracyValue(
+                      progress.accuracyPercent),
+                  valueColor: AppColors.tertiary,
+                  label: l10n.studentDashboardProgressAccuracy,
+                  trendDelta: progress.accuracyTrendDelta,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _WeeklyGoalCard(progress: progress),
+      ],
+    );
+  }
+}
+
+/// Bento metrik kartı: ikon + büyük değer (display-lg) + etiket; opsiyonel trend.
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({
     required this.icon,
     required this.iconColor,
-    required this.iconBg,
     required this.value,
+    required this.valueColor,
     required this.label,
+    this.trendDelta,
   });
 
   final IconData icon;
   final Color iconColor;
-  final Color iconBg;
   final String value;
+  final Color valueColor;
   final String label;
+
+  /// Doğruluk trendi (son 7 gün − önceki 7 gün). null ise trend gösterilmez.
+  final int? trendDelta;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final delta = trendDelta;
+    Widget? trend;
+    if (delta != null && delta != 0) {
+      final positive = delta > 0;
+      trend = Text(
+        positive
+            ? l10n.studentDashboardProgressTrendUp(delta)
+            : l10n.studentDashboardProgressTrendDown(delta.abs()),
+        style: AppTypography.labelSm.copyWith(
+          color: positive ? AppColors.tertiary : AppColors.error,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    }
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: AppColors.surfaceContainerLow,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(color: AppColors.outlineVariant),
         boxShadow: AppShadows.level2,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 40,
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: iconBg.withValues(alpha: 0.4),
-              shape: BoxShape.circle,
+              color: iconColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value,
-                    style: AppTypography.headlineMd
-                        .copyWith(color: AppColors.onSurface)),
-                Text(
-                  label,
-                  style: AppTypography.labelSm
-                      .copyWith(color: AppColors.onSurfaceVariant),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Flexible(
+                child: Text(
+                  value,
+                  style: AppTypography.displayLg.copyWith(color: valueColor),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+              ),
+              if (trend != null) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: trend,
+                ),
               ],
-            ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.base),
+          Text(
+            label,
+            style: AppTypography.labelSm
+                .copyWith(color: AppColors.onSurfaceVariant),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -1150,17 +1303,85 @@ class _ProgressStatCard extends StatelessWidget {
   }
 }
 
-/// Boş — henüz oyun oynanmadı: açıklama satırı (üstte atanan bulmacalardan
-/// oynanır; ayrıca "Raporlarım" kısayolu başlıkta mevcuttur).
-class _ProgressEmpty extends StatelessWidget {
-  const _ProgressEmpty();
+/// Tam-genişlik "Haftalık Hedef" kartı: timer ikon + {dk}/{hedef} + ilerleme
+/// çubuğu + kalan dakika metni.
+class _WeeklyGoalCard extends StatelessWidget {
+  const _WeeklyGoalCard({required this.progress});
+
+  final StudentProgressDto progress;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return _ProgressNotice(
-      icon: Icons.insights,
-      text: l10n.studentDashboardStatsEmpty,
+    final reached = progress.remainingMinutes <= 0;
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: AppShadows.level2,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryContainer.withValues(alpha: 0.25),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.timer, color: AppColors.secondary, size: 28),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.studentDashboardWeeklyGoal,
+                      style: AppTypography.labelLg,
+                    ),
+                    Text(
+                      l10n.studentDashboardWeeklyMinutes(
+                        progress.weeklyMinutes,
+                        progress.weeklyGoalMinutes,
+                      ),
+                      style: AppTypography.labelSm
+                          .copyWith(color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  child: LinearProgressIndicator(
+                    value: progress.weeklyProgress,
+                    minHeight: 12,
+                    backgroundColor:
+                        AppColors.outlineVariant.withValues(alpha: 0.3),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  reached
+                      ? l10n.studentDashboardWeeklyReached
+                      : l10n.studentDashboardWeeklyRemaining(
+                          progress.remainingMinutes),
+                  style: AppTypography.labelSm
+                      .copyWith(color: AppColors.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
