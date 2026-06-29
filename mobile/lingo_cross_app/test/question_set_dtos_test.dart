@@ -3,6 +3,49 @@ import 'package:lingo_cross_app/features/games/data/dtos/game_dtos.dart';
 import 'package:lingo_cross_app/features/games/domain/game_type.dart';
 
 void main() {
+  group('AssignedGameDto QuestionSet uyumu (regresyon)', () {
+    // Backend QuestionSet oyununda lessonId:null + questionTopicId dolu döner.
+    // lessonId non-nullable olsaydı parse patlar, öğrenci panelinde "dersler
+    // yüklenemedi" hatası verirdi.
+    test('lessonId null + questionTopicId dolu → parse patlamaz', () {
+      final dto = AssignedGameDto.fromJson({
+        'id': 'g1',
+        'lessonId': null,
+        'questionTopicId': 't1',
+        'lessonTitle': 'YDS Deneme Soruları',
+        'type': 3, // questionSet
+        'title': 'YDS Deneme Soruları',
+        'wordCount': 10,
+        'teacherName': 'Emily Bern',
+        'publishedAt': '2026-06-29T20:00:00Z',
+        'isCompleted': false,
+      });
+
+      expect(dto.lessonId, isNull);
+      expect(dto.questionTopicId, 't1');
+      expect(dto.type, GameType.questionSet);
+      expect(dto.wordCount, 10);
+    });
+
+    test('ders-tabanlı oyun: lessonId dolu, questionTopicId null', () {
+      final dto = AssignedGameDto.fromJson({
+        'id': 'g2',
+        'lessonId': 'l1',
+        'questionTopicId': null,
+        'lessonTitle': 'Ünite 4',
+        'type': 1, // wordMatching
+        'title': 'Kelime Eşleştirme',
+        'wordCount': 12,
+        'teacherName': 'Emily Bern',
+        'isCompleted': false,
+      });
+
+      expect(dto.lessonId, 'l1');
+      expect(dto.questionTopicId, isNull);
+      expect(dto.type, GameType.wordMatching);
+    });
+  });
+
   group('QuestionSet DTO json round-trip (camelCase)', () {
     test('QuestionChoice / QuestionItem / QuestionSetContent', () {
       final json = {

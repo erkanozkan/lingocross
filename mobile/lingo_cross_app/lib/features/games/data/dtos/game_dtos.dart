@@ -33,7 +33,8 @@ class GameSessionStatusConverter
 class GameDto with _$GameDto {
   const factory GameDto({
     required String id,
-    required String lessonId,
+    // QuestionSet oyunlarında ders yok → null gelebilir (API ile birebir).
+    String? lessonId,
     @GameTypeConverter() required GameType type,
     required String title,
     required bool isPublished,
@@ -56,7 +57,10 @@ class GameDto with _$GameDto {
 class AssignedGameDto with _$AssignedGameDto {
   const factory AssignedGameDto({
     required String id,
-    required String lessonId,
+    // QuestionSet (çıkmış sorular) oyunlarında ders yoktur → lessonId null gelir;
+    // bunun yerine questionTopicId dolu olur. Biri dolu, diğeri null (XOR).
+    String? lessonId,
+    String? questionTopicId,
     required String lessonTitle,
     @GameTypeConverter() required GameType type,
     required String title,
@@ -83,7 +87,8 @@ class AssignedGameDto with _$AssignedGameDto {
 class TeacherPuzzleDto with _$TeacherPuzzleDto {
   const factory TeacherPuzzleDto({
     required String id,
-    required String lessonId,
+    // QuestionSet oyunlarında ders yok → null; lessonTitle yerine konu başlığı gelir.
+    String? lessonId,
     required String lessonTitle,
     @GameTypeConverter() required GameType type,
     required bool isPublished,

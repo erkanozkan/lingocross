@@ -248,7 +248,9 @@ class _PuzzleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final detailEnabled = puzzle.isPublished;
+    // Ders detayı linki yalnız ders-tabanlı oyunlarda; QuestionSet (lessonId null)
+    // oyunlarda ders yoktur, link gizlenir.
+    final detailEnabled = puzzle.isPublished && puzzle.lessonId != null;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -300,7 +302,7 @@ class _PuzzleCard extends StatelessWidget {
             child: _DetailsLink(
               enabled: detailEnabled,
               onTap: detailEnabled
-                  ? () => context.push(AppRoutes.lessonDetail(puzzle.lessonId))
+                  ? () => context.push(AppRoutes.lessonDetail(puzzle.lessonId!))
                   : null,
             ),
           ),

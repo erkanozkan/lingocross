@@ -21,8 +21,9 @@ GameDto _$GameDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$GameDto {
-  String get id => throw _privateConstructorUsedError;
-  String get lessonId => throw _privateConstructorUsedError;
+  String get id =>
+      throw _privateConstructorUsedError; // QuestionSet oyunlarında ders yok → null gelebilir (API ile birebir).
+  String? get lessonId => throw _privateConstructorUsedError;
   @GameTypeConverter()
   GameType get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
@@ -47,7 +48,7 @@ abstract class $GameDtoCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
     @GameTypeConverter() GameType type,
     String title,
     bool isPublished,
@@ -73,7 +74,7 @@ class _$GameDtoCopyWithImpl<$Res, $Val extends GameDto>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? type = null,
     Object? title = null,
     Object? isPublished = null,
@@ -89,10 +90,10 @@ class _$GameDtoCopyWithImpl<$Res, $Val extends GameDto>
                     : id // ignore: cast_nullable_to_non_nullable
                         as String,
             lessonId:
-                null == lessonId
+                freezed == lessonId
                     ? _value.lessonId
                     : lessonId // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as String?,
             type:
                 null == type
                     ? _value.type
@@ -139,7 +140,7 @@ abstract class _$$GameDtoImplCopyWith<$Res> implements $GameDtoCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
     @GameTypeConverter() GameType type,
     String title,
     bool isPublished,
@@ -164,7 +165,7 @@ class __$$GameDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? type = null,
     Object? title = null,
     Object? isPublished = null,
@@ -180,10 +181,10 @@ class __$$GameDtoImplCopyWithImpl<$Res>
                 : id // ignore: cast_nullable_to_non_nullable
                     as String,
         lessonId:
-            null == lessonId
+            freezed == lessonId
                 ? _value.lessonId
                 : lessonId // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as String?,
         type:
             null == type
                 ? _value.type
@@ -224,7 +225,7 @@ class __$$GameDtoImplCopyWithImpl<$Res>
 class _$GameDtoImpl implements _GameDto {
   const _$GameDtoImpl({
     required this.id,
-    required this.lessonId,
+    this.lessonId,
     @GameTypeConverter() required this.type,
     required this.title,
     required this.isPublished,
@@ -238,8 +239,9 @@ class _$GameDtoImpl implements _GameDto {
 
   @override
   final String id;
+  // QuestionSet oyunlarında ders yok → null gelebilir (API ile birebir).
   @override
-  final String lessonId;
+  final String? lessonId;
   @override
   @GameTypeConverter()
   final GameType type;
@@ -310,7 +312,7 @@ class _$GameDtoImpl implements _GameDto {
 abstract class _GameDto implements GameDto {
   const factory _GameDto({
     required final String id,
-    required final String lessonId,
+    final String? lessonId,
     @GameTypeConverter() required final GameType type,
     required final String title,
     required final bool isPublished,
@@ -322,9 +324,9 @@ abstract class _GameDto implements GameDto {
   factory _GameDto.fromJson(Map<String, dynamic> json) = _$GameDtoImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // QuestionSet oyunlarında ders yok → null gelebilir (API ile birebir).
   @override
-  String get lessonId;
+  String? get lessonId;
   @override
   @GameTypeConverter()
   GameType get type;
@@ -353,8 +355,11 @@ AssignedGameDto _$AssignedGameDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$AssignedGameDto {
-  String get id => throw _privateConstructorUsedError;
-  String get lessonId => throw _privateConstructorUsedError;
+  String get id =>
+      throw _privateConstructorUsedError; // QuestionSet (çıkmış sorular) oyunlarında ders yoktur → lessonId null gelir;
+  // bunun yerine questionTopicId dolu olur. Biri dolu, diğeri null (XOR).
+  String? get lessonId => throw _privateConstructorUsedError;
+  String? get questionTopicId => throw _privateConstructorUsedError;
   String get lessonTitle => throw _privateConstructorUsedError;
   @GameTypeConverter()
   GameType get type => throw _privateConstructorUsedError;
@@ -386,7 +391,8 @@ abstract class $AssignedGameDtoCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
+    String? questionTopicId,
     String lessonTitle,
     @GameTypeConverter() GameType type,
     String title,
@@ -416,7 +422,8 @@ class _$AssignedGameDtoCopyWithImpl<$Res, $Val extends AssignedGameDto>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
+    Object? questionTopicId = freezed,
     Object? lessonTitle = null,
     Object? type = null,
     Object? title = null,
@@ -436,10 +443,15 @@ class _$AssignedGameDtoCopyWithImpl<$Res, $Val extends AssignedGameDto>
                     : id // ignore: cast_nullable_to_non_nullable
                         as String,
             lessonId:
-                null == lessonId
+                freezed == lessonId
                     ? _value.lessonId
                     : lessonId // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as String?,
+            questionTopicId:
+                freezed == questionTopicId
+                    ? _value.questionTopicId
+                    : questionTopicId // ignore: cast_nullable_to_non_nullable
+                        as String?,
             lessonTitle:
                 null == lessonTitle
                     ? _value.lessonTitle
@@ -507,7 +519,8 @@ abstract class _$$AssignedGameDtoImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
+    String? questionTopicId,
     String lessonTitle,
     @GameTypeConverter() GameType type,
     String title,
@@ -536,7 +549,8 @@ class __$$AssignedGameDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
+    Object? questionTopicId = freezed,
     Object? lessonTitle = null,
     Object? type = null,
     Object? title = null,
@@ -556,10 +570,15 @@ class __$$AssignedGameDtoImplCopyWithImpl<$Res>
                 : id // ignore: cast_nullable_to_non_nullable
                     as String,
         lessonId:
-            null == lessonId
+            freezed == lessonId
                 ? _value.lessonId
                 : lessonId // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as String?,
+        questionTopicId:
+            freezed == questionTopicId
+                ? _value.questionTopicId
+                : questionTopicId // ignore: cast_nullable_to_non_nullable
+                    as String?,
         lessonTitle:
             null == lessonTitle
                 ? _value.lessonTitle
@@ -620,7 +639,8 @@ class __$$AssignedGameDtoImplCopyWithImpl<$Res>
 class _$AssignedGameDtoImpl implements _AssignedGameDto {
   const _$AssignedGameDtoImpl({
     required this.id,
-    required this.lessonId,
+    this.lessonId,
+    this.questionTopicId,
     required this.lessonTitle,
     @GameTypeConverter() required this.type,
     required this.title,
@@ -638,8 +658,12 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
 
   @override
   final String id;
+  // QuestionSet (çıkmış sorular) oyunlarında ders yoktur → lessonId null gelir;
+  // bunun yerine questionTopicId dolu olur. Biri dolu, diğeri null (XOR).
   @override
-  final String lessonId;
+  final String? lessonId;
+  @override
+  final String? questionTopicId;
   @override
   final String lessonTitle;
   @override
@@ -665,7 +689,7 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
 
   @override
   String toString() {
-    return 'AssignedGameDto(id: $id, lessonId: $lessonId, lessonTitle: $lessonTitle, type: $type, title: $title, wordCount: $wordCount, teacherName: $teacherName, publishedAt: $publishedAt, isCompleted: $isCompleted, resultId: $resultId, score: $score, completedAt: $completedAt)';
+    return 'AssignedGameDto(id: $id, lessonId: $lessonId, questionTopicId: $questionTopicId, lessonTitle: $lessonTitle, type: $type, title: $title, wordCount: $wordCount, teacherName: $teacherName, publishedAt: $publishedAt, isCompleted: $isCompleted, resultId: $resultId, score: $score, completedAt: $completedAt)';
   }
 
   @override
@@ -676,6 +700,8 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.lessonId, lessonId) ||
                 other.lessonId == lessonId) &&
+            (identical(other.questionTopicId, questionTopicId) ||
+                other.questionTopicId == questionTopicId) &&
             (identical(other.lessonTitle, lessonTitle) ||
                 other.lessonTitle == lessonTitle) &&
             (identical(other.type, type) || other.type == type) &&
@@ -701,6 +727,7 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
     runtimeType,
     id,
     lessonId,
+    questionTopicId,
     lessonTitle,
     type,
     title,
@@ -733,7 +760,8 @@ class _$AssignedGameDtoImpl implements _AssignedGameDto {
 abstract class _AssignedGameDto implements AssignedGameDto {
   const factory _AssignedGameDto({
     required final String id,
-    required final String lessonId,
+    final String? lessonId,
+    final String? questionTopicId,
     required final String lessonTitle,
     @GameTypeConverter() required final GameType type,
     required final String title,
@@ -750,9 +778,12 @@ abstract class _AssignedGameDto implements AssignedGameDto {
       _$AssignedGameDtoImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // QuestionSet (çıkmış sorular) oyunlarında ders yoktur → lessonId null gelir;
+  // bunun yerine questionTopicId dolu olur. Biri dolu, diğeri null (XOR).
   @override
-  String get lessonId;
+  String? get lessonId;
+  @override
+  String? get questionTopicId;
   @override
   String get lessonTitle;
   @override
@@ -789,8 +820,9 @@ TeacherPuzzleDto _$TeacherPuzzleDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TeacherPuzzleDto {
-  String get id => throw _privateConstructorUsedError;
-  String get lessonId => throw _privateConstructorUsedError;
+  String get id =>
+      throw _privateConstructorUsedError; // QuestionSet oyunlarında ders yok → null; lessonTitle yerine konu başlığı gelir.
+  String? get lessonId => throw _privateConstructorUsedError;
   String get lessonTitle => throw _privateConstructorUsedError;
   @GameTypeConverter()
   GameType get type => throw _privateConstructorUsedError;
@@ -818,7 +850,7 @@ abstract class $TeacherPuzzleDtoCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
     String lessonTitle,
     @GameTypeConverter() GameType type,
     bool isPublished,
@@ -844,7 +876,7 @@ class _$TeacherPuzzleDtoCopyWithImpl<$Res, $Val extends TeacherPuzzleDto>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? lessonTitle = null,
     Object? type = null,
     Object? isPublished = null,
@@ -860,10 +892,10 @@ class _$TeacherPuzzleDtoCopyWithImpl<$Res, $Val extends TeacherPuzzleDto>
                     : id // ignore: cast_nullable_to_non_nullable
                         as String,
             lessonId:
-                null == lessonId
+                freezed == lessonId
                     ? _value.lessonId
                     : lessonId // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as String?,
             lessonTitle:
                 null == lessonTitle
                     ? _value.lessonTitle
@@ -911,7 +943,7 @@ abstract class _$$TeacherPuzzleDtoImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String lessonId,
+    String? lessonId,
     String lessonTitle,
     @GameTypeConverter() GameType type,
     bool isPublished,
@@ -936,7 +968,7 @@ class __$$TeacherPuzzleDtoImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? lessonTitle = null,
     Object? type = null,
     Object? isPublished = null,
@@ -952,10 +984,10 @@ class __$$TeacherPuzzleDtoImplCopyWithImpl<$Res>
                 : id // ignore: cast_nullable_to_non_nullable
                     as String,
         lessonId:
-            null == lessonId
+            freezed == lessonId
                 ? _value.lessonId
                 : lessonId // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as String?,
         lessonTitle:
             null == lessonTitle
                 ? _value.lessonTitle
@@ -996,7 +1028,7 @@ class __$$TeacherPuzzleDtoImplCopyWithImpl<$Res>
 class _$TeacherPuzzleDtoImpl implements _TeacherPuzzleDto {
   const _$TeacherPuzzleDtoImpl({
     required this.id,
-    required this.lessonId,
+    this.lessonId,
     required this.lessonTitle,
     @GameTypeConverter() required this.type,
     required this.isPublished,
@@ -1010,8 +1042,9 @@ class _$TeacherPuzzleDtoImpl implements _TeacherPuzzleDto {
 
   @override
   final String id;
+  // QuestionSet oyunlarında ders yok → null; lessonTitle yerine konu başlığı gelir.
   @override
-  final String lessonId;
+  final String? lessonId;
   @override
   final String lessonTitle;
   @override
@@ -1086,7 +1119,7 @@ class _$TeacherPuzzleDtoImpl implements _TeacherPuzzleDto {
 abstract class _TeacherPuzzleDto implements TeacherPuzzleDto {
   const factory _TeacherPuzzleDto({
     required final String id,
-    required final String lessonId,
+    final String? lessonId,
     required final String lessonTitle,
     @GameTypeConverter() required final GameType type,
     required final bool isPublished,
@@ -1099,9 +1132,9 @@ abstract class _TeacherPuzzleDto implements TeacherPuzzleDto {
       _$TeacherPuzzleDtoImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // QuestionSet oyunlarında ders yok → null; lessonTitle yerine konu başlığı gelir.
   @override
-  String get lessonId;
+  String? get lessonId;
   @override
   String get lessonTitle;
   @override

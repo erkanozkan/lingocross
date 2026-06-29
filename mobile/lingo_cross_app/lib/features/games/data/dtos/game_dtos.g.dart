@@ -9,7 +9,7 @@ part of 'game_dtos.dart';
 _$GameDtoImpl _$$GameDtoImplFromJson(Map<String, dynamic> json) =>
     _$GameDtoImpl(
       id: json['id'] as String,
-      lessonId: json['lessonId'] as String,
+      lessonId: json['lessonId'] as String?,
       type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
       title: json['title'] as String,
       isPublished: json['isPublished'] as bool,
@@ -37,7 +37,8 @@ _$AssignedGameDtoImpl _$$AssignedGameDtoImplFromJson(
   Map<String, dynamic> json,
 ) => _$AssignedGameDtoImpl(
   id: json['id'] as String,
-  lessonId: json['lessonId'] as String,
+  lessonId: json['lessonId'] as String?,
+  questionTopicId: json['questionTopicId'] as String?,
   lessonTitle: json['lessonTitle'] as String,
   type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
   title: json['title'] as String,
@@ -61,6 +62,7 @@ Map<String, dynamic> _$$AssignedGameDtoImplToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'lessonId': instance.lessonId,
+  'questionTopicId': instance.questionTopicId,
   'lessonTitle': instance.lessonTitle,
   'type': const GameTypeConverter().toJson(instance.type),
   'title': instance.title,
@@ -77,7 +79,7 @@ _$TeacherPuzzleDtoImpl _$$TeacherPuzzleDtoImplFromJson(
   Map<String, dynamic> json,
 ) => _$TeacherPuzzleDtoImpl(
   id: json['id'] as String,
-  lessonId: json['lessonId'] as String,
+  lessonId: json['lessonId'] as String?,
   lessonTitle: json['lessonTitle'] as String,
   type: const GameTypeConverter().fromJson((json['type'] as num).toInt()),
   isPublished: json['isPublished'] as bool,
