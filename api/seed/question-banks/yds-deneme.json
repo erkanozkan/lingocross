@@ -1,0 +1,129 @@
+{
+  "slug": "yds-deneme",
+  "title": "YDS Deneme Soruları",
+  "description": "Karışık YDS deneme soruları (dilbilgisi, edat, kelime). Beşinci şıklar deneme amaçlı tamamlanmıştır.",
+  "isActive": true,
+  "sortOrder": 1,
+  "questions": [
+    {
+      "stem": "The success of the proposed educational reform largely depends --- the active participation and continuous support of both teachers and parents.",
+      "explanation": "'depend' fiili bir şeye dayanmayı/bağlı olmayı ifade ederken her zaman 'on' (veya 'upon') edatıyla kullanılır. 'with/at/for/from' bu fiille kullanılmaz.",
+      "sourceRef": "YDS Deneme S.1",
+      "options": [
+        { "position": 0, "text": "with", "isCorrect": false },
+        { "position": 1, "text": "at", "isCorrect": false },
+        { "position": 2, "text": "on", "isCorrect": true },
+        { "position": 3, "text": "for", "isCorrect": false },
+        { "position": 4, "text": "from", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "By the time the rescue team arrived, the climbers --- in the freezing cold for over ten hours.",
+      "explanation": "Geçmişteki bir andan ('arrived') önce başlayıp o ana dek süregelen ve süresi vurgulanan eylem için Past Perfect Continuous kullanılır: 'had been waiting'.",
+      "sourceRef": "YDS Deneme S.2",
+      "options": [
+        { "position": 0, "text": "wait", "isCorrect": false },
+        { "position": 1, "text": "are waiting", "isCorrect": false },
+        { "position": 2, "text": "have waited", "isCorrect": false },
+        { "position": 3, "text": "had been waiting", "isCorrect": true },
+        { "position": 4, "text": "will wait", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "Although the new policy was initially met with --- , most employees eventually came to appreciate its long-term benefits.",
+      "explanation": "'Although' zıtlık kurar; çalışanlar sonradan faydaları takdir ettiğine göre başta olumsuz bir tepki, yani 'resistance' (direnç) ile karşılanmıştır.",
+      "sourceRef": "YDS Deneme S.3",
+      "options": [
+        { "position": 0, "text": "enthusiasm", "isCorrect": false },
+        { "position": 1, "text": "resistance", "isCorrect": true },
+        { "position": 2, "text": "approval", "isCorrect": false },
+        { "position": 3, "text": "indifference", "isCorrect": false },
+        { "position": 4, "text": "gratitude", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "The committee decided to --- the meeting until next week because several key members were unable to attend.",
+      "explanation": "'put off' = ertelemek. Önemli üyeler katılamadığı için toplantı ertelenmiştir. Diğer 'put' kalıpları (put on/up/down/away) bu anlamı vermez.",
+      "sourceRef": "YDS Deneme S.4",
+      "options": [
+        { "position": 0, "text": "put off", "isCorrect": true },
+        { "position": 1, "text": "put on", "isCorrect": false },
+        { "position": 2, "text": "put up", "isCorrect": false },
+        { "position": 3, "text": "put down", "isCorrect": false },
+        { "position": 4, "text": "put away", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "Archaeologists are still trying to determine --- the ancient structure was built and what purpose it originally served.",
+      "explanation": "Boşluk yapının 'nasıl' inşa edildiğini soran isim cümleciği gerektirir: 'how the structure was built'. Sonraki 'what purpose' ile paralel kullanım.",
+      "sourceRef": "YDS Deneme S.5",
+      "options": [
+        { "position": 0, "text": "that", "isCorrect": false },
+        { "position": 1, "text": "which", "isCorrect": false },
+        { "position": 2, "text": "how", "isCorrect": true },
+        { "position": 3, "text": "what", "isCorrect": false },
+        { "position": 4, "text": "whose", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "--- the heavy traffic on the motorway, we managed to reach the airport just in time for our flight.",
+      "explanation": "Trafik yoğun olmasına RAĞMEN zamanında varılmış; bu zıtlık ilişkisini 'In spite of' kurar. 'Because of/Owing to/Thanks to/Due to' sebep bildirir, anlamı bozar.",
+      "sourceRef": "YDS Deneme S.6",
+      "options": [
+        { "position": 0, "text": "Because of", "isCorrect": false },
+        { "position": 1, "text": "Owing to", "isCorrect": false },
+        { "position": 2, "text": "Thanks to", "isCorrect": false },
+        { "position": 3, "text": "In spite of", "isCorrect": true },
+        { "position": 4, "text": "Due to", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "The results of the experiment were so --- that the research team had to repeat it several times before publishing them.",
+      "explanation": "Sonuçları yayımlamadan önce defalarca tekrarlamak gerektiğine göre bulgular beklenmedik, yani 'surprising' (şaşırtıcı) idi.",
+      "sourceRef": "YDS Deneme S.7",
+      "options": [
+        { "position": 0, "text": "predictable", "isCorrect": false },
+        { "position": 1, "text": "surprising", "isCorrect": true },
+        { "position": 2, "text": "tedious", "isCorrect": false },
+        { "position": 3, "text": "reassuring", "isCorrect": false },
+        { "position": 4, "text": "conventional", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "A new bridge --- across the river next year in order to ease the city's growing traffic problem.",
+      "explanation": "Eylem gelecekte ('next year') gerçekleşecek ve özne (köprü) eylemi yapan değil, ona maruz kalan; bu yüzden gelecek edilgen yapı: 'will be built'.",
+      "sourceRef": "YDS Deneme S.8",
+      "options": [
+        { "position": 0, "text": "will build", "isCorrect": false },
+        { "position": 1, "text": "is built", "isCorrect": false },
+        { "position": 2, "text": "will be built", "isCorrect": true },
+        { "position": 3, "text": "has been built", "isCorrect": false },
+        { "position": 4, "text": "was built", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "The manager asked the new interns --- they had any questions about the company's safety regulations.",
+      "explanation": "Evet/hayır cevabı gerektiren dolaylı (gömülü) soru için 'whether' (veya 'if') kullanılır. 'that/what/which/how' burada anlamı bozar.",
+      "sourceRef": "YDS Deneme S.9",
+      "options": [
+        { "position": 0, "text": "that", "isCorrect": false },
+        { "position": 1, "text": "whether", "isCorrect": true },
+        { "position": 2, "text": "what", "isCorrect": false },
+        { "position": 3, "text": "which", "isCorrect": false },
+        { "position": 4, "text": "how", "isCorrect": false }
+      ]
+    },
+    {
+      "stem": "The government has introduced a series of measures intended to --- the negative effects of the economic crisis on low-income families.",
+      "explanation": "Olumsuz etkileri AZALTMAK/hafifletmek için önlem alınır: 'alleviate'. 'provoke/intensify/accelerate' etkiyi artırır; 'neglect' ihmal etmektir.",
+      "sourceRef": "YDS Deneme S.10",
+      "options": [
+        { "position": 0, "text": "provoke", "isCorrect": false },
+        { "position": 1, "text": "intensify", "isCorrect": false },
+        { "position": 2, "text": "alleviate", "isCorrect": true },
+        { "position": 3, "text": "neglect", "isCorrect": false },
+        { "position": 4, "text": "accelerate", "isCorrect": false }
+      ]
+    }
+  ]
+}
