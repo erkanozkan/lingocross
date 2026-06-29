@@ -266,6 +266,98 @@ public class ResultService : IResultService
         return new StudentStatsDto(scores.Count, average);
     }
 
+    /// <summary>Sabit haftalık çalışma hedefi (dakika). İleride kullanıcı-ayarına taşınabilir.</summary>
+    public const int WeeklyGoalMinutes = 150;
+
+    public async Task<StudentProgressDto> GetMyProgressAsync(CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        // Öğrencinin tüm tamamlanmış sonuçlarından yalnızca gerekli iki alanı çekeriz (skor + süre +
+        // oluşturulma anı). Öğrenci başına sonuç sayısı küçük olduğundan client-eval güvenli;
+        // ardışık gün (streak) mantığı zaten EF'de çevrilemez, bu yüzden listeyi belleğe alırız.
+        var rows = await _db.GameResults
+            .Where(r => r.Session.StudentId == studentId)
+            .Select(r => new { r.Score, r.DurationMs, r.CreatedAt })
+            .ToListAsync(cancellationToken);
+
+        if (rows.Count == 0)
+        {
+            return new StudentProgressDto(0, 0, null, 0, WeeklyGoalMinutes, 0);
+        }
+
+        var gamesPlayed = rows.Count;
+        var averageAccuracy = (int)Math.Round(rows.Average(r => r.Score), MidpointRounding.AwayFromZero);
+
+        // Tüm pencere hesapları tek bir referans "şimdi" (UTC) üzerinden yapılır.
+        var now = DateTime.UtcNow;
+        var last7Start = now.AddDays(-7);
+        var prev7Start = now.AddDays(-14);
+
+        // Haftalık dakika: son 7 gündeki sonuçların toplam süresi / 60000 (aşağı yuvarla). long ile
+        // taşma önlenir (çok sayıda uzun oturum toplamı int'i aşabilir).
+        var weeklyDurationMs = rows
+            .Where(r => r.CreatedAt >= last7Start)
+            .Sum(r => (long)r.DurationMs);
+        var weeklyMinutes = (int)(weeklyDurationMs / 60000);
+
+        // Doğruluk trendi: son 7 gün ort. − önceki 7 gün (14..7) ort. Önceki pencerede sonuç yoksa null.
+        var last7Scores = rows.Where(r => r.CreatedAt >= last7Start).Select(r => r.Score).ToList();
+        var prev7Scores = rows.Where(r => r.CreatedAt >= prev7Start && r.CreatedAt < last7Start)
+            .Select(r => r.Score).ToList();
+
+        int? accuracyTrendDelta = prev7Scores.Count == 0
+            ? null
+            : (int)Math.Round(
+                (last7Scores.Count == 0 ? 0 : last7Scores.Average()) - prev7Scores.Average(),
+                MidpointRounding.AwayFromZero);
+
+        var streakDays = CalculateStreakDays(rows.Select(r => r.CreatedAt), now);
+
+        return new StudentProgressDto(
+            gamesPlayed, averageAccuracy, accuracyTrendDelta, weeklyMinutes, WeeklyGoalMinutes, streakDays);
+    }
+
+    /// <summary>
+    /// Sonuç tarihlerinin UTC gün kümesinden ardışık seri uzunluğunu hesaplar. Bugün (UTC) sonuç
+    /// varsa bugünden, yoksa dünden başlanır; geriye doğru ardışık günler sayılır, ilk boşlukta durur.
+    /// Hiç gün yoksa 0. Bugünden eskiye bir boşlukla başlanan seriler (ör. yalnız 3 gün önce) 0 sayılır.
+    /// </summary>
+    private static int CalculateStreakDays(IEnumerable<DateTime> createdAtUtc, DateTime nowUtc)
+    {
+        var days = createdAtUtc.Select(d => d.Date).ToHashSet();
+        if (days.Count == 0)
+        {
+            return 0;
+        }
+
+        var today = nowUtc.Date;
+
+        // Seri ya bugünden ya da (bugün boşsa) dünden başlar; ikisi de boşsa seri yok.
+        DateTime cursor;
+        if (days.Contains(today))
+        {
+            cursor = today;
+        }
+        else if (days.Contains(today.AddDays(-1)))
+        {
+            cursor = today.AddDays(-1);
+        }
+        else
+        {
+            return 0;
+        }
+
+        var streak = 0;
+        while (days.Contains(cursor))
+        {
+            streak++;
+            cursor = cursor.AddDays(-1);
+        }
+
+        return streak;
+    }
+
     private async Task<GameResultDto> ToDtoAsync(GameResult result, CancellationToken cancellationToken)
     {
         // Submit/Share dönüşünde ders/oyun özetini doldurmak için oturum→oyun→ders zincirini çek.

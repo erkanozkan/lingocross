@@ -27,6 +27,10 @@ extension Entitlement on SubscriptionDto {
 
   /// Öğrencinin halihazırda [currentDistinctTeacherCount] farklı öğretmeni
   /// varken başka bir öğretmene (sınıfa) katılabilir mi.
+  ///
+  /// Not: Öğrenci tamamen ücretsiz — backend free öğrenciye `maxTeachers = -1`
+  /// (`unlimitedTeachers`) verir, dolayısıyla bu metot pratikte her zaman true
+  /// döner. Sonlu bir limit verilirse (`unlimitedTeachers` false) sayıya bakılır.
   bool canJoinAnotherTeacher(int currentDistinctTeacherCount) {
     if (isPremium || unlimitedTeachers) return true;
     return currentDistinctTeacherCount < maxTeachers;

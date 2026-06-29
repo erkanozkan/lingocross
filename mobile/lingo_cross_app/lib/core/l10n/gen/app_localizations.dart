@@ -2771,6 +2771,24 @@ abstract class AppLocalizations {
   /// **'Bitir'**
   String get questionSetFinish;
 
+  /// No description provided for @questionSetSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get questionSetSubtitle;
+
+  /// No description provided for @questionSetNextQuestion.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki Soru'**
+  String get questionSetNextQuestion;
+
+  /// No description provided for @questionSetPrevious.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki'**
+  String get questionSetPrevious;
+
   /// No description provided for @questionSetSelectAnswer.
   ///
   /// In tr, this message translates to:

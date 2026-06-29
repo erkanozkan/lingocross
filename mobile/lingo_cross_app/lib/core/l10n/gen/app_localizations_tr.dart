@@ -1425,6 +1425,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get questionSetFinish => 'Bitir';
 
   @override
+  String get questionSetSubtitle => 'Çıkmış Sorular';
+
+  @override
+  String get questionSetNextQuestion => 'Sonraki Soru';
+
+  @override
+  String get questionSetPrevious => 'Önceki';
+
+  @override
   String get questionSetSelectAnswer => 'Bir cevap seç';
 
   @override

@@ -72,29 +72,33 @@ Widget _wrap({FakeResultsRepository? resultsRepo}) {
 }
 
 void main() {
-  testWidgets('başlangıçta başlık + sayaç 0/2 + ilk soru + Bitir/Vazgeç',
+  testWidgets(
+      'başlangıçta başlık + ilk soru + Soru 1/2 + süre + Önceki/Sonraki Soru',
       (tester) async {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
-    expect(find.text('Çıkmış Sorular'), findsOneWidget); // başlık
+    // Başlık birden çok kez geçebilir (header başlık + alt başlık aynı metin).
+    expect(find.text('Çıkmış Sorular'), findsWidgets); // başlık/alt başlık
     expect(find.text('Birinci soru kökü?'), findsOneWidget);
-    expect(find.text('Soru 1 / 2'), findsOneWidget); // gezinme göstergesi
-    expect(find.text('0 / 2'), findsOneWidget); // ilerleme sayacı
-    expect(find.text('00:00'), findsOneWidget); // timer
-    expect(find.text('Vazgeç'), findsOneWidget);
-    expect(find.text('Bitir'), findsOneWidget);
+    expect(find.text('Soru 1 / 2'), findsOneWidget); // ilerleme göstergesi
+    expect(find.text('Süre 00:00'), findsOneWidget); // geçen süre (count-up)
+    expect(find.text('Önceki'), findsOneWidget);
+    expect(find.text('Sonraki Soru'), findsOneWidget); // son soru değil
+    expect(find.text('Bitir'), findsNothing); // son soruda değiliz
   });
 
-  testWidgets('şık seç → ilerleme artar (doğruluk gizli)', (tester) async {
+  testWidgets('şık seç → kart seçili işaretlenir (doğruluk gizli)',
+      (tester) async {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
     await tester.tap(find.text('Şık A bir'));
     await tester.pump();
 
-    expect(find.text('1 / 2'), findsOneWidget); // 1 cevaplandı
+    // Seçim semantics ile yansır; tamamlanma overlay'i görünmez.
     expect(find.text('Tebrikler!'), findsNothing); // tamamlanmadı
+    expect(find.text('Soru 1 / 2'), findsOneWidget);
   });
 
   testWidgets('şık seç → Bitir → submit çağrısı + rapora geçiş', (tester) async {
@@ -114,6 +118,11 @@ void main() {
     await tester.tap(find.text('Şık A bir'));
     await tester.pump();
 
+    // Son soruya geç → "Bitir" görünür.
+    await tester.tap(find.text('Sonraki Soru'));
+    await tester.pump();
+    expect(find.text('Bitir'), findsOneWidget);
+
     await tester.tap(find.text('Bitir'));
     await tester.pump();
     await tester.pumpAndSettle();
@@ -124,15 +133,18 @@ void main() {
     expect(find.text('RAPOR EKRANI'), findsOneWidget);
   });
 
-  testWidgets('Sonraki ile gezinme: ikinci soru gösterilir', (tester) async {
+  testWidgets('Sonraki Soru ile gezinme: ikinci (son) soru gösterilir',
+      (tester) async {
     await tester.pumpWidget(_wrap());
     await tester.pump();
 
-    await tester.tap(find.byIcon(Icons.chevron_right));
+    await tester.tap(find.text('Sonraki Soru'));
     await tester.pump();
 
     expect(find.text('İkinci soru kökü?'), findsOneWidget);
     expect(find.text('Soru 2 / 2'), findsOneWidget);
+    expect(find.text('Bitir'), findsOneWidget); // son soruda Bitir
+    expect(find.text('Sonraki Soru'), findsNothing);
   });
 
   testWidgets('sonuç gönderimi hatasında "Tekrar Dene" gösterilir',
@@ -143,6 +155,8 @@ void main() {
     await tester.pump();
 
     await tester.tap(find.text('Şık A bir'));
+    await tester.pump();
+    await tester.tap(find.text('Sonraki Soru')); // son soruya geç
     await tester.pump();
     await tester.tap(find.text('Bitir'));
     await tester.pump();

@@ -31,4 +31,11 @@ public interface IResultService
     /// başarı puanı. Sonuç yoksa 0/0. Yalnızca kendi sonuçları sayılır.
     /// </summary>
     Task<StudentStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Geçerli öğrencinin "Gelişim Özeti" zengin istatistiği (F3.1+): oynanan oyun sayısı, ortalama
+    /// doğruluk, 7 günlük doğruluk trendi, haftalık dakika/hedef ve günlük seri (streak). Yalnızca
+    /// kendi sonuçları sayılır; sonuç yoksa sayısal alanlar 0, trend null.
+    /// </summary>
+    Task<StudentProgressDto> GetMyProgressAsync(CancellationToken cancellationToken = default);
 }

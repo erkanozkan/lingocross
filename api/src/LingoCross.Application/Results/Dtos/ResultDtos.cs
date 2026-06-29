@@ -49,3 +49,25 @@ public record StudentStatsDto(
     int GamesPlayed,
     /// <summary>Bu sonuçların ortalama başarı puanı (0–100, AwayFromZero yuvarlanır); sonuç yoksa 0.</summary>
     int AverageAccuracy);
+
+/// <summary>
+/// Öğrenci paneli "Gelişim Özeti" için zengin istatistik (F3.1+). Tüm metrikler yalnızca geçerli
+/// öğrencinin tamamlanmış oyun sonuçlarından (game_results) türetilir; salt-okur. Hiç sonuç yoksa
+/// sayısal alanlar 0, <see cref="AccuracyTrendDelta"/> null döner.
+/// </summary>
+public record StudentProgressDto(
+    /// <summary>Tamamlanmış oyun sonucu sayısı.</summary>
+    int GamesPlayed,
+    /// <summary>Tüm sonuçların ortalama başarı puanı (0–100, AwayFromZero yuvarlanır); sonuç yoksa 0.</summary>
+    int AverageAccuracy,
+    /// <summary>
+    /// Son 7 gün ortalama doğruluk − önceki 7 gün (gün 14..7) ortalama doğruluk. Negatif olabilir.
+    /// Önceki 7 günlük pencerede hiç sonuç yoksa null (kıyaslanacak veri yok).
+    /// </summary>
+    int? AccuracyTrendDelta,
+    /// <summary>Son 7 gündeki sonuçların toplam süresi, dakika (DurationMs toplamı / 60000, aşağı yuvarlanır).</summary>
+    int WeeklyMinutes,
+    /// <summary>Sabit haftalık çalışma hedefi (dakika). İleride kullanıcı-ayarına taşınabilir.</summary>
+    int WeeklyGoalMinutes,
+    /// <summary>Bugüne (UTC) kadar, en az bir tamamlanmış sonucu olan ardışık gün sayısı. Hiç sonuç yoksa 0.</summary>
+    int StreakDays);

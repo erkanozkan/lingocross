@@ -146,15 +146,35 @@ void main() {
         'isPremium': false,
         'maxClasses': 1,
         'maxLessons': 3,
-        'maxTeachers': 1,
+        // Öğrenci tamamen ücretsiz: free öğrenciye maxTeachers=-1 (sınırsız).
+        'maxTeachers': -1,
         'ocrEnabled': false,
       });
       expect(free.canCreateClass(0), true);
       expect(free.canCreateClass(1), false); // limit doldu
       expect(free.canCreateLesson(2), true);
       expect(free.canCreateLesson(3), false);
+      // Öğretmen katılımı sınırsız: her zaman katılabilir.
+      expect(free.unlimitedTeachers, true);
       expect(free.canJoinAnotherTeacher(0), true);
-      expect(free.canJoinAnotherTeacher(1), false);
+      expect(free.canJoinAnotherTeacher(1), true);
+      expect(free.canJoinAnotherTeacher(99), true);
+    });
+
+    test('Sonlu maxTeachers limiti: sayıya göre kısıtlanır', () {
+      final limited = SubscriptionDto.fromJson({
+        'plan': 0,
+        'status': 0,
+        'period': 0,
+        'isPremium': false,
+        'maxClasses': 1,
+        'maxLessons': 3,
+        'maxTeachers': 1,
+        'ocrEnabled': false,
+      });
+      expect(limited.unlimitedTeachers, false);
+      expect(limited.canJoinAnotherTeacher(0), true);
+      expect(limited.canJoinAnotherTeacher(1), false);
     });
 
     test('Premium / -1: her zaman izin', () {

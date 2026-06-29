@@ -1425,6 +1425,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get questionSetFinish => 'Finish';
 
   @override
+  String get questionSetSubtitle => 'Past Questions';
+
+  @override
+  String get questionSetNextQuestion => 'Next Question';
+
+  @override
+  String get questionSetPrevious => 'Previous';
+
+  @override
   String get questionSetSelectAnswer => 'Choose an answer';
 
   @override

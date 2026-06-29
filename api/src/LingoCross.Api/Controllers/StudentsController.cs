@@ -30,4 +30,15 @@ public class StudentsController : ControllerBase
         var stats = await _resultService.GetMyStatsAsync(ct);
         return Ok(stats);
     }
+
+    /// <summary>
+    /// Geçerli öğrencinin "Gelişim Özeti" zengin istatistiği: oynanan oyun, ortalama doğruluk,
+    /// 7 günlük doğruluk trendi, haftalık dakika/hedef ve günlük seri (streak).
+    /// </summary>
+    [HttpGet("me/progress")]
+    public async Task<ActionResult<StudentProgressDto>> GetMyProgress(CancellationToken ct)
+    {
+        var progress = await _resultService.GetMyProgressAsync(ct);
+        return Ok(progress);
+    }
 }

@@ -72,10 +72,11 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
     period: SubscriptionPeriod.none,
     isPremium: false,
     // Backend SubscriptionOptions varsayılanlarıyla hizalı (FreeMaxClasses=2,
-    // FreeMaxLessons=5, FreeMaxTeachers=1); canlı değer GET /subscription/me'den gelir.
+    // FreeMaxLessons=5, FreeMaxTeachers=-1/sınırsız — öğrenci tamamen ücretsiz);
+    // canlı değer GET /subscription/me'den gelir.
     maxClasses: 2,
     maxLessons: 5,
-    maxTeachers: 1,
+    maxTeachers: -1,
     ocrEnabled: false,
   );
 }

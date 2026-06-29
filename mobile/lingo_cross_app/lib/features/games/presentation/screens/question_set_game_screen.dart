@@ -10,21 +10,28 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_shadows.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/primary_button_3d.dart';
 import '../../../results/presentation/results_failure_messages.dart';
 import '../../../results/presentation/submit_result_controller.dart';
 import '../../data/dtos/game_dtos.dart';
 import '../../domain/question_set_engine.dart';
 import '../widgets/completion_overlay.dart';
-import '../widgets/match_progress_header.dart';
 
-/// Çıkmış Sorular (Soru Çözüm) ekranı — Karışık Harfler deseninin eşi.
+/// Çıkmış Sorular (Soru Çözüm) ekranı — Stitch `4eebe27dcdc943f2b1fb797832cb7a80`.
 ///
 /// 10 soru tek tek çözülür (A–E tek seçim). Oyun boyunca serbest; doğru/yanlış
-/// OYUN SIRASINDA gösterilmez (nötr renkler). Stem + A–E şık listesi gösterilir;
-/// Önceki/Sonraki ile gezilir. "Bitir" her zaman aktiftir → topluca değerlendirilir
-/// (skorlama istemcide), sonuç `POST /game-sessions/{id}/result` ile gönderilir
-/// (yükleniyor overlay'i; hata → tekrar dene) ve dönen sonuçla Oyun Sonu Raporu
-/// ekranına geçilir.
+/// OYUN SIRASINDA gösterilmez (nötr renkler). Üstte başlık/alt başlık + geri,
+/// altında "Soru x/y" + geçen süre + ilerleme çubuğu, ortada soru kartı + şıklar.
+/// Alt sabit footer: solda "Önceki" (outlined), sağda son soruda "Bitir",
+/// diğerlerinde "Sonraki Soru" (primary 3D buton).
+///
+/// "Bitir" anında seçimler doğru cevaplarla karşılaştırılır (skorlama istemcide),
+/// sonuç `POST /game-sessions/{id}/result` ile gönderilir (yükleniyor overlay'i;
+/// hata → tekrar dene) ve dönen sonuçla Oyun Sonu Raporu ekranına geçilir.
+///
+/// Stitch sapması: seri (streak) rozeti, bookmark, reading görseli, per-soru
+/// kategori chip'i ve "Time remaining" geri sayımı — verimiz/özelliğimiz
+/// olmadığından uygulanmaz; geçen süre (count-up) gösterilir.
 class QuestionSetGameScreen extends ConsumerStatefulWidget {
   const QuestionSetGameScreen({
     super.key,
@@ -126,7 +133,7 @@ class _QuestionSetGameScreenState extends ConsumerState<QuestionSetGameScreen> {
     );
   }
 
-  /// Çıkış onayı (Vazgeç / geri) — veri kaybı uyarısı.
+  /// Çıkış onayı (geri / üstteki ok) — veri kaybı uyarısı.
   Future<bool> _confirmQuit() async {
     if (_completed) return true;
     final l10n = AppLocalizations.of(context);
@@ -182,6 +189,9 @@ class _QuestionSetGameScreenState extends ConsumerState<QuestionSetGameScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final card = _engine.activeCard;
+    // İlerleme çubuğu: bulunduğumuz sorunun konumuna göre (Stitch §progress).
+    final progress =
+        _engine.total == 0 ? 0.0 : (_engine.activeIndex + 1) / _engine.total;
 
     return PopScope(
       canPop: false,
@@ -192,18 +202,21 @@ class _QuestionSetGameScreenState extends ConsumerState<QuestionSetGameScreen> {
       child: Scaffold(
         backgroundColor: AppColors.surface,
         appBar: _GameAppBar(
-          time: _formattedTime,
+          title: l10n.questionSetTitle,
+          subtitle: l10n.questionSetSubtitle,
           onBack: () async {
             if (await _confirmQuit() && mounted) _exit();
           },
         ),
-        bottomNavigationBar: _ActionBar(
-          finishLabel: l10n.gameMatchingCompleteFinish,
-          quitLabel: l10n.gameMatchingQuit,
+        bottomNavigationBar: _NavFooter(
+          previousLabel: l10n.questionSetPrevious,
+          nextLabel: l10n.questionSetNextQuestion,
+          finishLabel: l10n.questionSetFinish,
+          isLast: _engine.isLast,
+          submitting: _completed && !_submitFailed,
+          onPrev: (_completed || _engine.isFirst) ? null : _onPrev,
+          onNext: _completed ? null : _onNext,
           onFinish: _completed ? null : _onFinish,
-          onQuit: () async {
-            if (await _confirmQuit() && mounted) _exit();
-          },
         ),
         body: Stack(
           children: [
@@ -217,36 +230,20 @@ class _QuestionSetGameScreenState extends ConsumerState<QuestionSetGameScreen> {
                   AppSpacing.lg,
                 ),
                 children: [
-                  MatchProgressHeader(
-                    label: l10n.gameMatchingCurrentGameLabelUpper,
-                    title: l10n.questionSetTitle,
-                    counter: l10n.gameMatchingCounter(
-                      _engine.answeredCount,
+                  _ProgressSection(
+                    questionLabel: l10n.questionSetQuestionOf(
+                      _engine.activeIndex + 1,
                       _engine.total,
                     ),
-                    progress: _engine.progress,
+                    timeLabel: l10n.questionSetElapsed(_formattedTime),
+                    timeSemantic:
+                        l10n.gameMatchingTimerSemantic(_formattedTime),
+                    progress: progress,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   if (card != null) ...[
-                    _QuestionNav(
-                      label: l10n.questionSetQuestionOf(
-                        _engine.activeIndex + 1,
-                        _engine.total,
-                      ),
-                      previousLabel: l10n.gameScrambledPrevious,
-                      nextLabel: l10n.gameScrambledNext,
-                      onPrev: _engine.isFirst ? null : _onPrev,
-                      onNext: _engine.isLast ? null : _onNext,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
                     _QuestionCard(stem: card.stem),
                     const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      l10n.questionSetSelectAnswer,
-                      style: AppTypography.labelLg
-                          .copyWith(color: AppColors.onSurfaceVariant),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
                     for (final choice in card.choices) ...[
                       _OptionCard(
                         choice: choice,
@@ -305,28 +302,31 @@ class _CompletionGate extends StatelessWidget {
   }
 }
 
-/// TopAppBar: geri + wordmark (sol), timer pill (sağ).
+/// Üst başlık (Stitch §header): geri ok (sol) + başlık (headline-md, primary) +
+/// alt başlık (label-sm, onSurfaceVariant). Seri rozeti uygulanmaz (sapma).
 class _GameAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const _GameAppBar({required this.time, required this.onBack});
+  const _GameAppBar({
+    required this.title,
+    required this.subtitle,
+    required this.onBack,
+  });
 
-  final String time;
+  final String title;
+  final String subtitle;
   final VoidCallback onBack;
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize => const Size.fromHeight(68);
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: AppShadows.level2,
-      ),
+      decoration: const BoxDecoration(color: AppColors.surface),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
-          height: 64,
+          height: 68,
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.marginMobile,
@@ -335,18 +335,34 @@ class _GameAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 IconButton(
                   onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back, color: AppColors.outline),
+                  icon: const Icon(Icons.arrow_back, color: AppColors.primary),
                   tooltip: l10n.gameMatchingQuit,
                 ),
                 const SizedBox(width: AppSpacing.xs),
-                Text(
-                  l10n.appName,
-                  style: AppTypography.headlineLg.copyWith(
-                    color: AppColors.primary,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.headlineMd.copyWith(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.labelSm.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const Spacer(),
-                _TimerPill(time: time),
               ],
             ),
           ),
@@ -356,89 +372,81 @@ class _GameAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Count-up timer pill (MM:SS).
-class _TimerPill extends StatelessWidget {
-  const _TimerPill({required this.time});
+/// İlerleme başlığı (Stitch §progress header): solda "Soru x / y" (label-lg,
+/// primary), sağda geçen süre "Süre MM:SS" (label-sm, onSurfaceVariant);
+/// altında pill ilerleme çubuğu (track surfaceContainerHighest, dolu primary).
+class _ProgressSection extends StatelessWidget {
+  const _ProgressSection({
+    required this.questionLabel,
+    required this.timeLabel,
+    required this.timeSemantic,
+    required this.progress,
+  });
 
-  final String time;
+  final String questionLabel;
+  final String timeLabel;
+  final String timeSemantic;
+  final double progress;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Semantics(
-      label: l10n.gameMatchingTimerSemantic(time),
-      liveRegion: false,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.base,
-        ),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppRadius.full),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const Icon(Icons.schedule, size: 20, color: AppColors.primary),
-            const SizedBox(width: AppSpacing.base),
-            Text(
-              time,
-              style: AppTypography.labelLg.copyWith(
-                color: AppColors.onSurfaceVariant,
+            Expanded(
+              child: Text(
+                questionLabel,
+                style: AppTypography.labelLg.copyWith(color: AppColors.primary),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Semantics(
+              liveRegion: false,
+              label: timeSemantic,
+              child: ExcludeSemantics(
+                child: Text(
+                  timeLabel,
+                  style: AppTypography.labelSm.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Sorular arası ileri/geri gezinme (örn. "Soru 4 / 10").
-class _QuestionNav extends StatelessWidget {
-  const _QuestionNav({
-    required this.label,
-    required this.previousLabel,
-    required this.nextLabel,
-    required this.onPrev,
-    required this.onNext,
-  });
-
-  final String label;
-  final String previousLabel;
-  final String nextLabel;
-  final VoidCallback? onPrev;
-  final VoidCallback? onNext;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: onPrev,
-          icon: const Icon(Icons.chevron_left),
-          color: AppColors.primary,
-          tooltip: previousLabel,
-        ),
-        Text(
-          label,
-          style:
-              AppTypography.labelLg.copyWith(color: AppColors.onSurfaceVariant),
-        ),
-        IconButton(
-          onPressed: onNext,
-          icon: const Icon(Icons.chevron_right),
-          color: AppColors.primary,
-          tooltip: nextLabel,
+        const SizedBox(height: AppSpacing.xs),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          child: Container(
+            height: 12,
+            color: AppColors.surfaceContainerHighest,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeOut,
+                    width: constraints.maxWidth * progress.clamp(0.0, 1.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-/// Soru kartı: soru kökü (Stitch §question card — bento, köşe xl, soft shadow).
+/// Soru kartı (Stitch §question card — bento, köşe xl, soft shadow).
 class _QuestionCard extends StatelessWidget {
   const _QuestionCard({required this.stem});
 
@@ -457,14 +465,16 @@ class _QuestionCard extends StatelessWidget {
       ),
       child: Text(
         stem,
-        style: AppTypography.headlineMd.copyWith(height: 1.3),
+        style: AppTypography.headlineLg.copyWith(height: 1.3),
       ),
     );
   }
 }
 
-/// Tek bir şık kartı (A–E). Seçili → primary kenarlık + tint; nötr → outline.
-/// Doğruluk renkleri YOK — oyun sırasında nötr (Stitch §option-card.selected).
+/// Tek bir şık kartı (A–E). Seçili → 2px primary kenarlık + surfaceContainerHighest
+/// zemin + rozet primary/onPrimary. Nötr → outlineVariant kenarlık + rozet
+/// surfaceContainerHigh/primary. Doğruluk YOK — oyun sırasında nötr
+/// (Stitch §option-card.selected).
 class _OptionCard extends StatefulWidget {
   const _OptionCard({
     required this.choice,
@@ -534,7 +544,8 @@ class _OptionCardState extends State<_OptionCard> {
   }
 }
 
-/// Şık harf rozeti (A–E) — seçiliyse primary dolu, nötrse tonal.
+/// Şık harf rozeti (A–E) — 40x40, köşe lg. Seçiliyse primary dolu/onPrimary
+/// yazı; nötrse surfaceContainerHigh zemin/primary yazı (Stitch §option badge).
 class _OptionBadge extends StatelessWidget {
   const _OptionBadge({required this.label, required this.selected});
 
@@ -563,79 +574,83 @@ class _OptionBadge extends StatelessWidget {
   }
 }
 
-/// Alt aksiyon çubuğu — "Bitir" (primary) + "Vazgeç" (outlined).
-/// "Bitir" her zaman aktif (serbest oyun; boş/yanlış sorular skorda yanlış).
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({
+/// Alt sabit footer (Stitch §navigation footer): solda "Önceki" (outlined,
+/// chevron_left, ilk soruda pasif), sağda son soruda "Bitir", diğerlerinde
+/// "Sonraki Soru" (primary 3D buton). Gönderiliyor → Bitir spinner.
+class _NavFooter extends StatelessWidget {
+  const _NavFooter({
+    required this.previousLabel,
+    required this.nextLabel,
     required this.finishLabel,
-    required this.quitLabel,
+    required this.isLast,
+    required this.submitting,
+    required this.onPrev,
+    required this.onNext,
     required this.onFinish,
-    required this.onQuit,
   });
 
+  final String previousLabel;
+  final String nextLabel;
   final String finishLabel;
-  final String quitLabel;
+  final bool isLast;
+  final bool submitting;
+  final VoidCallback? onPrev;
+  final VoidCallback? onNext;
   final VoidCallback? onFinish;
-  final VoidCallback onQuit;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x0A000000),
-            offset: Offset(0, -4),
-            blurRadius: 12,
-          ),
-        ],
+        color: AppColors.surfaceContainerLowest,
+        border: Border(
+          top: BorderSide(color: AppColors.outlineVariant),
+        ),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.marginMobile,
-            AppSpacing.sm,
+            AppSpacing.md,
             AppSpacing.marginMobile,
-            AppSpacing.sm,
+            AppSpacing.md,
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: onQuit,
-                  icon: const Icon(Icons.close, color: AppColors.outline),
-                  label: Text(
-                    quitLabel,
-                    style: AppTypography.labelLg
-                        .copyWith(color: AppColors.outline),
-                  ),
+                  onPressed: onPrev,
+                  icon: const Icon(Icons.chevron_left, size: 20),
+                  label: Text(previousLabel, style: AppTypography.labelLg),
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
+                    minimumSize: const Size.fromHeight(56),
+                    foregroundColor: AppColors.onSurfaceVariant,
                     side: const BorderSide(
-                        color: AppColors.outlineVariant, width: 2),
+                      color: AppColors.surfaceContainerHighest,
+                      width: 2,
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: FilledButton.icon(
-                  onPressed: onFinish,
-                  icon: const Icon(Icons.check),
-                  label: Text(finishLabel, style: AppTypography.labelLg),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size.fromHeight(52),
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                    ),
-                  ),
-                ),
+                flex: 2,
+                child: isLast
+                    ? PrimaryButton3D(
+                        label: finishLabel,
+                        isLoading: submitting,
+                        onPressed: onFinish,
+                      )
+                    : PrimaryButton3D(
+                        label: nextLabel,
+                        trailingIcon: Icons.chevron_right,
+                        onPressed: onNext,
+                      ),
               ),
             ],
           ),

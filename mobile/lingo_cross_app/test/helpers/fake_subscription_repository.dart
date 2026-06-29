@@ -74,7 +74,8 @@ class FakeSubscriptionRepository implements SubscriptionRepository {
 SubscriptionDto freeSubscription({
   int maxClasses = 2,
   int maxLessons = 5,
-  int maxTeachers = 1,
+  // Öğrenci tamamen ücretsiz: free öğrenciye sınırsız öğretmen (-1).
+  int maxTeachers = -1,
   bool ocrEnabled = false,
 }) {
   return SubscriptionDto(
