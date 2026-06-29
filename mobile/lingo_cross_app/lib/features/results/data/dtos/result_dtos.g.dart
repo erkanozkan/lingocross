@@ -56,7 +56,7 @@ _$GameResultDtoImpl _$$GameResultDtoImplFromJson(Map<String, dynamic> json) =>
       gameType: const GameTypeConverter().fromJson(
         (json['gameType'] as num).toInt(),
       ),
-      lessonId: json['lessonId'] as String,
+      lessonId: json['lessonId'] as String?,
       lessonTitle: json['lessonTitle'] as String,
       durationMs: (json['durationMs'] as num).toInt(),
       totalItems: (json['totalItems'] as num).toInt(),

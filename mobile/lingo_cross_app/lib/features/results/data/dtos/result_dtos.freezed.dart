@@ -564,8 +564,10 @@ mixin _$GameResultDto {
   String get sessionId => throw _privateConstructorUsedError;
   String get gameId => throw _privateConstructorUsedError;
   @GameTypeConverter()
-  GameType get gameType => throw _privateConstructorUsedError;
-  String get lessonId => throw _privateConstructorUsedError;
+  GameType get gameType => throw _privateConstructorUsedError; // QuestionSet (çıkmış sorular) sonucunda ders yoktur → lessonId null gelir;
+  // lessonTitle yerine konu başlığı döner. (API ile birebir; aksi halde sonuç
+  // yanıtı parse edilemez ve "Bitir" hata verir.)
+  String? get lessonId => throw _privateConstructorUsedError;
   String get lessonTitle => throw _privateConstructorUsedError;
   int get durationMs => throw _privateConstructorUsedError;
   int get totalItems => throw _privateConstructorUsedError;
@@ -597,7 +599,7 @@ abstract class $GameResultDtoCopyWith<$Res> {
     String sessionId,
     String gameId,
     @GameTypeConverter() GameType gameType,
-    String lessonId,
+    String? lessonId,
     String lessonTitle,
     int durationMs,
     int totalItems,
@@ -628,7 +630,7 @@ class _$GameResultDtoCopyWithImpl<$Res, $Val extends GameResultDto>
     Object? sessionId = null,
     Object? gameId = null,
     Object? gameType = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? lessonTitle = null,
     Object? durationMs = null,
     Object? totalItems = null,
@@ -661,10 +663,10 @@ class _$GameResultDtoCopyWithImpl<$Res, $Val extends GameResultDto>
                     : gameType // ignore: cast_nullable_to_non_nullable
                         as GameType,
             lessonId:
-                null == lessonId
+                freezed == lessonId
                     ? _value.lessonId
                     : lessonId // ignore: cast_nullable_to_non_nullable
-                        as String,
+                        as String?,
             lessonTitle:
                 null == lessonTitle
                     ? _value.lessonTitle
@@ -725,7 +727,7 @@ abstract class _$$GameResultDtoImplCopyWith<$Res>
     String sessionId,
     String gameId,
     @GameTypeConverter() GameType gameType,
-    String lessonId,
+    String? lessonId,
     String lessonTitle,
     int durationMs,
     int totalItems,
@@ -755,7 +757,7 @@ class __$$GameResultDtoImplCopyWithImpl<$Res>
     Object? sessionId = null,
     Object? gameId = null,
     Object? gameType = null,
-    Object? lessonId = null,
+    Object? lessonId = freezed,
     Object? lessonTitle = null,
     Object? durationMs = null,
     Object? totalItems = null,
@@ -788,10 +790,10 @@ class __$$GameResultDtoImplCopyWithImpl<$Res>
                 : gameType // ignore: cast_nullable_to_non_nullable
                     as GameType,
         lessonId:
-            null == lessonId
+            freezed == lessonId
                 ? _value.lessonId
                 : lessonId // ignore: cast_nullable_to_non_nullable
-                    as String,
+                    as String?,
         lessonTitle:
             null == lessonTitle
                 ? _value.lessonTitle
@@ -845,7 +847,7 @@ class _$GameResultDtoImpl extends _GameResultDto {
     required this.sessionId,
     required this.gameId,
     @GameTypeConverter() required this.gameType,
-    required this.lessonId,
+    this.lessonId,
     required this.lessonTitle,
     required this.durationMs,
     required this.totalItems,
@@ -868,8 +870,11 @@ class _$GameResultDtoImpl extends _GameResultDto {
   @override
   @GameTypeConverter()
   final GameType gameType;
+  // QuestionSet (çıkmış sorular) sonucunda ders yoktur → lessonId null gelir;
+  // lessonTitle yerine konu başlığı döner. (API ile birebir; aksi halde sonuç
+  // yanıtı parse edilemez ve "Bitir" hata verir.)
   @override
-  final String lessonId;
+  final String? lessonId;
   @override
   final String lessonTitle;
   @override
@@ -961,7 +966,7 @@ abstract class _GameResultDto extends GameResultDto {
     required final String sessionId,
     required final String gameId,
     @GameTypeConverter() required final GameType gameType,
-    required final String lessonId,
+    final String? lessonId,
     required final String lessonTitle,
     required final int durationMs,
     required final int totalItems,
@@ -984,9 +989,11 @@ abstract class _GameResultDto extends GameResultDto {
   String get gameId;
   @override
   @GameTypeConverter()
-  GameType get gameType;
+  GameType get gameType; // QuestionSet (çıkmış sorular) sonucunda ders yoktur → lessonId null gelir;
+  // lessonTitle yerine konu başlığı döner. (API ile birebir; aksi halde sonuç
+  // yanıtı parse edilemez ve "Bitir" hata verir.)
   @override
-  String get lessonId;
+  String? get lessonId;
   @override
   String get lessonTitle;
   @override

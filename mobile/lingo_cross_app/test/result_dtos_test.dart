@@ -26,6 +26,32 @@ void main() {
       expect(dto.sharedWithTeacher, isFalse);
     });
 
+    // REGRESYON: QuestionSet (çıkmış sorular) sonucunda backend lessonId:null +
+    // lessonTitle=konu başlığı döner. lessonId zorunlu olsaydı parse patlar,
+    // "Bitir"de hata verir ve oturum tamamlandığı için tekrar açılışta 409 olurdu.
+    test('QuestionSet sonucu: lessonId null parse edilir', () {
+      final dto = GameResultDto.fromJson(<String, dynamic>{
+        'id': 'r9',
+        'sessionId': 's9',
+        'gameId': 'g9',
+        'gameType': 3, // QuestionSet
+        'lessonId': null,
+        'lessonTitle': 'YDS Deneme Soruları',
+        'durationMs': 120000,
+        'totalItems': 10,
+        'correctItems': 7,
+        'score': 70,
+        'sharedWithTeacher': false,
+        'sharedAt': null,
+        'createdAt': '2026-06-29T20:00:00Z',
+      });
+
+      expect(dto.gameType, GameType.questionSet);
+      expect(dto.lessonId, isNull);
+      expect(dto.lessonTitle, 'YDS Deneme Soruları');
+      expect(dto.score, 70);
+    });
+
     test('accuracyPercent skoru 0–100 aralığına sıkıştırır', () {
       expect(_result(score: 85).accuracyPercent, 85);
       expect(_result(score: 140).accuracyPercent, 100);

@@ -65,7 +65,10 @@ class GameResultDto with _$GameResultDto {
     required String sessionId,
     required String gameId,
     @GameTypeConverter() required GameType gameType,
-    required String lessonId,
+    // QuestionSet (çıkmış sorular) sonucunda ders yoktur → lessonId null gelir;
+    // lessonTitle yerine konu başlığı döner. (API ile birebir; aksi halde sonuç
+    // yanıtı parse edilemez ve "Bitir" hata verir.)
+    String? lessonId,
     required String lessonTitle,
     required int durationMs,
     required int totalItems,
