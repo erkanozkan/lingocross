@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/gen/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/game_type.dart';
 import '../../domain/word_matching_engine.dart';
+
+/// Oyun türüne göre liste/kart ikonu. QuestionSet (Çıkmış Sorular) ayrı dallanır;
+/// diğerleri mevcut ikonlarını korur (eşleştirme varsayılan).
+IconData gameTypeIcon(GameType type) => switch (type) {
+      GameType.crossword => Icons.grid_on,
+      GameType.scrambled => Icons.shuffle,
+      GameType.questionSet => Icons.history_edu,
+      GameType.wordMatching => Icons.extension,
+    };
+
+/// Oyun türünün i18n etiketi (öğrenci panelindeki atanan oyun kartı vb.).
+String gameTypeLabel(GameType type, AppLocalizations l10n) => switch (type) {
+      GameType.crossword => l10n.myPuzzlesTypeCrossword,
+      GameType.scrambled => l10n.createGameTypeScrambledTitle,
+      GameType.questionSet => l10n.gameCardQuestionSet,
+      GameType.wordMatching => l10n.myPuzzlesTypeWordMatching,
+    };
 
 /// Kart taban kalıbı: min-h 80, köşe lg (16), ortalı body-lg semibold.
 const double _kCardMinHeight = 80;

@@ -8,6 +8,7 @@ using LingoCross.Application.Enrollments;
 using LingoCross.Application.Games;
 using LingoCross.Application.Lessons;
 using LingoCross.Application.Notifications;
+using LingoCross.Application.QuestionBanks;
 using LingoCross.Application.Results;
 using LingoCross.Application.Subscriptions;
 using LingoCross.Application.Teachers;
@@ -59,6 +60,9 @@ public static class DependencyInjection
         // Back office (salt-okur admin uçları + tek-admin env girişi).
         services.AddScoped<IAdminAuthService, AdminAuthService>();
         services.AddScoped<IAdminMetricsService, AdminMetricsService>();
+        // Faz 2 — "Çıkmış Sorular": öğretmen atama + admin import.
+        services.AddScoped<IQuestionBankService, QuestionBankService>();
+        services.AddScoped<IQuestionImportService, QuestionImportService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;

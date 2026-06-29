@@ -1414,6 +1414,55 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gameScrambledEmptySlot => 'boş harf yuvası';
 
   @override
+  String get questionSetTitle => 'Çıkmış Sorular';
+
+  @override
+  String questionSetQuestionOf(int current, int total) {
+    return 'Soru $current / $total';
+  }
+
+  @override
+  String get questionSetFinish => 'Bitir';
+
+  @override
+  String get questionSetSelectAnswer => 'Bir cevap seç';
+
+  @override
+  String get questionSetExplanation => 'Açıklama';
+
+  @override
+  String get questionTopicsTitle => 'Çıkmış Sorular';
+
+  @override
+  String get questionTopicsHeroTitle => 'Çıkmış Sorular';
+
+  @override
+  String get questionTopicsHeroSubtitle => 'Gerçek sınav tecrübesiyle öğrencilerinin İngilizce seviyesini bir üst noktaya taşı.';
+
+  @override
+  String get questionTopicsAssign => 'Sınıfa Ata';
+
+  @override
+  String get questionTopicsAssignSheetTitle => 'Sınıflara Ata';
+
+  @override
+  String get questionTopicsAssignSubmit => 'Ata';
+
+  @override
+  String get questionTopicsAssignSuccess => 'Konu seçili sınıflara atandı.';
+
+  @override
+  String questionTopicsQuestionCount(int count) {
+    return '$count Soru';
+  }
+
+  @override
+  String get questionTopicsEmpty => 'Henüz atanabilir soru konusu yok.';
+
+  @override
+  String get gameCardQuestionSet => 'Çıkmış Sorular';
+
+  @override
   String get teacherStudentsAppBarTitle => 'Öğrencilerim';
 
   @override
@@ -1759,6 +1808,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get teacherDashboardActionMyPuzzlesDesc => 'Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.';
+
+  @override
+  String get teacherDashboardActionQuestionTopicsTitle => 'Çıkmış Sorular';
+
+  @override
+  String get teacherDashboardActionQuestionTopicsDesc => 'Soru konularını seç ve sınıflarına ata; öğrenciler 10 soruluk setleri çözsün.';
 
   @override
   String get myPuzzlesTitle => 'Bulmacalarım';

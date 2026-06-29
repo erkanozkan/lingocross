@@ -15,11 +15,16 @@ public class AdminController : ControllerBase
 {
     private readonly IAdminAuthService _authService;
     private readonly IAdminMetricsService _metricsService;
+    private readonly IQuestionImportService _questionImportService;
 
-    public AdminController(IAdminAuthService authService, IAdminMetricsService metricsService)
+    public AdminController(
+        IAdminAuthService authService,
+        IAdminMetricsService metricsService,
+        IQuestionImportService questionImportService)
     {
         _authService = authService;
         _metricsService = metricsService;
+        _questionImportService = questionImportService;
     }
 
     [AllowAnonymous]
@@ -55,4 +60,20 @@ public class AdminController : ControllerBase
     [HttpGet("recent")]
     public async Task<ActionResult<RecentDto>> Recent([FromQuery] int take, CancellationToken ct)
         => Ok(await _metricsService.GetRecentAsync(take, ct));
+
+    /// <summary>
+    /// Faz 2 — "Çıkmış Sorular" toplu import (ÖSYM resmi JSON). Slug ile idempotent: aynı slug yeniden
+    /// gönderilirse başlık güncellenir, soruları yeniden yazılır. Her soru tam 5 şık + tam 1 doğru olmalı.
+    /// </summary>
+    [Authorize(Roles = "Admin")]
+    [HttpPost("question-topics/import")]
+    public async Task<ActionResult<QuestionImportResultDto>> ImportQuestionTopic(
+        [FromBody] ImportQuestionTopicRequest request, CancellationToken ct)
+        => Ok(await _questionImportService.ImportAsync(request, ct));
+
+    /// <summary>Faz 2 — yönetim listesi: tüm konu başlıkları (aktif/pasif) + soru sayıları.</summary>
+    [Authorize(Roles = "Admin")]
+    [HttpGet("question-topics")]
+    public async Task<ActionResult<IReadOnlyList<AdminQuestionTopicDto>>> ListQuestionTopics(CancellationToken ct)
+        => Ok(await _questionImportService.ListTopicsAsync(ct));
 }

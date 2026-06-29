@@ -1414,6 +1414,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameScrambledEmptySlot => 'empty letter slot';
 
   @override
+  String get questionSetTitle => 'Past Exam Questions';
+
+  @override
+  String questionSetQuestionOf(int current, int total) {
+    return 'Question $current / $total';
+  }
+
+  @override
+  String get questionSetFinish => 'Finish';
+
+  @override
+  String get questionSetSelectAnswer => 'Choose an answer';
+
+  @override
+  String get questionSetExplanation => 'Explanation';
+
+  @override
+  String get questionTopicsTitle => 'Past Exam Questions';
+
+  @override
+  String get questionTopicsHeroTitle => 'Past Exam Questions';
+
+  @override
+  String get questionTopicsHeroSubtitle => 'Take your students\' English to the next level with real exam experience.';
+
+  @override
+  String get questionTopicsAssign => 'Assign to Class';
+
+  @override
+  String get questionTopicsAssignSheetTitle => 'Assign to Classes';
+
+  @override
+  String get questionTopicsAssignSubmit => 'Assign';
+
+  @override
+  String get questionTopicsAssignSuccess => 'Topic assigned to the selected classes.';
+
+  @override
+  String questionTopicsQuestionCount(int count) {
+    return '$count Questions';
+  }
+
+  @override
+  String get questionTopicsEmpty => 'No assignable question topics yet.';
+
+  @override
+  String get gameCardQuestionSet => 'Past Exam Questions';
+
+  @override
   String get teacherStudentsAppBarTitle => 'My Students';
 
   @override
@@ -1759,6 +1808,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get teacherDashboardActionMyPuzzlesDesc => 'View, share, and track solve statistics for all the puzzles you\'ve created.';
+
+  @override
+  String get teacherDashboardActionQuestionTopicsTitle => 'Past Exam Questions';
+
+  @override
+  String get teacherDashboardActionQuestionTopicsDesc => 'Pick question topics and assign them to your classes; students solve 10-question sets.';
 
   @override
   String get myPuzzlesTitle => 'My Puzzles';

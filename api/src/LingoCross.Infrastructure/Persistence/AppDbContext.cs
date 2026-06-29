@@ -35,6 +35,12 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Game> Games => Set<Game>();
 
+    public DbSet<QuestionTopic> QuestionTopics => Set<QuestionTopic>();
+
+    public DbSet<Question> Questions => Set<Question>();
+
+    public DbSet<QuestionOption> QuestionOptions => Set<QuestionOption>();
+
     public DbSet<GameSession> GameSessions => Set<GameSession>();
 
     public DbSet<GameResult> GameResults => Set<GameResult>();

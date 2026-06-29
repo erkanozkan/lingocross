@@ -27,6 +27,12 @@ public interface IAppDbContext
 
     DbSet<Game> Games { get; }
 
+    DbSet<QuestionTopic> QuestionTopics { get; }
+
+    DbSet<Question> Questions { get; }
+
+    DbSet<QuestionOption> QuestionOptions { get; }
+
     DbSet<GameSession> GameSessions { get; }
 
     DbSet<GameResult> GameResults { get; }

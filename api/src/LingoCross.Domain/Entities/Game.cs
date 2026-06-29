@@ -15,9 +15,22 @@ namespace LingoCross.Domain.Entities;
 /// </summary>
 public class Game : Entity
 {
-    public Guid LessonId { get; set; }
+    /// <summary>
+    /// Oyunun ait olduğu ders. Ders-tabanlı oyunlarda (WordMatching/Crossword/Scrambled) doludur.
+    /// Faz 2 QuestionSet oyunlarında null'dır (oyun derse değil, bir konu başlığına bağlanır).
+    /// Veri bütünlüğü: <see cref="LessonId"/> ile <see cref="QuestionTopicId"/>'den tam biri dolu olmalı.
+    /// </summary>
+    public Guid? LessonId { get; set; }
 
-    public Lesson Lesson { get; set; } = null!;
+    public Lesson? Lesson { get; set; }
+
+    /// <summary>
+    /// Faz 2 — QuestionSet oyununun bağlandığı konu başlığı. Yalnız <see cref="GameType.QuestionSet"/>
+    /// oyunlarında doludur; ders-tabanlı oyunlarda null'dır.
+    /// </summary>
+    public Guid? QuestionTopicId { get; set; }
+
+    public QuestionTopic? QuestionTopic { get; set; }
 
     public GameType Type { get; set; } = GameType.WordMatching;
 

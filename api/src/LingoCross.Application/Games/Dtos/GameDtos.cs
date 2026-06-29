@@ -2,10 +2,15 @@ using LingoCross.Domain.Enums;
 
 namespace LingoCross.Application.Games.Dtos;
 
-/// <summary>Bir derse ait oyunun özet bilgisi (oluşturulduktan/yayımlandıktan sonra döndürülür).</summary>
+/// <summary>
+/// Bir oyunun özet bilgisi (oluşturulduktan/yayımlandıktan sonra döndürülür). Ders-tabanlı oyunlarda
+/// <see cref="LessonId"/> dolu, <see cref="QuestionTopicId"/> null'dır; Faz 2 QuestionSet oyunlarında
+/// tersi geçerlidir.
+/// </summary>
 public record GameDto(
     Guid Id,
-    Guid LessonId,
+    Guid? LessonId,
+    Guid? QuestionTopicId,
     GameType Type,
     string Title,
     bool IsPublished,
@@ -22,7 +27,8 @@ public record GameDto(
 /// </summary>
 public record AssignedGameDto(
     Guid Id,
-    Guid LessonId,
+    Guid? LessonId,
+    Guid? QuestionTopicId,
     string LessonTitle,
     GameType Type,
     string Title,
@@ -86,7 +92,8 @@ public record GamePreviewResponse(
     GameType Type,
     WordMatchingContent? WordMatching,
     CrosswordContent? Crossword,
-    ScrambledContent? Scrambled);
+    ScrambledContent? Scrambled,
+    QuestionSetContent? QuestionSet = null);
 
 /// <summary>Bir oyun oturumunun durumu.</summary>
 public record GameSessionDto(
@@ -112,7 +119,8 @@ public record StartGameSessionResponse(
     GameType Type,
     WordMatchingContent? WordMatching,
     CrosswordContent? Crossword,
-    ScrambledContent? Scrambled);
+    ScrambledContent? Scrambled,
+    QuestionSetContent? QuestionSet = null);
 
 /// <summary>
 /// Kelime eşleştirme oyun içeriği. <see cref="Pairs"/> doğru eşleşmeleri taşır; her çiftin
@@ -181,6 +189,31 @@ public record ScrambledItem(
     string Answer,
     string ScrambledLetters,
     string Clue);
+
+/// <summary>
+/// Faz 2 — "Çıkmış Sorular" (QuestionSet) oyun içeriği. Bankadan rastgele seçilen (en çok 10) çoktan
+/// seçmeli soru taşınır. Skorlama MVP oyunlarıyla aynı: doğru cevap (<see cref="QuestionItem.CorrectOptionId"/>)
+/// içerikle istemciye gönderilir, doğrulama istemcide yapılır. Şıklar ÖSYM A–E sırasındadır ve KARIŞTIRILMAZ.
+/// </summary>
+public record QuestionSetContent(
+    IReadOnlyList<QuestionItem> Questions);
+
+/// <summary>
+/// Tek bir çoktan seçmeli soru. <see cref="Choices"/> ÖSYM A–E sırasındadır (Label "A".."E").
+/// <see cref="CorrectOptionId"/> doğru <see cref="QuestionChoice.OptionId"/>'dir (istemci doğrulaması için).
+/// </summary>
+public record QuestionItem(
+    Guid QuestionId,
+    string Stem,
+    IReadOnlyList<QuestionChoice> Choices,
+    Guid CorrectOptionId,
+    string? Explanation);
+
+/// <summary>Tek bir şık: kalıcı <see cref="OptionId"/>, ÖSYM etiketi (<see cref="Label"/> "A".."E") ve metni.</summary>
+public record QuestionChoice(
+    Guid OptionId,
+    string Label,
+    string Text);
 
 /// <summary>Bulmaca kelime yönü. Sayısal değerler istemciyle paylaşılır.</summary>
 public enum CrosswordDirection

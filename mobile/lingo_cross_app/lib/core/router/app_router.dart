@@ -21,6 +21,7 @@ import '../../features/enrollment/presentation/screens/teacher_students_screen.d
 import '../../features/games/presentation/screens/create_game_screen.dart';
 import '../../features/games/presentation/screens/game_launcher_screen.dart';
 import '../../features/games/presentation/screens/my_puzzles_screen.dart';
+import '../../features/games/presentation/screens/question_topics_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_detail_screen.dart';
 import '../../features/lessons/presentation/screens/lessons_list_screen.dart';
 import '../../features/lessons/presentation/screens/lesson_form_screen.dart';
@@ -112,6 +113,9 @@ abstract final class AppRoutes {
 
   /// Bulmacalarım (F3.2 — öğretmenin tüm bulmacaları).
   static const String teacherPuzzles = '/teacher/puzzles';
+
+  /// Çıkmış Sorular (Faz 2 — öğretmen soru konusu atama listesi).
+  static const String teacherQuestionTopics = '/teacher/question-topics';
 
   static String gameNewForLesson(String lessonId) =>
       '/teacher/games/new?lessonId=$lessonId';
@@ -349,6 +353,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.teacherPuzzles,
         builder: (context, state) => const MyPuzzlesScreen(),
+      ),
+      // Çıkmış Sorular (Faz 2) — öğretmen soru konusu atama listesi.
+      GoRoute(
+        path: AppRoutes.teacherQuestionTopics,
+        builder: (context, state) => const QuestionTopicsScreen(),
       ),
       // Ders Detayı (F2.1) — Derslerim listesinden açılır.
       GoRoute(

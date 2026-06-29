@@ -13,7 +13,9 @@ import '../../../auth/presentation/auth_notifier.dart';
 import '../../../classes/data/dtos/class_dtos.dart';
 import '../../../classes/presentation/my_classes_notifier.dart';
 import '../../../games/data/dtos/game_dtos.dart';
+import '../../../games/domain/game_type.dart';
 import '../../../games/presentation/assigned_games_notifier.dart';
+import '../../../games/presentation/widgets/game_card.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
 import '../../../profile/presentation/student_stats_notifier.dart';
 import '../../data/dtos/enrollment_dtos.dart';
@@ -882,7 +884,7 @@ class _AssignedGameRow extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.extension, color: AppColors.primary),
+                child: Icon(gameTypeIcon(game.type), color: AppColors.primary),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -897,8 +899,10 @@ class _AssignedGameRow extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.base),
                     Text(
-                      l10n.studentDashboardPuzzleLesson(
-                          game.lessonTitle, game.wordCount),
+                      game.type == GameType.questionSet
+                          ? '${gameTypeLabel(game.type, l10n)} • ${game.lessonTitle}'
+                          : l10n.studentDashboardPuzzleLesson(
+                              game.lessonTitle, game.wordCount),
                       style: AppTypography.labelSm
                           .copyWith(color: AppColors.onSurfaceVariant),
                       maxLines: 1,

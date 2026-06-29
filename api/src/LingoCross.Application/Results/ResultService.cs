@@ -174,12 +174,19 @@ public class ResultService : IResultService
                 .Where(s => s.Id == result.SessionId)
                 .Select(s => new
                 {
-                    TeacherId = s.Game.Lesson.TeacherId,
+                    // Ders-tabanlı oyunda öğretmen dersin sahibidir; QuestionSet (Lesson null) oyununda
+                    // ise oyunun atandığı (arşivlenmemiş) sınıfın sahibi öğretmendir.
+                    TeacherId = s.Game.Lesson != null
+                        ? (Guid?)s.Game.Lesson.TeacherId
+                        : _db.GameAssignments
+                            .Where(a => a.GameId == s.GameId && !a.Class.IsArchived)
+                            .Select(a => (Guid?)a.Class.TeacherId)
+                            .FirstOrDefault(),
                     LessonId = s.Game.LessonId,
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (info is null)
+            if (info?.TeacherId is not { } teacherId)
             {
                 return;
             }
@@ -192,12 +199,17 @@ public class ResultService : IResultService
             var data = new Dictionary<string, string>
             {
                 ["type"] = "results",
-                ["lessonId"] = info.LessonId.ToString(),
                 ["resultId"] = result.Id.ToString(),
             };
 
+            // Ders-tabanlı oyunda deep-link için lessonId; QuestionSet'te ders yok → eklenmez.
+            if (info.LessonId is { } lessonId)
+            {
+                data["lessonId"] = lessonId.ToString();
+            }
+
             await _push!.NotifyUsersAsync(
-                new[] { info.TeacherId },
+                new[] { teacherId },
                 PushType.Results,
                 "Sonuç paylaşıldı",
                 $"{studentName} bir sonucu seninle paylaştı",
@@ -223,7 +235,10 @@ public class ResultService : IResultService
                 r.Session.GameId,
                 GameType = r.Session.Game.Type,
                 LessonId = r.Session.Game.LessonId,
-                LessonTitle = r.Session.Game.Lesson.Title,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                LessonTitle = r.Session.Game.Lesson != null
+                    ? r.Session.Game.Lesson.Title
+                    : (r.Session.Game.QuestionTopic != null ? r.Session.Game.QuestionTopic.Title : ""),
             })
             .ToListAsync(cancellationToken);
 
@@ -261,7 +276,10 @@ public class ResultService : IResultService
                 s.GameId,
                 GameType = s.Game.Type,
                 LessonId = s.Game.LessonId,
-                LessonTitle = s.Game.Lesson.Title,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                LessonTitle = s.Game.Lesson != null
+                    ? s.Game.Lesson.Title
+                    : (s.Game.QuestionTopic != null ? s.Game.QuestionTopic.Title : ""),
             })
             .FirstAsync(cancellationToken);
 
@@ -269,7 +287,7 @@ public class ResultService : IResultService
     }
 
     private static GameResultDto ToDto(
-        GameResult r, Guid gameId, GameType gameType, Guid lessonId, string lessonTitle)
+        GameResult r, Guid gameId, GameType gameType, Guid? lessonId, string lessonTitle)
         => new(
             r.Id,
             r.SessionId,

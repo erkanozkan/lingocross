@@ -17,6 +17,10 @@ class FakeGamesRepository implements GamesRepository {
     this.shareError,
     this.startValue,
     this.startError,
+    this.questionTopics = const [],
+    this.questionTopicsError,
+    this.topicAssignments = const GameAssignmentsDto(),
+    this.setAssignmentsError,
   });
 
   final List<AssignedGameDto> assigned;
@@ -30,6 +34,10 @@ class FakeGamesRepository implements GamesRepository {
   final GamesFailure? shareError;
   final StartGameSessionResponse? startValue;
   final GamesFailure? startError;
+  final List<QuestionTopicDto> questionTopics;
+  final GamesFailure? questionTopicsError;
+  final GameAssignmentsDto topicAssignments;
+  final GamesFailure? setAssignmentsError;
 
   int createCount = 0;
   CreateGameRequest? lastCreateRequest;
@@ -42,6 +50,10 @@ class FakeGamesRepository implements GamesRepository {
   String? lastSharedGameId;
   int startCount = 0;
   String? lastStartGameId;
+  int listQuestionTopicsCount = 0;
+  int setAssignmentsCount = 0;
+  String? lastAssignTopicId;
+  List<String>? lastAssignClassIds;
 
   @override
   Future<GameDto> createGame(String lessonId, CreateGameRequest request) async {
@@ -132,6 +144,31 @@ class FakeGamesRepository implements GamesRepository {
           type: GameType.wordMatching,
           wordMatching: const WordMatchingContent(pairs: [], distractors: []),
         );
+  }
+
+  @override
+  Future<List<QuestionTopicDto>> listQuestionTopics() async {
+    listQuestionTopicsCount++;
+    if (questionTopicsError != null) throw questionTopicsError!;
+    return questionTopics;
+  }
+
+  @override
+  Future<GameAssignmentsDto> setTopicAssignments(
+    String topicId,
+    List<String> classIds,
+  ) async {
+    setAssignmentsCount++;
+    lastAssignTopicId = topicId;
+    lastAssignClassIds = classIds;
+    if (setAssignmentsError != null) throw setAssignmentsError!;
+    return GameAssignmentsDto(classIds: classIds);
+  }
+
+  @override
+  Future<GameAssignmentsDto> getTopicAssignments(String topicId) async {
+    if (questionTopicsError != null) throw questionTopicsError!;
+    return topicAssignments;
   }
 
   @override

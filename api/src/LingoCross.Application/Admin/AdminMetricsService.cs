@@ -153,7 +153,10 @@ public class AdminMetricsService : IAdminMetricsService
             .Take(clampedTake)
             .Select(r => new RecentResultDto(
                 r.Session.Student.DisplayName,
-                r.Session.Game.Lesson.Title,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                r.Session.Game.Lesson != null
+                    ? r.Session.Game.Lesson.Title
+                    : (r.Session.Game.QuestionTopic != null ? r.Session.Game.QuestionTopic.Title : ""),
                 r.Score,
                 r.CreatedAt))
             .ToListAsync(cancellationToken);

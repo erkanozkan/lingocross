@@ -1,4 +1,5 @@
 using LingoCross.Application.Games.Dtos;
+using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 
 namespace LingoCross.Application.Games;
@@ -79,4 +80,12 @@ public interface IGameService
     /// kalıcı kayıt oluşturmaz (Game/GameSession eklenmez, SaveChanges çağrılmaz). Desteklenmeyen tür → 400.
     /// </summary>
     Task<GamePreviewResponse> PreviewForLessonAsync(Guid lessonId, GameType type, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Faz 2 reuse noktası: zaten çözülmüş (aynı DbContext'te izlenen) bir oyun için sınıf atamalarını
+    /// SET semantiğiyle uygular (QuestionBankService kullanır). Sahiplik: her classId öğretmene ait
+    /// olmalı (aksi 404). Nihai atanmış sınıf kimliklerini döndürür.
+    /// </summary>
+    Task<IReadOnlyList<Guid>> ApplyAssignmentsForGameAsync(
+        Game game, Guid teacherId, IReadOnlyList<Guid> classIds, CancellationToken cancellationToken = default);
 }

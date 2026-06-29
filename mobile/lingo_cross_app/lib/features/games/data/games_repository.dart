@@ -16,6 +16,9 @@ import 'dtos/game_dtos.dart';
 /// - `GET  /api/games/assigned`           (Student) → atanan (yayımlı) oyunlar
 /// - `POST /api/games/{gameId}/sessions`  (Student) → oturum + içerik
 /// - `GET  /api/game-sessions/{sessionId}` (Student) → oturum durumu
+/// - `GET  /api/question-topics`          (Teacher) → atanabilir soru konuları
+/// - `POST /api/question-topics/{id}/assignments` (Teacher) → sınıf atamaları
+/// - `GET  /api/question-topics/{id}/assignments` (Teacher) → mevcut atamalar
 ///
 /// Bearer token interceptor tarafından eklenir.
 class GamesRepository {
@@ -116,6 +119,50 @@ class GamesRepository {
         '$_base/games/$gameId/sessions',
       );
       return StartGameSessionResponse.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: atanabilir soru konularını döndürür (Çıkmış Sorular —
+  /// `GET /api/question-topics`).
+  Future<List<QuestionTopicDto>> listQuestionTopics() async {
+    try {
+      final res = await _dio.get<List<dynamic>>('$_base/question-topics');
+      return (res.data ?? const [])
+          .map((e) => QuestionTopicDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: bir konunun sınıf atamalarını ayarlar (idempotent —
+  /// `POST /api/question-topics/{topicId}/assignments`). Boş liste tüm
+  /// atamaları kaldırır.
+  Future<GameAssignmentsDto> setTopicAssignments(
+    String topicId,
+    List<String> classIds,
+  ) async {
+    try {
+      final res = await _dio.post<Map<String, dynamic>>(
+        '$_base/question-topics/$topicId/assignments',
+        data: {'classIds': classIds},
+      );
+      return GameAssignmentsDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
+  /// Öğretmen: bir konunun mevcut sınıf atamalarını döndürür
+  /// (`GET /api/question-topics/{topicId}/assignments`).
+  Future<GameAssignmentsDto> getTopicAssignments(String topicId) async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '$_base/question-topics/$topicId/assignments',
+      );
+      return GameAssignmentsDto.fromJson(res.data!);
     } on DioException catch (e) {
       throw _mapError(e);
     }

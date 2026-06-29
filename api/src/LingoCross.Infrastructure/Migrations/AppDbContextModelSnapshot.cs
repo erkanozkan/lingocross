@@ -218,13 +218,17 @@ namespace LingoCross.Infrastructure.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_published");
 
-                    b.Property<Guid>("LessonId")
+                    b.Property<Guid?>("LessonId")
                         .HasColumnType("uuid")
                         .HasColumnName("lesson_id");
 
                     b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("published_at");
+
+                    b.Property<Guid?>("QuestionTopicId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("question_topic_id");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -246,11 +250,23 @@ namespace LingoCross.Infrastructure.Migrations
                     b.HasIndex("LessonId")
                         .HasDatabaseName("ix_games_lesson_id");
 
+                    b.HasIndex("QuestionTopicId")
+                        .HasDatabaseName("ix_games_question_topic_id");
+
                     b.HasIndex("LessonId", "Type")
                         .IsUnique()
-                        .HasDatabaseName("ix_games_lesson_id_type");
+                        .HasDatabaseName("ix_games_lesson_id_type")
+                        .HasFilter("lesson_id IS NOT NULL");
 
-                    b.ToTable("games", (string)null);
+                    b.HasIndex("QuestionTopicId", "Type")
+                        .IsUnique()
+                        .HasDatabaseName("ix_games_question_topic_id_type")
+                        .HasFilter("question_topic_id IS NOT NULL");
+
+                    b.ToTable("games", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_games_lesson_xor_topic", "(lesson_id IS NULL) <> (question_topic_id IS NULL)");
+                        });
                 });
 
             modelBuilder.Entity("LingoCross.Domain.Entities.GameAssignment", b =>
@@ -632,6 +648,161 @@ namespace LingoCross.Infrastructure.Migrations
                     b.ToTable("password_reset_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Question", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Explanation")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("explanation");
+
+                    b.Property<int>("Ordinal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("ordinal");
+
+                    b.Property<Guid>("QuestionTopicId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("question_topic_id");
+
+                    b.Property<string>("SourceRef")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("source_ref");
+
+                    b.Property<string>("Stem")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)")
+                        .HasColumnName("stem");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_questions");
+
+                    b.HasIndex("QuestionTopicId")
+                        .HasDatabaseName("ix_questions_question_topic_id");
+
+                    b.ToTable("questions", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.QuestionOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsCorrect")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_correct");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer")
+                        .HasColumnName("position");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("question_id");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_question_options");
+
+                    b.HasIndex("QuestionId")
+                        .HasDatabaseName("ix_question_options_question_id");
+
+                    b.HasIndex("QuestionId", "Position")
+                        .IsUnique()
+                        .HasDatabaseName("ix_question_options_question_id_position");
+
+                    b.ToTable("question_options", (string)null);
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.QuestionTopic", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("slug");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("sort_order");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_question_topics");
+
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasDatabaseName("ix_question_topics_slug");
+
+                    b.ToTable("question_topics", (string)null);
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1004,10 +1175,17 @@ namespace LingoCross.Infrastructure.Migrations
                         .WithMany("Games")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_games_lessons_lesson_id");
 
+                    b.HasOne("LingoCross.Domain.Entities.QuestionTopic", "QuestionTopic")
+                        .WithMany()
+                        .HasForeignKey("QuestionTopicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_games_question_topics_question_topic_id");
+
                     b.Navigation("Lesson");
+
+                    b.Navigation("QuestionTopic");
                 });
 
             modelBuilder.Entity("LingoCross.Domain.Entities.GameAssignment", b =>
@@ -1112,6 +1290,30 @@ namespace LingoCross.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LingoCross.Domain.Entities.Question", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.QuestionTopic", "QuestionTopic")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuestionTopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_questions_question_topics_question_topic_id");
+
+                    b.Navigation("QuestionTopic");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.QuestionOption", b =>
+                {
+                    b.HasOne("LingoCross.Domain.Entities.Question", "Question")
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_question_options_questions_question_id");
+
+                    b.Navigation("Question");
+                });
+
             modelBuilder.Entity("LingoCross.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("LingoCross.Domain.Entities.User", "User")
@@ -1201,6 +1403,16 @@ namespace LingoCross.Infrastructure.Migrations
                     b.Navigation("Games");
 
                     b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.Question", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("LingoCross.Domain.Entities.QuestionTopic", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("LingoCross.Domain.Entities.User", b =>

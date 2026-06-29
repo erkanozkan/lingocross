@@ -30,7 +30,7 @@ public record GameResultDto(
     Guid SessionId,
     Guid GameId,
     GameType GameType,
-    Guid LessonId,
+    Guid? LessonId,
     string LessonTitle,
     int DurationMs,
     int TotalItems,

@@ -527,6 +527,24 @@
   "gameScrambledSlotSemantic": "yerleştirildi, geri almak için dokun",
   "gameScrambledEmptySlot": "boş harf yuvası",
 
+  "questionSetTitle": "Çıkmış Sorular",
+  "questionSetQuestionOf": "Soru {current} / {total}",
+  "@questionSetQuestionOf": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "questionSetFinish": "Bitir",
+  "questionSetSelectAnswer": "Bir cevap seç",
+  "questionSetExplanation": "Açıklama",
+  "questionTopicsTitle": "Çıkmış Sorular",
+  "questionTopicsHeroTitle": "Çıkmış Sorular",
+  "questionTopicsHeroSubtitle": "Gerçek sınav tecrübesiyle öğrencilerinin İngilizce seviyesini bir üst noktaya taşı.",
+  "questionTopicsAssign": "Sınıfa Ata",
+  "questionTopicsAssignSheetTitle": "Sınıflara Ata",
+  "questionTopicsAssignSubmit": "Ata",
+  "questionTopicsAssignSuccess": "Konu seçili sınıflara atandı.",
+  "questionTopicsQuestionCount": "{count} Soru",
+  "@questionTopicsQuestionCount": { "placeholders": { "count": { "type": "int" } } },
+  "questionTopicsEmpty": "Henüz atanabilir soru konusu yok.",
+  "gameCardQuestionSet": "Çıkmış Sorular",
+
   "teacherStudentsAppBarTitle": "Öğrencilerim",
   "teacherStudentsCodeLabel": "Davet Kodu",
   "teacherStudentsCodeDesc": "Bu kodu öğrencilerinle paylaş; girince derslerine katılırlar.",
@@ -660,6 +678,8 @@
 
   "teacherDashboardActionMyPuzzlesTitle": "Bulmacalarım",
   "teacherDashboardActionMyPuzzlesDesc": "Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.",
+  "teacherDashboardActionQuestionTopicsTitle": "Çıkmış Sorular",
+  "teacherDashboardActionQuestionTopicsDesc": "Soru konularını seç ve sınıflarına ata; öğrenciler 10 soruluk setleri çözsün.",
 
   "myPuzzlesTitle": "Bulmacalarım",
   "myPuzzlesCreateCta": "Yeni Bulmaca Oluştur",

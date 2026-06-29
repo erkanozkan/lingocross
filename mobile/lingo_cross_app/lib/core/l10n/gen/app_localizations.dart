@@ -2753,6 +2753,96 @@ abstract class AppLocalizations {
   /// **'boş harf yuvası'**
   String get gameScrambledEmptySlot;
 
+  /// No description provided for @questionSetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get questionSetTitle;
+
+  /// No description provided for @questionSetQuestionOf.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru {current} / {total}'**
+  String questionSetQuestionOf(int current, int total);
+
+  /// No description provided for @questionSetFinish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitir'**
+  String get questionSetFinish;
+
+  /// No description provided for @questionSetSelectAnswer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir cevap seç'**
+  String get questionSetSelectAnswer;
+
+  /// No description provided for @questionSetExplanation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get questionSetExplanation;
+
+  /// No description provided for @questionTopicsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get questionTopicsTitle;
+
+  /// No description provided for @questionTopicsHeroTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get questionTopicsHeroTitle;
+
+  /// No description provided for @questionTopicsHeroSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gerçek sınav tecrübesiyle öğrencilerinin İngilizce seviyesini bir üst noktaya taşı.'**
+  String get questionTopicsHeroSubtitle;
+
+  /// No description provided for @questionTopicsAssign.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıfa Ata'**
+  String get questionTopicsAssign;
+
+  /// No description provided for @questionTopicsAssignSheetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıflara Ata'**
+  String get questionTopicsAssignSheetTitle;
+
+  /// No description provided for @questionTopicsAssignSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ata'**
+  String get questionTopicsAssignSubmit;
+
+  /// No description provided for @questionTopicsAssignSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konu seçili sınıflara atandı.'**
+  String get questionTopicsAssignSuccess;
+
+  /// No description provided for @questionTopicsQuestionCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} Soru'**
+  String questionTopicsQuestionCount(int count);
+
+  /// No description provided for @questionTopicsEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz atanabilir soru konusu yok.'**
+  String get questionTopicsEmpty;
+
+  /// No description provided for @gameCardQuestionSet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get gameCardQuestionSet;
+
   /// No description provided for @teacherStudentsAppBarTitle.
   ///
   /// In tr, this message translates to:
@@ -3358,6 +3448,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.'**
   String get teacherDashboardActionMyPuzzlesDesc;
+
+  /// No description provided for @teacherDashboardActionQuestionTopicsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkmış Sorular'**
+  String get teacherDashboardActionQuestionTopicsTitle;
+
+  /// No description provided for @teacherDashboardActionQuestionTopicsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru konularını seç ve sınıflarına ata; öğrenciler 10 soruluk setleri çözsün.'**
+  String get teacherDashboardActionQuestionTopicsDesc;
 
   /// No description provided for @myPuzzlesTitle.
   ///

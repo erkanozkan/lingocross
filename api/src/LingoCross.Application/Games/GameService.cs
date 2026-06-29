@@ -21,6 +21,9 @@ public class GameService : IGameService
     /// <summary>Üretilecek en fazla çeldirici (fazladan Türkçe karşılık) sayısı.</summary>
     public const int MaxDistractors = 4;
 
+    /// <summary>Faz 2 — bir QuestionSet oturumunda bankadan rastgele seçilip sunulan soru sayısı.</summary>
+    public const int QuestionsPerSet = 10;
+
     private readonly IAppDbContext _db;
     private readonly ICurrentUser _currentUser;
     private readonly Random _random;
@@ -154,14 +157,16 @@ public class GameService : IGameService
         var teacherId = RequireTeacher();
 
         // Yalnız öğretmenin sahip olduğu derslerdeki bulmacalar; yeniden → eskiye.
+        // QuestionSet oyunları GLOBAL'dir (Lesson null) → "Bulmacalarım" listesinde GÖRÜNMEZ;
+        // Lesson != null null-guard'ı InMemory'de null-ref'i de önler.
         var puzzles = await _db.Games
-            .Where(g => g.Lesson.TeacherId == teacherId)
+            .Where(g => g.Lesson != null && g.Lesson.TeacherId == teacherId)
             .OrderByDescending(g => g.CreatedAt)
             .Select(g => new
             {
                 g.Id,
                 g.LessonId,
-                LessonTitle = g.Lesson.Title,
+                LessonTitle = g.Lesson!.Title,
                 g.Type,
                 g.IsPublished,
                 g.CreatedAt,
@@ -182,7 +187,8 @@ public class GameService : IGameService
         return puzzles
             .Select(p => new TeacherPuzzleDto(
                 p.Id,
-                p.LessonId,
+                // Bu listede yalnız ders-tabanlı oyunlar var (filtre Lesson != null) → LessonId daima dolu.
+                p.LessonId!.Value,
                 p.LessonTitle,
                 p.Type,
                 p.IsPublished,
@@ -199,7 +205,7 @@ public class GameService : IGameService
 
         // Sahiplik servis katmanında: oyun + dersi tek sorguda al, sahibi değilse 404.
         var game = await _db.Games
-            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson != null && g.Lesson.TeacherId == teacherId, cancellationToken);
 
         if (game is null)
         {
@@ -218,11 +224,13 @@ public class GameService : IGameService
     {
         var studentId = RequireStudent();
 
-        // F4.3: öğrencinin üye olduğu (arşivlenmemiş) sınıflara atanmış, yayımlanmış oyunlar
-        // (ders de yayımlanmış olmalı). Görünürlük sınıf üyeliğinden türetilir.
+        // F4.3: öğrencinin üye olduğu (arşivlenmemiş) sınıflara atanmış, yayımlanmış oyunlar.
+        // Görünürlük sınıf üyeliğinden türetilir. Ders-tabanlı oyunlarda ders de yayımlanmış olmalı;
+        // QuestionSet oyunlarında (Lesson null) bunun yerine konu başlığı aktif olmalı.
         var assigned = await _db.Games
             .Where(g => g.IsPublished
-                && g.Lesson.IsPublished
+                && ((g.Lesson != null && g.Lesson.IsPublished)
+                    || (g.QuestionTopic != null && g.QuestionTopic.IsActive))
                 && _db.GameAssignments.Any(a => a.GameId == g.Id
                     && !a.Class.IsArchived
                     && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
@@ -233,11 +241,24 @@ public class GameService : IGameService
             {
                 g.Id,
                 g.LessonId,
-                LessonTitle = g.Lesson.Title,
+                g.QuestionTopicId,
+                // QuestionSet'te "ders başlığı" yerine konu başlığını göster.
+                LessonTitle = g.Lesson != null ? g.Lesson.Title : g.QuestionTopic!.Title,
                 g.Type,
                 g.Title,
-                WordCount = g.Lesson.Words.Count,
-                TeacherName = g.Lesson.Teacher.DisplayName,
+                // QuestionSet'te "kelime sayısı" yerine bankadaki soru sayısını göster.
+                WordCount = g.Lesson != null ? g.Lesson.Words.Count : g.QuestionTopic!.Questions.Count,
+                // Ders-tabanlı: ders öğretmeni. QuestionSet: atayan öğretmen (atanmış sınıfın sahibi).
+                TeacherName = g.Lesson != null
+                    ? g.Lesson.Teacher.DisplayName
+                    : _db.GameAssignments
+                        .Where(a => a.GameId == g.Id
+                            && !a.Class.IsArchived
+                            && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                                && m.StudentId == studentId
+                                && m.Status == ClassMemberStatus.Active))
+                        .Select(a => a.Class.Teacher.DisplayName)
+                        .FirstOrDefault(),
                 g.PublishedAt,
                 // Bu öğrencinin bu oyuna ait (varsa) en güncel tamamlanmış sonucu (oturum→sonuç).
                 // Aynı oyuna birden çok oturum oluşabilir (yarım kalan vb.); sonucu olan en yeni alınır.
@@ -253,11 +274,12 @@ public class GameService : IGameService
             .Select(g => new AssignedGameDto(
                 g.Id,
                 g.LessonId,
+                g.QuestionTopicId,
                 g.LessonTitle,
                 g.Type,
                 g.Title,
                 g.WordCount,
-                g.TeacherName,
+                g.TeacherName ?? string.Empty,
                 g.PublishedAt,
                 g.Result is not null,
                 g.Result?.Id,
@@ -277,8 +299,18 @@ public class GameService : IGameService
             throw AppException.NotFound("Oyun bulunamadı.");
         }
 
-        // Ders erişimi (enrolled + published) doğrula; aksi 404.
-        await GetAccessibleLessonAsync(game.LessonId, cancellationToken);
+        // Erişim doğrulaması tür-duyarlıdır:
+        //  - Ders-tabanlı oyun (LessonId dolu): ders erişimi (enrolled + published).
+        //  - QuestionSet oyunu (Lesson null): ders kontrolü atlanır; atama-tabanlı erişim (sınıf üyeliği).
+        // Her iki durumda da aksi 404 (varlığı sızdırmamak için).
+        if (game.LessonId is { } lessonId)
+        {
+            await GetAccessibleLessonAsync(lessonId, cancellationToken);
+        }
+        else
+        {
+            await RequireQuestionSetAccessAsync(game, studentId, cancellationToken);
+        }
 
         // Tek seferlik oynanır: öğrencinin bu oyuna ait TAMAMLANMIŞ (sonuçlu) bir oturumu varsa
         // yeniden başlatılamaz (409). Yarım kalmış (sonuçsuz) InProgress oturum engel değildir;
@@ -295,19 +327,24 @@ public class GameService : IGameService
         WordMatchingContent? wordMatching = null;
         CrosswordContent? crossword = null;
         ScrambledContent? scrambled = null;
+        QuestionSetContent? questionSet = null;
 
         switch (game.Type)
         {
             case GameType.WordMatching:
-                wordMatching = await BuildWordMatchingContentAsync(game.LessonId, cancellationToken);
+                wordMatching = await BuildWordMatchingContentAsync(game.LessonId!.Value, cancellationToken);
                 break;
 
             case GameType.Crossword:
-                crossword = await BuildCrosswordContentAsync(game.LessonId, cancellationToken);
+                crossword = await BuildCrosswordContentAsync(game.LessonId!.Value, cancellationToken);
                 break;
 
             case GameType.Scrambled:
-                scrambled = await BuildScrambledContentAsync(game.LessonId, cancellationToken);
+                scrambled = await BuildScrambledContentAsync(game.LessonId!.Value, cancellationToken);
+                break;
+
+            case GameType.QuestionSet:
+                questionSet = await BuildQuestionSetContentAsync(game.QuestionTopicId!.Value, cancellationToken);
                 break;
 
             default:
@@ -324,7 +361,7 @@ public class GameService : IGameService
         _db.GameSessions.Add(session);
         await _db.SaveChangesAsync(cancellationToken);
 
-        return new StartGameSessionResponse(ToDto(session), game.Type, wordMatching, crossword, scrambled);
+        return new StartGameSessionResponse(ToDto(session), game.Type, wordMatching, crossword, scrambled, questionSet);
     }
 
     public async Task<GameSessionDto> GetSessionAsync(Guid sessionId, CancellationToken cancellationToken = default)
@@ -347,7 +384,7 @@ public class GameService : IGameService
 
         // Sahiplik: oyun + dersi tek sorguda; ders sahibi değilse 404.
         var game = await _db.Games
-            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+            .FirstOrDefaultAsync(g => g.Id == gameId && g.Lesson != null && g.Lesson.TeacherId == teacherId, cancellationToken);
 
         if (game is null)
         {
@@ -363,7 +400,7 @@ public class GameService : IGameService
         var teacherId = RequireTeacher();
 
         var owns = await _db.Games
-            .AnyAsync(g => g.Id == gameId && g.Lesson.TeacherId == teacherId, cancellationToken);
+            .AnyAsync(g => g.Id == gameId && g.Lesson != null && g.Lesson.TeacherId == teacherId, cancellationToken);
 
         if (!owns)
         {
@@ -410,6 +447,16 @@ public class GameService : IGameService
 
         return new GamePreviewResponse(type, wordMatching, crossword, scrambled);
     }
+
+    /// <summary>
+    /// Faz 2 — QuestionBankService'in yeniden kullandığı reuse noktası: zaten çözülmüş (aynı DbContext'te
+    /// izlenen) bir oyun için atamaları SET semantiğiyle uygular ve nihai sınıf kimliklerini döndürür.
+    /// Sahiplik (her classId öğretmenindir) ve oto-yayın/push mantığı <see cref="ApplyAssignmentsAsync"/>
+    /// ile aynıdır. QuestionSet oyununda Lesson null olduğundan EnsureLessonPublished no-op kalır.
+    /// </summary>
+    public Task<IReadOnlyList<Guid>> ApplyAssignmentsForGameAsync(
+        Game game, Guid teacherId, IReadOnlyList<Guid> classIds, CancellationToken cancellationToken = default)
+        => ApplyAssignmentsAsync(game, teacherId, classIds, cancellationToken);
 
     /// <summary>
     /// SET semantiğiyle oyunun atamalarını uygular: yalnız öğretmenin kendi (arşivlenmemiş) sınıfları
@@ -502,25 +549,42 @@ public class GameService : IGameService
                 return;
             }
 
-            // Ders adını oyunun dersinden al (deep-link/metin için).
-            var lessonInfo = await _db.Lessons
-                .Where(l => l.Id == game.LessonId)
-                .Select(l => new { l.Id, l.Title })
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var lessonTitle = lessonInfo?.Title ?? "Ders";
             var data = new Dictionary<string, string>
             {
                 ["type"] = "assigned",
-                ["lessonId"] = game.LessonId.ToString(),
                 ["gameId"] = game.Id.ToString(),
             };
+
+            // Başlık/deep-link tür-duyarlı: ders-tabanlı oyunda dersten, QuestionSet'te konu başlığından.
+            string title;
+            if (game.LessonId is { } lessonId)
+            {
+                var lessonTitle = await _db.Lessons
+                    .Where(l => l.Id == lessonId)
+                    .Select(l => l.Title)
+                    .FirstOrDefaultAsync(cancellationToken) ?? "Ders";
+                data["lessonId"] = lessonId.ToString();
+                title = lessonTitle;
+            }
+            else if (game.QuestionTopicId is { } topicId)
+            {
+                var topicTitle = await _db.QuestionTopics
+                    .Where(t => t.Id == topicId)
+                    .Select(t => t.Title)
+                    .FirstOrDefaultAsync(cancellationToken) ?? "Çıkmış Sorular";
+                data["topicId"] = topicId.ToString();
+                title = topicTitle;
+            }
+            else
+            {
+                title = "Oyun";
+            }
 
             await _push!.NotifyUsersAsync(
                 studentIds,
                 PushType.Assigned,
                 "Yeni ödev",
-                $"{lessonTitle} için yeni bir oyun atandı",
+                $"{title} için yeni bir oyun atandı",
                 data,
                 cancellationToken);
         }
@@ -688,6 +752,75 @@ public class GameService : IGameService
             .ToList();
 
         return new ScrambledContent(items);
+    }
+
+    /// <summary>
+    /// Faz 2 — bir konu başlığı bankasından QuestionSet içeriği üretir: tüm soruları (şıklarıyla) çek,
+    /// enjekte <see cref="_random"/> ile karıştır, ilk <see cref="QuestionsPerSet"/> tanesini al. Bankada
+    /// <see cref="QuestionsPerSet"/>'ten az soru varsa AppException(400). Şıklar ÖSYM <c>Position</c>
+    /// sırasında (Label "A".."E") sunulur, KARIŞTIRILMAZ. CorrectOptionId = IsCorrect olan şıkkın Id'sidir.
+    /// </summary>
+    private async Task<QuestionSetContent> BuildQuestionSetContentAsync(Guid topicId, CancellationToken cancellationToken)
+    {
+        var questions = await _db.Questions
+            .Where(q => q.QuestionTopicId == topicId)
+            .Include(q => q.Options)
+            .ToListAsync(cancellationToken);
+
+        if (questions.Count < QuestionsPerSet)
+        {
+            throw AppException.BadRequest(
+                $"Bu konu başlığı için soru seti oynatılamıyor; en az {QuestionsPerSet} soru gerekir.");
+        }
+
+        // Bankadan rastgele (deterministik: enjekte Random) ilk N soru.
+        var chosen = Shuffle(questions).Take(QuestionsPerSet).ToList();
+
+        var items = chosen
+            .Select(q =>
+            {
+                // Şıklar ÖSYM sırasında (Position artan); KARIŞTIRILMAZ. Label A..E.
+                var ordered = q.Options.OrderBy(o => o.Position).ToList();
+                var choices = ordered
+                    .Select(o => new QuestionChoice(o.Id, OptionLabel(o.Position), o.Text))
+                    .ToList();
+
+                // İçerik bütünlüğü uygulama seviyesinde de korunur (InMemory filtered index/CHECK'i bilmez):
+                // tam 1 doğru şık olmalı.
+                var correct = ordered.SingleOrDefault(o => o.IsCorrect);
+                if (correct is null)
+                {
+                    throw AppException.BadRequest("Soru bankası bozuk: tam bir doğru şık bulunmalı.");
+                }
+
+                return new QuestionItem(q.Id, q.Stem, choices, correct.Id, q.Explanation);
+            })
+            .ToList();
+
+        return new QuestionSetContent(items);
+    }
+
+    /// <summary>ÖSYM şık etiketi: 0→"A", 1→"B", ... 4→"E".</summary>
+    private static string OptionLabel(int position) => ((char)('A' + position)).ToString();
+
+    /// <summary>
+    /// QuestionSet oyununda atama-tabanlı erişim: öğrenci, oyunun atandığı (arşivlenmemiş) bir sınıfta
+    /// Active üye olmalı (ders erişim kontrolü uygulanmaz; oyun GLOBAL'dir). Aksi 404.
+    /// </summary>
+    private async Task RequireQuestionSetAccessAsync(Game game, Guid studentId, CancellationToken cancellationToken)
+    {
+        var hasAccess = await _db.GameAssignments.AnyAsync(
+            a => a.GameId == game.Id
+                && !a.Class.IsArchived
+                && _db.ClassMembers.Any(m => m.ClassId == a.ClassId
+                    && m.StudentId == studentId
+                    && m.Status == ClassMemberStatus.Active),
+            cancellationToken);
+
+        if (!hasAccess)
+        {
+            throw AppException.NotFound("Oyun bulunamadı.");
+        }
     }
 
     /// <summary>
@@ -941,7 +1074,7 @@ public class GameService : IGameService
     }
 
     private static GameDto ToDto(Game g)
-        => new(g.Id, g.LessonId, g.Type, g.Title, g.IsPublished, g.PublishedAt, g.CreatedAt, g.UpdatedAt);
+        => new(g.Id, g.LessonId, g.QuestionTopicId, g.Type, g.Title, g.IsPublished, g.PublishedAt, g.CreatedAt, g.UpdatedAt);
 
     private static GameSessionDto ToDto(GameSession s)
         => new(s.Id, s.GameId, s.StudentId, s.Status, s.StartedAt, s.CompletedAt);

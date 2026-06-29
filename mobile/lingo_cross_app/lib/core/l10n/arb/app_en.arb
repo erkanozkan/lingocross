@@ -527,6 +527,24 @@
   "gameScrambledSlotSemantic": "placed, tap to remove",
   "gameScrambledEmptySlot": "empty letter slot",
 
+  "questionSetTitle": "Past Exam Questions",
+  "questionSetQuestionOf": "Question {current} / {total}",
+  "@questionSetQuestionOf": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },
+  "questionSetFinish": "Finish",
+  "questionSetSelectAnswer": "Choose an answer",
+  "questionSetExplanation": "Explanation",
+  "questionTopicsTitle": "Past Exam Questions",
+  "questionTopicsHeroTitle": "Past Exam Questions",
+  "questionTopicsHeroSubtitle": "Take your students' English to the next level with real exam experience.",
+  "questionTopicsAssign": "Assign to Class",
+  "questionTopicsAssignSheetTitle": "Assign to Classes",
+  "questionTopicsAssignSubmit": "Assign",
+  "questionTopicsAssignSuccess": "Topic assigned to the selected classes.",
+  "questionTopicsQuestionCount": "{count} Questions",
+  "@questionTopicsQuestionCount": { "placeholders": { "count": { "type": "int" } } },
+  "questionTopicsEmpty": "No assignable question topics yet.",
+  "gameCardQuestionSet": "Past Exam Questions",
+
   "teacherStudentsAppBarTitle": "My Students",
   "teacherStudentsCodeLabel": "Invite Code",
   "teacherStudentsCodeDesc": "Share this code with your students; once they enter it, they join your lessons.",
@@ -660,6 +678,8 @@
 
   "teacherDashboardActionMyPuzzlesTitle": "My Puzzles",
   "teacherDashboardActionMyPuzzlesDesc": "View, share, and track solve statistics for all the puzzles you've created.",
+  "teacherDashboardActionQuestionTopicsTitle": "Past Exam Questions",
+  "teacherDashboardActionQuestionTopicsDesc": "Pick question topics and assign them to your classes; students solve 10-question sets.",
 
   "myPuzzlesTitle": "My Puzzles",
   "myPuzzlesCreateCta": "Create New Puzzle",

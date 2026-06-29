@@ -203,6 +203,87 @@ Map<String, dynamic> _$$ScrambledContentImplToJson(
   _$ScrambledContentImpl instance,
 ) => <String, dynamic>{'items': instance.items.map((e) => e.toJson()).toList()};
 
+_$QuestionChoiceImpl _$$QuestionChoiceImplFromJson(Map<String, dynamic> json) =>
+    _$QuestionChoiceImpl(
+      optionId: json['optionId'] as String,
+      label: json['label'] as String,
+      text: json['text'] as String,
+    );
+
+Map<String, dynamic> _$$QuestionChoiceImplToJson(
+  _$QuestionChoiceImpl instance,
+) => <String, dynamic>{
+  'optionId': instance.optionId,
+  'label': instance.label,
+  'text': instance.text,
+};
+
+_$QuestionItemImpl _$$QuestionItemImplFromJson(Map<String, dynamic> json) =>
+    _$QuestionItemImpl(
+      questionId: json['questionId'] as String,
+      stem: json['stem'] as String,
+      choices:
+          (json['choices'] as List<dynamic>)
+              .map((e) => QuestionChoice.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      correctOptionId: json['correctOptionId'] as String,
+      explanation: json['explanation'] as String?,
+    );
+
+Map<String, dynamic> _$$QuestionItemImplToJson(_$QuestionItemImpl instance) =>
+    <String, dynamic>{
+      'questionId': instance.questionId,
+      'stem': instance.stem,
+      'choices': instance.choices.map((e) => e.toJson()).toList(),
+      'correctOptionId': instance.correctOptionId,
+      'explanation': instance.explanation,
+    };
+
+_$QuestionSetContentImpl _$$QuestionSetContentImplFromJson(
+  Map<String, dynamic> json,
+) => _$QuestionSetContentImpl(
+  questions:
+      (json['questions'] as List<dynamic>)
+          .map((e) => QuestionItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
+
+Map<String, dynamic> _$$QuestionSetContentImplToJson(
+  _$QuestionSetContentImpl instance,
+) => <String, dynamic>{
+  'questions': instance.questions.map((e) => e.toJson()).toList(),
+};
+
+_$QuestionTopicDtoImpl _$$QuestionTopicDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$QuestionTopicDtoImpl(
+  id: json['id'] as String,
+  title: json['title'] as String,
+  description: json['description'] as String?,
+  questionCount: (json['questionCount'] as num).toInt(),
+);
+
+Map<String, dynamic> _$$QuestionTopicDtoImplToJson(
+  _$QuestionTopicDtoImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'description': instance.description,
+  'questionCount': instance.questionCount,
+};
+
+_$GameAssignmentsDtoImpl _$$GameAssignmentsDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$GameAssignmentsDtoImpl(
+  classIds:
+      (json['classIds'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const <String>[],
+);
+
+Map<String, dynamic> _$$GameAssignmentsDtoImplToJson(
+  _$GameAssignmentsDtoImpl instance,
+) => <String, dynamic>{'classIds': instance.classIds};
+
 _$CrosswordEntryImpl _$$CrosswordEntryImplFromJson(Map<String, dynamic> json) =>
     _$CrosswordEntryImpl(
       number: (json['number'] as num).toInt(),
@@ -269,6 +350,12 @@ _$GamePreviewResponseImpl _$$GamePreviewResponseImplFromJson(
           : ScrambledContent.fromJson(
             json['scrambled'] as Map<String, dynamic>,
           ),
+  questionSet:
+      json['questionSet'] == null
+          ? null
+          : QuestionSetContent.fromJson(
+            json['questionSet'] as Map<String, dynamic>,
+          ),
 );
 
 Map<String, dynamic> _$$GamePreviewResponseImplToJson(
@@ -278,6 +365,7 @@ Map<String, dynamic> _$$GamePreviewResponseImplToJson(
   'wordMatching': instance.wordMatching?.toJson(),
   'crossword': instance.crossword?.toJson(),
   'scrambled': instance.scrambled?.toJson(),
+  'questionSet': instance.questionSet?.toJson(),
 };
 
 _$StartGameSessionResponseImpl _$$StartGameSessionResponseImplFromJson(
@@ -303,6 +391,12 @@ _$StartGameSessionResponseImpl _$$StartGameSessionResponseImplFromJson(
           : ScrambledContent.fromJson(
             json['scrambled'] as Map<String, dynamic>,
           ),
+  questionSet:
+      json['questionSet'] == null
+          ? null
+          : QuestionSetContent.fromJson(
+            json['questionSet'] as Map<String, dynamic>,
+          ),
 );
 
 Map<String, dynamic> _$$StartGameSessionResponseImplToJson(
@@ -313,4 +407,5 @@ Map<String, dynamic> _$$StartGameSessionResponseImplToJson(
   'wordMatching': instance.wordMatching?.toJson(),
   'crossword': instance.crossword?.toJson(),
   'scrambled': instance.scrambled?.toJson(),
+  'questionSet': instance.questionSet?.toJson(),
 };

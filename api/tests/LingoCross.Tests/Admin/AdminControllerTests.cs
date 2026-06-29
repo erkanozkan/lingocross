@@ -42,7 +42,7 @@ public class AdminControllerTests
     public void Login_DelegatesToService_AndReturns200()
     {
         var expected = new AdminLoginResult("token-abc", DateTime.UtcNow.AddHours(8));
-        var controller = new AdminController(new FakeAuth(expected), new FakeMetrics());
+        var controller = new AdminController(new FakeAuth(expected), new FakeMetrics(), null!);
 
         var result = controller.Login(new AdminLoginRequest("a@b.com", "pw"));
 

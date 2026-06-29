@@ -189,6 +189,88 @@ class ScrambledContent with _$ScrambledContent {
       _$ScrambledContentFromJson(json);
 }
 
+/// Çoktan seçmeli soruda tek bir şık (QuestionChoice) — API ile birebir.
+///
+/// [optionId] şıkkın kalıcı kimliği (doğru cevap eşleşmesi bununla yapılır).
+/// [label] görünür harf etiketi ("A".."E"). [text] şık metni.
+@freezed
+class QuestionChoice with _$QuestionChoice {
+  const factory QuestionChoice({
+    required String optionId,
+    required String label,
+    required String text,
+  }) = _QuestionChoice;
+
+  factory QuestionChoice.fromJson(Map<String, dynamic> json) =>
+      _$QuestionChoiceFromJson(json);
+}
+
+/// Çoktan seçmeli tek bir soru (QuestionItem) — API ile birebir.
+///
+/// [stem] soru kökü. [choices] A–E sırasında şıklar. [correctOptionId] doğru
+/// şıkkın [QuestionChoice.optionId]'si (skorlama İSTEMCİDE bununla yapılır).
+/// [explanation] opsiyonel açıklama (oyun sırasında gösterilmez; ileride
+/// kullanılabilir).
+@freezed
+class QuestionItem with _$QuestionItem {
+  const factory QuestionItem({
+    required String questionId,
+    required String stem,
+    required List<QuestionChoice> choices,
+    required String correctOptionId,
+    String? explanation,
+  }) = _QuestionItem;
+
+  factory QuestionItem.fromJson(Map<String, dynamic> json) =>
+      _$QuestionItemFromJson(json);
+}
+
+/// Çıkmış Sorular (çoktan seçmeli) oyun içeriği (QuestionSetContent) — API ile
+/// birebir.
+///
+/// [questions] 10 soruluk set; her biri A–E şıklı tek seçimdir. Doğru cevap
+/// içerikle gelir (skorlama istemcide); tekrar çözme backend'de tek sefer.
+@freezed
+class QuestionSetContent with _$QuestionSetContent {
+  const factory QuestionSetContent({
+    required List<QuestionItem> questions,
+  }) = _QuestionSetContent;
+
+  factory QuestionSetContent.fromJson(Map<String, dynamic> json) =>
+      _$QuestionSetContentFromJson(json);
+}
+
+/// Öğretmenin atayabileceği bir soru konusu (QuestionTopicDto) — API ile birebir.
+///
+/// `GET /api/question-topics` döner. [questionCount] konudaki soru adedi (rozet).
+@freezed
+class QuestionTopicDto with _$QuestionTopicDto {
+  const factory QuestionTopicDto({
+    required String id,
+    required String title,
+    String? description,
+    required int questionCount,
+  }) = _QuestionTopicDto;
+
+  factory QuestionTopicDto.fromJson(Map<String, dynamic> json) =>
+      _$QuestionTopicDtoFromJson(json);
+}
+
+/// Bir oyunun/konunun sınıf atamalarının özeti (GameAssignmentsDto) — API ile
+/// birebir.
+///
+/// `POST/GET /api/question-topics/{topicId}/assignments` yanıtı. [classIds]
+/// konunun atandığı sınıf kimlikleridir.
+@freezed
+class GameAssignmentsDto with _$GameAssignmentsDto {
+  const factory GameAssignmentsDto({
+    @Default(<String>[]) List<String> classIds,
+  }) = _GameAssignmentsDto;
+
+  factory GameAssignmentsDto.fromJson(Map<String, dynamic> json) =>
+      _$GameAssignmentsDtoFromJson(json);
+}
+
 /// API'deki int `CrosswordDirection` değerini ([CrosswordDirection]) enum'una çevirir.
 class CrosswordDirectionConverter
     implements JsonConverter<CrosswordDirection, int> {
@@ -249,6 +331,7 @@ class GamePreviewResponse with _$GamePreviewResponse {
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   }) = _GamePreviewResponse;
 
   factory GamePreviewResponse.fromJson(Map<String, dynamic> json) =>
@@ -268,6 +351,7 @@ class StartGameSessionResponse with _$StartGameSessionResponse {
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   }) = _StartGameSessionResponse;
 
   factory StartGameSessionResponse.fromJson(Map<String, dynamic> json) =>

@@ -84,6 +84,8 @@ class TeacherDashboardScreen extends ConsumerWidget {
               ),
               newPuzzleLocked: puzzleCreateLocked,
               onMyPuzzles: () => context.push(AppRoutes.teacherPuzzles),
+              onQuestionTopics: () =>
+                  context.push(AppRoutes.teacherQuestionTopics),
               onProgress: onOpenReports ??
                   () => context.push(AppRoutes.teacherStudents),
             ),
@@ -172,6 +174,7 @@ class _PrimaryActions extends StatelessWidget {
     required this.onNewPuzzle,
     required this.newPuzzleLocked,
     required this.onMyPuzzles,
+    required this.onQuestionTopics,
     required this.onProgress,
   });
 
@@ -179,6 +182,7 @@ class _PrimaryActions extends StatelessWidget {
   final VoidCallback onNewPuzzle;
   final bool newPuzzleLocked;
   final VoidCallback onMyPuzzles;
+  final VoidCallback onQuestionTopics;
   final VoidCallback onProgress;
 
   @override
@@ -222,6 +226,20 @@ class _PrimaryActions extends StatelessWidget {
           title: l10n.teacherDashboardActionMyPuzzlesTitle,
           desc: l10n.teacherDashboardActionMyPuzzlesDesc,
           onTap: onMyPuzzles,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _BentoCard(
+          background: AppColors.surfaceContainerLowest,
+          foreground: AppColors.onSurface,
+          descColor: AppColors.onSurfaceVariant,
+          border: true,
+          iconBoxColor: AppColors.surfaceContainerHigh,
+          icon: Icons.history_edu,
+          iconColor: AppColors.primary,
+          decorIcon: Icons.school,
+          title: l10n.teacherDashboardActionQuestionTopicsTitle,
+          desc: l10n.teacherDashboardActionQuestionTopicsDesc,
+          onTap: onQuestionTopics,
         ),
         const SizedBox(height: AppSpacing.md),
         _BentoCard(

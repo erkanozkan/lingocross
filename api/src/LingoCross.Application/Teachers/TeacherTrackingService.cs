@@ -101,7 +101,10 @@ public class TeacherTrackingService : ITeacherTrackingService
             .ThenByDescending(r => r.CreatedAt)
             .Select(r => new SharedResultDto(
                 r.Id,
-                r.Session.Game.Lesson.Title,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                r.Session.Game.Lesson != null
+                    ? r.Session.Game.Lesson.Title
+                    : (r.Session.Game.QuestionTopic != null ? r.Session.Game.QuestionTopic.Title : ""),
                 r.Session.Game.Type,
                 r.Score,
                 r.DurationMs,
@@ -141,7 +144,10 @@ public class TeacherTrackingService : ITeacherTrackingService
             {
                 r.Id,
                 StudentDisplayName = r.Session.Student.DisplayName,
-                LessonTitle = r.Session.Game.Lesson.Title,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                LessonTitle = r.Session.Game.Lesson != null
+                    ? r.Session.Game.Lesson.Title
+                    : (r.Session.Game.QuestionTopic != null ? r.Session.Game.QuestionTopic.Title : ""),
                 GameType = r.Session.Game.Type,
                 r.Score,
                 r.DurationMs,

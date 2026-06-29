@@ -336,8 +336,10 @@ public class AuthService : IAuthService
             .Select(l => l.Id)
             .ToListAsync(cancellationToken);
 
+        // QuestionSet oyunları GLOBAL'dir (derse bağlı değil) → öğretmen silinince dokunulmaz;
+        // yalnız LessonId dolu (ders-tabanlı) oyunlar öğretmenin sayılır.
         var gameIds = await _db.Games
-            .Where(g => lessonIds.Contains(g.LessonId))
+            .Where(g => g.LessonId != null && lessonIds.Contains(g.LessonId.Value))
             .Select(g => g.Id)
             .ToListAsync(cancellationToken);
 

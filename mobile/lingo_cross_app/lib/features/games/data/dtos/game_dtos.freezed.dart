@@ -2440,6 +2440,1041 @@ abstract class _ScrambledContent implements ScrambledContent {
       throw _privateConstructorUsedError;
 }
 
+QuestionChoice _$QuestionChoiceFromJson(Map<String, dynamic> json) {
+  return _QuestionChoice.fromJson(json);
+}
+
+/// @nodoc
+mixin _$QuestionChoice {
+  String get optionId => throw _privateConstructorUsedError;
+  String get label => throw _privateConstructorUsedError;
+  String get text => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionChoice to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of QuestionChoice
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $QuestionChoiceCopyWith<QuestionChoice> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $QuestionChoiceCopyWith<$Res> {
+  factory $QuestionChoiceCopyWith(
+    QuestionChoice value,
+    $Res Function(QuestionChoice) then,
+  ) = _$QuestionChoiceCopyWithImpl<$Res, QuestionChoice>;
+  @useResult
+  $Res call({String optionId, String label, String text});
+}
+
+/// @nodoc
+class _$QuestionChoiceCopyWithImpl<$Res, $Val extends QuestionChoice>
+    implements $QuestionChoiceCopyWith<$Res> {
+  _$QuestionChoiceCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of QuestionChoice
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? optionId = null,
+    Object? label = null,
+    Object? text = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            optionId:
+                null == optionId
+                    ? _value.optionId
+                    : optionId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            label:
+                null == label
+                    ? _value.label
+                    : label // ignore: cast_nullable_to_non_nullable
+                        as String,
+            text:
+                null == text
+                    ? _value.text
+                    : text // ignore: cast_nullable_to_non_nullable
+                        as String,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionChoiceImplCopyWith<$Res>
+    implements $QuestionChoiceCopyWith<$Res> {
+  factory _$$QuestionChoiceImplCopyWith(
+    _$QuestionChoiceImpl value,
+    $Res Function(_$QuestionChoiceImpl) then,
+  ) = __$$QuestionChoiceImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String optionId, String label, String text});
+}
+
+/// @nodoc
+class __$$QuestionChoiceImplCopyWithImpl<$Res>
+    extends _$QuestionChoiceCopyWithImpl<$Res, _$QuestionChoiceImpl>
+    implements _$$QuestionChoiceImplCopyWith<$Res> {
+  __$$QuestionChoiceImplCopyWithImpl(
+    _$QuestionChoiceImpl _value,
+    $Res Function(_$QuestionChoiceImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of QuestionChoice
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? optionId = null,
+    Object? label = null,
+    Object? text = null,
+  }) {
+    return _then(
+      _$QuestionChoiceImpl(
+        optionId:
+            null == optionId
+                ? _value.optionId
+                : optionId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        label:
+            null == label
+                ? _value.label
+                : label // ignore: cast_nullable_to_non_nullable
+                    as String,
+        text:
+            null == text
+                ? _value.text
+                : text // ignore: cast_nullable_to_non_nullable
+                    as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$QuestionChoiceImpl implements _QuestionChoice {
+  const _$QuestionChoiceImpl({
+    required this.optionId,
+    required this.label,
+    required this.text,
+  });
+
+  factory _$QuestionChoiceImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionChoiceImplFromJson(json);
+
+  @override
+  final String optionId;
+  @override
+  final String label;
+  @override
+  final String text;
+
+  @override
+  String toString() {
+    return 'QuestionChoice(optionId: $optionId, label: $label, text: $text)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$QuestionChoiceImpl &&
+            (identical(other.optionId, optionId) ||
+                other.optionId == optionId) &&
+            (identical(other.label, label) || other.label == label) &&
+            (identical(other.text, text) || other.text == text));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, optionId, label, text);
+
+  /// Create a copy of QuestionChoice
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$QuestionChoiceImplCopyWith<_$QuestionChoiceImpl> get copyWith =>
+      __$$QuestionChoiceImplCopyWithImpl<_$QuestionChoiceImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionChoiceImplToJson(this);
+  }
+}
+
+abstract class _QuestionChoice implements QuestionChoice {
+  const factory _QuestionChoice({
+    required final String optionId,
+    required final String label,
+    required final String text,
+  }) = _$QuestionChoiceImpl;
+
+  factory _QuestionChoice.fromJson(Map<String, dynamic> json) =
+      _$QuestionChoiceImpl.fromJson;
+
+  @override
+  String get optionId;
+  @override
+  String get label;
+  @override
+  String get text;
+
+  /// Create a copy of QuestionChoice
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionChoiceImplCopyWith<_$QuestionChoiceImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionItem _$QuestionItemFromJson(Map<String, dynamic> json) {
+  return _QuestionItem.fromJson(json);
+}
+
+/// @nodoc
+mixin _$QuestionItem {
+  String get questionId => throw _privateConstructorUsedError;
+  String get stem => throw _privateConstructorUsedError;
+  List<QuestionChoice> get choices => throw _privateConstructorUsedError;
+  String get correctOptionId => throw _privateConstructorUsedError;
+  String? get explanation => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionItem to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of QuestionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $QuestionItemCopyWith<QuestionItem> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $QuestionItemCopyWith<$Res> {
+  factory $QuestionItemCopyWith(
+    QuestionItem value,
+    $Res Function(QuestionItem) then,
+  ) = _$QuestionItemCopyWithImpl<$Res, QuestionItem>;
+  @useResult
+  $Res call({
+    String questionId,
+    String stem,
+    List<QuestionChoice> choices,
+    String correctOptionId,
+    String? explanation,
+  });
+}
+
+/// @nodoc
+class _$QuestionItemCopyWithImpl<$Res, $Val extends QuestionItem>
+    implements $QuestionItemCopyWith<$Res> {
+  _$QuestionItemCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of QuestionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? questionId = null,
+    Object? stem = null,
+    Object? choices = null,
+    Object? correctOptionId = null,
+    Object? explanation = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            questionId:
+                null == questionId
+                    ? _value.questionId
+                    : questionId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            stem:
+                null == stem
+                    ? _value.stem
+                    : stem // ignore: cast_nullable_to_non_nullable
+                        as String,
+            choices:
+                null == choices
+                    ? _value.choices
+                    : choices // ignore: cast_nullable_to_non_nullable
+                        as List<QuestionChoice>,
+            correctOptionId:
+                null == correctOptionId
+                    ? _value.correctOptionId
+                    : correctOptionId // ignore: cast_nullable_to_non_nullable
+                        as String,
+            explanation:
+                freezed == explanation
+                    ? _value.explanation
+                    : explanation // ignore: cast_nullable_to_non_nullable
+                        as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionItemImplCopyWith<$Res>
+    implements $QuestionItemCopyWith<$Res> {
+  factory _$$QuestionItemImplCopyWith(
+    _$QuestionItemImpl value,
+    $Res Function(_$QuestionItemImpl) then,
+  ) = __$$QuestionItemImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String questionId,
+    String stem,
+    List<QuestionChoice> choices,
+    String correctOptionId,
+    String? explanation,
+  });
+}
+
+/// @nodoc
+class __$$QuestionItemImplCopyWithImpl<$Res>
+    extends _$QuestionItemCopyWithImpl<$Res, _$QuestionItemImpl>
+    implements _$$QuestionItemImplCopyWith<$Res> {
+  __$$QuestionItemImplCopyWithImpl(
+    _$QuestionItemImpl _value,
+    $Res Function(_$QuestionItemImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of QuestionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? questionId = null,
+    Object? stem = null,
+    Object? choices = null,
+    Object? correctOptionId = null,
+    Object? explanation = freezed,
+  }) {
+    return _then(
+      _$QuestionItemImpl(
+        questionId:
+            null == questionId
+                ? _value.questionId
+                : questionId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        stem:
+            null == stem
+                ? _value.stem
+                : stem // ignore: cast_nullable_to_non_nullable
+                    as String,
+        choices:
+            null == choices
+                ? _value._choices
+                : choices // ignore: cast_nullable_to_non_nullable
+                    as List<QuestionChoice>,
+        correctOptionId:
+            null == correctOptionId
+                ? _value.correctOptionId
+                : correctOptionId // ignore: cast_nullable_to_non_nullable
+                    as String,
+        explanation:
+            freezed == explanation
+                ? _value.explanation
+                : explanation // ignore: cast_nullable_to_non_nullable
+                    as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$QuestionItemImpl implements _QuestionItem {
+  const _$QuestionItemImpl({
+    required this.questionId,
+    required this.stem,
+    required final List<QuestionChoice> choices,
+    required this.correctOptionId,
+    this.explanation,
+  }) : _choices = choices;
+
+  factory _$QuestionItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionItemImplFromJson(json);
+
+  @override
+  final String questionId;
+  @override
+  final String stem;
+  final List<QuestionChoice> _choices;
+  @override
+  List<QuestionChoice> get choices {
+    if (_choices is EqualUnmodifiableListView) return _choices;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_choices);
+  }
+
+  @override
+  final String correctOptionId;
+  @override
+  final String? explanation;
+
+  @override
+  String toString() {
+    return 'QuestionItem(questionId: $questionId, stem: $stem, choices: $choices, correctOptionId: $correctOptionId, explanation: $explanation)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$QuestionItemImpl &&
+            (identical(other.questionId, questionId) ||
+                other.questionId == questionId) &&
+            (identical(other.stem, stem) || other.stem == stem) &&
+            const DeepCollectionEquality().equals(other._choices, _choices) &&
+            (identical(other.correctOptionId, correctOptionId) ||
+                other.correctOptionId == correctOptionId) &&
+            (identical(other.explanation, explanation) ||
+                other.explanation == explanation));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    questionId,
+    stem,
+    const DeepCollectionEquality().hash(_choices),
+    correctOptionId,
+    explanation,
+  );
+
+  /// Create a copy of QuestionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$QuestionItemImplCopyWith<_$QuestionItemImpl> get copyWith =>
+      __$$QuestionItemImplCopyWithImpl<_$QuestionItemImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionItemImplToJson(this);
+  }
+}
+
+abstract class _QuestionItem implements QuestionItem {
+  const factory _QuestionItem({
+    required final String questionId,
+    required final String stem,
+    required final List<QuestionChoice> choices,
+    required final String correctOptionId,
+    final String? explanation,
+  }) = _$QuestionItemImpl;
+
+  factory _QuestionItem.fromJson(Map<String, dynamic> json) =
+      _$QuestionItemImpl.fromJson;
+
+  @override
+  String get questionId;
+  @override
+  String get stem;
+  @override
+  List<QuestionChoice> get choices;
+  @override
+  String get correctOptionId;
+  @override
+  String? get explanation;
+
+  /// Create a copy of QuestionItem
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionItemImplCopyWith<_$QuestionItemImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionSetContent _$QuestionSetContentFromJson(Map<String, dynamic> json) {
+  return _QuestionSetContent.fromJson(json);
+}
+
+/// @nodoc
+mixin _$QuestionSetContent {
+  List<QuestionItem> get questions => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionSetContent to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of QuestionSetContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $QuestionSetContentCopyWith<QuestionSetContent> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $QuestionSetContentCopyWith<$Res> {
+  factory $QuestionSetContentCopyWith(
+    QuestionSetContent value,
+    $Res Function(QuestionSetContent) then,
+  ) = _$QuestionSetContentCopyWithImpl<$Res, QuestionSetContent>;
+  @useResult
+  $Res call({List<QuestionItem> questions});
+}
+
+/// @nodoc
+class _$QuestionSetContentCopyWithImpl<$Res, $Val extends QuestionSetContent>
+    implements $QuestionSetContentCopyWith<$Res> {
+  _$QuestionSetContentCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of QuestionSetContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? questions = null}) {
+    return _then(
+      _value.copyWith(
+            questions:
+                null == questions
+                    ? _value.questions
+                    : questions // ignore: cast_nullable_to_non_nullable
+                        as List<QuestionItem>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionSetContentImplCopyWith<$Res>
+    implements $QuestionSetContentCopyWith<$Res> {
+  factory _$$QuestionSetContentImplCopyWith(
+    _$QuestionSetContentImpl value,
+    $Res Function(_$QuestionSetContentImpl) then,
+  ) = __$$QuestionSetContentImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<QuestionItem> questions});
+}
+
+/// @nodoc
+class __$$QuestionSetContentImplCopyWithImpl<$Res>
+    extends _$QuestionSetContentCopyWithImpl<$Res, _$QuestionSetContentImpl>
+    implements _$$QuestionSetContentImplCopyWith<$Res> {
+  __$$QuestionSetContentImplCopyWithImpl(
+    _$QuestionSetContentImpl _value,
+    $Res Function(_$QuestionSetContentImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of QuestionSetContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? questions = null}) {
+    return _then(
+      _$QuestionSetContentImpl(
+        questions:
+            null == questions
+                ? _value._questions
+                : questions // ignore: cast_nullable_to_non_nullable
+                    as List<QuestionItem>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$QuestionSetContentImpl implements _QuestionSetContent {
+  const _$QuestionSetContentImpl({required final List<QuestionItem> questions})
+    : _questions = questions;
+
+  factory _$QuestionSetContentImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionSetContentImplFromJson(json);
+
+  final List<QuestionItem> _questions;
+  @override
+  List<QuestionItem> get questions {
+    if (_questions is EqualUnmodifiableListView) return _questions;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_questions);
+  }
+
+  @override
+  String toString() {
+    return 'QuestionSetContent(questions: $questions)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$QuestionSetContentImpl &&
+            const DeepCollectionEquality().equals(
+              other._questions,
+              _questions,
+            ));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_questions));
+
+  /// Create a copy of QuestionSetContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$QuestionSetContentImplCopyWith<_$QuestionSetContentImpl> get copyWith =>
+      __$$QuestionSetContentImplCopyWithImpl<_$QuestionSetContentImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionSetContentImplToJson(this);
+  }
+}
+
+abstract class _QuestionSetContent implements QuestionSetContent {
+  const factory _QuestionSetContent({
+    required final List<QuestionItem> questions,
+  }) = _$QuestionSetContentImpl;
+
+  factory _QuestionSetContent.fromJson(Map<String, dynamic> json) =
+      _$QuestionSetContentImpl.fromJson;
+
+  @override
+  List<QuestionItem> get questions;
+
+  /// Create a copy of QuestionSetContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionSetContentImplCopyWith<_$QuestionSetContentImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+QuestionTopicDto _$QuestionTopicDtoFromJson(Map<String, dynamic> json) {
+  return _QuestionTopicDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$QuestionTopicDto {
+  String get id => throw _privateConstructorUsedError;
+  String get title => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  int get questionCount => throw _privateConstructorUsedError;
+
+  /// Serializes this QuestionTopicDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of QuestionTopicDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $QuestionTopicDtoCopyWith<QuestionTopicDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $QuestionTopicDtoCopyWith<$Res> {
+  factory $QuestionTopicDtoCopyWith(
+    QuestionTopicDto value,
+    $Res Function(QuestionTopicDto) then,
+  ) = _$QuestionTopicDtoCopyWithImpl<$Res, QuestionTopicDto>;
+  @useResult
+  $Res call({String id, String title, String? description, int questionCount});
+}
+
+/// @nodoc
+class _$QuestionTopicDtoCopyWithImpl<$Res, $Val extends QuestionTopicDto>
+    implements $QuestionTopicDtoCopyWith<$Res> {
+  _$QuestionTopicDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of QuestionTopicDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? title = null,
+    Object? description = freezed,
+    Object? questionCount = null,
+  }) {
+    return _then(
+      _value.copyWith(
+            id:
+                null == id
+                    ? _value.id
+                    : id // ignore: cast_nullable_to_non_nullable
+                        as String,
+            title:
+                null == title
+                    ? _value.title
+                    : title // ignore: cast_nullable_to_non_nullable
+                        as String,
+            description:
+                freezed == description
+                    ? _value.description
+                    : description // ignore: cast_nullable_to_non_nullable
+                        as String?,
+            questionCount:
+                null == questionCount
+                    ? _value.questionCount
+                    : questionCount // ignore: cast_nullable_to_non_nullable
+                        as int,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$QuestionTopicDtoImplCopyWith<$Res>
+    implements $QuestionTopicDtoCopyWith<$Res> {
+  factory _$$QuestionTopicDtoImplCopyWith(
+    _$QuestionTopicDtoImpl value,
+    $Res Function(_$QuestionTopicDtoImpl) then,
+  ) = __$$QuestionTopicDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String title, String? description, int questionCount});
+}
+
+/// @nodoc
+class __$$QuestionTopicDtoImplCopyWithImpl<$Res>
+    extends _$QuestionTopicDtoCopyWithImpl<$Res, _$QuestionTopicDtoImpl>
+    implements _$$QuestionTopicDtoImplCopyWith<$Res> {
+  __$$QuestionTopicDtoImplCopyWithImpl(
+    _$QuestionTopicDtoImpl _value,
+    $Res Function(_$QuestionTopicDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of QuestionTopicDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? title = null,
+    Object? description = freezed,
+    Object? questionCount = null,
+  }) {
+    return _then(
+      _$QuestionTopicDtoImpl(
+        id:
+            null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                    as String,
+        title:
+            null == title
+                ? _value.title
+                : title // ignore: cast_nullable_to_non_nullable
+                    as String,
+        description:
+            freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                    as String?,
+        questionCount:
+            null == questionCount
+                ? _value.questionCount
+                : questionCount // ignore: cast_nullable_to_non_nullable
+                    as int,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$QuestionTopicDtoImpl implements _QuestionTopicDto {
+  const _$QuestionTopicDtoImpl({
+    required this.id,
+    required this.title,
+    this.description,
+    required this.questionCount,
+  });
+
+  factory _$QuestionTopicDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$QuestionTopicDtoImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String title;
+  @override
+  final String? description;
+  @override
+  final int questionCount;
+
+  @override
+  String toString() {
+    return 'QuestionTopicDto(id: $id, title: $title, description: $description, questionCount: $questionCount)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$QuestionTopicDtoImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.title, title) || other.title == title) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            (identical(other.questionCount, questionCount) ||
+                other.questionCount == questionCount));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, id, title, description, questionCount);
+
+  /// Create a copy of QuestionTopicDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$QuestionTopicDtoImplCopyWith<_$QuestionTopicDtoImpl> get copyWith =>
+      __$$QuestionTopicDtoImplCopyWithImpl<_$QuestionTopicDtoImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$QuestionTopicDtoImplToJson(this);
+  }
+}
+
+abstract class _QuestionTopicDto implements QuestionTopicDto {
+  const factory _QuestionTopicDto({
+    required final String id,
+    required final String title,
+    final String? description,
+    required final int questionCount,
+  }) = _$QuestionTopicDtoImpl;
+
+  factory _QuestionTopicDto.fromJson(Map<String, dynamic> json) =
+      _$QuestionTopicDtoImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get title;
+  @override
+  String? get description;
+  @override
+  int get questionCount;
+
+  /// Create a copy of QuestionTopicDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$QuestionTopicDtoImplCopyWith<_$QuestionTopicDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+GameAssignmentsDto _$GameAssignmentsDtoFromJson(Map<String, dynamic> json) {
+  return _GameAssignmentsDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$GameAssignmentsDto {
+  List<String> get classIds => throw _privateConstructorUsedError;
+
+  /// Serializes this GameAssignmentsDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of GameAssignmentsDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $GameAssignmentsDtoCopyWith<GameAssignmentsDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $GameAssignmentsDtoCopyWith<$Res> {
+  factory $GameAssignmentsDtoCopyWith(
+    GameAssignmentsDto value,
+    $Res Function(GameAssignmentsDto) then,
+  ) = _$GameAssignmentsDtoCopyWithImpl<$Res, GameAssignmentsDto>;
+  @useResult
+  $Res call({List<String> classIds});
+}
+
+/// @nodoc
+class _$GameAssignmentsDtoCopyWithImpl<$Res, $Val extends GameAssignmentsDto>
+    implements $GameAssignmentsDtoCopyWith<$Res> {
+  _$GameAssignmentsDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of GameAssignmentsDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? classIds = null}) {
+    return _then(
+      _value.copyWith(
+            classIds:
+                null == classIds
+                    ? _value.classIds
+                    : classIds // ignore: cast_nullable_to_non_nullable
+                        as List<String>,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$GameAssignmentsDtoImplCopyWith<$Res>
+    implements $GameAssignmentsDtoCopyWith<$Res> {
+  factory _$$GameAssignmentsDtoImplCopyWith(
+    _$GameAssignmentsDtoImpl value,
+    $Res Function(_$GameAssignmentsDtoImpl) then,
+  ) = __$$GameAssignmentsDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<String> classIds});
+}
+
+/// @nodoc
+class __$$GameAssignmentsDtoImplCopyWithImpl<$Res>
+    extends _$GameAssignmentsDtoCopyWithImpl<$Res, _$GameAssignmentsDtoImpl>
+    implements _$$GameAssignmentsDtoImplCopyWith<$Res> {
+  __$$GameAssignmentsDtoImplCopyWithImpl(
+    _$GameAssignmentsDtoImpl _value,
+    $Res Function(_$GameAssignmentsDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GameAssignmentsDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? classIds = null}) {
+    return _then(
+      _$GameAssignmentsDtoImpl(
+        classIds:
+            null == classIds
+                ? _value._classIds
+                : classIds // ignore: cast_nullable_to_non_nullable
+                    as List<String>,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$GameAssignmentsDtoImpl implements _GameAssignmentsDto {
+  const _$GameAssignmentsDtoImpl({
+    final List<String> classIds = const <String>[],
+  }) : _classIds = classIds;
+
+  factory _$GameAssignmentsDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameAssignmentsDtoImplFromJson(json);
+
+  final List<String> _classIds;
+  @override
+  @JsonKey()
+  List<String> get classIds {
+    if (_classIds is EqualUnmodifiableListView) return _classIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_classIds);
+  }
+
+  @override
+  String toString() {
+    return 'GameAssignmentsDto(classIds: $classIds)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$GameAssignmentsDtoImpl &&
+            const DeepCollectionEquality().equals(other._classIds, _classIds));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_classIds));
+
+  /// Create a copy of GameAssignmentsDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$GameAssignmentsDtoImplCopyWith<_$GameAssignmentsDtoImpl> get copyWith =>
+      __$$GameAssignmentsDtoImplCopyWithImpl<_$GameAssignmentsDtoImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$GameAssignmentsDtoImplToJson(this);
+  }
+}
+
+abstract class _GameAssignmentsDto implements GameAssignmentsDto {
+  const factory _GameAssignmentsDto({final List<String> classIds}) =
+      _$GameAssignmentsDtoImpl;
+
+  factory _GameAssignmentsDto.fromJson(Map<String, dynamic> json) =
+      _$GameAssignmentsDtoImpl.fromJson;
+
+  @override
+  List<String> get classIds;
+
+  /// Create a copy of GameAssignmentsDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$GameAssignmentsDtoImplCopyWith<_$GameAssignmentsDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 CrosswordEntry _$CrosswordEntryFromJson(Map<String, dynamic> json) {
   return _CrosswordEntry.fromJson(json);
 }
@@ -2978,6 +4013,7 @@ mixin _$GamePreviewResponse {
   WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
   CrosswordContent? get crossword => throw _privateConstructorUsedError;
   ScrambledContent? get scrambled => throw _privateConstructorUsedError;
+  QuestionSetContent? get questionSet => throw _privateConstructorUsedError;
 
   /// Serializes this GamePreviewResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3001,11 +4037,13 @@ abstract class $GamePreviewResponseCopyWith<$Res> {
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   });
 
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   $CrosswordContentCopyWith<$Res>? get crossword;
   $ScrambledContentCopyWith<$Res>? get scrambled;
+  $QuestionSetContentCopyWith<$Res>? get questionSet;
 }
 
 /// @nodoc
@@ -3027,6 +4065,7 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
     Object? wordMatching = freezed,
     Object? crossword = freezed,
     Object? scrambled = freezed,
+    Object? questionSet = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -3050,6 +4089,11 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
                     ? _value.scrambled
                     : scrambled // ignore: cast_nullable_to_non_nullable
                         as ScrambledContent?,
+            questionSet:
+                freezed == questionSet
+                    ? _value.questionSet
+                    : questionSet // ignore: cast_nullable_to_non_nullable
+                        as QuestionSetContent?,
           )
           as $Val,
     );
@@ -3096,6 +4140,20 @@ class _$GamePreviewResponseCopyWithImpl<$Res, $Val extends GamePreviewResponse>
       return _then(_value.copyWith(scrambled: value) as $Val);
     });
   }
+
+  /// Create a copy of GamePreviewResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $QuestionSetContentCopyWith<$Res>? get questionSet {
+    if (_value.questionSet == null) {
+      return null;
+    }
+
+    return $QuestionSetContentCopyWith<$Res>(_value.questionSet!, (value) {
+      return _then(_value.copyWith(questionSet: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -3112,6 +4170,7 @@ abstract class _$$GamePreviewResponseImplCopyWith<$Res>
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   });
 
   @override
@@ -3120,6 +4179,8 @@ abstract class _$$GamePreviewResponseImplCopyWith<$Res>
   $CrosswordContentCopyWith<$Res>? get crossword;
   @override
   $ScrambledContentCopyWith<$Res>? get scrambled;
+  @override
+  $QuestionSetContentCopyWith<$Res>? get questionSet;
 }
 
 /// @nodoc
@@ -3140,6 +4201,7 @@ class __$$GamePreviewResponseImplCopyWithImpl<$Res>
     Object? wordMatching = freezed,
     Object? crossword = freezed,
     Object? scrambled = freezed,
+    Object? questionSet = freezed,
   }) {
     return _then(
       _$GamePreviewResponseImpl(
@@ -3163,6 +4225,11 @@ class __$$GamePreviewResponseImplCopyWithImpl<$Res>
                 ? _value.scrambled
                 : scrambled // ignore: cast_nullable_to_non_nullable
                     as ScrambledContent?,
+        questionSet:
+            freezed == questionSet
+                ? _value.questionSet
+                : questionSet // ignore: cast_nullable_to_non_nullable
+                    as QuestionSetContent?,
       ),
     );
   }
@@ -3176,6 +4243,7 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
     this.wordMatching,
     this.crossword,
     this.scrambled,
+    this.questionSet,
   });
 
   factory _$GamePreviewResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -3190,10 +4258,12 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
   final CrosswordContent? crossword;
   @override
   final ScrambledContent? scrambled;
+  @override
+  final QuestionSetContent? questionSet;
 
   @override
   String toString() {
-    return 'GamePreviewResponse(type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled)';
+    return 'GamePreviewResponse(type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled, questionSet: $questionSet)';
   }
 
   @override
@@ -3207,13 +4277,21 @@ class _$GamePreviewResponseImpl implements _GamePreviewResponse {
             (identical(other.crossword, crossword) ||
                 other.crossword == crossword) &&
             (identical(other.scrambled, scrambled) ||
-                other.scrambled == scrambled));
+                other.scrambled == scrambled) &&
+            (identical(other.questionSet, questionSet) ||
+                other.questionSet == questionSet));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, type, wordMatching, crossword, scrambled);
+  int get hashCode => Object.hash(
+    runtimeType,
+    type,
+    wordMatching,
+    crossword,
+    scrambled,
+    questionSet,
+  );
 
   /// Create a copy of GamePreviewResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -3238,6 +4316,7 @@ abstract class _GamePreviewResponse implements GamePreviewResponse {
     final WordMatchingContent? wordMatching,
     final CrosswordContent? crossword,
     final ScrambledContent? scrambled,
+    final QuestionSetContent? questionSet,
   }) = _$GamePreviewResponseImpl;
 
   factory _GamePreviewResponse.fromJson(Map<String, dynamic> json) =
@@ -3252,6 +4331,8 @@ abstract class _GamePreviewResponse implements GamePreviewResponse {
   CrosswordContent? get crossword;
   @override
   ScrambledContent? get scrambled;
+  @override
+  QuestionSetContent? get questionSet;
 
   /// Create a copy of GamePreviewResponse
   /// with the given fields replaced by the non-null parameter values.
@@ -3275,6 +4356,7 @@ mixin _$StartGameSessionResponse {
   WordMatchingContent? get wordMatching => throw _privateConstructorUsedError;
   CrosswordContent? get crossword => throw _privateConstructorUsedError;
   ScrambledContent? get scrambled => throw _privateConstructorUsedError;
+  QuestionSetContent? get questionSet => throw _privateConstructorUsedError;
 
   /// Serializes this StartGameSessionResponse to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -3299,12 +4381,14 @@ abstract class $StartGameSessionResponseCopyWith<$Res> {
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   });
 
   $GameSessionDtoCopyWith<$Res> get session;
   $WordMatchingContentCopyWith<$Res>? get wordMatching;
   $CrosswordContentCopyWith<$Res>? get crossword;
   $ScrambledContentCopyWith<$Res>? get scrambled;
+  $QuestionSetContentCopyWith<$Res>? get questionSet;
 }
 
 /// @nodoc
@@ -3330,6 +4414,7 @@ class _$StartGameSessionResponseCopyWithImpl<
     Object? wordMatching = freezed,
     Object? crossword = freezed,
     Object? scrambled = freezed,
+    Object? questionSet = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -3358,6 +4443,11 @@ class _$StartGameSessionResponseCopyWithImpl<
                     ? _value.scrambled
                     : scrambled // ignore: cast_nullable_to_non_nullable
                         as ScrambledContent?,
+            questionSet:
+                freezed == questionSet
+                    ? _value.questionSet
+                    : questionSet // ignore: cast_nullable_to_non_nullable
+                        as QuestionSetContent?,
           )
           as $Val,
     );
@@ -3414,6 +4504,20 @@ class _$StartGameSessionResponseCopyWithImpl<
       return _then(_value.copyWith(scrambled: value) as $Val);
     });
   }
+
+  /// Create a copy of StartGameSessionResponse
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $QuestionSetContentCopyWith<$Res>? get questionSet {
+    if (_value.questionSet == null) {
+      return null;
+    }
+
+    return $QuestionSetContentCopyWith<$Res>(_value.questionSet!, (value) {
+      return _then(_value.copyWith(questionSet: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -3431,6 +4535,7 @@ abstract class _$$StartGameSessionResponseImplCopyWith<$Res>
     WordMatchingContent? wordMatching,
     CrosswordContent? crossword,
     ScrambledContent? scrambled,
+    QuestionSetContent? questionSet,
   });
 
   @override
@@ -3441,6 +4546,8 @@ abstract class _$$StartGameSessionResponseImplCopyWith<$Res>
   $CrosswordContentCopyWith<$Res>? get crossword;
   @override
   $ScrambledContentCopyWith<$Res>? get scrambled;
+  @override
+  $QuestionSetContentCopyWith<$Res>? get questionSet;
 }
 
 /// @nodoc
@@ -3466,6 +4573,7 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
     Object? wordMatching = freezed,
     Object? crossword = freezed,
     Object? scrambled = freezed,
+    Object? questionSet = freezed,
   }) {
     return _then(
       _$StartGameSessionResponseImpl(
@@ -3494,6 +4602,11 @@ class __$$StartGameSessionResponseImplCopyWithImpl<$Res>
                 ? _value.scrambled
                 : scrambled // ignore: cast_nullable_to_non_nullable
                     as ScrambledContent?,
+        questionSet:
+            freezed == questionSet
+                ? _value.questionSet
+                : questionSet // ignore: cast_nullable_to_non_nullable
+                    as QuestionSetContent?,
       ),
     );
   }
@@ -3508,6 +4621,7 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
     this.wordMatching,
     this.crossword,
     this.scrambled,
+    this.questionSet,
   });
 
   factory _$StartGameSessionResponseImpl.fromJson(Map<String, dynamic> json) =>
@@ -3524,10 +4638,12 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
   final CrosswordContent? crossword;
   @override
   final ScrambledContent? scrambled;
+  @override
+  final QuestionSetContent? questionSet;
 
   @override
   String toString() {
-    return 'StartGameSessionResponse(session: $session, type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled)';
+    return 'StartGameSessionResponse(session: $session, type: $type, wordMatching: $wordMatching, crossword: $crossword, scrambled: $scrambled, questionSet: $questionSet)';
   }
 
   @override
@@ -3542,7 +4658,9 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
             (identical(other.crossword, crossword) ||
                 other.crossword == crossword) &&
             (identical(other.scrambled, scrambled) ||
-                other.scrambled == scrambled));
+                other.scrambled == scrambled) &&
+            (identical(other.questionSet, questionSet) ||
+                other.questionSet == questionSet));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3554,6 +4672,7 @@ class _$StartGameSessionResponseImpl implements _StartGameSessionResponse {
     wordMatching,
     crossword,
     scrambled,
+    questionSet,
   );
 
   /// Create a copy of StartGameSessionResponse
@@ -3579,6 +4698,7 @@ abstract class _StartGameSessionResponse implements StartGameSessionResponse {
     final WordMatchingContent? wordMatching,
     final CrosswordContent? crossword,
     final ScrambledContent? scrambled,
+    final QuestionSetContent? questionSet,
   }) = _$StartGameSessionResponseImpl;
 
   factory _StartGameSessionResponse.fromJson(Map<String, dynamic> json) =
@@ -3595,6 +4715,8 @@ abstract class _StartGameSessionResponse implements StartGameSessionResponse {
   CrosswordContent? get crossword;
   @override
   ScrambledContent? get scrambled;
+  @override
+  QuestionSetContent? get questionSet;
 
   /// Create a copy of StartGameSessionResponse
   /// with the given fields replaced by the non-null parameter values.

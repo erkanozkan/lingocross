@@ -14,6 +14,7 @@ import '../assigned_games_notifier.dart';
 import '../games_failure_messages.dart';
 import '../start_game_controller.dart';
 import 'crossword_game_screen.dart';
+import 'question_set_game_screen.dart';
 import 'scrambled_game_screen.dart';
 import 'word_matching_game_screen.dart';
 
@@ -118,8 +119,20 @@ class _GameLauncherScreenState extends ConsumerState<GameLauncherScreen> {
               sessionId: response.session.id,
               content: scrambled,
             );
-          case GameType.wordMatching:
           case GameType.questionSet:
+            final qs = response.questionSet;
+            if (qs == null) {
+              return _ErrorScaffold(
+                error: const GamesFailure.unexpected(),
+                isEmpty: false,
+                onRetry: _start,
+              );
+            }
+            return QuestionSetGameScreen(
+              sessionId: response.session.id,
+              content: qs,
+            );
+          case GameType.wordMatching:
             final wordMatching = response.wordMatching;
             if (wordMatching == null) {
               return _ErrorScaffold(
