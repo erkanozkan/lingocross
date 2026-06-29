@@ -51,7 +51,8 @@ public class EntitlementServiceTests
         Assert.Equal(SubscriptionStatus.None, snap.Status);
         Assert.Equal(2, snap.MaxClasses);
         Assert.Equal(5, snap.MaxLessons);
-        Assert.Equal(1, snap.MaxTeachers);
+        // Öğrenci erişimi ücretsiz → öğretmene katılım sınırsız (free'de de int.MaxValue).
+        Assert.Equal(int.MaxValue, snap.MaxTeachers);
         Assert.False(snap.OcrEnabled);
     }
 

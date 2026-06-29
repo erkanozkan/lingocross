@@ -113,7 +113,8 @@ public class SubscriptionServiceTests
         Assert.Equal(SubscriptionStatus.None, dto.Status);
         Assert.Equal(2, dto.MaxClasses);
         Assert.Equal(5, dto.MaxLessons);
-        Assert.Equal(1, dto.MaxTeachers);
+        // Öğrenci erişimi ücretsiz → öğretmene katılım sınırsız (wire'da -1).
+        Assert.Equal(-1, dto.MaxTeachers);
         Assert.False(dto.OcrEnabled);
     }
 

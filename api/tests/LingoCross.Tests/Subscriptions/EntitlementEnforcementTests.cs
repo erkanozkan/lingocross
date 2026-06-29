@@ -160,7 +160,7 @@ public class EntitlementEnforcementTests
     // ---- Çoklu öğretmen (sınıf koduyla katılım) ----
 
     [Fact]
-    public async Task ClassJoin_Free_FirstTeacherOk_SecondThrows402_MultiTeacher()
+    public async Task ClassJoin_Free_SecondTeacherAllowed_StudentsFree()
     {
         var db = NewDb();
         var t1 = await SeedUserAsync(db, UserRole.Teacher, "t1@x.com");
@@ -175,14 +175,11 @@ public class EntitlementEnforcementTests
         var studentCurrent = TestCurrentUser.Student(student.Id);
         var studentSvc = new ClassService(db, studentCurrent, Entitlement(db, studentCurrent));
 
-        // 1. öğretmen → ok
+        // Öğrenci erişimi ücretsiz: farklı öğretmenlere katılım sınırsız (multi_teacher kapısı kaldırıldı).
         await studentSvc.JoinByCodeAsync(new JoinClassRequest(class1.InviteCode!));
+        await studentSvc.JoinByCodeAsync(new JoinClassRequest(class2.InviteCode!));
 
-        // Farklı 2. öğretmen → 402
-        var ex = await Assert.ThrowsAsync<AppException>(
-            () => studentSvc.JoinByCodeAsync(new JoinClassRequest(class2.InviteCode!)));
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("multi_teacher", ex.Feature);
+        Assert.Equal(2, await db.ClassMembers.CountAsync(m => m.StudentId == student.Id));
     }
 
     [Fact]
@@ -236,7 +233,7 @@ public class EntitlementEnforcementTests
     // ---- Çoklu öğretmen (eski enrollment koduyla katılım) ----
 
     [Fact]
-    public async Task EnrollmentJoin_Free_SecondTeacherThrows402_MultiTeacher()
+    public async Task EnrollmentJoin_Free_SecondTeacherAllowed_StudentsFree()
     {
         var db = NewDb();
         var t1 = await SeedUserAsync(db, UserRole.Teacher, "t1@x.com");
@@ -250,12 +247,11 @@ public class EntitlementEnforcementTests
         var classSvc = new ClassService(db, studentCurrent, Entitlement(db, studentCurrent));
         var enrollSvc = new EnrollmentService(db, studentCurrent, classSvc);
 
+        // Öğrenci ücretsiz: ikinci öğretmene de katılabilir (multi_teacher kapısı kaldırıldı).
         await enrollSvc.JoinByCodeAsync(new JoinByCodeRequest("TEACH111"));
+        await enrollSvc.JoinByCodeAsync(new JoinByCodeRequest("TEACH222"));
 
-        var ex = await Assert.ThrowsAsync<AppException>(
-            () => enrollSvc.JoinByCodeAsync(new JoinByCodeRequest("TEACH222")));
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("multi_teacher", ex.Feature);
+        Assert.Equal(2, await db.Enrollments.CountAsync(e => e.StudentId == student.Id));
     }
 
     [Fact]

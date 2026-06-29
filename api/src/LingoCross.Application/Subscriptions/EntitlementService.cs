@@ -59,7 +59,9 @@ public class EntitlementService : IEntitlementService
             ExpiresAt: expiresAt,
             MaxClasses: _options.FreeMaxClasses,
             MaxLessons: _options.FreeMaxLessons,
-            MaxTeachers: _options.FreeMaxTeachers,
+            // Öğrenci erişimi tamamen ÜCRETSİZ: öğretmene katılma sınırsız (multi_teacher
+            // kapısı kaldırıldı). Ücretli limitler yalnız öğretmen tarafıdır (sınıf/ders/OCR).
+            MaxTeachers: int.MaxValue,
             OcrEnabled: false);
     }
 
