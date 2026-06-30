@@ -20,6 +20,9 @@ class GamesFailure with _$GamesFailure {
   /// Yetersiz kelime / oynatılamaz (400) — oyun üretilemiyor.
   const factory GamesFailure.insufficientWords() = _InsufficientWords;
 
+  /// Yapay zekâ yapılandırılmamış (503) — AI ile soru üretimi kapalı.
+  const factory GamesFailure.aiUnavailable() = _AiUnavailable;
+
   /// Beklenmeyen sunucu hatası.
   const factory GamesFailure.unexpected() = _Unexpected;
 }

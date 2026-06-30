@@ -70,6 +70,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
             _PrimaryActions(
               onNewLesson: () => context.push(AppRoutes.lessonNew),
               onNewPuzzle: () => context.push(AppRoutes.gameNew),
+              onAiExam: () => context.push(AppRoutes.aiExamCreate),
               onMyPuzzles: () => context.push(AppRoutes.teacherPuzzles),
               onQuestionTopics: () =>
                   context.push(AppRoutes.teacherQuestionTopics),
@@ -159,6 +160,7 @@ class _PrimaryActions extends StatelessWidget {
   const _PrimaryActions({
     required this.onNewLesson,
     required this.onNewPuzzle,
+    required this.onAiExam,
     required this.onMyPuzzles,
     required this.onQuestionTopics,
     required this.onProgress,
@@ -166,6 +168,7 @@ class _PrimaryActions extends StatelessWidget {
 
   final VoidCallback onNewLesson;
   final VoidCallback onNewPuzzle;
+  final VoidCallback onAiExam;
   final VoidCallback onMyPuzzles;
   final VoidCallback onQuestionTopics;
   final VoidCallback onProgress;
@@ -197,6 +200,18 @@ class _PrimaryActions extends StatelessWidget {
           title: l10n.teacherDashboardActionNewPuzzleTitle,
           desc: l10n.teacherDashboardActionNewPuzzleDesc,
           onTap: onNewPuzzle,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _BentoCard(
+          background: AppColors.primary,
+          foreground: AppColors.onPrimary,
+          iconBoxColor: AppColors.surfaceContainerLowest,
+          icon: Icons.auto_awesome,
+          iconColor: AppColors.primary,
+          decorIcon: Icons.psychology,
+          title: l10n.teacherDashboardActionAiExamTitle,
+          desc: l10n.teacherDashboardActionAiExamDesc,
+          onTap: onAiExam,
         ),
         const SizedBox(height: AppSpacing.md),
         _BentoCard(

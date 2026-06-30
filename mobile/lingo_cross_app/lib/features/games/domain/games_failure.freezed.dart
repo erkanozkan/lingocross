@@ -23,6 +23,7 @@ mixin _$GamesFailure {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -31,6 +32,7 @@ mixin _$GamesFailure {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -39,6 +41,7 @@ mixin _$GamesFailure {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -48,6 +51,7 @@ mixin _$GamesFailure {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -56,6 +60,7 @@ mixin _$GamesFailure {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -64,6 +69,7 @@ mixin _$GamesFailure {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -138,6 +144,7 @@ class _$NetworkImpl implements _Network {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) {
     return network();
@@ -150,6 +157,7 @@ class _$NetworkImpl implements _Network {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) {
     return network?.call();
@@ -162,6 +170,7 @@ class _$NetworkImpl implements _Network {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) {
@@ -178,6 +187,7 @@ class _$NetworkImpl implements _Network {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) {
     return network(this);
@@ -190,6 +200,7 @@ class _$NetworkImpl implements _Network {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) {
     return network?.call(this);
@@ -202,6 +213,7 @@ class _$NetworkImpl implements _Network {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) {
@@ -263,6 +275,7 @@ class _$NotFoundImpl implements _NotFound {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) {
     return notFound();
@@ -275,6 +288,7 @@ class _$NotFoundImpl implements _NotFound {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) {
     return notFound?.call();
@@ -287,6 +301,7 @@ class _$NotFoundImpl implements _NotFound {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) {
@@ -303,6 +318,7 @@ class _$NotFoundImpl implements _NotFound {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) {
     return notFound(this);
@@ -315,6 +331,7 @@ class _$NotFoundImpl implements _NotFound {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) {
     return notFound?.call(this);
@@ -327,6 +344,7 @@ class _$NotFoundImpl implements _NotFound {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) {
@@ -388,6 +406,7 @@ class _$ForbiddenImpl implements _Forbidden {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) {
     return forbidden();
@@ -400,6 +419,7 @@ class _$ForbiddenImpl implements _Forbidden {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) {
     return forbidden?.call();
@@ -412,6 +432,7 @@ class _$ForbiddenImpl implements _Forbidden {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) {
@@ -428,6 +449,7 @@ class _$ForbiddenImpl implements _Forbidden {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) {
     return forbidden(this);
@@ -440,6 +462,7 @@ class _$ForbiddenImpl implements _Forbidden {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) {
     return forbidden?.call(this);
@@ -452,6 +475,7 @@ class _$ForbiddenImpl implements _Forbidden {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) {
@@ -513,6 +537,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) {
     return insufficientWords();
@@ -525,6 +550,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) {
     return insufficientWords?.call();
@@ -537,6 +563,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) {
@@ -553,6 +580,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) {
     return insufficientWords(this);
@@ -565,6 +593,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) {
     return insufficientWords?.call(this);
@@ -577,6 +606,7 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) {
@@ -589,6 +619,137 @@ class _$InsufficientWordsImpl implements _InsufficientWords {
 
 abstract class _InsufficientWords implements GamesFailure {
   const factory _InsufficientWords() = _$InsufficientWordsImpl;
+}
+
+/// @nodoc
+abstract class _$$AiUnavailableImplCopyWith<$Res> {
+  factory _$$AiUnavailableImplCopyWith(
+    _$AiUnavailableImpl value,
+    $Res Function(_$AiUnavailableImpl) then,
+  ) = __$$AiUnavailableImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$AiUnavailableImplCopyWithImpl<$Res>
+    extends _$GamesFailureCopyWithImpl<$Res, _$AiUnavailableImpl>
+    implements _$$AiUnavailableImplCopyWith<$Res> {
+  __$$AiUnavailableImplCopyWithImpl(
+    _$AiUnavailableImpl _value,
+    $Res Function(_$AiUnavailableImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of GamesFailure
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$AiUnavailableImpl implements _AiUnavailable {
+  const _$AiUnavailableImpl();
+
+  @override
+  String toString() {
+    return 'GamesFailure.aiUnavailable()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$AiUnavailableImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() network,
+    required TResult Function() notFound,
+    required TResult Function() forbidden,
+    required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
+    required TResult Function() unexpected,
+  }) {
+    return aiUnavailable();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? network,
+    TResult? Function()? notFound,
+    TResult? Function()? forbidden,
+    TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
+    TResult? Function()? unexpected,
+  }) {
+    return aiUnavailable?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? network,
+    TResult Function()? notFound,
+    TResult Function()? forbidden,
+    TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
+    TResult Function()? unexpected,
+    required TResult orElse(),
+  }) {
+    if (aiUnavailable != null) {
+      return aiUnavailable();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Network value) network,
+    required TResult Function(_NotFound value) notFound,
+    required TResult Function(_Forbidden value) forbidden,
+    required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
+    required TResult Function(_Unexpected value) unexpected,
+  }) {
+    return aiUnavailable(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Network value)? network,
+    TResult? Function(_NotFound value)? notFound,
+    TResult? Function(_Forbidden value)? forbidden,
+    TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
+    TResult? Function(_Unexpected value)? unexpected,
+  }) {
+    return aiUnavailable?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Network value)? network,
+    TResult Function(_NotFound value)? notFound,
+    TResult Function(_Forbidden value)? forbidden,
+    TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
+    TResult Function(_Unexpected value)? unexpected,
+    required TResult orElse(),
+  }) {
+    if (aiUnavailable != null) {
+      return aiUnavailable(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _AiUnavailable implements GamesFailure {
+  const factory _AiUnavailable() = _$AiUnavailableImpl;
 }
 
 /// @nodoc
@@ -638,6 +799,7 @@ class _$UnexpectedImpl implements _Unexpected {
     required TResult Function() notFound,
     required TResult Function() forbidden,
     required TResult Function() insufficientWords,
+    required TResult Function() aiUnavailable,
     required TResult Function() unexpected,
   }) {
     return unexpected();
@@ -650,6 +812,7 @@ class _$UnexpectedImpl implements _Unexpected {
     TResult? Function()? notFound,
     TResult? Function()? forbidden,
     TResult? Function()? insufficientWords,
+    TResult? Function()? aiUnavailable,
     TResult? Function()? unexpected,
   }) {
     return unexpected?.call();
@@ -662,6 +825,7 @@ class _$UnexpectedImpl implements _Unexpected {
     TResult Function()? notFound,
     TResult Function()? forbidden,
     TResult Function()? insufficientWords,
+    TResult Function()? aiUnavailable,
     TResult Function()? unexpected,
     required TResult orElse(),
   }) {
@@ -678,6 +842,7 @@ class _$UnexpectedImpl implements _Unexpected {
     required TResult Function(_NotFound value) notFound,
     required TResult Function(_Forbidden value) forbidden,
     required TResult Function(_InsufficientWords value) insufficientWords,
+    required TResult Function(_AiUnavailable value) aiUnavailable,
     required TResult Function(_Unexpected value) unexpected,
   }) {
     return unexpected(this);
@@ -690,6 +855,7 @@ class _$UnexpectedImpl implements _Unexpected {
     TResult? Function(_NotFound value)? notFound,
     TResult? Function(_Forbidden value)? forbidden,
     TResult? Function(_InsufficientWords value)? insufficientWords,
+    TResult? Function(_AiUnavailable value)? aiUnavailable,
     TResult? Function(_Unexpected value)? unexpected,
   }) {
     return unexpected?.call(this);
@@ -702,6 +868,7 @@ class _$UnexpectedImpl implements _Unexpected {
     TResult Function(_NotFound value)? notFound,
     TResult Function(_Forbidden value)? forbidden,
     TResult Function(_InsufficientWords value)? insufficientWords,
+    TResult Function(_AiUnavailable value)? aiUnavailable,
     TResult Function(_Unexpected value)? unexpected,
     required TResult orElse(),
   }) {

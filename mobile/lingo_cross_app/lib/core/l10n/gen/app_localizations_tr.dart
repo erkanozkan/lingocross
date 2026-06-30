@@ -2621,4 +2621,146 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get lockedFeatureLabel => 'Premium';
+
+  @override
+  String get teacherDashboardActionAiExamTitle => 'Sınav Soruları Oluştur';
+
+  @override
+  String get teacherDashboardActionAiExamDesc => 'Yapay zekâ, dersinin kelimelerinden çoktan seçmeli sorular hazırlasın.';
+
+  @override
+  String get aiExamCreateTitle => 'Sınav Soruları Oluştur';
+
+  @override
+  String get aiExamIntro => 'Dersinin içeriğine ve kelimelerine göre yapay zekâ çoktan seçmeli sorular hazırlasın.';
+
+  @override
+  String get aiExamLessonLabel => 'Ders Seç';
+
+  @override
+  String get aiExamLessonHint => 'Bir ders seçin…';
+
+  @override
+  String get aiExamLessonsEmpty => 'Henüz dersin yok. Önce bir ders oluştur.';
+
+  @override
+  String get aiExamLessonsError => 'Dersler yüklenemedi.';
+
+  @override
+  String get aiExamClassLabel => 'Sınıf Seç';
+
+  @override
+  String get aiExamClassesEmpty => 'Henüz sınıfın yok. Önce bir sınıf oluştur.';
+
+  @override
+  String get aiExamClassesError => 'Sınıflar yüklenemedi.';
+
+  @override
+  String get aiExamGradeLabel => 'Sınıf Seviyesi';
+
+  @override
+  String get aiExamTypesLabel => 'Soru Türleri';
+
+  @override
+  String get aiExamTypesHint => 'En az bir soru türü seç.';
+
+  @override
+  String get aiExamTypeWordMeaning => 'Kelime-Anlam';
+
+  @override
+  String get aiExamTypeFillBlank => 'Boşluk Doldurma';
+
+  @override
+  String get aiExamTypeSynonym => 'Eş Anlam';
+
+  @override
+  String get aiExamCountLabel => 'Soru Sayısı';
+
+  @override
+  String get aiExamCountMax => 'En fazla 10';
+
+  @override
+  String aiExamInfoBox(int grade, int count) {
+    return 'Yapay zekâ, seçtiğin dersin içeriğini ve kelimelerini kullanarak $grade. sınıf düzeyinde $count çoktan seçmeli soru üretecek.';
+  }
+
+  @override
+  String get aiExamGenerateButton => 'Yapay Zeka ile Soru Oluştur';
+
+  @override
+  String get aiExamLoadingTitle => 'Sorular hazırlanıyor…';
+
+  @override
+  String get aiExamLoadingSubtitle => 'Yapay zekâmız seçtiğin konuya göre en uygun soruları analiz ediyor.';
+
+  @override
+  String aiExamLoadingProgress(int percent) {
+    return 'ANALİZ EDİLİYOR %$percent';
+  }
+
+  @override
+  String get aiExamErrorInsufficientWords => 'Soru üretmek için ders yeterli kelime içermiyor.';
+
+  @override
+  String get aiExamErrorAiUnavailable => 'Yapay zekâ ile soru üretimi şu an kullanılamıyor.';
+
+  @override
+  String get aiExamErrorNetwork => 'Bağlanılamadı. Tekrar dene.';
+
+  @override
+  String get aiExamErrorGeneric => 'Sorular üretilemedi, tekrar dene.';
+
+  @override
+  String get aiExamReviewTitle => 'Üretilen Sorular';
+
+  @override
+  String aiExamReviewCount(int count) {
+    return '$count soru üretildi';
+  }
+
+  @override
+  String aiExamReviewGradeChip(int grade) {
+    return '$grade. Sınıf';
+  }
+
+  @override
+  String aiExamReviewClassChip(String name) {
+    return 'Sınıf: $name';
+  }
+
+  @override
+  String get aiExamReviewRegenerate => 'Yeniden Üret';
+
+  @override
+  String aiExamReviewQuestionLabel(int index) {
+    return 'Soru $index';
+  }
+
+  @override
+  String get aiExamReviewExplanation => 'Açıklama:';
+
+  @override
+  String aiExamReviewDeleteA11y(int index) {
+    return 'Soru $index sil';
+  }
+
+  @override
+  String get aiExamReviewDeleteError => 'Soru silinemedi, tekrar dene.';
+
+  @override
+  String get aiExamReviewEmpty => 'Tüm sorular silindi. Yeniden üret veya geri dön.';
+
+  @override
+  String aiExamReviewAssignNote(int count, String name) {
+    return '$count soru, $name sınıfına atanacak';
+  }
+
+  @override
+  String get aiExamReviewAssignButton => 'Öğrencilere Ata';
+
+  @override
+  String get aiExamReviewAssignSuccess => 'Sorular sınıfa atandı.';
+
+  @override
+  String get aiExamReviewAssignError => 'Atama başarısız, tekrar dene.';
 }

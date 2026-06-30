@@ -2621,4 +2621,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lockedFeatureLabel => 'Premium';
+
+  @override
+  String get teacherDashboardActionAiExamTitle => 'Create Exam Questions';
+
+  @override
+  String get teacherDashboardActionAiExamDesc => 'Let AI prepare multiple-choice questions from your lesson\'s words.';
+
+  @override
+  String get aiExamCreateTitle => 'Create Exam Questions';
+
+  @override
+  String get aiExamIntro => 'Let AI prepare multiple-choice questions based on your lesson\'s content and words.';
+
+  @override
+  String get aiExamLessonLabel => 'Select Lesson';
+
+  @override
+  String get aiExamLessonHint => 'Select a lesson…';
+
+  @override
+  String get aiExamLessonsEmpty => 'You don\'t have any lessons yet. Create one first.';
+
+  @override
+  String get aiExamLessonsError => 'Couldn\'t load lessons.';
+
+  @override
+  String get aiExamClassLabel => 'Select Class';
+
+  @override
+  String get aiExamClassesEmpty => 'You don\'t have any classes yet. Create one first.';
+
+  @override
+  String get aiExamClassesError => 'Couldn\'t load classes.';
+
+  @override
+  String get aiExamGradeLabel => 'Grade Level';
+
+  @override
+  String get aiExamTypesLabel => 'Question Types';
+
+  @override
+  String get aiExamTypesHint => 'Select at least one question type.';
+
+  @override
+  String get aiExamTypeWordMeaning => 'Word Meaning';
+
+  @override
+  String get aiExamTypeFillBlank => 'Fill in the Blank';
+
+  @override
+  String get aiExamTypeSynonym => 'Synonym';
+
+  @override
+  String get aiExamCountLabel => 'Number of Questions';
+
+  @override
+  String get aiExamCountMax => 'Up to 10';
+
+  @override
+  String aiExamInfoBox(int grade, int count) {
+    return 'AI will use your selected lesson\'s content and words to generate $count multiple-choice questions at grade $grade level.';
+  }
+
+  @override
+  String get aiExamGenerateButton => 'Generate Questions with AI';
+
+  @override
+  String get aiExamLoadingTitle => 'Preparing questions…';
+
+  @override
+  String get aiExamLoadingSubtitle => 'Our AI is analyzing the best questions for your selected topic.';
+
+  @override
+  String aiExamLoadingProgress(int percent) {
+    return 'ANALYZING $percent%';
+  }
+
+  @override
+  String get aiExamErrorInsufficientWords => 'The lesson doesn\'t have enough words to generate questions.';
+
+  @override
+  String get aiExamErrorAiUnavailable => 'AI question generation is currently unavailable.';
+
+  @override
+  String get aiExamErrorNetwork => 'Couldn\'t connect. Try again.';
+
+  @override
+  String get aiExamErrorGeneric => 'Couldn\'t generate questions, try again.';
+
+  @override
+  String get aiExamReviewTitle => 'Generated Questions';
+
+  @override
+  String aiExamReviewCount(int count) {
+    return '$count questions generated';
+  }
+
+  @override
+  String aiExamReviewGradeChip(int grade) {
+    return 'Grade $grade';
+  }
+
+  @override
+  String aiExamReviewClassChip(String name) {
+    return 'Class: $name';
+  }
+
+  @override
+  String get aiExamReviewRegenerate => 'Regenerate';
+
+  @override
+  String aiExamReviewQuestionLabel(int index) {
+    return 'Question $index';
+  }
+
+  @override
+  String get aiExamReviewExplanation => 'Explanation:';
+
+  @override
+  String aiExamReviewDeleteA11y(int index) {
+    return 'Delete question $index';
+  }
+
+  @override
+  String get aiExamReviewDeleteError => 'Couldn\'t delete the question, try again.';
+
+  @override
+  String get aiExamReviewEmpty => 'All questions were deleted. Regenerate or go back.';
+
+  @override
+  String aiExamReviewAssignNote(int count, String name) {
+    return '$count questions will be assigned to $name';
+  }
+
+  @override
+  String get aiExamReviewAssignButton => 'Assign to Students';
+
+  @override
+  String get aiExamReviewAssignSuccess => 'Questions assigned to the class.';
+
+  @override
+  String get aiExamReviewAssignError => 'Assignment failed, try again.';
 }

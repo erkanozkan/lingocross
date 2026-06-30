@@ -4978,6 +4978,258 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Premium'**
   String get lockedFeatureLabel;
+
+  /// Öğretmen panelindeki AI sınav soruları kartı başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınav Soruları Oluştur'**
+  String get teacherDashboardActionAiExamTitle;
+
+  /// AI sınav soruları kartı açıklaması.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zekâ, dersinin kelimelerinden çoktan seçmeli sorular hazırlasın.'**
+  String get teacherDashboardActionAiExamDesc;
+
+  /// AI sınav config ekranı başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınav Soruları Oluştur'**
+  String get aiExamCreateTitle;
+
+  /// Config ekranı giriş bilgi kutusu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersinin içeriğine ve kelimelerine göre yapay zekâ çoktan seçmeli sorular hazırlasın.'**
+  String get aiExamIntro;
+
+  /// Ders seçim alanı etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ders Seç'**
+  String get aiExamLessonLabel;
+
+  /// Ders dropdown yer tutucu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir ders seçin…'**
+  String get aiExamLessonHint;
+
+  /// Hiç ders yokken boş durum.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz dersin yok. Önce bir ders oluştur.'**
+  String get aiExamLessonsEmpty;
+
+  /// Ders listesi yükleme hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dersler yüklenemedi.'**
+  String get aiExamLessonsError;
+
+  /// Sınıf seçim alanı etiketi (tek seçim).
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf Seç'**
+  String get aiExamClassLabel;
+
+  /// Hiç sınıf yokken boş durum.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz sınıfın yok. Önce bir sınıf oluştur.'**
+  String get aiExamClassesEmpty;
+
+  /// Sınıf listesi yükleme hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıflar yüklenemedi.'**
+  String get aiExamClassesError;
+
+  /// Sınıf seviyesi (1-12) seçim alanı etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf Seviyesi'**
+  String get aiExamGradeLabel;
+
+  /// Soru türleri çoklu-seçim alanı etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru Türleri'**
+  String get aiExamTypesLabel;
+
+  /// Tür seçimi zorunlu uyarısı.
+  ///
+  /// In tr, this message translates to:
+  /// **'En az bir soru türü seç.'**
+  String get aiExamTypesHint;
+
+  /// word_meaning tür etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kelime-Anlam'**
+  String get aiExamTypeWordMeaning;
+
+  /// fill_blank tür etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boşluk Doldurma'**
+  String get aiExamTypeFillBlank;
+
+  /// synonym tür etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Eş Anlam'**
+  String get aiExamTypeSynonym;
+
+  /// Soru sayısı stepper etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru Sayısı'**
+  String get aiExamCountLabel;
+
+  /// Soru sayısı üst sınır notu.
+  ///
+  /// In tr, this message translates to:
+  /// **'En fazla 10'**
+  String get aiExamCountMax;
+
+  /// Config ekranı alt bilgi kutusu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zekâ, seçtiğin dersin içeriğini ve kelimelerini kullanarak {grade}. sınıf düzeyinde {count} çoktan seçmeli soru üretecek.'**
+  String aiExamInfoBox(int grade, int count);
+
+  /// Config ekranı üretme butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Zeka ile Soru Oluştur'**
+  String get aiExamGenerateButton;
+
+  /// Yükleme ekranı başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sorular hazırlanıyor…'**
+  String get aiExamLoadingTitle;
+
+  /// Yükleme ekranı alt metni.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zekâmız seçtiğin konuya göre en uygun soruları analiz ediyor.'**
+  String get aiExamLoadingSubtitle;
+
+  /// Yükleme ilerleme yüzdesi.
+  ///
+  /// In tr, this message translates to:
+  /// **'ANALİZ EDİLİYOR %{percent}'**
+  String aiExamLoadingProgress(int percent);
+
+  /// 400 yetersiz kelime hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru üretmek için ders yeterli kelime içermiyor.'**
+  String get aiExamErrorInsufficientWords;
+
+  /// 503 AI yapılandırılmamış hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay zekâ ile soru üretimi şu an kullanılamıyor.'**
+  String get aiExamErrorAiUnavailable;
+
+  /// Ağ hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlanılamadı. Tekrar dene.'**
+  String get aiExamErrorNetwork;
+
+  /// Genel üretim hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sorular üretilemedi, tekrar dene.'**
+  String get aiExamErrorGeneric;
+
+  /// Review ekranı başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üretilen Sorular'**
+  String get aiExamReviewTitle;
+
+  /// Review üst özet soru sayısı.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} soru üretildi'**
+  String aiExamReviewCount(int count);
+
+  /// Review grade çipi.
+  ///
+  /// In tr, this message translates to:
+  /// **'{grade}. Sınıf'**
+  String aiExamReviewGradeChip(int grade);
+
+  /// Review sınıf çipi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınıf: {name}'**
+  String aiExamReviewClassChip(String name);
+
+  /// Review yeniden üret aksiyonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden Üret'**
+  String get aiExamReviewRegenerate;
+
+  /// Soru kartı numarası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru {index}'**
+  String aiExamReviewQuestionLabel(int index);
+
+  /// Soru açıklaması satır etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama:'**
+  String get aiExamReviewExplanation;
+
+  /// Soru silme erişilebilirlik etiketi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru {index} sil'**
+  String aiExamReviewDeleteA11y(int index);
+
+  /// Soru silme hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Soru silinemedi, tekrar dene.'**
+  String get aiExamReviewDeleteError;
+
+  /// Review boş liste durumu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm sorular silindi. Yeniden üret veya geri dön.'**
+  String get aiExamReviewEmpty;
+
+  /// Review alt bilgi: atama özeti.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} soru, {name} sınıfına atanacak'**
+  String aiExamReviewAssignNote(int count, String name);
+
+  /// Review atama butonu.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öğrencilere Ata'**
+  String get aiExamReviewAssignButton;
+
+  /// Atama başarı bildirimi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sorular sınıfa atandı.'**
+  String get aiExamReviewAssignSuccess;
+
+  /// Atama hatası.
+  ///
+  /// In tr, this message translates to:
+  /// **'Atama başarısız, tekrar dene.'**
+  String get aiExamReviewAssignError;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
