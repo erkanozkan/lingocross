@@ -444,11 +444,12 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    // questionSet günün oyunu/atanan listesinde gösterilmez.
+    // Oyun "Günün Oyunu"nda; questionSet sınav ise "Sınavlara Hazırlan" altında.
     expect(find.text('Eşleştirme Oyunu'), findsOneWidget);
-    expect(find.text('LGS Çıkmış Sorular'), findsNothing);
-    // Sınavlara Hazırlan kartı görünür (≥1 atanan sınav).
-    expect(find.text('Çıkmış Sorular'), findsOneWidget);
+    // Çözülmemiş sınav artık ana sayfada satır olarak doğrudan görünür.
+    expect(find.text('LGS Çıkmış Sorular'), findsOneWidget);
+    // "tümü" kartı (Sınav Hazırlık Soruları) da görünür.
+    expect(find.text('Sınav Hazırlık Soruları'), findsOneWidget);
   });
 
   testWidgets('Atanan sınav yoksa Sınavlara Hazırlan kartı gizli',
@@ -462,7 +463,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    expect(find.text('Çıkmış Sorular'), findsNothing);
+    // Atanan sınav yoksa "Sınavlara Hazırlan" bölümü hiç görünmez (kart başlığı yok).
+    expect(find.text('Sınav Hazırlık Soruları'), findsNothing);
   });
 
   testWidgets('DÜZELTME 1: "Sınıflarım" bölümü sınıf adı + öğretmeni gösterir',

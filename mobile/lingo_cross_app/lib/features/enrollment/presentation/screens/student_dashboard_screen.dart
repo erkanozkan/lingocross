@@ -350,7 +350,9 @@ class _Content extends StatelessWidget {
           if (exams.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.lg),
             _ExamsSection(
-              onTap: () => context.push(AppRoutes.studentExams),
+              exams: exams,
+              onSolve: (id) => context.push(AppRoutes.studentGame(id)),
+              onSeeAll: () => context.push(AppRoutes.studentExams),
             ),
           ],
           const SizedBox(height: AppSpacing.lg),
@@ -393,8 +395,10 @@ class _Content extends StatelessWidget {
         if (exams.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _ExamsSection(
-            onTap: () => context.push(AppRoutes.studentExams),
-          ),
+              exams: exams,
+              onSolve: (id) => context.push(AppRoutes.studentGame(id)),
+              onSeeAll: () => context.push(AppRoutes.studentExams),
+            ),
         ],
         const SizedBox(height: AppSpacing.lg),
         _JoinTeacherLink(onTap: () => context.push(AppRoutes.studentJoin)),
@@ -408,23 +412,38 @@ class _Content extends StatelessWidget {
 /// "Sınavlara Hazırlan" bölümü (DÜZELTME 2) — Stitch primary-container kartı.
 /// Dokununca [StudentExamsScreen]'e gider (atanan questionSet listesi).
 class _ExamsSection extends StatelessWidget {
-  const _ExamsSection({required this.onTap});
+  const _ExamsSection({
+    required this.exams,
+    required this.onSolve,
+    required this.onSeeAll,
+  });
 
-  final VoidCallback onTap;
+  /// Öğrenciye atanan tüm sınavlar (questionSet); çözülmemişler ana sayfada
+  /// satır olarak listelenir, "tümü" kartı detay ekranına götürür.
+  final List<AssignedGameDto> exams;
+  final void Function(String gameId) onSolve;
+  final VoidCallback onSeeAll;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // Henüz çözülmemiş sınavlar: öğrenci detaya girmeden ana sayfada görür ve
+    // doğrudan çözmeye başlayabilir. Çözülmüşler "tümü" kartından (detay) görünür.
+    final pending = exams.where((e) => !e.isCompleted).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SectionLabel(l10n.studentDashboardExamsTitle),
         const SizedBox(height: AppSpacing.sm),
+        for (final exam in pending) ...[
+          _AssignedGameRow(game: exam, onTap: () => onSolve(exam.id)),
+          const SizedBox(height: AppSpacing.sm),
+        ],
         Material(
           color: AppColors.primaryContainer,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           child: InkWell(
-            onTap: onTap,
+            onTap: onSeeAll,
             borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
