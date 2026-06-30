@@ -65,6 +65,22 @@ class ResultsRepository {
     }
   }
 
+  /// Tek bir sonucun kelime-bazlı dökümle birlikte detayı.
+  ///
+  /// `GET /api/results/{resultId}` (Student, yalnız sahip). Başka bir
+  /// öğrencinin sonucunda API 404 → [ResultsFailure.notFound]. Eski sonuçta
+  /// `items: []` döner.
+  Future<GameResultDetailDto> getResultDetail(String resultId) async {
+    try {
+      final res = await _dio.get<Map<String, dynamic>>(
+        '$_base/results/$resultId',
+      );
+      return GameResultDetailDto.fromJson(res.data!);
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   ResultsFailure _mapError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:

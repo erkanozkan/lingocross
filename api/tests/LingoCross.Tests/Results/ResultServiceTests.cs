@@ -404,4 +404,155 @@ public class ResultServiceTests
         // Yeniden eskiye sıralı (en son gönderilen s2 başta).
         Assert.True(mine[0].CreatedAt >= mine[1].CreatedAt);
     }
+
+    // ---- GetMyResult (öğrencinin kendi sonuç kırılımı, F7.5) ----
+
+    /// <summary>QuestionSet oyunu (Lesson null, QuestionTopicId dolu) için InProgress oturum seed eder.</summary>
+    private static async Task<GameSession> SeedQuestionSetSessionAsync(
+        AppDbContext db, Guid studentId, string topicTitle)
+    {
+        var topic = new QuestionTopic { Title = topicTitle, Slug = $"yds-{Guid.NewGuid():N}", IsActive = true };
+        db.QuestionTopics.Add(topic);
+        await db.SaveChangesAsync();
+
+        var game = new Game
+        {
+            LessonId = null,
+            QuestionTopicId = topic.Id,
+            Type = GameType.QuestionSet,
+            Title = "Çıkmış Sorular",
+        };
+        db.Games.Add(game);
+        await db.SaveChangesAsync();
+
+        var session = new GameSession
+        {
+            GameId = game.Id,
+            StudentId = studentId,
+            Status = GameSessionStatus.InProgress,
+            StartedAt = DateTime.UtcNow,
+        };
+        db.GameSessions.Add(session);
+        await db.SaveChangesAsync();
+        return session;
+    }
+
+    [Fact]
+    public async Task GetMyResult_Owner_ReturnsDetail_WithItemsOrderedByOrdinal()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // Sıra dışı ordinal'lerle gönder; detay Ordinal artan sırada dönmeli.
+        var items = new List<SubmitResultItem>
+        {
+            new(2, "bird", "kuş", "kuş", true),
+            new(0, "cat", "kedi", "kedi", true),
+            new(1, "dog", "köpek", "balık", false),
+        };
+        var submitted = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(10_000, 99, 99, items));
+
+        var detail = await svc.GetMyResultAsync(submitted.Id);
+
+        Assert.Equal(submitted.Id, detail.Id);
+        Assert.Equal(session.GameId, detail.GameId);
+        Assert.Equal(GameType.WordMatching, detail.GameType);
+        Assert.NotNull(detail.LessonId);
+        Assert.Equal("Ders", detail.LessonTitle);
+        Assert.Equal(3, detail.TotalItems);
+        Assert.Equal(2, detail.CorrectItems);
+        Assert.Equal(67, detail.Score);
+        Assert.True(detail.SharedWithTeacher);
+
+        Assert.Equal(3, detail.Items.Count);
+        Assert.Equal(new[] { 0, 1, 2 }, detail.Items.Select(i => i.Ordinal).ToArray());
+        // Ordinal 1: yanlış cevap, beklenen/öğrenci doğru projekte edilmeli.
+        var wrong = detail.Items[1];
+        Assert.Equal("dog", wrong.Term);
+        Assert.Equal("köpek", wrong.ExpectedAnswer);
+        Assert.Equal("balık", wrong.StudentAnswer);
+        Assert.False(wrong.IsCorrect);
+        // Ordinal 0: doğru cevap.
+        Assert.True(detail.Items[0].IsCorrect);
+    }
+
+    [Fact]
+    public async Task GetMyResult_OtherStudent_Throws404()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var owner = await SeedUserAsync(db, UserRole.Student, "s1@x.com");
+        var intruder = await SeedUserAsync(db, UserRole.Student, "s2@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, owner.Id);
+
+        var ownerSvc = new ResultService(db, TestCurrentUser.Student(owner.Id));
+        var submitted = await ownerSvc.SubmitResultAsync(session.Id, new SubmitResultRequest(1000, 8, 8));
+
+        var intruderSvc = new ResultService(db, TestCurrentUser.Student(intruder.Id));
+        var ex = await Assert.ThrowsAsync<AppException>(() => intruderSvc.GetMyResultAsync(submitted.Id));
+        Assert.Equal(404, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMyResult_Teacher_Throws403()
+    {
+        // Öğretmen rolü RequireStudent kapısına takılır (403) — bu uç yalnızca öğrenci içindir.
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var studentSvc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        var submitted = await studentSvc.SubmitResultAsync(session.Id, new SubmitResultRequest(1000, 8, 8));
+
+        var teacherSvc = new ResultService(db, TestCurrentUser.Teacher(teacher.Id));
+        var ex = await Assert.ThrowsAsync<AppException>(() => teacherSvc.GetMyResultAsync(submitted.Id));
+        Assert.Equal(403, ex.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMyResult_LegacyResultWithoutItems_ReturnsEmptyItems()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedSessionAsync(db, teacher.Id, student.Id);
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        // Items null (eski istemci) → kırılım kaydedilmez.
+        var submitted = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(5000, 8, 6));
+
+        var detail = await svc.GetMyResultAsync(submitted.Id);
+        Assert.Empty(detail.Items);
+        Assert.Equal(8, detail.TotalItems);
+        Assert.Equal(6, detail.CorrectItems);
+    }
+
+    [Fact]
+    public async Task GetMyResult_QuestionSet_NullLessonId_TitleFromTopic_WithItems()
+    {
+        var db = NewDb();
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var session = await SeedQuestionSetSessionAsync(db, student.Id, "YDS 2020");
+
+        var svc = new ResultService(db, TestCurrentUser.Student(student.Id));
+        var items = new List<SubmitResultItem>
+        {
+            new(0, "Soru 1", "B", "B", true),
+            new(1, "Soru 2", "C", "A", false),
+        };
+        var submitted = await svc.SubmitResultAsync(session.Id, new SubmitResultRequest(20_000, 2, 1, items));
+
+        var detail = await svc.GetMyResultAsync(submitted.Id);
+
+        Assert.Null(detail.LessonId);                 // QuestionSet → ders yok
+        Assert.Equal("YDS 2020", detail.LessonTitle); // başlık konu başlığından
+        Assert.Equal(GameType.QuestionSet, detail.GameType);
+        Assert.Equal(2, detail.Items.Count);
+        Assert.Equal("Soru 2", detail.Items[1].Term);
+        Assert.False(detail.Items[1].IsCorrect);
+    }
 }

@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../games/domain/game_type.dart';
 import '../../../results/presentation/result_date_format.dart';
+import '../../../results/presentation/widgets/result_items_breakdown.dart';
 import '../../data/dtos/tracking_dtos.dart';
 import '../student_result_detail_notifier.dart';
 import '../tracking_failure_messages.dart';
@@ -124,6 +125,7 @@ class _DetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final hasItems = detail.hasItems;
     final visibleItems = switch (filter) {
       _DetailFilter.all => detail.items,
@@ -150,10 +152,18 @@ class _DetailBody extends StatelessWidget {
             onChanged: onFilterChanged,
           ),
           const SizedBox(height: AppSpacing.md),
-          for (final item in visibleItems) ...[
-            _WordItemCard(item: item),
-            const SizedBox(height: AppSpacing.xs),
-          ],
+          ResultItemsBreakdown(
+            items: [
+              for (final item in visibleItems)
+                ResultBreakdownItemData(
+                  term: item.term,
+                  expectedAnswer: item.expectedAnswer,
+                  studentAnswer: item.studentAnswer,
+                  isCorrect: item.isCorrect,
+                ),
+            ],
+            labels: _teacherBreakdownLabels(l10n),
+          ),
           const SizedBox(height: AppSpacing.md),
           _SectionAnalysis(detail: detail),
         ] else ...[
@@ -163,6 +173,19 @@ class _DetailBody extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Öğretmen ekranı kelime kartı etiketleri ("Öğrencinin cevabı" dili).
+ResultBreakdownLabels _teacherBreakdownLabels(AppLocalizations l10n) {
+  return ResultBreakdownLabels(
+    badgeCorrect: l10n.resultDetailBadgeCorrect,
+    badgeWrong: l10n.resultDetailBadgeWrong,
+    correctAnswer: l10n.resultDetailCorrectAnswer,
+    studentAnswer: l10n.resultDetailStudentAnswer,
+    studentAnswerEmpty: l10n.resultDetailStudentAnswerEmpty,
+    itemCorrectA11y: l10n.resultDetailItemCorrectA11y,
+    itemWrongA11y: l10n.resultDetailItemWrongA11y,
+  );
 }
 
 /// Öğrenci bağlam kartı: avatar + ad + ders, sağ üstte oyun türü chip, alt
@@ -475,184 +498,6 @@ class _SegmentButton extends StatelessWidget {
               color: selected ? AppColors.onPrimary : AppColors.onSurfaceVariant,
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Tek bir kelime kartı — doğru (yeşil) veya yanlış (kırmızı).
-class _WordItemCard extends StatelessWidget {
-  const _WordItemCard({required this.item});
-
-  final ResultItemDto item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final correct = item.isCorrect;
-    final stripe = correct ? AppColors.tertiary : AppColors.error;
-    final bg = correct ? AppColors.onTertiaryContainer : AppColors.errorContainer;
-
-    final a11y = correct
-        ? l10n.resultDetailItemCorrectA11y(item.term, item.expectedAnswer)
-        : l10n.resultDetailItemWrongA11y(
-            item.term,
-            item.expectedAnswer,
-            item.studentAnswer ?? '',
-          );
-
-    return Semantics(
-      label: a11y,
-      child: ExcludeSemantics(
-        child: Container(
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            border: Border(left: BorderSide(color: stripe, width: 4)),
-            boxShadow: AppShadows.level2,
-          ),
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: stripe,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  correct ? Icons.check : Icons.close,
-                  size: 20,
-                  color: correct ? AppColors.onTertiary : AppColors.onError,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: correct
-                    ? _CorrectBody(item: item)
-                    : _WrongBody(item: item),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              _ResultBadge(
-                label: correct
-                    ? l10n.resultDetailBadgeCorrect
-                    : l10n.resultDetailBadgeWrong,
-                bg: stripe,
-                fg: correct ? AppColors.onTertiary : AppColors.onError,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CorrectBody extends StatelessWidget {
-  const _CorrectBody({required this.item});
-
-  final ResultItemDto item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.term,
-          style: AppTypography.headlineMd.copyWith(
-            fontSize: 16,
-            color: AppColors.onSurface,
-          ),
-        ),
-        Text(
-          item.expectedAnswer,
-          style: AppTypography.labelSm.copyWith(
-            color: AppColors.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _WrongBody extends StatelessWidget {
-  const _WrongBody({required this.item});
-
-  final ResultItemDto item;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final answer = item.studentAnswer;
-    final hasAnswer = answer != null && answer.trim().isNotEmpty;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.term,
-          style: AppTypography.headlineMd.copyWith(
-            fontSize: 16,
-            color: AppColors.onSurface,
-          ),
-        ),
-        Text(
-          l10n.resultDetailCorrectAnswer(item.expectedAnswer),
-          style: AppTypography.labelSm.copyWith(color: AppColors.tertiary),
-        ),
-        if (hasAnswer)
-          Text(
-            l10n.resultDetailStudentAnswer(answer),
-            style: AppTypography.labelSm.copyWith(
-              color: AppColors.error,
-              decoration: TextDecoration.lineThrough,
-            ),
-          )
-        else
-          Text(
-            l10n.resultDetailStudentAnswerEmpty,
-            style: AppTypography.labelSm.copyWith(
-              color: AppColors.error,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _ResultBadge extends StatelessWidget {
-  const _ResultBadge({
-    required this.label,
-    required this.bg,
-    required this.fg,
-  });
-
-  final String label;
-  final Color bg;
-  final Color fg;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xs,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-      ),
-      child: Text(
-        label,
-        style: AppTypography.labelSm.copyWith(
-          color: fg,
-          fontWeight: FontWeight.w700,
-          fontSize: 10,
         ),
       ),
     );

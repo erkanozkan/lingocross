@@ -3,6 +3,7 @@ using LingoCross.Application.Common.Persistence;
 using LingoCross.Application.Common.Security;
 using LingoCross.Application.Notifications;
 using LingoCross.Application.Results.Dtos;
+using LingoCross.Application.Teachers.Dtos;
 using LingoCross.Domain.Entities;
 using LingoCross.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -245,6 +246,60 @@ public class ResultService : IResultService
         return rows
             .Select(x => ToDto(x.Result, x.GameId, x.GameType, x.LessonId, x.LessonTitle))
             .ToList();
+    }
+
+    public async Task<MyResultDetailDto> GetMyResultAsync(Guid resultId, CancellationToken cancellationToken = default)
+    {
+        var studentId = RequireStudent();
+
+        // Sonuç geçerli öğrencinin oturumuna ait olmalı; aksi/yoksa 404 (varlığı sızdırmamak için).
+        // Items oturum→sonuç kırılımından, Ordinal artan sırada projekte edilir.
+        var detail = await _db.GameResults
+            .Where(r => r.Id == resultId && r.Session.StudentId == studentId)
+            .Select(r => new
+            {
+                r.Id,
+                r.Session.GameId,
+                GameType = r.Session.Game.Type,
+                LessonId = r.Session.Game.LessonId,
+                // QuestionSet oyununda (Lesson null) başlık konu başlığından gelir.
+                LessonTitle = r.Session.Game.Lesson != null
+                    ? r.Session.Game.Lesson.Title
+                    : (r.Session.Game.QuestionTopic != null ? r.Session.Game.QuestionTopic.Title : ""),
+                r.DurationMs,
+                r.TotalItems,
+                r.CorrectItems,
+                r.Score,
+                r.SharedWithTeacher,
+                r.SharedAt,
+                r.CreatedAt,
+                Items = r.Items
+                    .OrderBy(i => i.Ordinal)
+                    .Select(i => new ResultItemDto(
+                        i.Ordinal, i.Term, i.ExpectedAnswer, i.StudentAnswer, i.IsCorrect))
+                    .ToList(),
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (detail is null)
+        {
+            throw AppException.NotFound("Sonuç bulunamadı.");
+        }
+
+        return new MyResultDetailDto(
+            detail.Id,
+            detail.GameId,
+            detail.GameType,
+            detail.LessonId,
+            detail.LessonTitle,
+            detail.DurationMs,
+            detail.TotalItems,
+            detail.CorrectItems,
+            detail.Score,
+            detail.SharedWithTeacher,
+            detail.SharedAt,
+            detail.CreatedAt,
+            detail.Items);
     }
 
     public async Task<StudentStatsDto> GetMyStatsAsync(CancellationToken cancellationToken = default)

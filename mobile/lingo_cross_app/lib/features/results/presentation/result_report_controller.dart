@@ -8,14 +8,20 @@ import '../domain/results_failure.dart';
 part 'result_report_controller.freezed.dart';
 part 'result_report_controller.g.dart';
 
-/// Oyun Sonu Raporu ekranının durumu: rapor verisi.
+/// Oyun Sonu Raporu ekranının durumu: özet rapor + kelime kırılımı.
 ///
 /// Paylaşım artık otomatiktir (submit `sharedWithTeacher = true` döner); ekranda
 /// elle "Öğretmene Gönder" akışı yoktur, yalnız bilgi notu gösterilir.
+///
+/// [result] özet (radyal/bento) için; [items] doğru/yanlış kırılımı. Kırılım
+/// `GET /results/{id}`'den gelir; eski sonuçta boş döner → bölüm gizlenir.
+/// Kırılımın yüklenmesi özeti BLOKLAMAZ (özet seed/listeden hemen gösterilir,
+/// kırılım arka planda gelir; hata olursa bölüm sessizce gizli kalır).
 @freezed
 class ResultReportState with _$ResultReportState {
   const factory ResultReportState({
     required AsyncValue<GameResultDto> result,
+    @Default(<ResultItemModel>[]) List<ResultItemModel> items,
   }) = _ResultReportState;
 }
 

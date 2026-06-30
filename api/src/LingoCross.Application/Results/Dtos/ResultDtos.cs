@@ -1,3 +1,4 @@
+using LingoCross.Application.Teachers.Dtos;
 using LingoCross.Domain.Enums;
 
 namespace LingoCross.Application.Results.Dtos;
@@ -39,6 +40,28 @@ public record GameResultDto(
     bool SharedWithTeacher,
     DateTime? SharedAt,
     DateTime CreatedAt);
+
+/// <summary>
+/// Öğrencinin KENDİ tek bir oyun sonucunun kelime/soru-bazlı doğru-yanlış kırılımıyla tam görünümü
+/// (F7.5, öğrenci tarafı). <see cref="GameResultDto"/>'ya ek olarak <see cref="Items"/> kırılımını
+/// içerir; öğretmen tarafındaki <c>ResultItemDto</c> reuse edilir. QuestionSet sonucunda
+/// <see cref="LessonId"/> null olur ve <see cref="LessonTitle"/> konu başlığından gelir.
+/// <see cref="Items"/> <c>Ordinal</c> artan sırada; eski/itemsız sonuçlarda boş liste döner.
+/// </summary>
+public record MyResultDetailDto(
+    Guid Id,
+    Guid GameId,
+    GameType GameType,
+    Guid? LessonId,
+    string LessonTitle,
+    int DurationMs,
+    int TotalItems,
+    int CorrectItems,
+    int Score,
+    bool SharedWithTeacher,
+    DateTime? SharedAt,
+    DateTime CreatedAt,
+    IReadOnlyList<ResultItemDto> Items);
 
 /// <summary>
 /// Öğrenci profil istatistikleri (F3.1). Yalnızca tamamlanmış oyun sonuçlarından türetilen iki

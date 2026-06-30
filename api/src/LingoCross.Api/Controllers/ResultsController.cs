@@ -48,4 +48,15 @@ public class ResultsController : ControllerBase
         var results = await _resultService.ListMineAsync(ct);
         return Ok(results);
     }
+
+    /// <summary>
+    /// Geçerli öğrencinin KENDİ tek bir sonucunun kelime/soru-bazlı doğru-yanlış kırılımıyla detayı.
+    /// Sonuç öğrenciye ait değilse (veya yoksa) 404.
+    /// </summary>
+    [HttpGet("api/results/{resultId:guid}")]
+    public async Task<ActionResult<MyResultDetailDto>> GetMine(Guid resultId, CancellationToken ct)
+    {
+        var result = await _resultService.GetMyResultAsync(resultId, ct);
+        return Ok(result);
+    }
 }

@@ -27,6 +27,13 @@ public interface IResultService
     Task<IReadOnlyList<GameResultDto>> ListMineAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Geçerli öğrencinin KENDİ tek bir sonucunun kelime/soru-bazlı kırılımıyla tam detayı (F7.5).
+    /// Sonucun oturumu (Session.StudentId) geçerli öğrenciye ait değilse (veya sonuç yoksa) 404
+    /// (varlığı sızdırmamak için). Items, Ordinal artan sırada; eski/itemsız sonuçlarda boş liste.
+    /// </summary>
+    Task<MyResultDetailDto> GetMyResultAsync(Guid resultId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Geçerli öğrencinin profil istatistikleri (F3.1): tamamlanmış sonuç sayısı ve ortalama
     /// başarı puanı. Sonuç yoksa 0/0. Yalnızca kendi sonuçları sayılır.
     /// </summary>
