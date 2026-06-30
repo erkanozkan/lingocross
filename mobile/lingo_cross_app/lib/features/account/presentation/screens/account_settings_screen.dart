@@ -60,9 +60,11 @@ class AccountSettingsScreen extends ConsumerWidget {
             onEdit: () => EditProfileSheet.show(context, initialName: name),
           ),
           const SizedBox(height: AppSpacing.xl),
-          // PREMIUM — paywall giriş noktası (tek premium: AI/OCR kelime tarama).
-          _PremiumCard(onTap: () => context.push(AppRoutes.paywall)),
-          const SizedBox(height: AppSpacing.lg),
+          // PREMIUM girişi şimdilik GİZLİ: uygulama tamamen ücretsiz, premium
+          // hiçbir şeyin kilidini açmıyor → işlevsiz/karşılıksız IAP App Review
+          // reddine yol açar (Guideline 3.1.1 / 2.3.1). Paywall ekranı + route +
+          // IAP altyapısı korunuyor; ileride bir premium özellik gelince
+          // _PremiumCard geri eklenir (git geçmişinden).
           // GENEL
           _SettingsGroup(
             title: l10n.accountGroupGeneral,
@@ -195,69 +197,6 @@ class _ProfileHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// LingoCross Premium giriş kartı — paywall'a götürür. Tek premium özellik
-/// AI/OCR kelime taramadır; metin bunu yansıtır (App Review: doğru anlatım).
-class _PremiumCard extends StatelessWidget {
-  const _PremiumCard({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Material(
-      color: AppColors.secondaryContainer,
-      borderRadius: BorderRadius.circular(AppRadius.xl),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        child: Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-            boxShadow: AppShadows.level2,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLowest.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                ),
-                child: const Icon(Icons.workspace_premium,
-                    color: AppColors.onSecondary, size: 22),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.accountPremiumTitle,
-                      style: AppTypography.headlineMd
-                          .copyWith(color: AppColors.onSurface),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      l10n.accountPremiumSubtitle,
-                      style: AppTypography.labelSm
-                          .copyWith(color: AppColors.onSurfaceVariant),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.onSecondary),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

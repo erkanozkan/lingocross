@@ -116,7 +116,8 @@ void main() {
     expect(find.text('Çıkış Yap'), findsOneWidget);
   });
 
-  testWidgets('LingoCross Premium kartı → /paywall push eder', (tester) async {
+  testWidgets('Premium kartı GİZLİ (uygulama ücretsiz → işlevsiz IAP yok)',
+      (tester) async {
     tester.view.physicalSize = const Size(1080, 3200);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -126,12 +127,9 @@ void main() {
     await tester.pumpWidget(_wrap(authRepo, prefs));
     await tester.pumpAndSettle();
 
-    final premium = find.text('LingoCross Premium');
-    expect(premium, findsOneWidget);
-
-    await tester.tap(premium);
-    await tester.pumpAndSettle();
-    expect(find.text('PROBE_PAYWALL'), findsOneWidget);
+    // Premium giriş noktası profilden kaldırıldı; paywall'a giden bir yol yok.
+    expect(find.text('LingoCross Premium'), findsNothing);
+    expect(find.byIcon(Icons.workspace_premium), findsNothing);
   });
 
   testWidgets('4 satır gerçek route push eder', (tester) async {
