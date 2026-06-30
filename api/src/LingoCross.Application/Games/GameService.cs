@@ -45,11 +45,8 @@ public class GameService : IGameService
 
     public async Task<GameDto> CreateForLessonAsync(Guid lessonId, CreateGameRequest request, CancellationToken cancellationToken = default)
     {
-        // Bulmaca/oyun oluşturma Premium özelliğidir: Free öğretmen herhangi bir iş yapılmadan 402 alır.
-        if (_entitlement is not null)
-        {
-            await _entitlement.RequirePuzzleCreateAsync(cancellationToken);
-        }
+        // Bulmaca/oyun oluşturma ÜCRETSİZ (puzzle_create premium kapısı kaldırıldı). Öğretmen
+        // tarafında geriye kalan tek premium özelliği OCR / AI ile kelime taramadır.
 
         // Yalnızca ders sahibi öğretmen oluşturabilir.
         var lesson = await GetOwnedLessonAsync(lessonId, cancellationToken);

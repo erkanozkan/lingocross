@@ -66,21 +66,20 @@ public class EntitlementEnforcementTests
     // ---- Sınıf limiti ----
 
     [Fact]
-    public async Task ClassCreate_Free_TwoOk_ThirdThrows402_ClassLimit()
+    public async Task ClassCreate_Free_Unlimited_NoCharge()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
         var current = TestCurrentUser.Teacher(teacher.Id);
         var svc = new ClassService(db, current, Entitlement(db, current));
 
-        await svc.CreateAsync(new SaveClassRequest("A"));
-        await svc.CreateAsync(new SaveClassRequest("B"));
+        // Sınıf kotası kaldırıldı → Free öğretmen sınırsız sınıf oluşturabilir (402 yok).
+        for (var i = 0; i < 5; i++)
+        {
+            await svc.CreateAsync(new SaveClassRequest($"C{i}"));
+        }
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => svc.CreateAsync(new SaveClassRequest("C")));
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("subscription_required", ex.Code);
-        Assert.Equal("class_limit", ex.Feature);
-        Assert.Equal(2, await db.Classes.CountAsync());
+        Assert.Equal(5, await db.Classes.CountAsync());
     }
 
     [Fact]
@@ -121,23 +120,20 @@ public class EntitlementEnforcementTests
     // ---- Ders limiti ----
 
     [Fact]
-    public async Task LessonCreate_Free_FiveOk_SixthThrows402_LessonLimit()
+    public async Task LessonCreate_Free_Unlimited_NoCharge()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
         var current = TestCurrentUser.Teacher(teacher.Id);
         var svc = new LessonService(db, current, Entitlement(db, current));
 
-        for (var i = 0; i < 5; i++)
+        // Ders kotası kaldırıldı → Free öğretmen sınırsız ders oluşturabilir (402 yok).
+        for (var i = 0; i < 8; i++)
         {
             await svc.CreateAsync(new CreateLessonRequest($"L{i}", null, null, null));
         }
 
-        var ex = await Assert.ThrowsAsync<AppException>(
-            () => svc.CreateAsync(new CreateLessonRequest("L6", null, null, null)));
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("lesson_limit", ex.Feature);
-        Assert.Equal(5, await db.Lessons.CountAsync());
+        Assert.Equal(8, await db.Lessons.CountAsync());
     }
 
     [Fact]
@@ -291,22 +287,19 @@ public class EntitlementEnforcementTests
     }
 
     [Fact]
-    public async Task PuzzleCreate_Free_Throws402_PuzzleCreate()
+    public async Task PuzzleCreate_Free_Succeeds_NoCharge()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
         var current = TestCurrentUser.Teacher(teacher.Id);
-        // İçerik fazlasıyla yeterli; yine de Free öğretmen oyun oluşturamaz (kapı içerikten önce).
         var lesson = await SeedLessonWithWordsAsync(db, teacher.Id, translatedWordCount: 5);
         var svc = new GameService(db, current, random: new Random(12345), push: null, entitlement: Entitlement(db, current));
 
-        var ex = await Assert.ThrowsAsync<AppException>(
-            () => svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.WordMatching, "Hafta 1")));
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("subscription_required", ex.Code);
-        Assert.Equal("puzzle_create", ex.Feature);
-        // Hiçbir oyun oluşturulmamış olmalı (iş yapılmadan reddedildi).
-        Assert.Equal(0, await db.Games.CountAsync());
+        // Bulmaca/oyun oluşturma ücretsiz (puzzle_create kapısı kaldırıldı) → Free öğretmen oluşturabilir.
+        var game = await svc.CreateForLessonAsync(lesson.Id, new CreateGameRequest(GameType.WordMatching, "Hafta 1"));
+
+        Assert.Equal(GameType.WordMatching, game.Type);
+        Assert.Equal(1, await db.Games.CountAsync());
     }
 
     [Fact]

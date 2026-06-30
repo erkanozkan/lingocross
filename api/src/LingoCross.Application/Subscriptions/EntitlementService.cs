@@ -57,10 +57,10 @@ public class EntitlementService : IEntitlementService
             Status: status,
             Period: period,
             ExpiresAt: expiresAt,
-            MaxClasses: _options.FreeMaxClasses,
-            MaxLessons: _options.FreeMaxLessons,
-            // Öğrenci erişimi tamamen ÜCRETSİZ: öğretmene katılma sınırsız (multi_teacher
-            // kapısı kaldırıldı). Ücretli limitler yalnız öğretmen tarafıdır (sınıf/ders/OCR).
+            // Sınıf/ders/öğretmen kotaları KALDIRILDI → Free'de de sınırsız. Öğretmen tarafında
+            // geriye kalan tek premium özelliği OCR / AI ile kelime taramadır (OcrEnabled=false).
+            MaxClasses: int.MaxValue,
+            MaxLessons: int.MaxValue,
             MaxTeachers: int.MaxValue,
             OcrEnabled: false);
     }

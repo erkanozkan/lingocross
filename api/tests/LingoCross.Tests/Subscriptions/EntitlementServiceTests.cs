@@ -49,9 +49,9 @@ public class EntitlementServiceTests
 
         Assert.False(snap.IsPremium);
         Assert.Equal(SubscriptionStatus.None, snap.Status);
-        Assert.Equal(2, snap.MaxClasses);
-        Assert.Equal(5, snap.MaxLessons);
-        // Öğrenci erişimi ücretsiz → öğretmene katılım sınırsız (free'de de int.MaxValue).
+        // Sınıf/ders/öğretmen kotaları kaldırıldı → Free'de de sınırsız. Tek premium: OCR.
+        Assert.Equal(int.MaxValue, snap.MaxClasses);
+        Assert.Equal(int.MaxValue, snap.MaxLessons);
         Assert.Equal(int.MaxValue, snap.MaxTeachers);
         Assert.False(snap.OcrEnabled);
     }
@@ -104,7 +104,7 @@ public class EntitlementServiceTests
 
         Assert.False(snap.IsPremium);
         Assert.False(snap.OcrEnabled);
-        Assert.Equal(2, snap.MaxClasses);
+        Assert.Equal(int.MaxValue, snap.MaxClasses);
     }
 
     [Fact]
@@ -141,15 +141,13 @@ public class EntitlementServiceTests
     }
 
     [Fact]
-    public async Task RequireClassQuota_AtLimit_Throws402_ClassLimit()
+    public async Task RequireClassQuota_Free_Unlimited_DoesNotThrow()
     {
         var db = NewDb();
         var userId = await SeedUserAsync(db);
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => Svc(db, userId).RequireClassQuotaAsync(2));
-
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("class_limit", ex.Feature);
+        // Sınıf kotası kaldırıldı → yüksek sayıda bile fırlatmamalı (Free sınırsız).
+        await Svc(db, userId).RequireClassQuotaAsync(999);
     }
 
     [Fact]
