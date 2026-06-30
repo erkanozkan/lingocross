@@ -119,19 +119,36 @@ public class QuestionSetGameServiceTests
     }
 
     [Fact]
-    public async Task StartSession_QuestionSet_BankBelowTen_Throws400_NoSession()
+    public async Task StartSession_QuestionSet_BankBelowTen_UsesAllQuestions()
     {
         var db = NewDb();
         var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
         var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
-        var topic = await SeedTopicAsync(db, questionCount: 9); // < QuestionsPerSet(10)
+        // AI ile üretilen küçük set / azaltılmış sayı: 10'dan az soru → hepsi kullanılır.
+        var topic = await SeedTopicAsync(db, questionCount: 3);
+        var game = await SeedQuestionSetGameAsync(db, topic.Id, teacher.Id, student.Id);
+
+        var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
+        var resp = await svc.StartSessionAsync(game.Id);
+
+        Assert.NotNull(resp.QuestionSet);
+        Assert.Equal(3, resp.QuestionSet!.Questions.Count);
+        Assert.Equal(1, await db.GameSessions.CountAsync(s => s.GameId == game.Id));
+    }
+
+    [Fact]
+    public async Task StartSession_QuestionSet_EmptyBank_Throws400_NoSession()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var student = await SeedUserAsync(db, UserRole.Student, "s@x.com");
+        var topic = await SeedTopicAsync(db, questionCount: 0);
         var game = await SeedQuestionSetGameAsync(db, topic.Id, teacher.Id, student.Id);
 
         var svc = new GameService(db, TestCurrentUser.Student(student.Id), SeededRandom());
         var ex = await Assert.ThrowsAsync<AppException>(() => svc.StartSessionAsync(game.Id));
 
         Assert.Equal(400, ex.StatusCode);
-        // İçerik üretimi SaveChanges'tan önce patladığı için oturum oluşturulmaz.
         Assert.Equal(0, await db.GameSessions.CountAsync());
     }
 

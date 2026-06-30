@@ -622,28 +622,34 @@ class _CountStepper extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.aiExamCountLabel,
-                  style: AppTypography.labelLg
-                      .copyWith(color: AppColors.onSurface)),
-              const SizedBox(height: AppSpacing.base),
-              Text(l10n.aiExamCountMax,
-                  style: AppTypography.labelSm
-                      .copyWith(color: AppColors.outline)),
-            ],
+          // Etiket esnek olmalı: uzun başlık (özellikle EN "Number of Questions")
+          // stepper'ı taşırmasın diye kalan alanı alır ve gerekirse sarar.
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.aiExamCountLabel,
+                    style: AppTypography.labelLg
+                        .copyWith(color: AppColors.onSurface)),
+                const SizedBox(height: AppSpacing.base),
+                Text(l10n.aiExamCountMax,
+                    style: AppTypography.labelSm
+                        .copyWith(color: AppColors.outline)),
+              ],
+            ),
           ),
+          const SizedBox(width: AppSpacing.sm),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               _StepButton(
                 icon: Icons.remove,
                 enabled: count > min,
                 onTap: count > min ? () => onChanged(count - 1) : null,
               ),
-              const SizedBox(width: AppSpacing.lg),
+              const SizedBox(width: AppSpacing.md),
               SizedBox(
-                width: 40,
+                width: 36,
                 child: Text(
                   '$count',
                   textAlign: TextAlign.center,
@@ -651,7 +657,7 @@ class _CountStepper extends StatelessWidget {
                       .copyWith(color: AppColors.primary),
                 ),
               ),
-              const SizedBox(width: AppSpacing.lg),
+              const SizedBox(width: AppSpacing.md),
               _StepButton(
                 icon: Icons.add,
                 enabled: count < max,

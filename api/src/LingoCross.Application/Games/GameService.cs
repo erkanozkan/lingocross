@@ -764,13 +764,14 @@ public class GameService : IGameService
             .Include(q => q.Options)
             .ToListAsync(cancellationToken);
 
-        if (questions.Count < QuestionsPerSet)
+        if (questions.Count == 0)
         {
-            throw AppException.BadRequest(
-                $"Bu konu başlığı için soru seti oynatılamıyor; en az {QuestionsPerSet} soru gerekir.");
+            throw AppException.BadRequest("Bu konu başlığında hiç soru yok.");
         }
 
-        // Bankadan rastgele (deterministik: enjekte Random) ilk N soru.
+        // Bankadan rastgele (deterministik: enjekte Random) EN FAZLA QuestionsPerSet soru. Banka daha
+        // az içeriyorsa (ör. AI ile üretilen küçük sınav setleri ya da öğretmenin azalttığı sayı)
+        // mevcut soruların hepsi kullanılır; büyük bankalarda (ör. YDS) rastgele 10 alınır.
         var chosen = Shuffle(questions).Take(QuestionsPerSet).ToList();
 
         var items = chosen
