@@ -109,6 +109,78 @@ void main() {
     expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
   });
 
+  testWidgets(
+      'items dolu → "Cevap Dökümü" + doğru/yanlış satırları görünür; özet kalır',
+      (tester) async {
+    _tallSurface(tester);
+    final seed = sampleResult(id: 'rb1', sharedWithTeacher: true);
+    final repo = FakeResultsRepository(
+      mine: [seed],
+      details: {'rb1': sampleResultDetail(id: 'rb1')},
+    );
+    await tester.pumpWidget(_wrap(seed: seed, repo: repo));
+    await tester.pump(); // seed (post-frame)
+    await tester.pump(); // _loadBreakdown future
+    await tester.pumpAndSettle();
+
+    // Özet hâlâ görünür.
+    expect(find.text('Oyun Özeti'), findsOneWidget);
+    expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
+
+    // Kırılım bölümü açıldı.
+    expect(find.text('Cevap Dökümü'), findsOneWidget);
+    // Terimler listelendi (3 item).
+    expect(find.text('apple'), findsOneWidget);
+    expect(find.text('bread'), findsOneWidget);
+    expect(find.text('water'), findsOneWidget);
+    // Doğru/yanlış rozetleri (1 doğru, 2 yanlış).
+    expect(find.text('Doğru'), findsOneWidget);
+    expect(find.text('Yanlış'), findsNWidgets(2));
+    // Boş bırakılan cevap etiketi (öğrenci dili).
+    expect(find.text('Senin cevabın: — (boş)'), findsOneWidget);
+    // Verilen yanlış cevap (öğrenci dili).
+    expect(find.text('Senin cevabın: su'), findsOneWidget);
+    // Öğretmen dilindeki etiket bu ekranda KULLANILMAZ.
+    expect(find.textContaining('Öğrencinin cevabı'), findsNothing);
+  });
+
+  testWidgets('items boş (eski sonuç) → kırılım bölümü gizli; özet görünür',
+      (tester) async {
+    _tallSurface(tester);
+    final seed = sampleResult(id: 'rb2', sharedWithTeacher: true);
+    final repo = FakeResultsRepository(
+      mine: [seed],
+      details: {
+        'rb2': sampleResultDetail(id: 'rb2', items: const []),
+      },
+    );
+    await tester.pumpWidget(_wrap(seed: seed, repo: repo));
+    await tester.pump();
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Oyun Özeti'), findsOneWidget);
+    // Kırılım bölümü gizli.
+    expect(find.text('Cevap Dökümü'), findsNothing);
+  });
+
+  testWidgets(
+      'detay ucu hata verirse kırılım gizli kalır ama özet (seed) bozulmaz',
+      (tester) async {
+    _tallSurface(tester);
+    final seed = sampleResult(id: 'rb3', sharedWithTeacher: true);
+    // details boş → getResultDetail notFound atar; seed özeti etkilenmez.
+    final repo = FakeResultsRepository(mine: [seed]);
+    await tester.pumpWidget(_wrap(seed: seed, repo: repo));
+    await tester.pump();
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Oyun Özeti'), findsOneWidget);
+    expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
+    expect(find.text('Cevap Dökümü'), findsNothing);
+  });
+
   testWidgets('geçmişten (seed yok) yüklenince de paylaşıldı notu görünür',
       (tester) async {
     _tallSurface(tester);
@@ -150,5 +222,54 @@ void main() {
     expect(find.text('Öğretmeninle paylaşıldı'), findsOneWidget);
     expect(find.text('Öğretmene Gönder'), findsNothing);
     expect(find.text('Tekrar Oyna'), findsNothing);
+  });
+
+  testWidgets(
+      'geçmişten (seed yok) detay ucundan özet + kırılım birlikte yüklenir',
+      (tester) async {
+    _tallSurface(tester);
+    final repo = FakeResultsRepository(
+      details: {'r7': sampleResultDetail(id: 'r7')},
+    );
+    final router = GoRouter(
+      initialLocation: '/report',
+      routes: [
+        GoRoute(
+          path: '/report',
+          builder: (_, __) => const GameResultReportScreen(resultId: 'r7'),
+        ),
+        GoRoute(path: '/student', builder: (_, __) => const Scaffold()),
+        GoRoute(path: '/student/results', builder: (_, __) => const Scaffold()),
+        GoRoute(path: '/profile', builder: (_, __) => const Scaffold()),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [resultsRepositoryProvider.overrideWithValue(repo)],
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          routerConfig: router,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('tr'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    // Özet detaydan geldi.
+    expect(find.text('Oyun Özeti'), findsOneWidget);
+    expect(find.text('%85'), findsOneWidget);
+    // Kırılım da geldi.
+    expect(find.text('Cevap Dökümü'), findsOneWidget);
+    expect(find.text('apple'), findsOneWidget);
+    // listMine'a düşmedi (detay başarılı).
+    expect(repo.detailCount, 1);
   });
 }

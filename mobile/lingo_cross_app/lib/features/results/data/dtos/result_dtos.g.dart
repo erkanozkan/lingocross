@@ -86,3 +86,68 @@ Map<String, dynamic> _$$GameResultDtoImplToJson(_$GameResultDtoImpl instance) =>
       'sharedAt': instance.sharedAt?.toIso8601String(),
       'createdAt': instance.createdAt.toIso8601String(),
     };
+
+_$ResultItemModelImpl _$$ResultItemModelImplFromJson(
+  Map<String, dynamic> json,
+) => _$ResultItemModelImpl(
+  ordinal: (json['ordinal'] as num).toInt(),
+  term: json['term'] as String,
+  expectedAnswer: json['expectedAnswer'] as String,
+  studentAnswer: json['studentAnswer'] as String?,
+  isCorrect: json['isCorrect'] as bool,
+);
+
+Map<String, dynamic> _$$ResultItemModelImplToJson(
+  _$ResultItemModelImpl instance,
+) => <String, dynamic>{
+  'ordinal': instance.ordinal,
+  'term': instance.term,
+  'expectedAnswer': instance.expectedAnswer,
+  'studentAnswer': instance.studentAnswer,
+  'isCorrect': instance.isCorrect,
+};
+
+_$GameResultDetailDtoImpl _$$GameResultDetailDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$GameResultDetailDtoImpl(
+  id: json['id'] as String,
+  gameId: json['gameId'] as String,
+  gameType: const GameTypeConverter().fromJson(
+    (json['gameType'] as num).toInt(),
+  ),
+  lessonId: json['lessonId'] as String?,
+  lessonTitle: json['lessonTitle'] as String,
+  durationMs: (json['durationMs'] as num).toInt(),
+  totalItems: (json['totalItems'] as num).toInt(),
+  correctItems: (json['correctItems'] as num).toInt(),
+  score: (json['score'] as num).toInt(),
+  sharedWithTeacher: json['sharedWithTeacher'] as bool,
+  sharedAt:
+      json['sharedAt'] == null
+          ? null
+          : DateTime.parse(json['sharedAt'] as String),
+  createdAt: DateTime.parse(json['createdAt'] as String),
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => ResultItemModel.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <ResultItemModel>[],
+);
+
+Map<String, dynamic> _$$GameResultDetailDtoImplToJson(
+  _$GameResultDetailDtoImpl instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'gameId': instance.gameId,
+  'gameType': const GameTypeConverter().toJson(instance.gameType),
+  'lessonId': instance.lessonId,
+  'lessonTitle': instance.lessonTitle,
+  'durationMs': instance.durationMs,
+  'totalItems': instance.totalItems,
+  'correctItems': instance.correctItems,
+  'score': instance.score,
+  'sharedWithTeacher': instance.sharedWithTeacher,
+  'sharedAt': instance.sharedAt?.toIso8601String(),
+  'createdAt': instance.createdAt.toIso8601String(),
+  'items': instance.items.map((e) => e.toJson()).toList(),
+};

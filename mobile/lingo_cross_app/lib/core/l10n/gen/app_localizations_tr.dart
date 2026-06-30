@@ -1650,6 +1650,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gameResultErrorTitle => 'Sonuç yüklenemedi';
 
   @override
+  String get resultBreakdownTitle => 'Cevap Dökümü';
+
+  @override
+  String resultBreakdownYourAnswer(String answer) {
+    return 'Senin cevabın: $answer';
+  }
+
+  @override
+  String get resultBreakdownYourAnswerEmpty => 'Senin cevabın: — (boş)';
+
+  @override
+  String resultBreakdownItemWrongA11y(String term, String expected, String given) {
+    return '$term, doğru cevap $expected, senin cevabın $given, yanlış';
+  }
+
+  @override
   String get resultsHistoryTitle => 'Sonuçlarım';
 
   @override

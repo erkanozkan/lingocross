@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$ResultReportState {
   AsyncValue<GameResultDto> get result => throw _privateConstructorUsedError;
+  List<ResultItemModel> get items => throw _privateConstructorUsedError;
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +34,7 @@ abstract class $ResultReportStateCopyWith<$Res> {
     $Res Function(ResultReportState) then,
   ) = _$ResultReportStateCopyWithImpl<$Res, ResultReportState>;
   @useResult
-  $Res call({AsyncValue<GameResultDto> result});
+  $Res call({AsyncValue<GameResultDto> result, List<ResultItemModel> items});
 }
 
 /// @nodoc
@@ -50,7 +51,7 @@ class _$ResultReportStateCopyWithImpl<$Res, $Val extends ResultReportState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? result = null}) {
+  $Res call({Object? result = null, Object? items = null}) {
     return _then(
       _value.copyWith(
             result:
@@ -58,6 +59,11 @@ class _$ResultReportStateCopyWithImpl<$Res, $Val extends ResultReportState>
                     ? _value.result
                     : result // ignore: cast_nullable_to_non_nullable
                         as AsyncValue<GameResultDto>,
+            items:
+                null == items
+                    ? _value.items
+                    : items // ignore: cast_nullable_to_non_nullable
+                        as List<ResultItemModel>,
           )
           as $Val,
     );
@@ -73,7 +79,7 @@ abstract class _$$ResultReportStateImplCopyWith<$Res>
   ) = __$$ResultReportStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AsyncValue<GameResultDto> result});
+  $Res call({AsyncValue<GameResultDto> result, List<ResultItemModel> items});
 }
 
 /// @nodoc
@@ -89,7 +95,7 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? result = null}) {
+  $Res call({Object? result = null, Object? items = null}) {
     return _then(
       _$ResultReportStateImpl(
         result:
@@ -97,6 +103,11 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
                 ? _value.result
                 : result // ignore: cast_nullable_to_non_nullable
                     as AsyncValue<GameResultDto>,
+        items:
+            null == items
+                ? _value._items
+                : items // ignore: cast_nullable_to_non_nullable
+                    as List<ResultItemModel>,
       ),
     );
   }
@@ -105,14 +116,25 @@ class __$$ResultReportStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ResultReportStateImpl implements _ResultReportState {
-  const _$ResultReportStateImpl({required this.result});
+  const _$ResultReportStateImpl({
+    required this.result,
+    final List<ResultItemModel> items = const <ResultItemModel>[],
+  }) : _items = items;
 
   @override
   final AsyncValue<GameResultDto> result;
+  final List<ResultItemModel> _items;
+  @override
+  @JsonKey()
+  List<ResultItemModel> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
 
   @override
   String toString() {
-    return 'ResultReportState(result: $result)';
+    return 'ResultReportState(result: $result, items: $items)';
   }
 
   @override
@@ -120,11 +142,16 @@ class _$ResultReportStateImpl implements _ResultReportState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ResultReportStateImpl &&
-            (identical(other.result, result) || other.result == result));
+            (identical(other.result, result) || other.result == result) &&
+            const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, result);
+  int get hashCode => Object.hash(
+    runtimeType,
+    result,
+    const DeepCollectionEquality().hash(_items),
+  );
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.
@@ -141,10 +168,13 @@ class _$ResultReportStateImpl implements _ResultReportState {
 abstract class _ResultReportState implements ResultReportState {
   const factory _ResultReportState({
     required final AsyncValue<GameResultDto> result,
+    final List<ResultItemModel> items,
   }) = _$ResultReportStateImpl;
 
   @override
   AsyncValue<GameResultDto> get result;
+  @override
+  List<ResultItemModel> get items;
 
   /// Create a copy of ResultReportState
   /// with the given fields replaced by the non-null parameter values.

@@ -615,6 +615,13 @@
   "gameResultSharedNote": "Öğretmeninle paylaşıldı",
   "gameResultErrorTitle": "Sonuç yüklenemedi",
 
+  "resultBreakdownTitle": "Cevap Dökümü",
+  "resultBreakdownYourAnswer": "Senin cevabın: {answer}",
+  "@resultBreakdownYourAnswer": { "placeholders": { "answer": { "type": "String" } } },
+  "resultBreakdownYourAnswerEmpty": "Senin cevabın: — (boş)",
+  "resultBreakdownItemWrongA11y": "{term}, doğru cevap {expected}, senin cevabın {given}, yanlış",
+  "@resultBreakdownItemWrongA11y": { "placeholders": { "term": { "type": "String" }, "expected": { "type": "String" }, "given": { "type": "String" } } },
+
   "resultsHistoryTitle": "Sonuçlarım",
   "resultsHistorySubtitle": "Tüm oyun geçmişin",
   "resultsHistorySummaryTotalGames": "Toplam Oyun",

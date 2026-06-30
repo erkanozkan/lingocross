@@ -14,6 +14,7 @@ import '../../data/dtos/result_dtos.dart';
 import '../result_report_controller.dart';
 import '../results_failure_messages.dart';
 import '../widgets/accuracy_ring.dart';
+import '../widgets/result_items_breakdown.dart';
 
 /// Oyun Sonu Raporu ekranı (game-result-report.md — Stitch `4786e952…` birebir).
 ///
@@ -104,7 +105,7 @@ class _GameResultReportScreenState
                             )
                             .load(),
               ),
-          data: (result) => _ReportBody(result: result),
+          data: (result) => _ReportBody(result: result, items: state.items),
         ),
       ),
     );
@@ -199,9 +200,10 @@ class ResultTopAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 /// Rapor gövdesi (başarı hâli) — başlık + radyal + bento + paylaşıldı notu.
 class _ReportBody extends StatelessWidget {
-  const _ReportBody({required this.result});
+  const _ReportBody({required this.result, required this.items});
 
   final GameResultDto result;
+  final List<ResultItemModel> items;
 
   @override
   Widget build(BuildContext context) {
@@ -293,6 +295,36 @@ class _ReportBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         // §3.4 Paylaşıldı bilgi notu (sonuç otomatik öğretmene paylaşıldı).
         const _SharedNote(),
+        // Cevap Dökümü — öğretmenin gördüğü kırılımın aynısı (doğru=yeşil,
+        // yanlış=kırmızı). Kırılım yoksa (eski sonuç) bölüm gizli.
+        if (items.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            l10n.resultBreakdownTitle,
+            style: AppTypography.headlineMd,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ResultItemsBreakdown(
+            items: [
+              for (final item in items)
+                ResultBreakdownItemData(
+                  term: item.term,
+                  expectedAnswer: item.expectedAnswer,
+                  studentAnswer: item.studentAnswer,
+                  isCorrect: item.isCorrect,
+                ),
+            ],
+            labels: ResultBreakdownLabels(
+              badgeCorrect: l10n.resultDetailBadgeCorrect,
+              badgeWrong: l10n.resultDetailBadgeWrong,
+              correctAnswer: l10n.resultDetailCorrectAnswer,
+              studentAnswer: l10n.resultBreakdownYourAnswer,
+              studentAnswerEmpty: l10n.resultBreakdownYourAnswerEmpty,
+              itemCorrectA11y: l10n.resultDetailItemCorrectA11y,
+              itemWrongA11y: l10n.resultBreakdownItemWrongA11y,
+            ),
+          ),
+        ],
       ],
     );
   }

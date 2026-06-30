@@ -42,21 +42,59 @@ class ResultReportController extends _$ResultReportController {
     return const ResultReportState(result: AsyncValue.loading());
   }
 
-  /// Oyun-sonu yolunda zaten elde olan sonucu yerleştirir (ağ çağrısı yok).
+  /// Oyun-sonu yolunda zaten elde olan sonucu yerleştirir (özet ağ çağrısı yok);
+  /// kelime kırılımını arka planda `GET /results/{id}`'den çeker.
   void seed(GameResultDto result) {
     state = ResultReportState(result: AsyncValue.data(result));
+    _loadBreakdown();
   }
 
-  /// Geçmiş/tamamlanan yolunda: `GET /results/me`'den `resultId`'yi bulup yükler.
+  /// Geçmiş/tamamlanan yolunda: `GET /results/{id}` detayından özet + kırılımı
+  /// birlikte yükler (detay ucu hem özeti hem item'ları döndürür). Detay ucu
+  /// başarısız olursa özet için `GET /results/me` listesine düşülür (kırılımsız).
   Future<void> load() async {
     state = state.copyWith(result: const AsyncValue.loading());
+    final repo = ref.read(resultsRepositoryProvider);
     final loaded = await AsyncValue.guard(() async {
+      final detail = await repo.getResultDetail(resultId);
+      return detail;
+    });
+    loaded.when(
+      data: (detail) {
+        state = state.copyWith(
+          result: AsyncValue.data(detail.toSummary(sessionId: '')),
+          items: detail.items,
+        );
+      },
+      error: (error, st) => _loadSummaryFallback(error, st),
+      loading: () {},
+    );
+  }
+
+  /// Detay ucu (örn. 404/ağ) başarısızsa: özeti `GET /results/me`'den bul; yine
+  /// bulunamazsa özgün hatayı yüzeye çıkar. Kırılım boş kalır (bölüm gizli).
+  Future<void> _loadSummaryFallback(Object detailError, StackTrace st) async {
+    final summary = await AsyncValue.guard(() async {
       final repo = ref.read(resultsRepositoryProvider);
       final all = await repo.listMine();
       final match = all.where((r) => r.id == resultId).firstOrNull;
       if (match == null) throw const ResultsFailure.notFound();
       return match;
     });
-    state = state.copyWith(result: loaded);
+    state = summary.maybeWhen(
+      data: (r) => state.copyWith(result: AsyncValue.data(r)),
+      orElse: () => state.copyWith(result: AsyncValue.error(detailError, st)),
+    );
+  }
+
+  /// Seed yolunda yalnız kelime kırılımını çeker; özeti etkilemez. Hata olursa
+  /// kırılım boş kalır (bölüm gizlenir, özet bozulmaz).
+  Future<void> _loadBreakdown() async {
+    final loaded = await AsyncValue.guard(() async {
+      final repo = ref.read(resultsRepositoryProvider);
+      final detail = await repo.getResultDetail(resultId);
+      return detail.items;
+    });
+    state = state.copyWith(items: loaded.valueOrNull ?? const []);
   }
 }

@@ -615,6 +615,13 @@
   "gameResultSharedNote": "Shared with your teacher",
   "gameResultErrorTitle": "Couldn't load result",
 
+  "resultBreakdownTitle": "Answer Breakdown",
+  "resultBreakdownYourAnswer": "Your answer: {answer}",
+  "@resultBreakdownYourAnswer": { "placeholders": { "answer": { "type": "String" } } },
+  "resultBreakdownYourAnswerEmpty": "Your answer: — (empty)",
+  "resultBreakdownItemWrongA11y": "{term}, correct answer {expected}, your answer {given}, wrong",
+  "@resultBreakdownItemWrongA11y": { "placeholders": { "term": { "type": "String" }, "expected": { "type": "String" }, "given": { "type": "String" } } },
+
   "resultsHistoryTitle": "My Results",
   "resultsHistorySubtitle": "All your game history",
   "resultsHistorySummaryTotalGames": "Total Games",

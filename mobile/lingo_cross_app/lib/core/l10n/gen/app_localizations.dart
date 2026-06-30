@@ -3161,6 +3161,30 @@ abstract class AppLocalizations {
   /// **'Sonuç yüklenemedi'**
   String get gameResultErrorTitle;
 
+  /// No description provided for @resultBreakdownTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cevap Dökümü'**
+  String get resultBreakdownTitle;
+
+  /// No description provided for @resultBreakdownYourAnswer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Senin cevabın: {answer}'**
+  String resultBreakdownYourAnswer(String answer);
+
+  /// No description provided for @resultBreakdownYourAnswerEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Senin cevabın: — (boş)'**
+  String get resultBreakdownYourAnswerEmpty;
+
+  /// No description provided for @resultBreakdownItemWrongA11y.
+  ///
+  /// In tr, this message translates to:
+  /// **'{term}, doğru cevap {expected}, senin cevabın {given}, yanlış'**
+  String resultBreakdownItemWrongA11y(String term, String expected, String given);
+
   /// No description provided for @resultsHistoryTitle.
   ///
   /// In tr, this message translates to:

@@ -1650,6 +1650,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameResultErrorTitle => 'Couldn\'t load result';
 
   @override
+  String get resultBreakdownTitle => 'Answer Breakdown';
+
+  @override
+  String resultBreakdownYourAnswer(String answer) {
+    return 'Your answer: $answer';
+  }
+
+  @override
+  String get resultBreakdownYourAnswerEmpty => 'Your answer: — (empty)';
+
+  @override
+  String resultBreakdownItemWrongA11y(String term, String expected, String given) {
+    return '$term, correct answer $expected, your answer $given, wrong';
+  }
+
+  @override
   String get resultsHistoryTitle => 'My Results';
 
   @override

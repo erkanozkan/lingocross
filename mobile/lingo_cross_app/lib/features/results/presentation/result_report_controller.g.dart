@@ -7,7 +7,7 @@ part of 'result_report_controller.dart';
 // **************************************************************************
 
 String _$resultReportControllerHash() =>
-    r'f8000702d49544386f3246877a469e88afa02b1b';
+    r'22e9e94616516159cd96fd64d4b5df0759c19655';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -125,6 +125,100 @@ void main() {
     expect(json['items'], isA<List<dynamic>>());
     expect((json['items'] as List).length, 1);
   });
+
+  group('GameResultDetailDto (GET /api/results/{id})', () {
+    test('JSON parse — items dahil, studentAnswer null korunur', () {
+      final dto = GameResultDetailDto.fromJson(<String, dynamic>{
+        'id': 'r1',
+        'gameId': 'g1',
+        'gameType': 1, // WordMatching
+        'lessonId': 'l1',
+        'lessonTitle': 'Ünite 3',
+        'durationMs': 252000,
+        'totalItems': 3,
+        'correctItems': 2,
+        'score': 85,
+        'sharedWithTeacher': true,
+        'sharedAt': '2026-06-23T09:00:00Z',
+        'createdAt': '2026-06-23T08:00:00Z',
+        'items': [
+          {
+            'ordinal': 0,
+            'term': 'apple',
+            'expectedAnswer': 'elma',
+            'studentAnswer': 'elma',
+            'isCorrect': true,
+          },
+          {
+            'ordinal': 1,
+            'term': 'water',
+            'expectedAnswer': 'su',
+            'studentAnswer': null,
+            'isCorrect': false,
+          },
+        ],
+      });
+
+      expect(dto.gameType, GameType.wordMatching);
+      expect(dto.score, 85);
+      expect(dto.hasItems, isTrue);
+      expect(dto.items.length, 2);
+      expect(dto.items[0].isCorrect, isTrue);
+      expect(dto.items[1].studentAnswer, isNull);
+      expect(dto.items[1].isCorrect, isFalse);
+    });
+
+    test('round-trip — fromJson → toJson alanları korur (studentAnswer null)', () {
+      final source = <String, dynamic>{
+        'id': 'r1',
+        'gameId': 'g1',
+        'gameType': 1,
+        'lessonId': null,
+        'lessonTitle': 'YDS',
+        'durationMs': 120000,
+        'totalItems': 1,
+        'correctItems': 0,
+        'score': 0,
+        'sharedWithTeacher': false,
+        'sharedAt': null,
+        'createdAt': '2026-06-23T08:00:00Z',
+        'items': [
+          {
+            'ordinal': 0,
+            'term': 'pen',
+            'expectedAnswer': 'kalem',
+            'studentAnswer': null,
+            'isCorrect': false,
+          },
+        ],
+      };
+      final json = GameResultDetailDto.fromJson(source).toJson();
+      expect(json['lessonId'], isNull);
+      expect((json['items'] as List).length, 1);
+      final item = (json['items'] as List).first as Map<String, dynamic>;
+      expect(item['studentAnswer'], isNull);
+      expect(item['isCorrect'], isFalse);
+    });
+
+    test('items eksikse boş liste (eski sonuç) → hasItems false', () {
+      final dto = GameResultDetailDto.fromJson(<String, dynamic>{
+        'id': 'r1',
+        'gameId': 'g1',
+        'gameType': 1,
+        'lessonId': 'l1',
+        'lessonTitle': 'Ünite 3',
+        'durationMs': 252000,
+        'totalItems': 20,
+        'correctItems': 17,
+        'score': 85,
+        'sharedWithTeacher': true,
+        'sharedAt': null,
+        'createdAt': '2026-06-23T08:00:00Z',
+      });
+      expect(dto.items, isEmpty);
+      expect(dto.hasItems, isFalse);
+    });
+  });
 }
 
 GameResultDto _result({int score = 85, int durationMs = 1000}) => GameResultDto(
