@@ -340,7 +340,9 @@ class _WordsPreview extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: AppSpacing.xs,
               mainAxisSpacing: AppSpacing.xs,
-              childAspectRatio: 3,
+              // 3.0 bazı yazı tiplerinde kart içeriğini ~4.5px taşırıyordu; biraz
+              // yükseklik verilir (terim + anlam iki satır rahat sığsın).
+              childAspectRatio: 2.6,
               children: [
                 for (final w in preview) _WordChip(word: w),
               ],

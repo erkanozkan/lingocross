@@ -71,12 +71,12 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
     status: SubscriptionStatus.none,
     period: SubscriptionPeriod.none,
     isPremium: false,
-    // Öğretmen ücretlendirmesi sadeleşti: tek premium = OCR/AI kelime tarama.
-    // Sınıf/ders kotası + bulmaca oluşturma ücretsiz → sınırsız (-1). Öğrenci de
-    // tamamen ücretsiz (maxTeachers=-1). Canlı değer GET /subscription/me'den gelir.
+    // Ücretlendirme şimdilik tamamen kaldırıldı: sınıf/ders/bulmaca + OCR/AI
+    // tarama hepsi ücretsiz → sınırsız (-1) ve ocrEnabled=true. Canlı değer
+    // GET /subscription/me'den gelir (ücret politikası ileride yeniden ele alınacak).
     maxClasses: -1,
     maxLessons: -1,
     maxTeachers: -1,
-    ocrEnabled: false,
+    ocrEnabled: true,
   );
 }

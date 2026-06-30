@@ -9,7 +9,6 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/ocr_service.dart';
 import '../../domain/language_option.dart';
 import '../../domain/ocr_line_parser.dart';
@@ -33,36 +32,7 @@ class OcrCaptureScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
 
-    // BUG 2 — Savunma derinliği guard'ı: OCR premium-only, default-deny.
-    // Doğrudan route erişimini de kapatır. Premium belirsizse (loading) kısa
-    // spinner gösterilir; data gelince karar verilir. Premium DEĞİLSE (free ya
-    // da error) capture hiç gösterilmez → paywall'a yönlendirilir.
-    final subscription = ref.watch(subscriptionNotifierProvider);
-    final isPremium =
-        subscription.maybeWhen(data: (s) => s.isPremium, orElse: () => false);
-    if (!isPremium) {
-      if (subscription.isLoading) {
-        // Karar verilemeyen kısa an: spinner; ASLA free'ye tarama açma.
-        return const Scaffold(
-          backgroundColor: AppColors.surface,
-          body: Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
-          ),
-        );
-      }
-      // Free veya hata: capture'ı gösterme, paywall'a yönlendir.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!context.mounted) return;
-        context.pushReplacement(AppRoutes.paywallFor('ocr'));
-      });
-      return const Scaffold(
-        backgroundColor: AppColors.surface,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
-        ),
-      );
-    }
-
+    // OCR / AI ile kelime tarama artık ÜCRETSİZ — premium guard'ı kaldırıldı.
     final state = ref.watch(ocrCaptureControllerProvider);
     final controller = ref.read(ocrCaptureControllerProvider.notifier);
 

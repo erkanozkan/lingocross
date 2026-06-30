@@ -95,7 +95,9 @@ Widget _wrap({
 }
 
 void main() {
-  group('BUG 2 — word_list openScan default-deny', () {
+  // OCR / AI ile kelime tarama artık ÜCRETSİZ: tarama hiçbir abonelik durumunda
+  // (free/loading/premium) paywall'a yönlenmez; doğrudan capture ekranı açılır.
+  group('OCR ücretsiz — word_list openScan', () {
     Future<void> tapScan(WidgetTester tester) async {
       final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
       final scan = find.text(l10n.wordsListScan).first;
@@ -105,7 +107,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('free → /paywall?feature=ocr (capture açılmaz)', (tester) async {
+    testWidgets('free → capture açılır (paywall yok)', (tester) async {
       final pushed = <String>[];
       await tester.pumpWidget(_wrap(
         home: const WordListScreen(lessonId: 'l1'),
@@ -116,12 +118,12 @@ void main() {
       await tester.pumpAndSettle();
       await tapScan(tester);
 
-      expect(pushed.any((r) => r.contains('feature=ocr')), isTrue);
-      expect(pushed.contains('ocr-capture'), isFalse);
-      expect(find.text('PAYWALL'), findsOneWidget);
+      expect(pushed.contains('ocr-capture'), isTrue);
+      expect(pushed.any((r) => r.contains('feature=ocr')), isFalse);
+      expect(find.text('PAYWALL'), findsNothing);
     });
 
-    testWidgets('loading → /paywall (default-deny, tarama açılmaz)',
+    testWidgets('loading → capture açılır (abonelik bağımsız)',
         (tester) async {
       final pushed = <String>[];
       await tester.pumpWidget(_wrap(
@@ -132,8 +134,8 @@ void main() {
       await tester.pump();
       await tapScan(tester);
 
-      expect(pushed.any((r) => r.contains('feature=ocr')), isTrue);
-      expect(pushed.contains('ocr-capture'), isFalse);
+      expect(pushed.contains('ocr-capture'), isTrue);
+      expect(pushed.any((r) => r.contains('feature=ocr')), isFalse);
     });
 
     testWidgets('premium → capture açılır', (tester) async {
@@ -152,10 +154,11 @@ void main() {
     });
   });
 
-  group('BUG 2 — OcrCaptureScreen guard (savunma derinliği)', () {
-    testWidgets('free → capture gösterilmez, paywall\'a yönlenir',
+  group('OCR ücretsiz — OcrCaptureScreen', () {
+    testWidgets('free → capture normal görünür (paywall yok)',
         (tester) async {
       final pushed = <String>[];
+      final l10n = await AppLocalizations.delegate.load(const Locale('tr'));
       await tester.pumpWidget(_wrap(
         home: const OcrCaptureScreen(lessonId: 'l1'),
         subOverride: () =>
@@ -164,9 +167,9 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      // Capture içeriği (Kelimeleri Çıkart vb.) görünmez; paywall'a gidilir.
-      expect(find.text('PAYWALL'), findsOneWidget);
-      expect(pushed.any((r) => r.contains('feature=ocr')), isTrue);
+      expect(find.text('PAYWALL'), findsNothing);
+      expect(pushed.any((r) => r.contains('feature=ocr')), isFalse);
+      expect(find.text(l10n.ocrCaptureTitle), findsOneWidget);
     });
 
     testWidgets('premium → capture normal görünür', (tester) async {
@@ -181,7 +184,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('PAYWALL'), findsNothing);
-      // Yakalama ekranı başlığı görünür.
       expect(find.text(l10n.ocrCaptureTitle), findsOneWidget);
     });
   });

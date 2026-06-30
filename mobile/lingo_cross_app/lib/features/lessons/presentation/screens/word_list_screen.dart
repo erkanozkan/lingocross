@@ -9,7 +9,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/locked_feature_badge.dart';
 import '../../../../core/widgets/refresh_on_mount.dart';
-import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/word_dtos.dart';
 import '../../domain/language_option.dart';
 import '../lessons_notifier.dart';
@@ -34,14 +33,8 @@ class WordListScreen extends ConsumerWidget {
     final lessonAsync = ref.watch(lessonProvider(lessonId));
     final wordsAsync = ref.watch(wordsNotifierProvider(lessonId));
 
-    // OCR premium-only (BUG 2): default-deny. Yalnız abonelik DATA + isPremium
-    // iken tarama açılır; loading/error/free hepsinde kilitli kabul edilir ve
-    // tarama butonu doğrudan paywall'a yönlenir (yerel OCR ile bile giriş engellenir).
-    final isPremium = ref.watch(subscriptionNotifierProvider).maybeWhen(
-          data: (sub) => sub.isPremium,
-          orElse: () => false,
-        );
-    final ocrLocked = !isPremium;
+    // OCR / AI ile kelime tarama artık ÜCRETSİZ — kilit yok, tarama herkese açık.
+    const ocrLocked = false;
 
     final title = lessonAsync.maybeWhen(
       data: (l) => l.title,
@@ -70,11 +63,6 @@ class WordListScreen extends ConsumerWidget {
     }
 
     void openScan() {
-      // Default-deny: yalnız premium iken capture'a git; aksi halde paywall.
-      if (!isPremium) {
-        context.push(AppRoutes.paywallFor('ocr'));
-        return;
-      }
       context.push(AppRoutes.lessonOcrCapture(lessonId));
     }
 
