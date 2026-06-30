@@ -53,7 +53,8 @@ public class EntitlementServiceTests
         Assert.Equal(int.MaxValue, snap.MaxClasses);
         Assert.Equal(int.MaxValue, snap.MaxLessons);
         Assert.Equal(int.MaxValue, snap.MaxTeachers);
-        Assert.False(snap.OcrEnabled);
+        // OCR ücreti kaldırıldı → Free'de de açık.
+        Assert.True(snap.OcrEnabled);
     }
 
     [Fact]
@@ -103,21 +104,19 @@ public class EntitlementServiceTests
         var snap = await Svc(db, userId).GetAsync(userId);
 
         Assert.False(snap.IsPremium);
-        Assert.False(snap.OcrEnabled);
+        // OCR ücreti kaldırıldı → premium olmasa da açık.
+        Assert.True(snap.OcrEnabled);
         Assert.Equal(int.MaxValue, snap.MaxClasses);
     }
 
     [Fact]
-    public async Task RequireOcr_Free_Throws402_Ocr()
+    public async Task RequireOcr_Free_DoesNotThrow()
     {
         var db = NewDb();
         var userId = await SeedUserAsync(db);
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => Svc(db, userId).RequireOcrAsync());
-
-        Assert.Equal(402, ex.StatusCode);
-        Assert.Equal("subscription_required", ex.Code);
-        Assert.Equal("ocr", ex.Feature);
+        // OCR ücreti kaldırıldı → Free kullanıcıda da fırlatmamalı.
+        await Svc(db, userId).RequireOcrAsync();
     }
 
     [Fact]

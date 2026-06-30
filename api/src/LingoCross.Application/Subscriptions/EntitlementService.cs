@@ -57,12 +57,12 @@ public class EntitlementService : IEntitlementService
             Status: status,
             Period: period,
             ExpiresAt: expiresAt,
-            // Sınıf/ders/öğretmen kotaları KALDIRILDI → Free'de de sınırsız. Öğretmen tarafında
-            // geriye kalan tek premium özelliği OCR / AI ile kelime taramadır (OcrEnabled=false).
+            // Sınıf/ders/öğretmen kotaları KALDIRILDI → Free'de de sınırsız. OCR/AI tarama ücreti de
+            // kaldırıldı → uygulama şimdilik tamamen ücretsiz; OcrEnabled herkeste true.
             MaxClasses: int.MaxValue,
             MaxLessons: int.MaxValue,
             MaxTeachers: int.MaxValue,
-            OcrEnabled: false);
+            OcrEnabled: true);
     }
 
     public async Task RequireOcrAsync(CancellationToken cancellationToken = default)

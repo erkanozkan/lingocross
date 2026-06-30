@@ -1,6 +1,8 @@
 using FluentValidation;
 using LingoCross.Application.Lessons;
 using LingoCross.Application.Lessons.Dtos;
+using LingoCross.Application.QuestionBanks;
+using LingoCross.Application.QuestionBanks.Dtos;
 using LingoCross.Application.Words;
 using LingoCross.Application.Words.Dtos;
 using Microsoft.AspNetCore.Authorization;
@@ -15,12 +17,18 @@ public class LessonsController : ControllerBase
 {
     private readonly ILessonService _lessonService;
     private readonly IWordService _wordService;
+    private readonly IAiQuestionService _aiQuestionService;
     private readonly IServiceProvider _services;
 
-    public LessonsController(ILessonService lessonService, IWordService wordService, IServiceProvider services)
+    public LessonsController(
+        ILessonService lessonService,
+        IWordService wordService,
+        IAiQuestionService aiQuestionService,
+        IServiceProvider services)
     {
         _lessonService = lessonService;
         _wordService = wordService;
+        _aiQuestionService = aiQuestionService;
         _services = services;
     }
 
@@ -107,6 +115,24 @@ public class LessonsController : ControllerBase
         await ValidateAsync(request, ct);
         var word = await _wordService.AddAsync(id, request, ct);
         return CreatedAtAction(nameof(WordsController.Update), "Words", new { wordId = word.Id }, word);
+    }
+
+    // --- AI ile sınav sorusu üretimi (öğretmen) ---
+
+    /// <summary>
+    /// Bu dersi temel alıp AI ile çoktan seçmeli sınav soruları üretir ve teacher-owned bir konu başlığı
+    /// olarak kaydeder. Üretim DTO'su döner (review ekranı). Ders sahibi değil → 404; &lt; 4 çevirili kelime → 400;
+    /// geçersiz grade/count/types → 400; AI yapılandırılmamış → 503.
+    /// </summary>
+    [Authorize(Roles = "Teacher")]
+    [HttpPost("{lessonId:guid}/ai-questions")]
+    public async Task<ActionResult<AiQuestionsResultDto>> GenerateAiQuestions(
+        Guid lessonId, GenerateAiQuestionsRequest request, CancellationToken ct)
+    {
+        await ValidateAsync(request, ct);
+        var result = await _aiQuestionService.GenerateAsync(
+            lessonId, request.Grade, request.Count, request.Types ?? Array.Empty<string>(), ct);
+        return Ok(result);
     }
 
     private async Task ValidateAsync<T>(T instance, CancellationToken ct)

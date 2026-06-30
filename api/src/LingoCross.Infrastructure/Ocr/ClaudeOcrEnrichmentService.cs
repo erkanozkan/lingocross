@@ -183,6 +183,17 @@ internal interface IClaudeChatCompleter
         Dictionary<string, JsonElement> schema,
         long maxTokens,
         CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Metin tabanlı yapılandırılmış JSON üretimi: sistem prompt + kullanıcı metni → verilen JSON şemasına
+    /// uyan tek metin bloğu. AI soru üretiminde kullanılır.
+    /// </summary>
+    Task<string> CompleteJsonFromTextAsync(
+        string systemPrompt,
+        string userContent,
+        Dictionary<string, JsonElement> schema,
+        long maxTokens,
+        CancellationToken cancellationToken);
 }
 
 /// <summary>Anthropic resmi C# SDK üzerinden çalışan gerçek tamamlayıcı (vision).</summary>
@@ -236,6 +247,41 @@ internal sealed class AnthropicChatCompleter : IClaudeChatCompleter
         var response = await _client.Value.Messages.Create(parameters, cancellationToken);
 
         // Yapılandırılmış çıktıda ilk metin bloğu geçerli JSON içerir.
+        var text = response.Content
+            .Select(b => b.Value)
+            .OfType<TextBlock>()
+            .Select(t => t.Text)
+            .FirstOrDefault();
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            throw new InvalidOperationException("Claude yanıtında metin bloğu bulunamadı.");
+        }
+
+        return text;
+    }
+
+    public async Task<string> CompleteJsonFromTextAsync(
+        string systemPrompt,
+        string userContent,
+        Dictionary<string, JsonElement> schema,
+        long maxTokens,
+        CancellationToken cancellationToken)
+    {
+        var parameters = new MessageCreateParams
+        {
+            Model = Model.ClaudeHaiku4_5,
+            MaxTokens = maxTokens,
+            System = systemPrompt,
+            OutputConfig = new OutputConfig
+            {
+                Format = new JsonOutputFormat { Schema = schema },
+            },
+            Messages = [new MessageParam { Role = Role.User, Content = userContent }],
+        };
+
+        var response = await _client.Value.Messages.Create(parameters, cancellationToken);
+
         var text = response.Content
             .Select(b => b.Value)
             .OfType<TextBlock>()

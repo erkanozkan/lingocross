@@ -57,6 +57,9 @@ public static class DependencyInjection
         // OCR zenginleştirme (Claude). Anahtar yoksa servis 503 fırlatır; mobil yerel ayrıştırmaya düşer.
         services.AddScoped<IOcrEnrichmentService, ClaudeOcrEnrichmentService>();
 
+        // AI ile sınav sorusu üretimi (Claude metin → JSON). Anahtar yoksa servis 503 fırlatır.
+        services.AddScoped<LingoCross.Application.Games.IClaudeQuestionGenerator, Games.ClaudeQuestionGenerator>();
+
         // Push gönderimi (FCM). Firebase:ServiceAccountJson boşsa no-op; FirebaseApp singleton.
         services.AddSingleton<IPushSender, FcmPushSender>();
 

@@ -17,10 +17,12 @@ namespace LingoCross.Api.Controllers;
 public class QuestionBanksController : ControllerBase
 {
     private readonly IQuestionBankService _service;
+    private readonly IAiQuestionService _aiQuestionService;
 
-    public QuestionBanksController(IQuestionBankService service)
+    public QuestionBanksController(IQuestionBankService service, IAiQuestionService aiQuestionService)
     {
         _service = service;
+        _aiQuestionService = aiQuestionService;
     }
 
     /// <summary>Atanabilir (aktif) konu başlıklarını listeler.</summary>
@@ -41,4 +43,15 @@ public class QuestionBanksController : ControllerBase
     [HttpGet("{topicId:guid}/assignments")]
     public async Task<ActionResult<GameAssignmentsDto>> GetAssignments(Guid topicId, CancellationToken ct)
         => Ok(await _service.GetTopicAssignmentsAsync(topicId, ct));
+
+    /// <summary>
+    /// Bir AI başlığındaki tek bir soruyu (şıklarıyla cascade) siler. Review ekranındaki çöp ikonu için.
+    /// Başlık öğretmene ait değilse 404; başarıda 204.
+    /// </summary>
+    [HttpDelete("{topicId:guid}/questions/{questionId:guid}")]
+    public async Task<IActionResult> DeleteQuestion(Guid topicId, Guid questionId, CancellationToken ct)
+    {
+        await _aiQuestionService.DeleteQuestionAsync(topicId, questionId, ct);
+        return NoContent();
+    }
 }

@@ -15,6 +15,7 @@ public class QuestionConfiguration : IEntityTypeConfiguration<Question>
 
         builder.Property(q => q.QuestionTopicId).IsRequired();
         builder.Property(q => q.Stem).IsRequired().HasMaxLength(4000);
+        builder.Property(q => q.Kind).HasMaxLength(40);
         builder.Property(q => q.Explanation).HasMaxLength(4000);
         builder.Property(q => q.Ordinal).IsRequired().HasDefaultValue(0);
         builder.Property(q => q.SourceRef).HasMaxLength(200);

@@ -111,11 +111,11 @@ public class SubscriptionServiceTests
 
         Assert.False(dto.IsPremium);
         Assert.Equal(SubscriptionStatus.None, dto.Status);
-        // Sınıf/ders/öğretmen kotaları kaldırıldı → Free'de de sınırsız (wire'da -1). Tek premium: OCR.
+        // Sınıf/ders/öğretmen kotaları kaldırıldı → Free'de de sınırsız (wire'da -1). OCR ücreti de kaldırıldı.
         Assert.Equal(-1, dto.MaxClasses);
         Assert.Equal(-1, dto.MaxLessons);
         Assert.Equal(-1, dto.MaxTeachers);
-        Assert.False(dto.OcrEnabled);
+        Assert.True(dto.OcrEnabled);
     }
 
     [Fact]
@@ -200,7 +200,8 @@ public class SubscriptionServiceTests
         Assert.False(dto.IsPremium);
         Assert.Equal(SubscriptionStatus.Canceled, dto.Status);
         Assert.Equal(-1, dto.MaxClasses);
-        Assert.False(dto.OcrEnabled);
+        // OCR ücreti kaldırıldı → iptal sonrası Free'de de açık.
+        Assert.True(dto.OcrEnabled);
     }
 
     [Fact]

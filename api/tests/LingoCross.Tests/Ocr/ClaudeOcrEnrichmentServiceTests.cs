@@ -149,5 +149,14 @@ public class ClaudeOcrEnrichmentServiceTests
 
             return Task.FromResult(Json);
         }
+
+        // Bu fake yalnız görüntü yolunu test eder; metin yolu kullanılmaz.
+        public Task<string> CompleteJsonFromTextAsync(
+            string systemPrompt,
+            string userContent,
+            Dictionary<string, JsonElement> schema,
+            long maxTokens,
+            CancellationToken cancellationToken)
+            => throw new NotImplementedException();
     }
 }

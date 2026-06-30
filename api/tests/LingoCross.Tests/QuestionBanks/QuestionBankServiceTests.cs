@@ -59,6 +59,48 @@ public class QuestionBankServiceTests
         return klass;
     }
 
+    private static async Task<QuestionTopic> SeedAiTopicAsync(AppDbContext db, Guid teacherId, int questionCount = 3)
+    {
+        var topic = new QuestionTopic
+        {
+            Title = "Animals — Sınav",
+            Slug = $"ai-{Guid.NewGuid():N}"[..11],
+            TeacherId = teacherId,
+            Grade = 5,
+            IsActive = true,
+        };
+        for (var i = 0; i < questionCount; i++)
+        {
+            var q = new Question { Stem = $"Soru {i}", Ordinal = i, Kind = "word_meaning" };
+            for (var p = 0; p < 4; p++)
+            {
+                q.Options.Add(new QuestionOption { Position = p, Text = $"o{p}", IsCorrect = p == 0 });
+            }
+            topic.Questions.Add(q);
+        }
+        db.QuestionTopics.Add(topic);
+        await db.SaveChangesAsync();
+        return topic;
+    }
+
+    [Fact]
+    public async Task ListTopics_ReturnsGlobalAndOwnAi_ButNotOtherTeachersAi()
+    {
+        var db = NewDb();
+        var teacher = await SeedUserAsync(db, UserRole.Teacher, "t@x.com");
+        var other = await SeedUserAsync(db, UserRole.Teacher, "o@x.com");
+        var global = await SeedTopicAsync(db, questionCount: 10, active: true); // TeacherId null
+        var mine = await SeedAiTopicAsync(db, teacher.Id);
+        await SeedAiTopicAsync(db, other.Id); // başka öğretmenin AI seti → görünmemeli
+
+        var list = await NewService(db, teacher.Id).ListTopicsAsync();
+
+        var ids = list.Select(t => t.Id).ToHashSet();
+        Assert.Contains(global.Id, ids);
+        Assert.Contains(mine.Id, ids);
+        Assert.Equal(2, list.Count);
+    }
+
     [Fact]
     public async Task ListTopics_ReturnsOnlyActive_WithQuestionCount()
     {

@@ -63,6 +63,8 @@ public static class DependencyInjection
         // Faz 2 — "Çıkmış Sorular": öğretmen atama + admin import.
         services.AddScoped<IQuestionBankService, QuestionBankService>();
         services.AddScoped<IQuestionImportService, QuestionImportService>();
+        // AI ile öğretmen sınav sorusu üretimi (generator Infrastructure'da kayıtlı).
+        services.AddScoped<IAiQuestionService, AiQuestionService>();
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
         return services;

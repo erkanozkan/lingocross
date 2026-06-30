@@ -15,6 +15,12 @@ public class Question : Entity
     /// <summary>Soru kökü (gövde).</summary>
     public string Stem { get; set; } = string.Empty;
 
+    /// <summary>
+    /// AI üretimi soru türü etiketi (word_meaning/fill_blank/synonym). Review ekranında etiket olarak
+    /// gösterilir. Global (import) sorularda null.
+    /// </summary>
+    public string? Kind { get; set; }
+
     /// <summary>Opsiyonel çözüm açıklaması (öğrenciye rapor/inceleme aşamasında gösterilebilir).</summary>
     public string? Explanation { get; set; }
 

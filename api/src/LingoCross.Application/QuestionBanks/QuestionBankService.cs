@@ -31,10 +31,12 @@ public class QuestionBankService : IQuestionBankService
 
     public async Task<IReadOnlyList<QuestionTopicSummaryDto>> ListTopicsAsync(CancellationToken cancellationToken = default)
     {
-        RequireTeacher();
+        var teacherId = RequireTeacher();
 
+        // Öğretmen GLOBAL (YDS, TeacherId null) başlıkları + KENDİ AI setlerini görür; başka öğretmenin
+        // AI seti görünmez.
         return await _db.QuestionTopics
-            .Where(t => t.IsActive)
+            .Where(t => t.IsActive && (t.TeacherId == null || t.TeacherId == teacherId))
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Title)
             .Select(t => new QuestionTopicSummaryDto(
