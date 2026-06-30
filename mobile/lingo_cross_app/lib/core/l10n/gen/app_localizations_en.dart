@@ -1149,10 +1149,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studentDashboardExamsTitle => 'Prepare for Exams';
 
   @override
-  String get studentDashboardExamsCardTitle => 'Past Exam Questions';
+  String get studentDashboardExamsCardTitle => 'Exam Prep Questions';
 
   @override
-  String get studentDashboardExamsCardDesc => 'Test yourself by solving past LGS, YDT and YDS exam questions.';
+  String get studentDashboardExamsCardDesc => 'Solve the questions your teacher prepared for you and test yourself.';
 
   @override
   String get studentDashboardProgressGamesPlayed => 'Games Completed';

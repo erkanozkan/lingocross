@@ -1149,10 +1149,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get studentDashboardExamsTitle => 'Sınavlara Hazırlan';
 
   @override
-  String get studentDashboardExamsCardTitle => 'Çıkmış Sorular';
+  String get studentDashboardExamsCardTitle => 'Sınav Hazırlık Soruları';
 
   @override
-  String get studentDashboardExamsCardDesc => 'LGS, YDT ve YDS çıkmış sorularını çözerek kendini test et.';
+  String get studentDashboardExamsCardDesc => 'Öğretmeninin senin için hazırladığı soruları çöz ve kendini test et.';
 
   @override
   String get studentDashboardProgressGamesPlayed => 'Tamamlanan Oyun';

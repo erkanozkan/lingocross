@@ -2246,13 +2246,13 @@ abstract class AppLocalizations {
   /// No description provided for @studentDashboardExamsCardTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Çıkmış Sorular'**
+  /// **'Sınav Hazırlık Soruları'**
   String get studentDashboardExamsCardTitle;
 
   /// No description provided for @studentDashboardExamsCardDesc.
   ///
   /// In tr, this message translates to:
-  /// **'LGS, YDT ve YDS çıkmış sorularını çözerek kendini test et.'**
+  /// **'Öğretmeninin senin için hazırladığı soruları çöz ve kendini test et.'**
   String get studentDashboardExamsCardDesc;
 
   /// No description provided for @studentDashboardProgressGamesPlayed.
