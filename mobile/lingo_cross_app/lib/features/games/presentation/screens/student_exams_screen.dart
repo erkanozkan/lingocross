@@ -98,8 +98,17 @@ class StudentExamsScreen extends ConsumerWidget {
                 for (final exam in exams) ...[
                   _ExamRow(
                     exam: exam,
-                    onTap: () =>
-                        context.push(AppRoutes.studentGame(exam.id)),
+                    // Tamamlanmış sınav tekrar oynanamaz (tek-sefer); dashboard'daki
+                    // tamamlanmış bulmaca deseni gibi sonuç/rapor ekranına gider.
+                    // Tamamlanmamışsa launcher ile çözüme başlar.
+                    onTap: () {
+                      final resultId = exam.resultId;
+                      if (exam.isCompleted && resultId != null) {
+                        context.push(AppRoutes.studentResultDetail(resultId));
+                      } else {
+                        context.push(AppRoutes.studentGame(exam.id));
+                      }
+                    },
                   ),
                   const SizedBox(height: AppSpacing.sm),
                 ],

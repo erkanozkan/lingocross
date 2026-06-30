@@ -13,9 +13,11 @@ import 'package:lingo_cross_app/features/games/presentation/screens/student_exam
 import 'helpers/fake_games_repository.dart';
 
 String? lastGameId;
+String? lastResultId;
 
 Widget _wrap(FakeGamesRepository gamesRepo) {
   lastGameId = null;
+  lastResultId = null;
   final router = GoRouter(
     initialLocation: '/student/exams',
     routes: [
@@ -27,6 +29,13 @@ Widget _wrap(FakeGamesRepository gamesRepo) {
         builder: (_, state) {
           lastGameId = state.pathParameters['gameId'];
           return const Scaffold(body: Text('launcher-screen'));
+        },
+      ),
+      GoRoute(
+        path: '/student/results/:resultId',
+        builder: (_, state) {
+          lastResultId = state.pathParameters['resultId'];
+          return const Scaffold(body: Text('result-screen'));
         },
       ),
     ],
@@ -56,6 +65,7 @@ AssignedGameDto _exam({
   int words = 10,
   bool isCompleted = false,
   int? score,
+  String? resultId,
 }) {
   return AssignedGameDto(
     id: id,
@@ -68,6 +78,7 @@ AssignedGameDto _exam({
     publishedAt: DateTime(2026, 6, 23),
     isCompleted: isCompleted,
     score: score,
+    resultId: resultId,
   );
 }
 
@@ -139,5 +150,30 @@ void main() {
 
     expect(lastGameId, 'q42');
     expect(find.text('launcher-screen'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Tamamlanmış sınava dokununca sonuç ekranına gider (launcher DEĞİL)',
+      (tester) async {
+    await tester.pumpWidget(_wrap(
+      FakeGamesRepository(assigned: [
+        _exam(
+            id: 'q7',
+            title: 'YDS Çıkmış',
+            isCompleted: true,
+            score: 70,
+            resultId: 'r99'),
+      ]),
+    ));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+
+    await tester.tap(find.text('YDS Çıkmış'));
+    await tester.pumpAndSettle();
+
+    // Tek-sefer: tamamlanmış sınav yeniden başlatılmaz; sonuç/rapor ekranına gider.
+    expect(lastResultId, 'r99');
+    expect(find.text('result-screen'), findsOneWidget);
+    expect(lastGameId, isNull);
   });
 }
