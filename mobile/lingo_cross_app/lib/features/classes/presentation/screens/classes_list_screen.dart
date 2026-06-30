@@ -11,8 +11,6 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/primary_button_3d.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../lessons/presentation/widgets/skeleton_card.dart';
-import '../../../subscription/domain/entitlement.dart';
-import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../data/dtos/class_dtos.dart';
 import '../classes_notifier.dart';
 import '../widgets/class_badge.dart';
@@ -80,13 +78,6 @@ class ClassesListScreen extends ConsumerWidget {
               data: (classes) => _Content(
                 classes: classes,
                 activityPercent: _activityPercent,
-                // Sınıf oluşturma proaktif kilidi (F8.2): ücretsiz limit aşılırsa
-                // buton paywall'a yönlenir. Durum belirsizse kilitsiz (reaktif
-                // 402 güvenlik ağı).
-                createLocked: ref.watch(subscriptionNotifierProvider).maybeWhen(
-                      data: (sub) => !sub.canCreateClass(classes.length),
-                      orElse: () => false,
-                    ),
               ),
             ),
           ],
@@ -100,12 +91,10 @@ class _Content extends StatelessWidget {
   const _Content({
     required this.classes,
     required this.activityPercent,
-    required this.createLocked,
   });
 
   final List<ClassDto> classes;
   final int activityPercent;
-  final bool createLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -170,10 +159,7 @@ class _Content extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         PrimaryButton3D(
           label: l10n.classesCreateButton,
-          trailingIcon: createLocked ? Icons.lock : null,
-          onPressed: () => context.push(
-            createLocked ? AppRoutes.paywallFor('class_limit') : AppRoutes.classNew,
-          ),
+          onPressed: () => context.push(AppRoutes.classNew),
         ),
       ],
     );

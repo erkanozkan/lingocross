@@ -53,9 +53,9 @@ void main() {
 
     // REGRESYON: Backend Free kullanıcı için `period: null` döner (0 DEĞİL).
     // Eski converter `int` beklediği için `null as int` parse'ı patlatıyordu →
-    // getMine() hataya düşüyor, Free kullanıcı kilitsiz görünüyor, bulmaca
-    // sihirbazı açılıyor ve paywall ancak sonda 402 ile çıkıyordu. Gerçek
-    // prod payload'ı (period null, expiresAt yok) sorunsuz çözülmeli.
+    // getMine() hataya düşüyor. Gerçek prod payload'ı (period null, expiresAt
+    // yok) sorunsuz çözülmeli. Ücretlendirme sadeleşti: tek premium = OCR;
+    // bulmaca oluşturma artık ücretsiz (puzzleCreateLocked her zaman false).
     test('Free (GERÇEK prod payload): period null → none, parse patlamaz', () {
       final dto = SubscriptionDto.fromJson({
         'plan': 1, // backend Free yanıtında plan=1 döner; isPremium otoritedir
@@ -71,7 +71,9 @@ void main() {
 
       expect(dto.period, SubscriptionPeriod.none);
       expect(dto.isPremium, false);
-      expect(dto.puzzleCreateLocked, true); // Free → bulmaca oluşturma kilitli
+      // Bulmaca oluşturma ücretsizleşti → her zaman kilitsiz.
+      expect(dto.puzzleCreateLocked, false);
+      // OCR tek premium özellik → Free'de hâlâ kilitli.
       expect(dto.ocrLocked, true);
     });
 

@@ -41,6 +41,7 @@ Widget _wrap(FakeAuthRepository authRepo, SharedPreferences prefs) {
         ('/account/language', 'PROBE_LANGUAGE'),
         ('/account/help', 'PROBE_HELP'),
         ('/account/privacy', 'PROBE_PRIVACY'),
+        ('/paywall', 'PROBE_PAYWALL'),
       ])
         GoRoute(
           path: r.$1,
@@ -113,6 +114,24 @@ void main() {
     expect(find.text('Tema'), findsNothing);
     expect(find.text('İki Faktörlü Doğrulama'), findsNothing);
     expect(find.text('Çıkış Yap'), findsOneWidget);
+  });
+
+  testWidgets('LingoCross Premium kartı → /paywall push eder', (tester) async {
+    tester.view.physicalSize = const Size(1080, 3200);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final authRepo = FakeAuthRepository();
+    await tester.pumpWidget(_wrap(authRepo, prefs));
+    await tester.pumpAndSettle();
+
+    final premium = find.text('LingoCross Premium');
+    expect(premium, findsOneWidget);
+
+    await tester.tap(premium);
+    await tester.pumpAndSettle();
+    expect(find.text('PROBE_PAYWALL'), findsOneWidget);
   });
 
   testWidgets('4 satır gerçek route push eder', (tester) async {

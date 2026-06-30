@@ -23,11 +23,11 @@ ClassDto _class(String id) => ClassDto(
 
 void main() {
   testWidgets(
-      'Free + sınıf limiti dolu → "Yeni Sınıf" kilitli + tıkla → /paywall?feature=class_limit',
+      'Free + çok sınıf → "Yeni Sınıf" kilitsiz, tıkla → doğrudan create (paywall yok)',
       (tester) async {
     final pushedRoutes = <String>[];
 
-    // Free maxClasses=2; mevcut 2 sınıf → canCreateClass(2)=false (limit dolu).
+    // Sınıf oluşturma artık ücretsiz: limit yok, kilit yok, paywall yok.
     final router = GoRouter(
       initialLocation: '/x',
       routes: [
@@ -41,7 +41,10 @@ void main() {
         ),
         GoRoute(
           path: '/teacher/classes/new',
-          builder: (_, __) => const Scaffold(body: Text('CREATE')),
+          builder: (_, __) {
+            pushedRoutes.add('/teacher/classes/new');
+            return const Scaffold(body: Text('CREATE'));
+          },
         ),
       ],
     );
@@ -80,17 +83,15 @@ void main() {
     await tester.ensureVisible(createButton);
     await tester.pumpAndSettle();
 
-    // Kilit ikonu görünür (oluştur butonunda trailing lock).
-    expect(find.byIcon(Icons.lock), findsWidgets);
+    // Kilit ikonu YOK (artık ücretsiz).
+    expect(find.byIcon(Icons.lock), findsNothing);
 
-    // "Yeni Sınıf Oluştur" butonuna tıkla → paywall'a yönlendirilir.
+    // "Yeni Sınıf Oluştur" → doğrudan create rotasına gider, paywall'a değil.
     await tester.tap(createButton, warnIfMissed: false);
     await tester.pumpAndSettle();
 
-    expect(pushedRoutes, isNotEmpty);
-    expect(pushedRoutes.single, contains('feature=class_limit'));
-    expect(find.text('PAYWALL'), findsOneWidget);
-    // Oluşturma ekranına gitmedi.
-    expect(find.text('CREATE'), findsNothing);
+    expect(pushedRoutes, contains('/teacher/classes/new'));
+    expect(find.text('CREATE'), findsOneWidget);
+    expect(find.text('PAYWALL'), findsNothing);
   });
 }

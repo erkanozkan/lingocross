@@ -71,11 +71,11 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
     status: SubscriptionStatus.none,
     period: SubscriptionPeriod.none,
     isPremium: false,
-    // Backend SubscriptionOptions varsayılanlarıyla hizalı (FreeMaxClasses=2,
-    // FreeMaxLessons=5, FreeMaxTeachers=-1/sınırsız — öğrenci tamamen ücretsiz);
-    // canlı değer GET /subscription/me'den gelir.
-    maxClasses: 2,
-    maxLessons: 5,
+    // Öğretmen ücretlendirmesi sadeleşti: tek premium = OCR/AI kelime tarama.
+    // Sınıf/ders kotası + bulmaca oluşturma ücretsiz → sınırsız (-1). Öğrenci de
+    // tamamen ücretsiz (maxTeachers=-1). Canlı değer GET /subscription/me'den gelir.
+    maxClasses: -1,
+    maxLessons: -1,
     maxTeachers: -1,
     ocrEnabled: false,
   );

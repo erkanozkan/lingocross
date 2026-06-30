@@ -1505,10 +1505,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get questionSetExplanation => 'Açıklama';
 
   @override
-  String get questionTopicsTitle => 'Çıkmış Sorular';
+  String get questionTopicsTitle => 'Sınav Hazırlık Soruları';
 
   @override
-  String get questionTopicsHeroTitle => 'Çıkmış Sorular';
+  String get questionTopicsHeroTitle => 'Sınav Hazırlık Soruları';
 
   @override
   String get questionTopicsHeroSubtitle => 'Gerçek sınav tecrübesiyle öğrencilerinin İngilizce seviyesini bir üst noktaya taşı.';
@@ -1900,7 +1900,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get teacherDashboardActionMyPuzzlesDesc => 'Oluşturduğun tüm bulmacaları gör, paylaş ve çözüm istatistiklerini izle.';
 
   @override
-  String get teacherDashboardActionQuestionTopicsTitle => 'Çıkmış Sorular';
+  String get teacherDashboardActionQuestionTopicsTitle => 'Sınav Hazırlık Soruları';
 
   @override
   String get teacherDashboardActionQuestionTopicsDesc => 'Soru konularını seç ve sınıflarına ata; öğrenciler 10 soruluk setleri çözsün.';
@@ -1961,6 +1961,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get accountEditProfileCta => 'Profili Düzenle';
+
+  @override
+  String get accountPremiumTitle => 'LingoCross Premium';
+
+  @override
+  String get accountPremiumSubtitle => 'AI ile kelime tarama özelliğinin kilidini aç';
 
   @override
   String get accountGroupGeneral => 'GENEL';
@@ -2509,7 +2515,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallHeadline => 'LingoCross Premium';
 
   @override
-  String get paywallSubtitle => 'Tüm özelliklerin kilidini aç';
+  String get paywallSubtitle => 'AI ile kelime tarama özelliğinin kilidini aç';
 
   @override
   String get paywallBannerOcr => 'AI ile kelime tarama Premium\'da';
@@ -2530,16 +2536,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallBannerDefault => 'Tüm özellikler Premium\'da';
 
   @override
-  String get paywallBenefitUnlimitedClasses => 'Sınırsız sınıf ve ders';
+  String get paywallBenefitOcr => 'AI ile kelime tarama (kameradan/galeriden)';
 
   @override
-  String get paywallBenefitOcr => 'AI ile kelime tarama';
+  String get paywallBenefitOcrHandwriting => 'El yazısı dahil otomatik kelime tanıma';
 
   @override
-  String get paywallBenefitMultiTeacher => 'Birden fazla öğretmene katılma';
-
-  @override
-  String get paywallBenefitReports => 'Tüm raporlar ve istatistikler';
+  String get paywallBenefitOcrReview => 'Taranan kelimeleri düzenle ve tek dokunuşla kaydet';
 
   @override
   String get paywallPlanMonthlyTitle => 'Aylık';

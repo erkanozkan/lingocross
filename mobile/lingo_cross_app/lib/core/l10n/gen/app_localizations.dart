@@ -2906,13 +2906,13 @@ abstract class AppLocalizations {
   /// No description provided for @questionTopicsTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Çıkmış Sorular'**
+  /// **'Sınav Hazırlık Soruları'**
   String get questionTopicsTitle;
 
   /// No description provided for @questionTopicsHeroTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Çıkmış Sorular'**
+  /// **'Sınav Hazırlık Soruları'**
   String get questionTopicsHeroTitle;
 
   /// No description provided for @questionTopicsHeroSubtitle.
@@ -3596,7 +3596,7 @@ abstract class AppLocalizations {
   /// No description provided for @teacherDashboardActionQuestionTopicsTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Çıkmış Sorular'**
+  /// **'Sınav Hazırlık Soruları'**
   String get teacherDashboardActionQuestionTopicsTitle;
 
   /// No description provided for @teacherDashboardActionQuestionTopicsDesc.
@@ -3706,6 +3706,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Profili Düzenle'**
   String get accountEditProfileCta;
+
+  /// Hesap ekranındaki Premium kartı başlığı.
+  ///
+  /// In tr, this message translates to:
+  /// **'LingoCross Premium'**
+  String get accountPremiumTitle;
+
+  /// Hesap ekranındaki Premium kartı alt metni.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI ile kelime tarama özelliğinin kilidini aç'**
+  String get accountPremiumSubtitle;
 
   /// No description provided for @accountGroupGeneral.
   ///
@@ -4754,7 +4766,7 @@ abstract class AppLocalizations {
   /// Paywall hero alt başlığı.
   ///
   /// In tr, this message translates to:
-  /// **'Tüm özelliklerin kilidini aç'**
+  /// **'AI ile kelime tarama özelliğinin kilidini aç'**
   String get paywallSubtitle;
 
   /// No description provided for @paywallBannerOcr.
@@ -4793,29 +4805,23 @@ abstract class AppLocalizations {
   /// **'Tüm özellikler Premium\'da'**
   String get paywallBannerDefault;
 
-  /// No description provided for @paywallBenefitUnlimitedClasses.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sınırsız sınıf ve ders'**
-  String get paywallBenefitUnlimitedClasses;
-
   /// No description provided for @paywallBenefitOcr.
   ///
   /// In tr, this message translates to:
-  /// **'AI ile kelime tarama'**
+  /// **'AI ile kelime tarama (kameradan/galeriden)'**
   String get paywallBenefitOcr;
 
-  /// No description provided for @paywallBenefitMultiTeacher.
+  /// No description provided for @paywallBenefitOcrHandwriting.
   ///
   /// In tr, this message translates to:
-  /// **'Birden fazla öğretmene katılma'**
-  String get paywallBenefitMultiTeacher;
+  /// **'El yazısı dahil otomatik kelime tanıma'**
+  String get paywallBenefitOcrHandwriting;
 
-  /// No description provided for @paywallBenefitReports.
+  /// No description provided for @paywallBenefitOcrReview.
   ///
   /// In tr, this message translates to:
-  /// **'Tüm raporlar ve istatistikler'**
-  String get paywallBenefitReports;
+  /// **'Taranan kelimeleri düzenle ve tek dokunuşla kaydet'**
+  String get paywallBenefitOcrReview;
 
   /// No description provided for @paywallPlanMonthlyTitle.
   ///

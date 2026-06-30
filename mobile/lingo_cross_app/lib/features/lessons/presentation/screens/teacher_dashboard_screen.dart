@@ -10,8 +10,6 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../auth/presentation/auth_notifier.dart';
 import '../../../results/presentation/result_date_format.dart';
-import '../../../subscription/domain/entitlement.dart';
-import '../../../subscription/presentation/subscription_notifier.dart';
 import '../../../tracking/data/dtos/tracking_dtos.dart';
 import '../../../tracking/presentation/students_notifier.dart';
 import '../../data/dtos/lesson_dtos.dart';
@@ -38,12 +36,6 @@ class TeacherDashboardScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final lessonsAsync = ref.watch(lessonsNotifierProvider);
     final name = ref.watch(authNotifierProvider).user?.displayName ?? '';
-    // Bulmaca oluşturma Premium-only (puzzle_create). Free kullanıcı kilitli;
-    // durum belirsizse kilitsiz (reaktif 402 güvenlik ağı).
-    final puzzleCreateLocked = ref.watch(subscriptionNotifierProvider).maybeWhen(
-          data: (sub) => sub.puzzleCreateLocked,
-          orElse: () => false,
-        );
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -77,12 +69,7 @@ class TeacherDashboardScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xl),
             _PrimaryActions(
               onNewLesson: () => context.push(AppRoutes.lessonNew),
-              onNewPuzzle: () => context.push(
-                puzzleCreateLocked
-                    ? AppRoutes.paywallFor('puzzle_create')
-                    : AppRoutes.gameNew,
-              ),
-              newPuzzleLocked: puzzleCreateLocked,
+              onNewPuzzle: () => context.push(AppRoutes.gameNew),
               onMyPuzzles: () => context.push(AppRoutes.teacherPuzzles),
               onQuestionTopics: () =>
                   context.push(AppRoutes.teacherQuestionTopics),
@@ -172,7 +159,6 @@ class _PrimaryActions extends StatelessWidget {
   const _PrimaryActions({
     required this.onNewLesson,
     required this.onNewPuzzle,
-    required this.newPuzzleLocked,
     required this.onMyPuzzles,
     required this.onQuestionTopics,
     required this.onProgress,
@@ -180,7 +166,6 @@ class _PrimaryActions extends StatelessWidget {
 
   final VoidCallback onNewLesson;
   final VoidCallback onNewPuzzle;
-  final bool newPuzzleLocked;
   final VoidCallback onMyPuzzles;
   final VoidCallback onQuestionTopics;
   final VoidCallback onProgress;
@@ -212,7 +197,6 @@ class _PrimaryActions extends StatelessWidget {
           title: l10n.teacherDashboardActionNewPuzzleTitle,
           desc: l10n.teacherDashboardActionNewPuzzleDesc,
           onTap: onNewPuzzle,
-          locked: newPuzzleLocked,
         ),
         const SizedBox(height: AppSpacing.md),
         _BentoCard(
@@ -273,7 +257,6 @@ class _BentoCard extends StatelessWidget {
     required this.onTap,
     this.descColor,
     this.border = false,
-    this.locked = false,
   });
 
   final Color background;
@@ -287,7 +270,6 @@ class _BentoCard extends StatelessWidget {
   final String desc;
   final VoidCallback onTap;
   final bool border;
-  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -313,21 +295,6 @@ class _BentoCard extends StatelessWidget {
                 child: Icon(decorIcon,
                     size: 64, color: foreground.withValues(alpha: 0.1)),
               ),
-              if (locked)
-                Positioned(
-                  right: AppSpacing.md,
-                  top: AppSpacing.md,
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: foreground.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.lock, size: 16, color: foreground),
-                  ),
-                ),
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(

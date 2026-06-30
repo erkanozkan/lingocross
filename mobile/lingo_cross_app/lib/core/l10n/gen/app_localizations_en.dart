@@ -1505,10 +1505,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get questionSetExplanation => 'Explanation';
 
   @override
-  String get questionTopicsTitle => 'Past Exam Questions';
+  String get questionTopicsTitle => 'Exam Prep Questions';
 
   @override
-  String get questionTopicsHeroTitle => 'Past Exam Questions';
+  String get questionTopicsHeroTitle => 'Exam Prep Questions';
 
   @override
   String get questionTopicsHeroSubtitle => 'Take your students\' English to the next level with real exam experience.';
@@ -1900,7 +1900,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get teacherDashboardActionMyPuzzlesDesc => 'View, share, and track solve statistics for all the puzzles you\'ve created.';
 
   @override
-  String get teacherDashboardActionQuestionTopicsTitle => 'Past Exam Questions';
+  String get teacherDashboardActionQuestionTopicsTitle => 'Exam Prep Questions';
 
   @override
   String get teacherDashboardActionQuestionTopicsDesc => 'Pick question topics and assign them to your classes; students solve 10-question sets.';
@@ -1961,6 +1961,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountEditProfileCta => 'Edit Profile';
+
+  @override
+  String get accountPremiumTitle => 'LingoCross Premium';
+
+  @override
+  String get accountPremiumSubtitle => 'Unlock AI word scanning';
 
   @override
   String get accountGroupGeneral => 'GENERAL';
@@ -2509,7 +2515,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywallHeadline => 'LingoCross Premium';
 
   @override
-  String get paywallSubtitle => 'Unlock all features';
+  String get paywallSubtitle => 'Unlock AI word scanning';
 
   @override
   String get paywallBannerOcr => 'AI word scanning is in Premium';
@@ -2530,16 +2536,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paywallBannerDefault => 'All features are in Premium';
 
   @override
-  String get paywallBenefitUnlimitedClasses => 'Unlimited classes and lessons';
+  String get paywallBenefitOcr => 'AI word scanning (camera/gallery)';
 
   @override
-  String get paywallBenefitOcr => 'AI word scanning';
+  String get paywallBenefitOcrHandwriting => 'Automatic word recognition, handwriting included';
 
   @override
-  String get paywallBenefitMultiTeacher => 'Join multiple teachers';
-
-  @override
-  String get paywallBenefitReports => 'All reports and statistics';
+  String get paywallBenefitOcrReview => 'Edit scanned words and save in one tap';
 
   @override
   String get paywallPlanMonthlyTitle => 'Monthly';
